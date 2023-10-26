@@ -1,0 +1,117 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2709
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica-Bold;\f1\fswiss\fcharset0 Helvetica;\f2\fswiss\fcharset0 Helvetica-Oblique;
+\f3\fswiss\fcharset0 Helvetica-BoldOblique;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\b\fs24 \cf0 Server:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f1\b0 \cf0 	Users will contact the main AWS Lambda function API with either a request to start a game or join a game\
+		If the user wants to start a game -> user POST requests to get a server ID\
+			Lambda recognizes this request\
+			Lambda creates a new lambda function using a specific game template\
+			Lambda creates a new API gateway for this new function to be redirected to\
+				This could either be a new API gateway or a new endpoint of the old gateway (which would be so much better)\
+
+\f0\b 	
+\f1\b0 One AWS Lambda function accepts a post request from a user asking for a game-specific server ID\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 		Game ID will correlate to an API endpoint that will run the game\
+\
+
+\f0\b Client:
+\f1\b0 \
+	\
+\
+\
+
+\f0\b To create a docker image:
+\f1\b0 \
+
+\f2\i cd
+\f1\i0  into directory of project\
+run the 
+\f2\i docker init
+\f1\i0  command\
+run the 
+\f2\i docker build --tag [project name] . 
+\f1\i0 command\
+	you can run 
+\f2\i docker tag [project name]:latest [project name]:[new tag]
+\f1\i0  to kind\'92ve create a branch\
+ \
+
+\f0\b To run a docker container:
+\f1\b0 \
+
+\f2\i cd
+\f1\i0  into the directory of the project\
+run the command 
+\f2\i docker run -t -i [project name 
+\f3\b (THIS IS WHERE YOU CREATE THE PROJECT NAME)
+\f2\b0 ]\
+	
+\f1\i0 if you try to access the image from the client side and you can\'92t access it, kill the running image and rerun with 
+\f2\i docker run --publish 8000:5000 [project name]
+\f1\i0  to reroute the default port number\
+	run the command with flag 
+\f2\i -d
+\f1\i0  to be detached and not running on your terminal\
+\
+
+\f0\b To stop a running docker image:
+\f1\b0 \
+run the command 
+\f2\i docker stop [container name || container id]\
+\
+
+\f0\i0\b To show all running containers:\
+
+\f1\b0 run the command 
+\f2\i docker ps
+\f1\i0 \
+\
+
+\f0\b To run a postgreSQL database in a container and access it through a network:
+\f1\b0 \
+run the command 
+\f2\i docker volume create [volume/database name]\
+	
+\f1\i0 this will allow you to keep persistent data\
+run the command 
+\f2\i docker network create [network name] 
+\f1\i0 to create a network for an application to access a database\
+run the command 
+\f2\i docker run --rm -d \\\
+  --mount type=volume,src=[volume/database name],target=/var/lib/postgresql/data \\\
+  -p 5432:5432 \\\
+  --network [network name] \\\
+  --name db \\\
+  -e POSTGRES_PASSWORD=mysecretpassword \\\
+  -e POSTGRES_DB=example \\\
+  postgres\
+
+\f1\i0 	make sure the volume is accessible with command 
+\f2\i docker exec -it db psql -U postgres\
+	ctrl-d 
+\f1\i0 to quit\
+\
+
+\f0\b To run a container on the same network as database:
+\f1\b0 \
+
+\f2\i docker run --rm -d \\\
+  --network [network name] \\\
+  --name rest-server \\\
+  -p 8000:5000 \\\
+  -e POSTGRES_PASSWORD=mysecretpassword \\\
+  python-docker-dev\
+	
+\f1\i0 container can be accessed through port 8000 now
+\f2\i \
+
+\f1\i0 \
+}
