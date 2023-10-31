@@ -22,17 +22,32 @@ struct Cribbage: View {
         VStack(alignment: .center, spacing: 30) {
             VStack(spacing: 10) {
                 Text("Turn number \(game.turn)!")
-                    .font(/*@START_MENU_TOKEN@*/.title/*@END_MENU_TOKEN@*/)
-                HStack {
+                    .font(.title)
+                HStack(spacing: 20) {
                     ForEach(teams, id: \.self) { team in
-                        Text("\(team.points)")
-                            .font(.largeTitle)
+                        VStack {
+                            Text("Team \(team.team_num)")
+                            Text("\(team.points)")
+                        }
+                            .font(.custom("", size: 21))
+
+                        if team != teams.last {
+                            Divider()
+                        }
                     }
                 }
                 Divider()
-                Spacer().frame(width: 10, height: 100)
+                HStack(spacing: 30){
+                    ForEach(players, id: \.self) { player in
+                        HStack {
+                            Text(player.name)
+                            StatusDot(is_ready: player.is_ready)
+                        }
+                    }
+                }
+                Spacer().frame(width: 10, height: 120)
             }
-            
+
             CardDropArea(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
             CardInHandArea(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
             .onAppear(perform: {
