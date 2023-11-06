@@ -7,12 +7,13 @@
 
 import SwiftUI
 
-struct StatusDot: View {
+struct ShowStatus: View {
+    @EnvironmentObject var firebaseHelper: FirebaseHelper
     // This might have to be a binding somehow if when firebaseHelper changes, it doesn't update the value too
-    var is_ready: Bool = true
+//    @Binding var is_ready: Bool
     
     var body: some View {
-        if is_ready {
+        if firebaseHelper.playerInfo?.is_ready {
             Circle()
                 .fill(.green)
                 .frame(width: 10, height: 10)
@@ -25,5 +26,6 @@ struct StatusDot: View {
 }
 
 #Preview {
-    StatusDot(is_ready: true)
+    ShowStatus()
+        .environmentObject(FirebaseHelper())
 }
