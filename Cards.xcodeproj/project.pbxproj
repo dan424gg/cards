@@ -7,12 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1E20F1752AF33EA300F2B368 /* DiagonalLines.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E20F1742AF33EA300F2B368 /* DiagonalLines.swift */; };
+		1E20F1772AF3440400F2B368 /* DisabledCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E20F1762AF3440400F2B368 /* DisabledCardView.swift */; };
+		1E20F1792AF3524100F2B368 /* CardPlaceHolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E20F1782AF3524100F2B368 /* CardPlaceHolder.swift */; };
 		1E25B4A02AD7CF8B008DFACE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1E25B49F2AD7CF8B008DFACE /* GoogleService-Info.plist */; };
 		1E25B4A42ADC528F008DFACE /* NewGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E25B4A32ADC528F008DFACE /* NewGame.swift */; };
 		1E939CFD2AE3606D00D64551 /* GameInformation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E939CFC2AE3606D00D64551 /* GameInformation.swift */; };
 		1E9C48F42AE7A4A3008C518D /* SwiftUISnackbar in Frameworks */ = {isa = PBXBuildFile; productRef = 1E9C48F32AE7A4A3008C518D /* SwiftUISnackbar */; };
 		1E9C48F62AE7B3F3008C518D /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9C48F52AE7B3F3008C518D /* CardView.swift */; };
-		1EA245802AED6F71003B0943 /* CardDropArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA2457F2AED6F71003B0943 /* CardDropArea.swift */; };
+		1EA245802AED6F71003B0943 /* TurnOneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA2457F2AED6F71003B0943 /* TurnOneView.swift */; };
 		1EA245822AED70B3003B0943 /* CardInHandArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA245812AED70B3003B0943 /* CardInHandArea.swift */; };
 		1EA759132AE2272A00537BB5 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 1EA759122AE2272A00537BB5 /* FirebaseFirestoreSwift */; };
 		1EBED90E2AD7BBFF008B85EE /* CardsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED90D2AD7BBFF008B85EE /* CardsApp.swift */; };
@@ -30,11 +33,13 @@
 		1EBED9492AD7BD88008B85EE /* CribbageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED9482AD7BD88008B85EE /* CribbageView.swift */; };
 		1EBED94C2AD7BF2C008B85EE /* Firebase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED94B2AD7BF2C008B85EE /* Firebase.swift */; };
 		1EBEF2C22AE4F579008A093B /* TeamInformation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBEF2C12AE4F579008A093B /* TeamInformation.swift */; };
-		1EC498432AF19B050047F54A /* StatusDot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EC498422AF19B050047F54A /* StatusDot.swift */; };
+		1EC498432AF19B050047F54A /* ShowStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EC498422AF19B050047F54A /* ShowStatus.swift */; };
 		1ECBB9FC2ADE3B9B0046D4CA /* PlayerInformation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECBB9FB2ADE3B9B0046D4CA /* PlayerInformation.swift */; };
 		1ECCDABD2AE600DA00EFF167 /* GameStartButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECCDABC2AE600DA00EFF167 /* GameStartButton.swift */; };
 		1ECCDABF2AE606A800EFF167 /* TeamPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECCDABE2AE606A800EFF167 /* TeamPicker.swift */; };
 		1EE5F12B2AE8A5EF0089162D /* CardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE5F12A2AE8A5EF0089162D /* CardItem.swift */; };
+		1EFA9F5B2AF584CC00FA092C /* TurnTwoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFA9F5A2AF584CC00FA092C /* TurnTwoView.swift */; };
+		1EFA9F5D2AF5860000FA092C /* CribbageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFA9F5C2AF5860000FA092C /* CribbageController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,11 +60,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1E20F1742AF33EA300F2B368 /* DiagonalLines.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagonalLines.swift; sourceTree = "<group>"; };
+		1E20F1762AF3440400F2B368 /* DisabledCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisabledCardView.swift; sourceTree = "<group>"; };
+		1E20F1782AF3524100F2B368 /* CardPlaceHolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardPlaceHolder.swift; sourceTree = "<group>"; };
 		1E25B49F2AD7CF8B008DFACE /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
 		1E25B4A32ADC528F008DFACE /* NewGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewGame.swift; sourceTree = "<group>"; };
 		1E939CFC2AE3606D00D64551 /* GameInformation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameInformation.swift; sourceTree = "<group>"; };
 		1E9C48F52AE7B3F3008C518D /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
-		1EA2457F2AED6F71003B0943 /* CardDropArea.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDropArea.swift; sourceTree = "<group>"; };
+		1EA2457F2AED6F71003B0943 /* TurnOneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnOneView.swift; sourceTree = "<group>"; };
 		1EA245812AED70B3003B0943 /* CardInHandArea.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardInHandArea.swift; sourceTree = "<group>"; };
 		1EBED90A2AD7BBFF008B85EE /* Cards.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cards.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EBED90D2AD7BBFF008B85EE /* CardsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsApp.swift; sourceTree = "<group>"; };
@@ -77,12 +85,14 @@
 		1EBED9482AD7BD88008B85EE /* CribbageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CribbageView.swift; sourceTree = "<group>"; };
 		1EBED94B2AD7BF2C008B85EE /* Firebase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Firebase.swift; sourceTree = "<group>"; };
 		1EBEF2C12AE4F579008A093B /* TeamInformation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamInformation.swift; sourceTree = "<group>"; };
-		1EC498422AF19B050047F54A /* StatusDot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusDot.swift; sourceTree = "<group>"; };
+		1EC498422AF19B050047F54A /* ShowStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowStatus.swift; sourceTree = "<group>"; };
 		1ECBB9FB2ADE3B9B0046D4CA /* PlayerInformation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerInformation.swift; sourceTree = "<group>"; };
 		1ECCDABC2AE600DA00EFF167 /* GameStartButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStartButton.swift; sourceTree = "<group>"; };
 		1ECCDABE2AE606A800EFF167 /* TeamPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamPicker.swift; sourceTree = "<group>"; };
 		1EE5F1292AE8A3750089162D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		1EE5F12A2AE8A5EF0089162D /* CardItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardItem.swift; sourceTree = "<group>"; };
+		1EFA9F5A2AF584CC00FA092C /* TurnTwoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnTwoView.swift; sourceTree = "<group>"; };
+		1EFA9F5C2AF5860000FA092C /* CribbageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CribbageController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,8 +138,9 @@
 			children = (
 				1E9C48F52AE7B3F3008C518D /* CardView.swift */,
 				1EE5F12A2AE8A5EF0089162D /* CardItem.swift */,
-				1EA2457F2AED6F71003B0943 /* CardDropArea.swift */,
 				1EA245812AED70B3003B0943 /* CardInHandArea.swift */,
+				1E20F1762AF3440400F2B368 /* DisabledCardView.swift */,
+				1E20F1782AF3524100F2B368 /* CardPlaceHolder.swift */,
 			);
 			path = "card views";
 			sourceTree = "<group>";
@@ -209,7 +220,8 @@
 				1EA2457C2AED6F1F003B0943 /* card views */,
 				1EA2457B2AED6ED4003B0943 /* buttons */,
 				1ECCDABE2AE606A800EFF167 /* TeamPicker.swift */,
-				1EC498422AF19B050047F54A /* StatusDot.swift */,
+				1EC498422AF19B050047F54A /* ShowStatus.swift */,
+				1E20F1742AF33EA300F2B368 /* DiagonalLines.swift */,
 			);
 			path = ui;
 			sourceTree = "<group>";
@@ -228,7 +240,7 @@
 		1EBED9402AD7BCD0008B85EE /* games */ = {
 			isa = PBXGroup;
 			children = (
-				1EBED9482AD7BD88008B85EE /* CribbageView.swift */,
+				1EFA9F592AF5848D00FA092C /* cribbage */,
 			);
 			path = games;
 			sourceTree = "<group>";
@@ -240,8 +252,19 @@
 				1ECBB9FB2ADE3B9B0046D4CA /* PlayerInformation.swift */,
 				1E939CFC2AE3606D00D64551 /* GameInformation.swift */,
 				1EBEF2C12AE4F579008A093B /* TeamInformation.swift */,
+				1EFA9F5C2AF5860000FA092C /* CribbageController.swift */,
 			);
 			path = models;
+			sourceTree = "<group>";
+		};
+		1EFA9F592AF5848D00FA092C /* cribbage */ = {
+			isa = PBXGroup;
+			children = (
+				1EA2457F2AED6F71003B0943 /* TurnOneView.swift */,
+				1EBED9482AD7BD88008B85EE /* CribbageView.swift */,
+				1EFA9F5A2AF584CC00FA092C /* TurnTwoView.swift */,
+			);
+			path = cribbage;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -387,10 +410,14 @@
 			files = (
 				1E25B4A42ADC528F008DFACE /* NewGame.swift in Sources */,
 				1E939CFD2AE3606D00D64551 /* GameInformation.swift in Sources */,
+				1E20F1792AF3524100F2B368 /* CardPlaceHolder.swift in Sources */,
+				1E20F1772AF3440400F2B368 /* DisabledCardView.swift in Sources */,
+				1EFA9F5B2AF584CC00FA092C /* TurnTwoView.swift in Sources */,
 				1EE5F12B2AE8A5EF0089162D /* CardItem.swift in Sources */,
+				1E20F1752AF33EA300F2B368 /* DiagonalLines.swift in Sources */,
 				1EBED9102AD7BBFF008B85EE /* ContentView.swift in Sources */,
 				1ECBB9FC2ADE3B9B0046D4CA /* PlayerInformation.swift in Sources */,
-				1EA245802AED6F71003B0943 /* CardDropArea.swift in Sources */,
+				1EA245802AED6F71003B0943 /* TurnOneView.swift in Sources */,
 				1ECCDABF2AE606A800EFF167 /* TeamPicker.swift in Sources */,
 				1ECCDABD2AE600DA00EFF167 /* GameStartButton.swift in Sources */,
 				1EBED9492AD7BD88008B85EE /* CribbageView.swift in Sources */,
@@ -398,11 +425,12 @@
 				1EBED93E2AD7BC9A008B85EE /* GameButton.swift in Sources */,
 				1E9C48F62AE7B3F3008C518D /* CardView.swift in Sources */,
 				1EA245822AED70B3003B0943 /* CardInHandArea.swift in Sources */,
-				1EC498432AF19B050047F54A /* StatusDot.swift in Sources */,
+				1EC498432AF19B050047F54A /* ShowStatus.swift in Sources */,
 				1EBED9452AD7BCFE008B85EE /* LoadingScreen.swift in Sources */,
 				1EBED9422AD7BCE7008B85EE /* ExistingGame.swift in Sources */,
 				1EBEF2C22AE4F579008A093B /* TeamInformation.swift in Sources */,
 				1EBED90E2AD7BBFF008B85EE /* CardsApp.swift in Sources */,
+				1EFA9F5D2AF5860000FA092C /* CribbageController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

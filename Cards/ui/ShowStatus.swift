@@ -9,18 +9,39 @@ import SwiftUI
 
 struct ShowStatus: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
-    // This might have to be a binding somehow if when firebaseHelper changes, it doesn't update the value too
-//    @Binding var is_ready: Bool
-    
+    var players = [PlayerInformation.player_one, PlayerInformation.player_two]
+
     var body: some View {
-        if firebaseHelper.playerInfo?.is_ready {
-            Circle()
-                .fill(.green)
-                .frame(width: 10, height: 10)
+        if firebaseHelper.playerInfo == nil {
+            ForEach(players, id: \.self) { player in
+                HStack {
+                    Text(player.name)
+                    if player.is_ready {
+                        Circle()
+                            .fill(.green)
+                            .frame(width: 10, height: 10)
+                    } else {
+                        Circle()
+                            .fill(.red)
+                            .frame(width: 10, height: 10)
+                    }
+                }
+            }
         } else {
-            Circle()
-                .fill(.red)
-                .frame(width: 10, height: 10)
+            ForEach(firebaseHelper.players, id: \.self) { player in
+                HStack {
+                    Text(player.name)
+                    if player.is_ready {
+                        Circle()
+                            .fill(.green)
+                            .frame(width: 10, height: 10)
+                    } else {
+                        Circle()
+                            .fill(.red)
+                            .frame(width: 10, height: 10)
+                    }
+                }
+            }
         }
     }
 }

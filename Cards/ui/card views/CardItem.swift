@@ -18,24 +18,24 @@ struct CardItem: Hashable, Codable, Identifiable, Transferable {
     var id: Int
     var card: String
     
-    static var sampleCards: [CardItem] {
-        [
-            CardItem(id: 0, card: "SA"),
-            CardItem(id: 1, card: "HA"),
-            CardItem(id: 2, card: "CA"),
-            CardItem(id: 3, card: "DA")
-        ]
-    }
+//    static var sampleCards: [CardItem] {
+//        [
+//            CardItem(id: 0, card: "SA"),
+//            CardItem(id: 1, card: "HA"),
+//            CardItem(id: 2, card: "CA"),
+//            CardItem(id: 3, card: "DA")
+//        ]
+//    }
 }
 
 extension UTType {
     static var card = UTType(exportedAs: "dan424gg.Cards.CardItems")
 }
 
-class Card: ObservableObject {
-    @Published var items = [CardItem]()
-     
-    init() {
-        items.append(contentsOf: CardItem.sampleCards)
-    }
-}
+//class Card: ObservableObject {
+//    @Published var items = [CardItem]()
+//     
+//    init() {
+//        items.append(contentsOf: CardItem.sampleCards)
+//    }
+//}

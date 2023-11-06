@@ -34,12 +34,18 @@ struct ExistingGame: View {
             .border(.blue)
             .focused($isFocused)
             .onChange(of: isFocused) {
-                Task {
-                    if await FirebaseHelper().checkValidId(id: groupId) {
-                        notValid = false
-                    } else {
-                        showSnackbar = true
-                        notValid = true
+                if isFocused {
+                    // ensure snackbar isn't being shown
+                    showSnackbar = false
+                } else {
+                    // determine validity of groupid
+                    Task {
+                        if await FirebaseHelper().checkValidId(id: groupId) {
+                            notValid = false
+                        } else {
+                            showSnackbar = true
+                            notValid = true
+                        }
                     }
                 }
             }
@@ -57,9 +63,6 @@ struct ExistingGame: View {
             } label: {
                 Text("Submit")
                     .buttonStyle(.borderedProminent)
-            }
-            .onTapGesture {
-                
             }
             .disabled(notValid)
         }

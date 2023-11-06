@@ -9,7 +9,21 @@ import SwiftUI
 
 struct CardPlaceHolder: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        ZStack {
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Color.gray.opacity(0.4))
+                .frame(width: 50, height: 100)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.black, style: StrokeStyle(lineWidth: 1, dash: [5]))
+                )
+                .overlay(
+                    Text("Place a card here!")
+                        .font(.system(size: 7))
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(Color.black.opacity(0.9))
+                )
+        }
     }
 }
 

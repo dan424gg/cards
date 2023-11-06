@@ -6,7 +6,18 @@
 //
 
 import Foundation
+import SwiftUI
 
-class CribbageState {
+class CribbageController {
+    
+    func readyForNextRound(players: [PlayerInformation]) -> Bool {
+        for player in players {
+            if !player.is_ready {
+                return false
+            }
+        }
+        
+        return true
+    }
     
 }

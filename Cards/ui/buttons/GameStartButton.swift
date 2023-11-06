@@ -20,10 +20,10 @@ struct GameStartButton: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .simultaneousGesture(TapGesture().onEnded {
-                    self.firebaseHelper.startGame()
+                    self.firebaseHelper.updateGame(newState: ["is_ready": true])
                 })
             } else {
-                if self.firebaseHelper.gameInfo != nil && !(self.firebaseHelper.gameInfo!.is_pregame) {
+                if self.firebaseHelper.gameInfo != nil && self.firebaseHelper.gameInfo!.is_ready {
                     NavigationLink {
                         Cribbage().navigationBarBackButtonHidden(true)
                     } label: {

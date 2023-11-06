@@ -12,6 +12,8 @@ struct Cribbage: View {
     var players = [PlayerInformation.player_one, PlayerInformation.player_two]
     var game = GameInformation(group_id: 1000, is_ready: false, is_won: false, num_players: 2, turn: 1)
     
+    var controller = CribbageController()
+    
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @State var buttonText: String = "Ready!"
     @State var isUiDisabled: Bool = false
@@ -58,29 +60,39 @@ struct Cribbage: View {
                 HStack(spacing: 30) {
                     ShowStatus()
                 }
-                Spacer().frame(height: 20)
             }
             
             VStack {
-//                if firebaseHelper.gameInfo != nil {
-                    switch(firebaseHelper.gameInfo?.turn ?? game.turn) {
-                        case 0,1: TurnOneView(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
-                            .onAppear(perform: {
-                                if firebaseHelper.playerInfo != nil && firebaseHelper.playerInfo!.cards_in_hand != [] {
-                                    cardsInHand = firebaseHelper.playerInfo!.cards_in_hand
-                                } else {
-                                    cardsInHand = players[0].cards_in_hand
-                                }
-                            })
-                            .transition(.slide)
+                switch(firebaseHelper.gameInfo?.turn ?? game.turn) {
+                    case 0,1: TurnOneView(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
+                        .onAppear(perform: {
+                            if firebaseHelper.playerInfo != nil && firebaseHelper.playerInfo!.cards_in_hand != [] {
+                                cardsInHand = firebaseHelper.playerInfo!.cards_in_hand
+                            } else {
+                                cardsInHand = players[0].cards_in_hand
+                            }
+                        })
+                        .transition(.slide)
 
-//                    case 2: break
+                    case 2: TurnTwoView()
+                        .task {
+                            await firebaseHelper.updatePlayer(newState: ["is_ready": false])
+                            if firebaseHelper.playerInfo!.is_lead {
+                                firebaseHelper.updateGame(newState: ["is_ready": false])
+                            }
+                        }
+                        .onAppear(perform: {
+                            if firebaseHelper.playerInfo != nil && firebaseHelper.playerInfo!.cards_in_hand != [] {
+                                cardsInHand = firebaseHelper.playerInfo!.cards_in_hand
+                            } else {
+                                cardsInHand = players[0].cards_in_hand
+                            }
+                        })
 //                    case 3: break
 //                    case 4: //
                     default:
                         EmptyView()
-                    }
-//                }
+                }
                 
                 CardInHandArea(isDisabled: $isUiDisabled, cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
                     .onAppear(perform: {
@@ -94,14 +106,23 @@ struct Cribbage: View {
             .disabled(isUiDisabled)
             
             Button(buttonText) {
-                firebaseHelper.readyPlayer()
                 isUiDisabled = !isUiDisabled
                 buttonText = isUiDisabled ? "Not Ready!" : "Ready!"
+                Task {
+                    await firebaseHelper.updatePlayer(newState: ["is_ready": isUiDisabled])
+                    if controller.readyForNextRound(players: firebaseHelper.players) {
+                        firebaseHelper.updateGame(newState: [
+                            "is_ready": true,
+                            "turn": ((firebaseHelper.gameInfo?.turn ?? game.turn) + 1)
+                        ])
+                    }
+                }
             }
-                .buttonStyle(.bordered)
+            .buttonStyle(.bordered)
             
             Spacer()
         }
+        
     }
 }
 

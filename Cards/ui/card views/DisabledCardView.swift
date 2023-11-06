@@ -8,11 +8,26 @@
 import SwiftUI
 
 struct DisabledCardView: View {
+    var cardItem: CardItem
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        ZStack {
+            Text(cardItem.card)
+                .font(.largeTitle)
+                .foregroundStyle(.gray)
+            
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(Color.black, lineWidth: 2)
+                .frame(width: 50, height: 100)
+                .overlay(
+                    DiagonalLines()
+                        .stroke(Color.black)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                )
+        }
     }
 }
 
 #Preview {
-    DisabledCardView()
+    DisabledCardView(cardItem: CardItem(id:0, card: "JK"))
 }
