@@ -15,120 +15,91 @@ struct Cribbage: View {
     var controller = CribbageController()
     
     @EnvironmentObject var firebaseHelper: FirebaseHelper
-    @State var buttonText: String = "Ready!"
     @State var isUiDisabled: Bool = false
+    @State var showSnackbar: Bool = false
     @State var cardsDragged: [CardItem] = []
     @State var cardsInHand: [CardItem] = []
     
     var body: some View {
-        VStack(alignment: .center, spacing: 30) {
-            VStack(spacing: 10) {
-                Spacer()
-                Text("Turn number \(firebaseHelper.gameInfo?.turn ?? game.turn)!")
-                    .font(.title)
-                    .onAppear(perform: {
-                    })
-                Divider()
-                HStack(spacing: 20) {
-                    if firebaseHelper.teams == [] {
-                        ForEach(teams, id: \.self) { team in
-                            VStack {
-                                Text("Team \(team.team_num)")
-                                Text("\(team.points)")
-                            }
-                            .font(.custom("", size: 21))
+        VStack {
+            Header()
+            Spacer()
+            VStack(spacing: 50) {
+                    VStack {
+                        switch(firebaseHelper.gameInfo?.turn ?? game.turn) {
+                        case 0,1: TurnOneView(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
+                                .onAppear(perform: {
+                                    if firebaseHelper.playerInfo != nil && firebaseHelper.playerInfo!.cards_in_hand != [] {
+                                        cardsInHand = firebaseHelper.playerInfo!.cards_in_hand
+                                    } else {
+                                        cardsInHand = players[0].cards_in_hand
+                                    }
+                                })
+                                .transition(.slide)
                             
-                            if team != teams.last {
-                                Divider()
-                            }
-                        }
-                    } else {
-                        ForEach(firebaseHelper.teams, id: \.self) { team in
-                            VStack {
-                                Text("Team \(team.team_num)")
-                                Text("\(team.points)")
-                            }
-                            .font(.custom("", size: 21))
-                            
-                            if team != firebaseHelper.teams.last {
-                                Divider()
-                            }
-                        }
-                    }
-                }
-                Divider()
-                HStack(spacing: 30) {
-                    ShowStatus()
-                }
-            }
-            
-            VStack {
-                switch(firebaseHelper.gameInfo?.turn ?? game.turn) {
-                    case 0,1: TurnOneView(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
-                        .onAppear(perform: {
-                            if firebaseHelper.playerInfo != nil && firebaseHelper.playerInfo!.cards_in_hand != [] {
-                                cardsInHand = firebaseHelper.playerInfo!.cards_in_hand
-                            } else {
-                                cardsInHand = players[0].cards_in_hand
-                            }
-                        })
-                        .transition(.slide)
+                        case 2: TurnTwoView(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
+                                .task {
+                                    isUiDisabled = false
 
-                    case 2: TurnTwoView()
-                        .task {
-                            await firebaseHelper.updatePlayer(newState: ["is_ready": false])
-                            if firebaseHelper.playerInfo!.is_lead {
-                                firebaseHelper.updateGame(newState: ["is_ready": false])
-                            }
+                                    await firebaseHelper.updatePlayer(newState: ["is_ready": false])
+                                    if firebaseHelper.playerInfo!.is_lead {
+                                        firebaseHelper.updateGame(newState: ["is_ready": false])
+                                    }
+                                }
+                                .onAppear(perform: {
+                                    cardsDragged = []
+                                    if firebaseHelper.playerInfo != nil && firebaseHelper.playerInfo!.cards_in_hand != [] {
+                                        cardsInHand = firebaseHelper.playerInfo!.cards_in_hand
+                                    } else {
+                                        cardsInHand = players[0].cards_in_hand
+                                    }
+                                })
+                                .transition(.slide)
+                        default:
+                            EmptyView()
                         }
-                        .onAppear(perform: {
-                            if firebaseHelper.playerInfo != nil && firebaseHelper.playerInfo!.cards_in_hand != [] {
-                                cardsInHand = firebaseHelper.playerInfo!.cards_in_hand
-                            } else {
-                                cardsInHand = players[0].cards_in_hand
-                            }
-                        })
-//                    case 3: break
-//                    case 4: //
-                    default:
-                        EmptyView()
-                }
-                
-                CardInHandArea(isDisabled: $isUiDisabled, cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
-                    .onAppear(perform: {
-                        if firebaseHelper.playerInfo != nil && firebaseHelper.playerInfo!.cards_in_hand != [] {
-                            cardsInHand = firebaseHelper.playerInfo!.cards_in_hand
-                        } else {
-                            cardsInHand = players[0].cards_in_hand
-                        }
-                    })
-            }
-            .disabled(isUiDisabled)
-            
-            Button(buttonText) {
-                isUiDisabled = !isUiDisabled
-                buttonText = isUiDisabled ? "Not Ready!" : "Ready!"
-                Task {
-                    await firebaseHelper.updatePlayer(newState: ["is_ready": isUiDisabled])
-                    if controller.readyForNextRound(players: firebaseHelper.players) {
-                        firebaseHelper.updateGame(newState: [
-                            "is_ready": true,
-                            "turn": ((firebaseHelper.gameInfo?.turn ?? game.turn) + 1)
-                        ])
+                        
+                        CardInHandArea(isDisabled: $isUiDisabled, cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
+                            .onAppear(perform: {
+                                if firebaseHelper.playerInfo != nil && firebaseHelper.playerInfo!.cards_in_hand != [] {
+                                    cardsInHand = firebaseHelper.playerInfo!.cards_in_hand
+                                } else {
+                                    cardsInHand = players[0].cards_in_hand
+                                }
+                            })
                     }
+                    .disabled(isUiDisabled)
+                    Button(isUiDisabled ? "Not Ready!" : "Ready!") {
+                        if cardsDragged.count == 2 {
+                            showSnackbar = false
+                            isUiDisabled = !isUiDisabled
+//                            buttonText = isUiDisabled ? "Not Ready!" : "Ready!"
+                            Task {
+                                firebaseHelper.updatePlayer(newState: [
+                                    "is_ready": isUiDisabled,
+                                    "cards_in_hand": cardsInHand
+                                ])
+                                if controller.readyForNextRound(players: firebaseHelper.players) {
+                                    firebaseHelper.updateGame(newState: [
+                                        "is_ready": true,
+                                        "turn": ((firebaseHelper.gameInfo?.turn ?? game.turn) + 1)
+                                    ])
+                                }
+                            }
+                        } else {
+                            showSnackbar = true
+                        }
+                    }
+                    .buttonStyle(.bordered)
                 }
-            }
-            .buttonStyle(.bordered)
-            
             Spacer()
         }
-        
+        .snackbar(isShowing: $showSnackbar, title: "Not Ready", text: "You need to select two cards to discard!", style: .warning)
     }
 }
 
 struct Cribbage_Previews: PreviewProvider {
     static var previews: some View {
-//        Text("nothing")
         Cribbage()
             .environmentObject(FirebaseHelper())
     }

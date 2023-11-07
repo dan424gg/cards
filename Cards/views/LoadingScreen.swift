@@ -62,6 +62,7 @@ struct LoadingScreen: View {
             
             VStack {
                 GameStartButton()
+                    .disabled(groupId == "Loading...")
             }
         }
     }

@@ -25,6 +25,8 @@ struct ExistingGame: View {
     
     var body: some View {
         VStack {
+            Text("Please enter a Group ID,       and your name!")
+                .font(.title2)
             TextField(
                 "Group ID",
                 value: $groupId,
@@ -64,7 +66,7 @@ struct ExistingGame: View {
                 Text("Submit")
                     .buttonStyle(.borderedProminent)
             }
-            .disabled(notValid)
+            .disabled(notValid && fullName == "")
         }
         .multilineTextAlignment(.center)
         .padding([.leading, .trailing], 48)

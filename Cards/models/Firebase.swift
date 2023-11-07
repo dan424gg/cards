@@ -33,7 +33,7 @@ import FirebaseFirestoreSwift
         self.teams = []
     }
     
-    func updatePlayer(newState: [String: Any]) async {
+    func updatePlayer(newState: [String: Any]) {
         guard docRef != nil else {
             print("docRef was nil before updating player information")
             return
@@ -42,32 +42,32 @@ import FirebaseFirestoreSwift
             print("playerInfo was nil before trying to update it's info!")
             return
         }
-        
-        for temp in newState {
-            let property = temp.key
-            switch (property) {
-                case "name":
-                    playerInfo!.name = temp.value as! String
-                    break
-                case "cards_in_hand":
-                    playerInfo!.cards_in_hand = temp.value as! [CardItem]
-                    break
-                case "team_num":
-                    playerInfo!.team_num = temp.value as! Int
-                    break
-                case "is_ready":
-                    playerInfo!.is_ready = temp.value as! Bool
-                    break
-                default:
-                    print("property doesn't exist when trying to update player!")
-                    return
-            }
-        }
-        
+                
         do {
-            try await docRef.collection("teams").document("\(playerInfo!.team_num)").collection("players").document("\(playerInfo!.uid)").updateData(newState)
+            for (key, value) in newState {
+                switch key {
+                case "name" where value is String:
+                    playerInfo!.name = value as! String
+                case "cards_in_hand" where value is [CardItem]:
+                    playerInfo!.cards_in_hand = value as! [CardItem]
+                case "team_num" where value is Int:
+                    playerInfo!.team_num = value as! Int
+                case "is_ready" where value is Bool:
+                    playerInfo!.is_ready = value as! Bool
+                default:
+                    print("Property '\(key)' doesn't exist when trying to update player!")
+                    return
+                }
+            }
+
+            let loc: Int! = players.firstIndex(where: { player in
+                player.uid == playerInfo!.uid
+            })
+            players[loc] = playerInfo!
+            
+            try docRef.collection("teams").document("\(playerInfo!.team_num)").collection("players").document("\(playerInfo!.uid)").setData(from: playerInfo!, merge: true)
         } catch {
-            print("error from firebase: \(error)")
+            print("error in updatePlayer: \(error)")
         }
     }
     
@@ -114,10 +114,10 @@ import FirebaseFirestoreSwift
             print("teamInfo was nil before trying to update it's info!")
             return
         }
-        
-        for temp in newState {
-            let property = temp.key
-            switch (property) {
+        do {
+            for temp in newState {
+                let property = temp.key
+                switch (property) {
                 case "crib":
                     teamInfo!.crib = temp.value as! [CardItem]
                     break
@@ -130,10 +130,13 @@ import FirebaseFirestoreSwift
                 default:
                     print("property doesn't exist when trying to update team!")
                     return
+                }
             }
+            
+            try docRef!.collection("teams").document("\(playerInfo!.team_num)").setData(from: teamInfo!, merge: true)
+        } catch {
+            print("error in updateTeam: \(error)")
         }
-        
-        docRef!.collection("teams").document("\(playerInfo!.team_num)").updateData(newState)
     }
     
     func addGameInfoListener() {
@@ -277,7 +280,7 @@ import FirebaseFirestoreSwift
             
             playerInfo!.team_num = newTeamNum
             if await !checkTeamExists(teamNum: newTeamNum) {
-                teamInfo = TeamInformation(team_num: newTeamNum, crib: [], has_crib: false, points: 0)
+                teamInfo = TeamInformation(team_num: newTeamNum)
                 try docRef!.collection("teams").document("\(newTeamNum)").setData(from: teamInfo)
                 try await docRef!.collection("teams").document("\(newTeamNum)").collection("players").document("placeholder").setData([
                     "This": "serves as a placeholder so this collection doesn't get deleted when there aren't any players on this team, temporarily"
@@ -303,10 +306,8 @@ import FirebaseFirestoreSwift
             try await docRef!.updateData([
                 "num_players": numPlayers + 1
             ])
-            
-            print("gameinfo after update\(try await docRef!.getDocument().data(as: GameInformation.self))")            
-            
-            playerInfo = PlayerInformation(name: fullName, uid: UUID().uuidString, player_num: numPlayers + 1, cards_in_hand: [], is_lead: false, team_num: teamNum)
+                        
+            playerInfo = PlayerInformation(name: fullName, uid: UUID().uuidString, team_num: teamNum)
             try docRef!.collection("teams").document("\(teamNum)").collection("players").document(playerInfo!.uid).setData(from: playerInfo)
             try await docRef!.collection("teams").document("\(teamNum)").collection("players").document("placeholder").setData([
                 "This": "serves as a placeholder so this collection doesn't get deleted when there aren't any players on this team, temporarily"
@@ -329,13 +330,13 @@ import FirebaseFirestoreSwift
         docRef = db.collection("games").document(String(groupId))
         
         do {
-            gameInfo = GameInformation(group_id: groupId, is_ready: true, is_won: false, num_players: 1, turn: 1)
+            gameInfo = GameInformation(group_id: groupId, is_ready: true, num_players: 1, turn: 1)
             try docRef!.setData(from: gameInfo)
                         
-            teamInfo = TeamInformation(team_num: 1, crib: [], has_crib: false, points: 0)
+            teamInfo = TeamInformation(team_num: 1)
             try docRef!.collection("teams").document(String(1)).setData(from: teamInfo)
             
-            playerInfo = PlayerInformation(name: fullName, uid: UUID().uuidString, player_num: 0, cards_in_hand: [], is_lead: true, team_num: 1)
+            playerInfo = PlayerInformation(name: fullName, uid: UUID().uuidString, cards_in_hand: [CardItem(id: 0, value: "J", suit: "D"), CardItem(id: 1, value: "9", suit: "H"), CardItem(id: 2, value: "6", suit: "S"), CardItem(id: 3, value: "9", suit: "S")], is_lead: true, team_num: 1)
             try docRef!.collection("teams").document(String(1)).collection("players").document(playerInfo!.uid).setData(from: playerInfo)
             try await docRef!.collection("teams").document("\(1)").collection("players").document("placeholder").setData([
                 "This": "serves as a placeholder so this collection doesn't get deleted when there aren't any players on this team, temporarily"

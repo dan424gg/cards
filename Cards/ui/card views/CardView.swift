@@ -20,16 +20,22 @@ struct CardView: View {
                     RoundedRectangle(cornerRadius: 10)
                         .stroke(Color.black, lineWidth: 2)
                 )
+                .overlay(
+                    VStack (spacing: 30) {
+                        Text(cardItem.suit)
+                            .font(.footnote)
+                            .position(CGPoint(x: 10, y: 10))
+                        Text(cardItem.value)
+                            .font(.largeTitle)
+                            .multilineTextAlignment(.center)
+                            .position(x: 25, y: -10)
+                    })
             
-            VStack {
-                Text(cardItem.card)
-                    .font(.largeTitle)
-            }
         }
         .draggable(cardItem)
     }
 }
 
 #Preview {
-    CardView(cardItem: CardItem(id:0, card: "JK"))
+    CardView(cardItem: CardItem(id:0, value: "K", suit: "S"))
 }

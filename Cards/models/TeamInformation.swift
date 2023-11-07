@@ -12,12 +12,12 @@ import FirebaseFirestore
 
 
 public struct TeamInformation: Hashable, Codable {
-    var team_num: Int
-    var crib: [CardItem]
-    var has_crib: Bool
-    var points: Int
+    var team_num: Int = 0
+    var crib: [CardItem] = []
+    var has_crib: Bool = false
+    var points: Int = 0
     
-    static let team_one = TeamInformation(team_num: 1, crib: [CardItem(id: 0, card: "HA"), CardItem(id: 1, card: "H5"), CardItem(id: 2, card: "HJ"), CardItem(id: 3, card: "HK")], has_crib: true, points: 50)
+    static let team_one = TeamInformation(team_num: 1, crib: [CardItem(id: 0, value: "A", suit: "H"), CardItem(id: 1, value: "5", suit: "H"), CardItem(id: 2, value: "4", suit: "S"), CardItem(id: 3, value: "K", suit: "H")], has_crib: true, points: 50)
     static let team_two = TeamInformation(team_num: 2, crib: [], has_crib: false, points: 46)
 
 //    enum CodingKeys: String, CodingKey {

@@ -13,6 +13,8 @@ struct NewGame: View {
     
     var body: some View {
         VStack {
+            Text("Please enter your name (or anything)!")
+                .font(.title2)
             TextField(
                 "Full Name",
                 text: $fullName
@@ -27,6 +29,7 @@ struct NewGame: View {
             } label: {
                 Text("Submit")
             }
+            .disabled(fullName == "")
         }
     }
 }

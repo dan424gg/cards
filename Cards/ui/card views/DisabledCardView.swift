@@ -12,7 +12,7 @@ struct DisabledCardView: View {
     
     var body: some View {
         ZStack {
-            Text(cardItem.card)
+            Text(cardItem.value)
                 .font(.largeTitle)
                 .foregroundStyle(.gray)
             
@@ -29,5 +29,5 @@ struct DisabledCardView: View {
 }
 
 #Preview {
-    DisabledCardView(cardItem: CardItem(id:0, card: "JK"))
+    DisabledCardView(cardItem: CardItem(id:0, value: "K", suit: "D"))
 }

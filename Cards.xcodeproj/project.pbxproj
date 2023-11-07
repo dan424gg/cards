@@ -40,6 +40,7 @@
 		1EE5F12B2AE8A5EF0089162D /* CardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE5F12A2AE8A5EF0089162D /* CardItem.swift */; };
 		1EFA9F5B2AF584CC00FA092C /* TurnTwoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFA9F5A2AF584CC00FA092C /* TurnTwoView.swift */; };
 		1EFA9F5D2AF5860000FA092C /* CribbageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFA9F5C2AF5860000FA092C /* CribbageController.swift */; };
+		1EFE00F92AF9B08F00B71623 /* Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFE00F82AF9B08F00B71623 /* Header.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -93,6 +94,7 @@
 		1EE5F12A2AE8A5EF0089162D /* CardItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardItem.swift; sourceTree = "<group>"; };
 		1EFA9F5A2AF584CC00FA092C /* TurnTwoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnTwoView.swift; sourceTree = "<group>"; };
 		1EFA9F5C2AF5860000FA092C /* CribbageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CribbageController.swift; sourceTree = "<group>"; };
+		1EFE00F82AF9B08F00B71623 /* Header.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Header.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -222,6 +224,7 @@
 				1ECCDABE2AE606A800EFF167 /* TeamPicker.swift */,
 				1EC498422AF19B050047F54A /* ShowStatus.swift */,
 				1E20F1742AF33EA300F2B368 /* DiagonalLines.swift */,
+				1EFE00F82AF9B08F00B71623 /* Header.swift */,
 			);
 			path = ui;
 			sourceTree = "<group>";
@@ -424,6 +427,7 @@
 				1EBED94C2AD7BF2C008B85EE /* Firebase.swift in Sources */,
 				1EBED93E2AD7BC9A008B85EE /* GameButton.swift in Sources */,
 				1E9C48F62AE7B3F3008C518D /* CardView.swift in Sources */,
+				1EFE00F92AF9B08F00B71623 /* Header.swift in Sources */,
 				1EA245822AED70B3003B0943 /* CardInHandArea.swift in Sources */,
 				1EC498432AF19B050047F54A /* ShowStatus.swift in Sources */,
 				1EBED9452AD7BCFE008B85EE /* LoadingScreen.swift in Sources */,

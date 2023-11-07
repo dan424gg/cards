@@ -14,8 +14,8 @@ struct CardInHandArea: View {
     
     var body: some View {
         VStack {
-            Text("Cards")
-                .font(.headline)
+            Text("Cards in hand")
+                .font(.subheadline)
             if cardsInHand.count < 5 {
                 HStack(alignment: .center, content: {
                     ForEach(cardsInHand, id: \.self) { card in
@@ -54,5 +54,5 @@ struct CardInHandArea: View {
 }
 
 #Preview {
-    CardInHandArea(isDisabled: .constant(true), cardsDragged: .constant([CardItem(id: 0, card: "HA"), CardItem(id: 1, card: "JK")]), cardsInHand: .constant([CardItem(id: 0, card: "DJ"), CardItem(id: 1, card: "D5"), CardItem(id: 2, card: "SA")]))
+    CardInHandArea(isDisabled: .constant(true), cardsDragged: .constant([]), cardsInHand: .constant([CardItem(id: 0, value: "J", suit: "D"), CardItem(id: 1, value: "5", suit: "D"), CardItem(id: 2, value: "A", suit: "S")]))
 }
