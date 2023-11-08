@@ -16,29 +16,35 @@ struct CardInHandArea: View {
         VStack {
             Text("Cards in hand")
                 .font(.subheadline)
-            if cardsInHand.count < 5 {
-                HStack(alignment: .center, content: {
-                    ForEach(cardsInHand, id: \.self) { card in
+//            if cardsInHand.count < 5 {
+                HStack(spacing: -20) {
+                    var rotationOffset: Double = Double(30 / (cardsInHand.count - 1))
+                    var positionOffset = 10 / (cardsInHand.count - 1)
+                    ForEach(Array(cardsInHand.enumerated()), id: \.offset) { (index, card) in
                         if isDisabled {
-                            DisabledCardView(cardItem: card)
+//                            DisabledCardView(cardItem: card)
                         } else {
                             CardView(cardItem: card)
+                                .rotationEffect(.degrees(-15.0 + (rotationOffset * Double(index))))
                         }
                     }
-                })
-            } else {
-                ScrollView(.horizontal, showsIndicators: false, content: {
-                    HStack(alignment: .center, content: {
-                        ForEach(cardsInHand, id: \.self) { card in
-                            if isDisabled {
-                                DisabledCardView(cardItem: card)
-                            } else {
-                                CardView(cardItem: card)
-                            }
-                        }
-                    })
-                })
-            }
+                }
+//            } else {
+//                ScrollView(.horizontal, showsIndicators: false, content: {
+//                    HStack(spacing: -20) {
+//                        var rotationOffset = 45 / cardsInHand.count
+//                        var positionOffset = 10
+//                        ForEach(Array(cardsInHand.enumerated()), id: \.offset) { (index, card) in
+//                            if isDisabled {
+////                                DisabledCardView(cardItem: card)
+//                            } else {
+//                                CardView(cardItem: card)
+//                                    .rotationEffect(.degrees(Double(-15 + (rotationOffset * index))))
+//                            }
+//                        }
+//                    }
+//                })
+//            }
         }
         .dropDestination(for: CardItem.self) { items, location in
             if !cardsInHand.contains(items.first!) {
@@ -54,5 +60,5 @@ struct CardInHandArea: View {
 }
 
 #Preview {
-    CardInHandArea(isDisabled: .constant(true), cardsDragged: .constant([]), cardsInHand: .constant([CardItem(id: 0, value: "J", suit: "D"), CardItem(id: 1, value: "5", suit: "D"), CardItem(id: 2, value: "A", suit: "S")]))
+    CardInHandArea(isDisabled: .constant(false), cardsDragged: .constant([]), cardsInHand: .constant([CardItem(id: 0, value: "J", suit: "D"), CardItem(id: 1, value: "5", suit: "D"), CardItem(id: 2, value: "A", suit: "S"), CardItem(id: 0, value: "J", suit: "D"), CardItem(id: 1, value: "5", suit: "D"), CardItem(id: 2, value: "A", suit: "S")]))
 }

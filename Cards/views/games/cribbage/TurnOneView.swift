@@ -18,7 +18,7 @@ struct TurnOneView: View {
     @State private var secondDropAreaBorderWidth: CGFloat = 1.0
     
     var body: some View {
-        Text("Turn 1")
+        Text("The Deal")
             .font(.title2)
         HStack(spacing: 10) {
             if cardsDragged.count > 0 {

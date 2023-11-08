@@ -57,6 +57,7 @@ struct Header: View {
 //            }
 //            .frame(height: geo.frame(in: .global).height / 4)
         }
+            .padding()
     }
 }
 

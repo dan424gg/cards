@@ -28,6 +28,10 @@ class CribbageController {
         
         return true
     }
+    
+    func determineDealer(numPlayers: Int) -> Int {
+        return Int.random(in: 1..<(numPlayers + 1))
+    }
 
     func calculateCribbagePoints(cardPlayed: CardItem, previousCards: [CardItem]) -> Int {
         var totalPoints = 0
