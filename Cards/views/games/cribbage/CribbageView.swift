@@ -40,8 +40,7 @@ struct Cribbage: View {
                         case 2: TurnTwoView(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
                                 .task {
                                     isUiDisabled = false
-
-                                    await firebaseHelper.updatePlayer(newState: ["is_ready": false])
+                                    firebaseHelper.updatePlayer(newState: ["is_ready": false])
                                     if firebaseHelper.playerInfo!.is_lead {
                                         firebaseHelper.updateGame(newState: ["is_ready": false])
                                     }
@@ -73,13 +72,12 @@ struct Cribbage: View {
                         if cardsDragged.count == 2 {
                             showSnackbar = false
                             isUiDisabled = !isUiDisabled
-//                            buttonText = isUiDisabled ? "Not Ready!" : "Ready!"
                             Task {
                                 firebaseHelper.updatePlayer(newState: [
                                     "is_ready": isUiDisabled,
                                     "cards_in_hand": cardsInHand
                                 ])
-                                if controller.readyForNextRound(players: firebaseHelper.players) {
+                                if controller.moveToNextRound(players: firebaseHelper.players) {
                                     firebaseHelper.updateGame(newState: [
                                         "is_ready": true,
                                         "turn": ((firebaseHelper.gameInfo?.turn ?? game.turn) + 1)

@@ -30,6 +30,18 @@ struct TurnTwoView: View {
             } else {
                 CardPlaceHolder()
                     .border(dropAreaBorderColor, width: dropAreaBorderWidth)
+                    .dropDestination(for: CardItem.self) { items, location in
+//                        if !cardsDragged.contains(items.first!) {
+//                            cardsDragged.append(items.first!)
+//                            cardsInHand.removeAll(where: { card in
+//                                card == items.first!
+//                            })
+//                        }
+                        return true
+                    } isTargeted: { inDropArea in
+                        dropAreaBorderColor = inDropArea ? .green : .clear
+                        dropAreaBorderWidth = inDropArea ? 7.0 : 1.0
+                    }
             }
         }
     }

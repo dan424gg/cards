@@ -14,7 +14,7 @@ struct NewGame: View {
     var body: some View {
         VStack {
             Text("Please enter your name (or anything)!")
-                .font(.title2)
+                .font(.title3)
             TextField(
                 "Full Name",
                 text: $fullName
