@@ -10,6 +10,7 @@ import SwiftUI
 
 struct CardView: View {
     var cardItem: CardItem
+    @Binding var isDisabled: Bool
     
     var body: some View {
         ZStack {
@@ -37,12 +38,17 @@ struct CardView: View {
                             .font(.largeTitle)
                             .multilineTextAlignment(.center)
                             .position(x: 25, y: -10)
-                    }).offset(y: -50)
+                    })
+                .opacity(isDisabled ? 0.5 : 1.0)
+                .overlay(isDisabled ? DiagonalLines().stroke(Color.yellow)
+                    .clipShape(RoundedRectangle(cornerRadius: 10)) : nil
+                )
         }
+        .offset(y: -50)
         .draggable(cardItem)
     }
 }
 
 #Preview {
-    CardView(cardItem: CardItem(id:0, value: "K", suit: "spade"))
+    CardView(cardItem: CardItem(id:0, value: "K", suit: "spade"), isDisabled: .constant(true))
 }

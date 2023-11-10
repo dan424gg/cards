@@ -22,7 +22,7 @@ struct TurnOneView: View {
             .font(.title2)
         HStack(spacing: 10) {
             if cardsDragged.count > 0 {
-                CardView(cardItem: cardsDragged[0])
+                CardView(cardItem: cardsDragged[0], isDisabled: .constant(false))
             } else {
                 CardPlaceHolder()
                     .border(firstDropAreaBorderColor, width: firstDropAreaBorderWidth)
@@ -41,7 +41,7 @@ struct TurnOneView: View {
             }
             
             if cardsDragged.count > 1 {
-                CardView(cardItem: cardsDragged[1])
+                CardView(cardItem: cardsDragged[1], isDisabled: .constant(false))
             } else {
                 CardPlaceHolder()
                     .border(secondDropAreaBorderColor, width: secondDropAreaBorderWidth)

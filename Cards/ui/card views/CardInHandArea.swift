@@ -18,14 +18,12 @@ struct CardInHandArea: View {
                 .font(.subheadline)
             if cardsInHand != [] {
                 ZStack {
-//                    Circle()
-//                        .stroke(Color.red)
-//                        .frame(width: 100, height:100)
                     ForEach(Array(cardsInHand.enumerated()), id: \.offset) { (index, card) in
                         if isDisabled {
-                            //                            DisabledCardView(cardItem: card)
+//                            DisabledCardView(cardItem: card)
+//                                .rotationEffect(.degrees(-Double((cardsInHand.count - 1) * 5) + Double(index * 10)))
                         } else {
-                            CardView(cardItem: card)
+                            CardView(cardItem: card, isDisabled: $isDisabled)
                                 .rotationEffect(.degrees(-Double((cardsInHand.count - 1) * 5) + Double(index * 10)))
                                 .onAppear(perform: {
                                     print(cardsInHand.count)

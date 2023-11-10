@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		1E20F1752AF33EA300F2B368 /* DiagonalLines.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E20F1742AF33EA300F2B368 /* DiagonalLines.swift */; };
-		1E20F1772AF3440400F2B368 /* DisabledCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E20F1762AF3440400F2B368 /* DisabledCardView.swift */; };
 		1E20F1792AF3524100F2B368 /* CardPlaceHolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E20F1782AF3524100F2B368 /* CardPlaceHolder.swift */; };
 		1E25B4A02AD7CF8B008DFACE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1E25B49F2AD7CF8B008DFACE /* GoogleService-Info.plist */; };
 		1E25B4A42ADC528F008DFACE /* NewGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E25B4A32ADC528F008DFACE /* NewGame.swift */; };
@@ -63,7 +62,6 @@
 
 /* Begin PBXFileReference section */
 		1E20F1742AF33EA300F2B368 /* DiagonalLines.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagonalLines.swift; sourceTree = "<group>"; };
-		1E20F1762AF3440400F2B368 /* DisabledCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisabledCardView.swift; sourceTree = "<group>"; };
 		1E20F1782AF3524100F2B368 /* CardPlaceHolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardPlaceHolder.swift; sourceTree = "<group>"; };
 		1E25B49F2AD7CF8B008DFACE /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
 		1E25B4A32ADC528F008DFACE /* NewGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewGame.swift; sourceTree = "<group>"; };
@@ -143,7 +141,6 @@
 				1E9C48F52AE7B3F3008C518D /* CardView.swift */,
 				1EE5F12A2AE8A5EF0089162D /* CardItem.swift */,
 				1EA245812AED70B3003B0943 /* CardInHandArea.swift */,
-				1E20F1762AF3440400F2B368 /* DisabledCardView.swift */,
 				1E20F1782AF3524100F2B368 /* CardPlaceHolder.swift */,
 			);
 			path = "card views";
@@ -417,7 +414,6 @@
 				1E25B4A42ADC528F008DFACE /* NewGame.swift in Sources */,
 				1E939CFD2AE3606D00D64551 /* GameInformation.swift in Sources */,
 				1E20F1792AF3524100F2B368 /* CardPlaceHolder.swift in Sources */,
-				1E20F1772AF3440400F2B368 /* DisabledCardView.swift in Sources */,
 				1EFA9F5B2AF584CC00FA092C /* TurnTwoView.swift in Sources */,
 				1EE5F12B2AE8A5EF0089162D /* CardItem.swift in Sources */,
 				1E20F1752AF33EA300F2B368 /* DiagonalLines.swift in Sources */,

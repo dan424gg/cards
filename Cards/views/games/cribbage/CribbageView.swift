@@ -21,53 +21,49 @@ struct Cribbage: View {
     @State var cardsInHand: [CardItem] = []
     
     var body: some View {
-//        VStack {
-//            Header()
-//            Spacer()
-//            VStack(spacing: 50) {
-                    VStack {
-                        switch(firebaseHelper.gameInfo?.turn ?? game.turn) {
-                        case 0,1: TurnOneView(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
-                                .onAppear(perform: {
-                                    if firebaseHelper.playerInfo != nil && firebaseHelper.playerInfo!.cards_in_hand != [] {
-                                        cardsInHand = firebaseHelper.playerInfo!.cards_in_hand
-                                    } else {
-                                        cardsInHand = players[0].cards_in_hand
-                                    }
-                                })
-                                .transition(.slide)
-                            
-                        case 2: TurnTwoView(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
-                                .task {
-                                    isUiDisabled = false
-                                    firebaseHelper.updatePlayer(newState: ["is_ready": false])
-                                    if firebaseHelper.playerInfo!.is_lead {
-                                        firebaseHelper.updateGame(newState: ["is_ready": false])
-                                    }
-                                }
-                                .onAppear(perform: {
-                                    cardsDragged = []
-                                    if firebaseHelper.playerInfo != nil && firebaseHelper.playerInfo!.cards_in_hand != [] {
-                                        cardsInHand = firebaseHelper.playerInfo!.cards_in_hand
-                                    } else {
-                                        cardsInHand = players[0].cards_in_hand
-                                    }
-                                })
-                                .transition(.slide)
-                        default:
-                            EmptyView()
+        VStack {
+            switch(firebaseHelper.gameInfo?.turn ?? game.turn) {
+            case 0,1: TurnOneView(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
+                    .onAppear(perform: {
+                        if firebaseHelper.playerInfo != nil && firebaseHelper.playerInfo!.cards_in_hand != [] {
+                            cardsInHand = firebaseHelper.playerInfo!.cards_in_hand
+                        } else {
+                            cardsInHand = players[0].cards_in_hand
                         }
-                        Spacer().frame(height: 95)
-                        CardInHandArea(isDisabled: $isUiDisabled, cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
-                            .onAppear(perform: {
-                                if firebaseHelper.playerInfo != nil && firebaseHelper.playerInfo!.cards_in_hand != [] {
-                                    cardsInHand = firebaseHelper.playerInfo!.cards_in_hand
-                                } else {
-                                    cardsInHand = players[0].cards_in_hand
-                                }
-                            })
+                    })
+                    .transition(.slide)
+                
+            case 2: TurnTwoView(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
+                    .task {
+                        isUiDisabled = false
+                        firebaseHelper.updatePlayer(newState: ["is_ready": false])
+                        if firebaseHelper.playerInfo!.is_lead {
+                            firebaseHelper.updateGame(newState: ["is_ready": false])
+                        }
                     }
-                    .disabled(isUiDisabled)
+                    .onAppear(perform: {
+                        cardsDragged = []
+                        if firebaseHelper.playerInfo != nil && firebaseHelper.playerInfo!.cards_in_hand != [] {
+                            cardsInHand = firebaseHelper.playerInfo!.cards_in_hand
+                        } else {
+                            cardsInHand = players[0].cards_in_hand
+                        }
+                    })
+                    .transition(.slide)
+            default:
+                EmptyView()
+            }
+            Spacer().frame(height: 95)
+            CardInHandArea(isDisabled: $isUiDisabled, cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
+                .onAppear(perform: {
+                    if firebaseHelper.playerInfo != nil && firebaseHelper.playerInfo!.cards_in_hand != [] {
+                        cardsInHand = firebaseHelper.playerInfo!.cards_in_hand
+                    } else {
+                        cardsInHand = players[0].cards_in_hand
+                    }
+                })
+        }
+        .disabled(isUiDisabled)
 //                    Button(isUiDisabled ? "Not Ready!" : "Ready!") {
 //                        if cardsDragged.count == 2 {
 //                            showSnackbar = false
@@ -89,11 +85,8 @@ struct Cribbage: View {
 //                        }
 //                    }
 //                    .buttonStyle(.bordered)
-//                }
             .snackbar(isShowing: $showSnackbar, title: "Not Ready", text: "You need to select two cards to discard!", style: .warning)
-//            Spacer()
         }
-//    }
 }
 
 struct Cribbage_Previews: PreviewProvider {
