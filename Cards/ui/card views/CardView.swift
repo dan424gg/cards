@@ -21,21 +21,28 @@ struct CardView: View {
                         .stroke(Color.black, lineWidth: 2)
                 )
                 .overlay(
+//                    Circle()
+//                        .fill(Color.black)
+//                        .frame(width: 5, height:5))
                     VStack (spacing: 30) {
-                        Text(cardItem.suit)
-                            .font(.footnote)
-                            .position(CGPoint(x: 10, y: 10))
+                        VStack (alignment: .center, spacing: 0) {
+                            Text(cardItem.value)
+                                .font(.caption2)
+                            Image(systemName: "suit.\(cardItem.suit)")
+                                .imageScale(.small)
+                                .foregroundStyle(cardItem.suit == "spade" || cardItem.suit == "club" ? Color.black : Color.red)
+                        }
+                        .position(CGPoint(x: 10, y: 20))
                         Text(cardItem.value)
                             .font(.largeTitle)
                             .multilineTextAlignment(.center)
                             .position(x: 25, y: -10)
-                    })
-            
+                    }).offset(y: -50)
         }
         .draggable(cardItem)
     }
 }
 
 #Preview {
-    CardView(cardItem: CardItem(id:0, value: "K", suit: "S"))
+    CardView(cardItem: CardItem(id:0, value: "K", suit: "spade"))
 }
