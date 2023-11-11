@@ -13,9 +13,9 @@ struct ContentView: View {
         NavigationView {
             VStack {
                 Text("What game do you want to play??")
-                GameButton(universalClicked: $universalClicked, name: "Cribbage")
-                GameButton(universalClicked: $universalClicked, name: "Uno")
-                GameButton(universalClicked: $universalClicked, name: "Rummy")
+                GameButton(universalClicked: $universalClicked, gameName: "cribbage")
+                GameButton(universalClicked: $universalClicked, gameName: "uno")
+                GameButton(universalClicked: $universalClicked, gameName: "rummy")
             }
             .buttonStyle(.bordered)
         }

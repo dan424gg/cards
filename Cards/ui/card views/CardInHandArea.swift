@@ -8,27 +8,23 @@
 import SwiftUI
 
 struct CardInHandArea: View {
-    @Binding var isDisabled: Bool
+//    @Binding var isDisabled: Bool
     @Binding var cardsDragged: [CardItem]
     @Binding var cardsInHand: [CardItem]
     
     var body: some View {
         VStack {
-            Text("Cards in hand")
-                .font(.subheadline)
+//            Text("Cards in hand")
+//                .font(.subheadline)
             if cardsInHand != [] {
                 ZStack {
                     ForEach(Array(cardsInHand.enumerated()), id: \.offset) { (index, card) in
-                        if isDisabled {
-//                            DisabledCardView(cardItem: card)
-//                                .rotationEffect(.degrees(-Double((cardsInHand.count - 1) * 5) + Double(index * 10)))
-                        } else {
-                            CardView(cardItem: card, isDisabled: $isDisabled)
-                                .rotationEffect(.degrees(-Double((cardsInHand.count - 1) * 5) + Double(index * 10)))
-                                .onAppear(perform: {
-                                    print(cardsInHand.count)
-                                })
-                        }
+                        CardView(cardItem: card/*, isDisabled: $isDisabled*/)
+                            .offset(y: -50)
+                            .rotationEffect(.degrees(-Double((cardsInHand.count - 1) * 6) + Double(index * 12)))
+                            .onAppear(perform: {
+                                print(cardsInHand.count)
+                            })
                     }
                 }
                 .offset(y: 50)
@@ -48,5 +44,5 @@ struct CardInHandArea: View {
 }
 
 #Preview {
-    CardInHandArea(isDisabled: .constant(false), cardsDragged: .constant([]), cardsInHand: .constant([CardItem(id: 39, value: "A", suit: "club"), CardItem(id: 40, value: "2", suit: "club"), CardItem(id: 26, value: "A", suit: "diamond"), CardItem(id: 27, value: "2", suit: "diamond"), CardItem(id: 39, value: "A", suit: "club"), CardItem(id: 40, value: "2", suit: "club"), CardItem(id: 26, value: "A", suit: "diamond"), CardItem(id: 27, value: "2", suit: "diamond")]))
+    CardInHandArea(/*isDisabled: .constant(false), */cardsDragged: .constant([]), cardsInHand: .constant([CardItem(id: 39, value: "A", suit: "club"), CardItem(id: 40, value: "2", suit: "club"), CardItem(id: 26, value: "A", suit: "diamond"), CardItem(id: 27, value: "2", suit: "diamond"), CardItem(id: 39, value: "A", suit: "club"), CardItem(id: 40, value: "2", suit: "club"), CardItem(id: 26, value: "A", suit: "diamond"), CardItem(id: 27, value: "2", suit: "diamond")]))
 }

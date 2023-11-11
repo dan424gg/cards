@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftUISnackbar
 
 struct ExistingGame: View {
-    var name: String
+    var gameName: String
     @State private var notValid: Bool = true
     @State private var showSnackbar = false
     @State private var groupId: Int = 0
@@ -61,7 +61,7 @@ struct ExistingGame: View {
             
             
             NavigationLink {
-                LoadingScreen(groupId: String(groupId), fullName: fullName, gameName: name)
+                LoadingScreen(groupId: String(groupId), fullName: fullName, gameName: gameName)
             } label: {
                 Text("Submit")
                     .buttonStyle(.borderedProminent)
@@ -76,7 +76,7 @@ struct ExistingGame: View {
 
 struct ExistingGame_Previews: PreviewProvider {
     static var previews: some View {
-        ExistingGame(name: "Cribbage")
+        ExistingGame(gameName: "Cribbage")
             .environmentObject(FirebaseHelper())
     }
 }

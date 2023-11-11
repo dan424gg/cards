@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CardView: View {
     var cardItem: CardItem
-    @Binding var isDisabled: Bool
+//    @Binding var isDisabled: Bool
     
     var body: some View {
         ZStack {
@@ -30,7 +30,6 @@ struct CardView: View {
                                 .font(.caption2)
                             Image(systemName: "suit.\(cardItem.suit)")
                                 .imageScale(.small)
-                                .foregroundStyle(cardItem.suit == "spade" || cardItem.suit == "club" ? Color.black : Color.red)
                         }
                         .position(CGPoint(x: 10, y: 20))
                         Text(cardItem.value)
@@ -38,16 +37,18 @@ struct CardView: View {
                             .multilineTextAlignment(.center)
                             .position(x: 25, y: -10)
                     })
-                .opacity(isDisabled ? 0.5 : 1.0)
-                .overlay(isDisabled ? DiagonalLines().stroke(Color.yellow)
-                    .clipShape(RoundedRectangle(cornerRadius: 10)) : nil
-                )
+                .foregroundStyle(cardItem.suit == "spade" || cardItem.suit == "club" ? Color.black : Color.red)
+//                .opacity(isDisabled ? 0.5 : 1.0)
+//                .overlay(isDisabled ? DiagonalLines().stroke(Color.yellow)
+//                    .clipShape(RoundedRectangle(cornerRadius: 10)) : nil
+//                )
         }
-        .offset(y: -50)
+//        .offset(y: -50)
+        .clipShape(RoundedRectangle(cornerRadius: 10))
         .draggable(cardItem)
     }
 }
 
 #Preview {
-    CardView(cardItem: CardItem(id:0, value: "K", suit: "spade"), isDisabled: .constant(true))
+    CardView(cardItem: CardItem(id:0, value: "K", suit: "diamond")/*, isDisabled: .constant(false)*/)
 }
