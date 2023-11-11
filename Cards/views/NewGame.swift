@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct NewGame: View {
-    var name: String = "test"
+    var gameName: String = "test"
     @State private var fullName: String = ""
     
     var body: some View {
@@ -25,7 +25,7 @@ struct NewGame: View {
                 .padding([.leading, .trailing], 48)
             
             NavigationLink {
-                LoadingScreen(fullName: fullName, gameName: name)
+                LoadingScreen(fullName: fullName, gameName: gameName)
             } label: {
                 Text("Submit")
             }

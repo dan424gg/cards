@@ -10,31 +10,31 @@ import SwiftUI
 
 struct GameButton: View {
     @Binding var universalClicked: String
-    var name: String
+    var gameName: String
 
     var body: some View {
-        VStack(alignment: .center) {
+        VStack {
             Button(action: {
-                if universalClicked == name {
+                if universalClicked == gameName {
                     universalClicked = "A game"
                 } else {
-                    universalClicked = name
+                    universalClicked = gameName
                 }
             }) {
-                Text(name)
+                Text(gameName.capitalized)
             }
             .buttonStyle(.bordered)
             
-            if universalClicked == name {
+            if universalClicked == gameName {
                 HStack {
                     NavigationLink {
-                        NewGame(name: name)
+                        NewGame(gameName: gameName)
                     } label: {
                         Text("Start a new game")
                     }
                     
                     NavigationLink {
-                        ExistingGame(name: name)
+                        ExistingGame(gameName: gameName)
                     } label: {
                         Text("Join an existing game")
                     }
@@ -47,7 +47,7 @@ struct GameButton: View {
 
 struct GameButton_Previews: PreviewProvider {
     static var previews: some View {
-        GameButton(universalClicked: .constant("A game"), name: "Cribbage")
+        GameButton(universalClicked: .constant("A game"), gameName: "Cribbage")
             .environmentObject(FirebaseHelper())
     }
 }

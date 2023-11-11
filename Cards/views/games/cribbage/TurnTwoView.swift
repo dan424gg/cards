@@ -26,7 +26,7 @@ struct TurnTwoView: View {
             }
             
             if cardsDragged.count > 0 {
-                CardView(cardItem: cardsDragged[0], isDisabled: .constant(false))
+                CardView(cardItem: cardsDragged[0]/*, isDisabled: .constant(false)*/)
             } else {
                 CardPlaceHolder()
                     .border(dropAreaBorderColor, width: dropAreaBorderWidth)

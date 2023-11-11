@@ -8,24 +8,58 @@
 import SwiftUI
 
 struct GameView: View {
+    var gameName: String = "cribbage"
+    
     @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @State var cardsDragged: [CardItem] = []
+    @State var cardsInHand: [CardItem] = []
     
     var body: some View {
-        ZStack {
-            VStack {
-                Text("Cribbage")
-                    .font(.largeTitle)
-                    .padding()
-                Divider()
-                    .frame(width: 300)
-                Spacer()
-                    .frame(height: 75)
+        GeometryReader { geo in
+            ZStack {
+                VStack {
+                    Text("\(gameName.capitalized)")
+                        .font(.largeTitle)
+                        .padding()
+                    Divider()
+                        .frame(width: 300)
+                    Spacer()
+                }
+                
                 CircleShape()
                     .stroke(Color.gray.opacity(0.5))
                     .aspectRatio(1.35, contentMode: .fit)
-                Spacer()
+                    .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 1.5 )
+
+                VStack {
+                    switch (gameName) {
+                    case "cribbage":
+                        Cribbage(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand).offset(y: 195)
+                            .onAppear(perform: {
+                                cardsDragged = []
+                                if firebaseHelper.playerInfo != nil && firebaseHelper.playerInfo!.cards_in_hand != [] {
+                                    cardsInHand = firebaseHelper.playerInfo!.cards_in_hand
+                                } else {
+                                    cardsInHand = [CardItem(id: 39, value: "A", suit: "club"), CardItem(id: 40, value: "2", suit: "club"), CardItem(id: 26, value: "A", suit: "diamond"), CardItem(id: 27, value: "2", suit: "diamond")]
+                                }
+                            })
+                    default: EmptyView()
+                    }
+                }
+                .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 2)
+                
+                CardInHandArea(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand).offset(y: 195)
+                    .onAppear(perform: {
+                        cardsDragged = []
+                        if firebaseHelper.playerInfo != nil && firebaseHelper.playerInfo!.cards_in_hand != [] {
+                            cardsInHand = firebaseHelper.playerInfo!.cards_in_hand
+                        } else {
+                            cardsInHand = [CardItem(id: 39, value: "A", suit: "club"), CardItem(id: 40, value: "2", suit: "club"), CardItem(id: 26, value: "A", suit: "diamond"), CardItem(id: 27, value: "2", suit: "diamond")]
+                        }
+                    })
+                    .offset(y: -10)
+                    .scaleEffect(x: 2, y: 2)
             }
-            Cribbage().offset(y: 195)
         }
     }
 }

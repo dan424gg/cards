@@ -8,30 +8,22 @@
 import SwiftUI
 
 struct GameStartButton: View {
+    var gameName: String = ""
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     
     var body: some View {
         VStack {
-            if self.firebaseHelper.playerInfo != nil && self.firebaseHelper.playerInfo!.is_lead {
-                NavigationLink {
-                    Cribbage().navigationBarBackButtonHidden(true)
-                } label: {
-                    Text("Play!")
-                }
-                .buttonStyle(.borderedProminent)
-                .simultaneousGesture(TapGesture().onEnded {
-                    self.firebaseHelper.updateGame(newState: ["is_ready": true])
-                })
-            } else {
-                if self.firebaseHelper.gameInfo != nil && self.firebaseHelper.gameInfo!.is_ready {
-                    NavigationLink {
-                        Cribbage().navigationBarBackButtonHidden(true)
-                    } label: {
-                        Text("Play!")
-                    }
-                    .buttonStyle(.borderedProminent)
-                }
+            NavigationLink {
+                GameView(gameName: gameName).navigationBarBackButtonHidden(true)
+            } label: {
+                Text("Play!")
             }
+            .buttonStyle(.borderedProminent)
+            .simultaneousGesture(TapGesture().onEnded {
+                if self.firebaseHelper.playerInfo != nil && self.firebaseHelper.playerInfo!.is_lead {
+                    self.firebaseHelper.updateGame(newState: ["is_ready": true])
+                }
+            })
         }
     }
 }
