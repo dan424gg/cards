@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1E06C9292B003CB300195F6D /* CribbageBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E06C9282B003CB300195F6D /* CribbageBoard.swift */; };
 		1E20F1752AF33EA300F2B368 /* DiagonalLines.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E20F1742AF33EA300F2B368 /* DiagonalLines.swift */; };
 		1E20F1792AF3524100F2B368 /* CardPlaceHolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E20F1782AF3524100F2B368 /* CardPlaceHolder.swift */; };
 		1E25B4A02AD7CF8B008DFACE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1E25B49F2AD7CF8B008DFACE /* GoogleService-Info.plist */; };
@@ -61,6 +62,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1E06C9282B003CB300195F6D /* CribbageBoard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CribbageBoard.swift; sourceTree = "<group>"; };
 		1E20F1742AF33EA300F2B368 /* DiagonalLines.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagonalLines.swift; sourceTree = "<group>"; };
 		1E20F1782AF3524100F2B368 /* CardPlaceHolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardPlaceHolder.swift; sourceTree = "<group>"; };
 		1E25B49F2AD7CF8B008DFACE /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
@@ -224,6 +226,7 @@
 				1EC498422AF19B050047F54A /* ShowStatus.swift */,
 				1E20F1742AF33EA300F2B368 /* DiagonalLines.swift */,
 				1EFE00F82AF9B08F00B71623 /* Header.swift */,
+				1E06C9282B003CB300195F6D /* CribbageBoard.swift */,
 			);
 			path = ui;
 			sourceTree = "<group>";
@@ -411,6 +414,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E06C9292B003CB300195F6D /* CribbageBoard.swift in Sources */,
 				1E25B4A42ADC528F008DFACE /* NewGame.swift in Sources */,
 				1E939CFD2AE3606D00D64551 /* GameInformation.swift in Sources */,
 				1E20F1792AF3524100F2B368 /* CardPlaceHolder.swift in Sources */,
