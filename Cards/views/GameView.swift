@@ -32,8 +32,8 @@ struct GameView: View {
                     .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 1.5 )
                 
                 CribbageBoard()
-                    .scaleEffect(x:0.25, y: 0.25)
-                    .offset(y: -150)
+                    .rotationEffect(.degrees(270))
+                    .offset(y: -125)
                 VStack {
                     switch (gameName) {
                     case "cribbage":
