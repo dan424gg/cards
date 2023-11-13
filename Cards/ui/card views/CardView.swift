@@ -37,7 +37,7 @@ struct CardView: View {
                             .multilineTextAlignment(.center)
                             .position(x: 25, y: -10)
                     })
-                .foregroundStyle(cardItem.suit == "spade" || cardItem.suit == "club" ? Color.black : Color.red)
+                .foregroundStyle(cardItem.suit == "spade" || cardItem.suit == "club" ? Color.black.opacity(0.8) : Color.red.opacity(0.8))
                 .draggable(cardItem)
 //                .opacity(isDisabled ? 0.5 : 1.0)
 //                .overlay(isDisabled ? DiagonalLines().stroke(Color.yellow)

@@ -38,6 +38,7 @@
 		1ECBB9FC2ADE3B9B0046D4CA /* PlayerInformation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECBB9FB2ADE3B9B0046D4CA /* PlayerInformation.swift */; };
 		1ECCDABD2AE600DA00EFF167 /* GameStartButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECCDABC2AE600DA00EFF167 /* GameStartButton.swift */; };
 		1ECCDABF2AE606A800EFF167 /* TeamPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECCDABE2AE606A800EFF167 /* TeamPicker.swift */; };
+		1ED272522B02A49C00B21600 /* NamesAroundTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ED272512B02A49C00B21600 /* NamesAroundTable.swift */; };
 		1EE5F12B2AE8A5EF0089162D /* CardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE5F12A2AE8A5EF0089162D /* CardItem.swift */; };
 		1EFA9F5B2AF584CC00FA092C /* TurnTwoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFA9F5A2AF584CC00FA092C /* TurnTwoView.swift */; };
 		1EFA9F5D2AF5860000FA092C /* CribbageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFA9F5C2AF5860000FA092C /* CribbageController.swift */; };
@@ -92,6 +93,7 @@
 		1ECBB9FB2ADE3B9B0046D4CA /* PlayerInformation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerInformation.swift; sourceTree = "<group>"; };
 		1ECCDABC2AE600DA00EFF167 /* GameStartButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStartButton.swift; sourceTree = "<group>"; };
 		1ECCDABE2AE606A800EFF167 /* TeamPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamPicker.swift; sourceTree = "<group>"; };
+		1ED272512B02A49C00B21600 /* NamesAroundTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NamesAroundTable.swift; sourceTree = "<group>"; };
 		1EE5F1292AE8A3750089162D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		1EE5F12A2AE8A5EF0089162D /* CardItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardItem.swift; sourceTree = "<group>"; };
 		1EFA9F5A2AF584CC00FA092C /* TurnTwoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnTwoView.swift; sourceTree = "<group>"; };
@@ -227,6 +229,7 @@
 				1E20F1742AF33EA300F2B368 /* DiagonalLines.swift */,
 				1EFE00F82AF9B08F00B71623 /* Header.swift */,
 				1E06C9282B003CB300195F6D /* CribbageBoard.swift */,
+				1ED272512B02A49C00B21600 /* NamesAroundTable.swift */,
 			);
 			path = ui;
 			sourceTree = "<group>";
@@ -438,6 +441,7 @@
 				1EBED9422AD7BCE7008B85EE /* ExistingGame.swift in Sources */,
 				1EBEF2C22AE4F579008A093B /* TeamInformation.swift in Sources */,
 				1EBED90E2AD7BBFF008B85EE /* CardsApp.swift in Sources */,
+				1ED272522B02A49C00B21600 /* NamesAroundTable.swift in Sources */,
 				1EFA9F5D2AF5860000FA092C /* CribbageController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

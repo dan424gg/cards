@@ -23,6 +23,10 @@ import FirebaseFirestoreSwift
     @Published var players: [PlayerInformation] = []
     @Published var teams: [TeamInformation] = []
     
+    @Published var showSnackbar: Bool = false
+    @Published var warning: String = ""
+    @Published var error: String = ""
+    
     var docRef: DocumentReference!
         
     func initFirebaseHelper() {
@@ -31,6 +35,16 @@ import FirebaseFirestoreSwift
         self.teamInfo = nil
         self.players = []
         self.teams = []
+    }
+    
+    func sendWarning(w: String) {
+        showSnackbar = true
+        warning = w
+    }
+    
+    func sendError(e: String) {
+        showSnackbar = true
+        error = e
     }
     
     func updatePlayer(newState: [String: Any]) {

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct CribbageBoard: View {
+    @EnvironmentObject var firebaseHelper: FirebaseHelper
     var threePlayer = true
     var teamOnePoints = 40
     var teamTwoPoints = 60
@@ -102,8 +103,10 @@ struct CribbageBoard: View {
                         path.addArc(center: CGPoint(x: rect.minX, y: ((rect.midY - midYAdjustment) / 2) + rect.midY), radius: ((rect.midY + midYAdjustment) / 2) - (2 * trackPosAdjustment) - (trackWidthAdjustment / 2), startAngle: .degrees(90), endAngle: .degrees(270), clockwise: false)
                         path.addLine(to: CGPoint(x: rect.maxX, y: (rect.midY - midYAdjustment) + (2 * trackPosAdjustment) + (trackWidthAdjustment / 2)))
                     }
-                    .trim(from: 0, to: Double(teamThreePoints) / 121.0)
-                    .stroke(.blue.opacity(0.7), lineWidth: trackWidthAdjustment)
+                    .trim(from: 0, to: Double(firebaseHelper.teams.first(where: { team in
+                            team.team_num == 3
+                    })?.points ?? teamThreePoints) / 121.0)
+                    .stroke(.blue.opacity(0.8), lineWidth: trackWidthAdjustment)
                 }
                 
                 // path 1 point line
@@ -115,7 +118,9 @@ struct CribbageBoard: View {
                     path.addArc(center: CGPoint(x: rect.minX, y: ((rect.midY - midYAdjustment) / 2) + rect.midY), radius: ((rect.midY + midYAdjustment) / 2) - (trackWidthAdjustment / 2), startAngle: .degrees(90), endAngle: .degrees(270), clockwise: false)
                     path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY - midYAdjustment + (trackWidthAdjustment / 2)))
                 }
-                .trim(from: 0, to: Double(teamOnePoints) / 121.0)
+                .trim(from: 0, to: Double(firebaseHelper.teams.first(where: { team in
+                        team.team_num == 1
+                })?.points ?? teamOnePoints) / 121.0)
                 .stroke(.red.opacity(0.8), lineWidth: trackWidthAdjustment)
                 
                 // path 2 point line
@@ -127,7 +132,9 @@ struct CribbageBoard: View {
                     path.addArc(center: CGPoint(x: rect.minX, y: ((rect.midY - midYAdjustment) / 2) + rect.midY), radius: ((rect.midY + midYAdjustment) / 2) - trackPosAdjustment - (trackWidthAdjustment / 2), startAngle: .degrees(90), endAngle: .degrees(270), clockwise: false)
                     path.addLine(to: CGPoint(x: rect.maxX, y: (rect.midY - midYAdjustment) + trackPosAdjustment + (trackWidthAdjustment / 2)))
                 }
-                .trim(from: 0, to: Double(teamTwoPoints) / 121.0)
+                .trim(from: 0, to: Double(firebaseHelper.teams.first(where: { team in
+                        team.team_num == 2
+                })?.points ?? teamOnePoints) / 121.0)
                 .stroke(.green.opacity(0.8), lineWidth: trackWidthAdjustment)
                 
 //                Path { path in
@@ -147,4 +154,5 @@ struct CribbageBoard: View {
 
 #Preview {
     CribbageBoard()
+        .environmentObject(FirebaseHelper())
 }
