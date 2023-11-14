@@ -9,21 +9,52 @@ import SwiftUI
 
 struct CardView: View {
     var cardItem: CardItem
-//    @Binding var isDisabled: Bool
+    @State var backside = false
+    @State var backDegree = -90.0
+    @State var frontDegree = 0.0
     
+    var width = 50.0
+    var height = 100.0
+
     var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color.white)
-                .frame(width: 50, height: 100)
-                .overlay(
+        VStack {
+            ZStack {
+                // backside
+                ZStack {
                     RoundedRectangle(cornerRadius: 10)
-                        .stroke(Color.black, lineWidth: 1)
+                        .stroke(.black.opacity(0.7), lineWidth: 3)
+                        .frame(width: 50, height: 100)
+                    
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(.blue.opacity(0.2))
+                        .frame(width: width, height: height)
+                        .shadow(color: .gray, radius: 2, x: 0, y: 0)
+                    
+                    Image(systemName: "seal.fill")
+                        .resizable()
+                        .frame(width: 20, height: 25)
+                        .foregroundColor(.blue.opacity(0.7))
+                    
+                    Image(systemName: "seal")
+                        .resizable()
+                        .frame(width: 20, height: 25)
+                        .foregroundColor(.black)
+                    
+                    Image(systemName: "seal")
+                        .resizable()
+                        .frame(width: 38.46, height: 45)
+                        .foregroundColor(.white.opacity(0.7))
+                }
+                .frame(width: 50, height: 100)
+                .rotation3DEffect(
+                    .degrees(frontDegree), axis: (x: 0.0, y: 1.0, z: 0.0)
                 )
-                .overlay(
-//                    Circle()
-//                        .fill(Color.black)
-//                        .frame(width: 5, height:5))
+                
+                // frontside
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.white)
+                        .stroke(Color.black, lineWidth: 1)
                     VStack (spacing: 30) {
                         VStack (alignment: .center, spacing: 0) {
                             Text(cardItem.value)
@@ -36,19 +67,37 @@ struct CardView: View {
                             .font(.largeTitle)
                             .multilineTextAlignment(.center)
                             .position(x: 25, y: -10)
-                    })
-                .foregroundStyle(cardItem.suit == "spade" || cardItem.suit == "club" ? Color.black.opacity(0.8) : Color.red.opacity(0.8))
+                    }
+                    .foregroundStyle(cardItem.suit == "spade" || cardItem.suit == "club" ? Color.black.opacity(0.8) : Color.red.opacity(0.8))
+                }
+                .frame(width: 50, height: 100)
                 .draggable(cardItem)
-//                .opacity(isDisabled ? 0.5 : 1.0)
-//                .overlay(isDisabled ? DiagonalLines().stroke(Color.yellow)
-//                    .clipShape(RoundedRectangle(cornerRadius: 10)) : nil
-//                )
+                .rotation3DEffect(
+                    .degrees(backDegree), axis: (x: 0.0, y: 1.0, z: 0.0)
+                )
+            }
+            .onTapGesture {
+                backside = !backside
+                if backside {
+                    withAnimation(.linear(duration: 0.3)) {
+                        frontDegree = 90
+                    }
+                    withAnimation(.linear(duration: 0.3).delay(0.3)) {
+                        backDegree = 0
+                    }
+                } else {
+                    withAnimation(.linear(duration: 0.3)) {
+                        backDegree = -90
+                    }
+                    withAnimation(.linear(duration: 0.3).delay(0.3)) {
+                        frontDegree = 0
+                    }
+                }
+            }
         }
-//        .offset(y: -50)
-//        .draggable(cardItem)
     }
 }
 
 #Preview {
-    CardView(cardItem: CardItem(id:0, value: "K", suit: "diamond")/*, isDisabled: .constant(false)*/)
+    CardView(cardItem: CardItem(id:0, value: "K", suit: "diamond"))
 }

@@ -16,24 +16,24 @@ struct NamesAroundTable: View {
 //                    .aspectRatio(1.40, contentMode: .fit)
 
                 VStack(spacing: 0) {
-                    Text("Dan")
+                    Text("Katie")
                         .underline(true, color: .red)
                     CardView(cardItem: CardItem(id: 39, value: "A", suit: "club"))
                         .rotationEffect(.degrees(180))
-                        .scaleEffect(x: 0.45, y: 0.45)
-                        .offset(y: -15)
+                        .scaleEffect(x: 0.55, y: 0.55)
+                        .offset(y: -12.5)
                 }
-                .offset(y: -105)
+                .offset(y: -135)
                 
                 VStack(spacing: 0) {
-                    Text("Katie")
+                    Text("Ryan")
                         .underline(true, color: .green)
                     CardView(cardItem: CardItem(id: 39, value: "A", suit: "club"))
                         .rotationEffect(.degrees(180))
                         .scaleEffect(x: 0.45, y: 0.45)
-                        .offset(y: -15)
+                        .offset(y: -12.5)
                 }
-                .offset(y: -105)
+                .offset(y: -135)
                 .rotationEffect(.degrees(270))
                 
                 VStack(spacing: 0) {
@@ -42,9 +42,9 @@ struct NamesAroundTable: View {
                     CardView(cardItem: CardItem(id: 39, value: "A", suit: "club"))
                         .rotationEffect(.degrees(180))
                         .scaleEffect(x: 0.45, y: 0.45)
-                        .offset(y: -15)
+                        .offset(y: -12.5)
                 }
-                .offset(y: -105)
+                .offset(y: -135)
                 .rotationEffect(.degrees(90))
             }
         }

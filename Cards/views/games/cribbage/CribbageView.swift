@@ -21,13 +21,16 @@ struct Cribbage: View {
     
     var body: some View {
         VStack {
+            VStack(alignment: .leading) {
+                Text("The Deal")
+                    .font(.title3)
+                    .foregroundStyle(.gray.opacity(0.7))
+            }
+            Spacer().frame(height: 375)
             VStack {
+                
                 switch(firebaseHelper.gameInfo?.turn ?? game.turn) {
-                case 0,1: 
-                    Text("The Deal")
-                        .font(.title2)
-                        .foregroundStyle(.gray.opacity(0.7))
-                    Spacer().frame(height: 375)
+                case 0,1:
                     TurnOneView(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
                         .transition(.slide)
                     

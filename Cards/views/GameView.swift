@@ -21,31 +21,30 @@ struct GameView: View {
                 // header
                 VStack {
                     Text("\(gameName.capitalized)")
-                        .font(.largeTitle)
-                        .padding()
-                    Divider()
-                        .frame(width: 300)
+                        .font(.title2)
+//                        .padding()
                     Spacer()
                 }
                 
                 // "table"
                 Table()
                     .stroke(Color.gray.opacity(0.5))
-                    .aspectRatio(1.40, contentMode: .fit)
+                    .aspectRatio(1.15, contentMode: .fit)
                     .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 1.5 )
                 
                 NamesAroundTable()
                     .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 1.5 )
                 
                 CribbageBoard()
-                    .rotationEffect(.degrees(270))
-                    .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 1.5 )
+                    .rotationEffect(.degrees(0))
+                    .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 1.8 )
                 
                 // game that is being played
                 VStack {
                     switch (gameName) {
                     case "cribbage":
-                        Cribbage(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand).offset(y: 235)
+                        Cribbage(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
+                            .offset(y: 210)
                             .onAppear(perform: {
                                 cardsDragged = []
                                 if firebaseHelper.playerInfo != nil && firebaseHelper.playerInfo!.cards_in_hand != [] {

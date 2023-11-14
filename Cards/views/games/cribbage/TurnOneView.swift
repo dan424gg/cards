@@ -41,9 +41,6 @@ struct TurnOneView: View {
                 
                 if cardsDragged.count > 1 {
                     CardView(cardItem: cardsDragged[1]/*, isDisabled: .constant(false)*/)
-                        .onAppear(perform: {
-                            
-                        })
                 } else {
                     CardPlaceHolder()
                         .border(secondDropAreaBorderColor, width: secondDropAreaBorderWidth)
