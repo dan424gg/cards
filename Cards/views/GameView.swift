@@ -15,14 +15,22 @@ struct GameView: View {
     @State var cardsDragged: [CardItem] = []
     @State var cardsInHand: [CardItem] = []
     
+    @State var isPressed: Bool = false
+    
     var body: some View {
         GeometryReader { geo in
             ZStack {
+                NavigationLink("Exit") {
+                    ContentView()
+                        .navigationBarBackButtonHidden()
+                }
+                .position(CGPoint(x: 15, y: 0))
+                .padding()
+                
                 // header
                 VStack {
                     Text("\(gameName.capitalized)")
                         .font(.title2)
-//                        .padding()
                     Spacer()
                 }
                 
@@ -38,6 +46,10 @@ struct GameView: View {
                 CribbageBoard()
                     .rotationEffect(.degrees(0))
                     .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 1.8 )
+                
+                DeckOfCardsView()
+                    .scaleEffect(x: 0.75, y: 0.75)
+                    .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 1.25 )
                 
                 // game that is being played
                 VStack {

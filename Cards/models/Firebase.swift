@@ -310,7 +310,7 @@ import FirebaseFirestoreSwift
         
     }
     
-    func joinGameCollection(fullName: String, id: Int, teamNum: Int) async {
+    func joinGameCollection(fullName: String, id: Int, teamNum: Int, gameName: String) async {
         docRef = db.collection("games").document(String(id))
 
         do {
@@ -335,7 +335,7 @@ import FirebaseFirestoreSwift
         addGameInfoListener()
     }
     
-    func startGameCollection(fullName: String) async {
+    func startGameCollection(fullName: String, gameName: String) async {
         var groupId = 0
         repeat {
             groupId = Int.random(in: 10000..<99999)
@@ -344,7 +344,7 @@ import FirebaseFirestoreSwift
         docRef = db.collection("games").document(String(groupId))
         
         do {
-            gameInfo = GameInformation(group_id: groupId, is_ready: true, num_players: 1, turn: 1)
+            gameInfo = GameInformation(group_id: groupId, is_ready: true, num_players: 1, turn: 1, game_name: gameName)
             try docRef!.setData(from: gameInfo)
                         
             teamInfo = TeamInformation(team_num: 1)

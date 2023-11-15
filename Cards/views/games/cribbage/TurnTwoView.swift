@@ -16,9 +16,6 @@ struct TurnTwoView: View {
     @State private var dropAreaBorderWidth: CGFloat = 1.0
     
     var body: some View {
-        Text("The Play")
-            .font(.title2)
-        
         HStack (spacing: 20) {
             VStack {
                 Text("Points")

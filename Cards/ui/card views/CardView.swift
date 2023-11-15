@@ -26,9 +26,9 @@ struct CardView: View {
                         .frame(width: 50, height: 100)
                     
                     RoundedRectangle(cornerRadius: 10)
-                        .fill(.blue.opacity(0.2))
+                        .fill(.blue.gradient)
                         .frame(width: width, height: height)
-                        .shadow(color: .gray, radius: 2, x: 0, y: 0)
+                        .shadow(color: .black, radius: 2, x: 0, y: 0)
                     
                     Image(systemName: "seal.fill")
                         .resizable()
@@ -76,6 +76,12 @@ struct CardView: View {
                 .rotation3DEffect(
                     .degrees(backDegree), axis: (x: 0.0, y: 1.0, z: 0.0)
                 )
+            }
+            .onAppear {
+                if backside {
+                    backDegree = -90.0
+                    frontDegree = 0.0
+                }
             }
             .onTapGesture {
                 backside = !backside

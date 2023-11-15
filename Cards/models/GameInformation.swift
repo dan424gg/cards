@@ -18,6 +18,7 @@ public struct GameInformation: Hashable, Codable {
     var num_players: Int = 0
     var turn: Int = 0
     var count_points: Int = 0
+    var game_name: String = ""
     var cards: [CardItem] = [
         // Spades
         CardItem(id: 0, value: "A", suit: "spade"),
