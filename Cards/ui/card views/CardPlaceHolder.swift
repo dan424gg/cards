@@ -15,7 +15,7 @@ struct CardPlaceHolder: View {
                     .frame(width: 50, height: 100)
                     .overlay(
                         RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.black, style: StrokeStyle(lineWidth: 1, dash: [5]))
+                            .stroke(Color.black, style: StrokeStyle(lineWidth: 1, dash: [4]))
                     )
                     .overlay(
                         Text("Place a card here!")

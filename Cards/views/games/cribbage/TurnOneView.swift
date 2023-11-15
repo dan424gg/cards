@@ -18,45 +18,45 @@ struct TurnOneView: View {
     @State private var secondDropAreaBorderWidth: CGFloat = 1.0
     
     var body: some View {
-        Text("The Deal")
-            .font(.title2)
-        HStack(spacing: 10) {
-            if cardsDragged.count > 0 {
-                CardView(cardItem: cardsDragged[0]/*, isDisabled: .constant(false)*/)
-            } else {
-                CardPlaceHolder()
-                    .border(firstDropAreaBorderColor, width: firstDropAreaBorderWidth)
-                    .dropDestination(for: CardItem.self) { items, location in
-                        if !cardsDragged.contains(items.first!) {
-                            cardsDragged.append(items.first!)
-                            cardsInHand.removeAll(where: { card in
-                                card == items.first!
-                            })
+        VStack {
+            HStack(spacing: 10) {
+                if cardsDragged.count > 0 {
+                    CardView(cardItem: cardsDragged[0]/*, isDisabled: .constant(false)*/)
+                } else {
+                    CardPlaceHolder()
+                        .border(firstDropAreaBorderColor, width: firstDropAreaBorderWidth)
+                        .dropDestination(for: CardItem.self) { items, location in
+                            if !cardsDragged.contains(items.first!) {
+                                cardsDragged.append(items.first!)
+                                cardsInHand.removeAll(where: { card in
+                                    card == items.first!
+                                })
+                            }
+                            return true
+                        } isTargeted: { inDropArea in
+                            firstDropAreaBorderColor = inDropArea ? .green : .clear
+                            firstDropAreaBorderWidth = inDropArea ? 7.0 : 1.0
                         }
-                        return true
-                    } isTargeted: { inDropArea in
-                        firstDropAreaBorderColor = inDropArea ? .green : .clear
-                        firstDropAreaBorderWidth = inDropArea ? 7.0 : 1.0
-                    }
-            }
-            
-            if cardsDragged.count > 1 {
-                CardView(cardItem: cardsDragged[1]/*, isDisabled: .constant(false)*/)
-            } else {
-                CardPlaceHolder()
-                    .border(secondDropAreaBorderColor, width: secondDropAreaBorderWidth)
-                    .dropDestination(for: CardItem.self) { items, location in
-                        if !cardsDragged.contains(items.first!) {
-                            cardsDragged.append(items.first!)
-                            cardsInHand.removeAll(where: { card in
-                                card == items.first!
-                            })
+                }
+                
+                if cardsDragged.count > 1 {
+                    CardView(cardItem: cardsDragged[1]/*, isDisabled: .constant(false)*/)
+                } else {
+                    CardPlaceHolder()
+                        .border(secondDropAreaBorderColor, width: secondDropAreaBorderWidth)
+                        .dropDestination(for: CardItem.self) { items, location in
+                            if !cardsDragged.contains(items.first!) {
+                                cardsDragged.append(items.first!)
+                                cardsInHand.removeAll(where: { card in
+                                    card == items.first!
+                                })
+                            }
+                            return true
+                        } isTargeted: { inDropArea in
+                            secondDropAreaBorderColor = inDropArea ? .green : .clear
+                            secondDropAreaBorderWidth = inDropArea ? 7.0 : 1.0
                         }
-                        return true
-                    } isTargeted: { inDropArea in
-                        secondDropAreaBorderColor = inDropArea ? .green : .clear
-                        secondDropAreaBorderWidth = inDropArea ? 7.0 : 1.0
-                    }
+                }
             }
         }
     }

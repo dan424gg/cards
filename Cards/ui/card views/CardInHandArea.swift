@@ -22,9 +22,6 @@ struct CardInHandArea: View {
                         CardView(cardItem: card/*, isDisabled: $isDisabled*/)
                             .offset(y: -50)
                             .rotationEffect(.degrees(-Double((cardsInHand.count - 1) * 6) + Double(index * 12)))
-                            .onAppear(perform: {
-                                print(cardsInHand.count)
-                            })
                     }
                 }
                 .offset(y: 50)

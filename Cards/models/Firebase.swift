@@ -23,6 +23,10 @@ import FirebaseFirestoreSwift
     @Published var players: [PlayerInformation] = []
     @Published var teams: [TeamInformation] = []
     
+    @Published var showSnackbar: Bool = false
+    @Published var warning: String = ""
+    @Published var error: String = ""
+    
     var docRef: DocumentReference!
         
     func initFirebaseHelper() {
@@ -31,6 +35,16 @@ import FirebaseFirestoreSwift
         self.teamInfo = nil
         self.players = []
         self.teams = []
+    }
+    
+    func sendWarning(w: String) {
+        showSnackbar = true
+        warning = w
+    }
+    
+    func sendError(e: String) {
+        showSnackbar = true
+        error = e
     }
     
     func updatePlayer(newState: [String: Any]) {
@@ -336,7 +350,7 @@ import FirebaseFirestoreSwift
             teamInfo = TeamInformation(team_num: 1)
             try docRef!.collection("teams").document(String(1)).setData(from: teamInfo)
             
-            playerInfo = PlayerInformation(name: fullName, uid: UUID().uuidString, cards_in_hand: [CardItem(id: 0, value: "J", suit: "D"), CardItem(id: 1, value: "9", suit: "H"), CardItem(id: 2, value: "6", suit: "S"), CardItem(id: 3, value: "9", suit: "S")], is_lead: true, team_num: 1)
+            playerInfo = PlayerInformation(name: fullName, uid: UUID().uuidString, cards_in_hand: [CardItem(id: 39, value: "A", suit: "club"), CardItem(id: 40, value: "2", suit: "club"), CardItem(id: 26, value: "A", suit: "diamond"), CardItem(id: 27, value: "2", suit: "diamond")], is_lead: true, team_num: 1)
             try docRef!.collection("teams").document(String(1)).collection("players").document(playerInfo!.uid).setData(from: playerInfo)
             try await docRef!.collection("teams").document("\(1)").collection("players").document("placeholder").setData([
                 "This": "serves as a placeholder so this collection doesn't get deleted when there aren't any players on this team, temporarily"
