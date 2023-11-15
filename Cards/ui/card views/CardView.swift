@@ -10,8 +10,8 @@ import SwiftUI
 struct CardView: View {
     var cardItem: CardItem
     @State var backside = false
-    @State var backDegree = -90.0
-    @State var frontDegree = 0.0
+    @State var backDegree = 0.0
+    @State var frontDegree = 90.0
     
     var width = 50.0
     var height = 100.0
@@ -72,6 +72,7 @@ struct CardView: View {
                 }
                 .frame(width: 50, height: 100)
                 .draggable(cardItem)
+                .disabled(backside)
                 .rotation3DEffect(
                     .degrees(backDegree), axis: (x: 0.0, y: 1.0, z: 0.0)
                 )
@@ -80,17 +81,17 @@ struct CardView: View {
                 backside = !backside
                 if backside {
                     withAnimation(.linear(duration: 0.3)) {
-                        frontDegree = 90
-                    }
-                    withAnimation(.linear(duration: 0.3).delay(0.3)) {
-                        backDegree = 0
-                    }
-                } else {
-                    withAnimation(.linear(duration: 0.3)) {
                         backDegree = -90
                     }
                     withAnimation(.linear(duration: 0.3).delay(0.3)) {
                         frontDegree = 0
+                    }
+                } else {
+                    withAnimation(.linear(duration: 0.3)) {
+                        frontDegree = 90
+                    }
+                    withAnimation(.linear(duration: 0.3).delay(0.3)) {
+                        backDegree = 0
                     }
                 }
             }
