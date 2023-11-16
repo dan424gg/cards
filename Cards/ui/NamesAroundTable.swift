@@ -20,8 +20,8 @@ struct NamesAroundTable: View {
                         .underline(true, color: .red)
                     CardView(cardItem: CardItem(id: 39, value: "A", suit: "club"))
                         .rotationEffect(.degrees(180))
-                        .scaleEffect(x: 0.55, y: 0.55)
-                        .offset(y: -12.5)
+                        .scaleEffect(x: 0.75, y: 0.75)
+                        .offset(y: -0)
                 }
                 .offset(y: -135)
                 

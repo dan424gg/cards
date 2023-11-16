@@ -45,7 +45,7 @@ struct GameView: View {
                 
                 CribbageBoard()
                     .rotationEffect(.degrees(0))
-                    .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 1.8 )
+                    .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 1.7 )
                 
                 DeckOfCardsView()
                     .scaleEffect(x: 0.75, y: 0.75)
