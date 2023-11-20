@@ -101,8 +101,8 @@ import FirebaseFirestoreSwift
                 case "turn":
                     gameInfo!.turn = temp.value as! Int
                     break
-                case "num_players":
-                    gameInfo!.num_players = temp.value as! Int
+                case "num_teams":
+                    gameInfo!.num_teams = temp.value as! Int
                     break
                 case "is_won":
                     gameInfo!.is_won = temp.value as! Bool
@@ -288,6 +288,10 @@ import FirebaseFirestoreSwift
             return
         }
         
+        guard newTeamNum != playerInfo!.team_num else {
+            return
+        }
+        
         do {
             // delete old player document
             try await docRef!.collection("teams").document("\(playerInfo!.team_num)").collection("players").document(playerInfo!.uid).delete()
@@ -310,29 +314,37 @@ import FirebaseFirestoreSwift
         
     }
     
-    func joinGameCollection(fullName: String, id: Int, teamNum: Int, gameName: String) async {
+    func joinGameCollection(fullName: String, id: Int, gameName: String) async {
         docRef = db.collection("games").document(String(id))
 
         do {
             gameInfo = try await docRef!.getDocument().data(as: GameInformation.self)
             
-            let numPlayers = try await docRef!.getDocument().data(as: GameInformation.self).num_players
-            try await docRef!.updateData([
-                "num_players": numPlayers + 1
-            ])
-                        
+            let numTeams = try await docRef!.getDocument().data(as: GameInformation.self).num_teams
+            if numTeams < 3 {
+                updateGame(newState: [
+                    "num_teams": numTeams + 1,
+                    "num_players": gameInfo!.num_players + 1
+                ])
+            } else {
+                updateGame(newState: [
+                    "num_players": gameInfo!.num_players + 1
+                ])
+            }
+            
+            let teamNum = (gameInfo!.num_players % 3) + 1
             playerInfo = PlayerInformation(name: fullName, uid: UUID().uuidString, team_num: teamNum)
+            
             try docRef!.collection("teams").document("\(teamNum)").collection("players").document(playerInfo!.uid).setData(from: playerInfo)
             try await docRef!.collection("teams").document("\(teamNum)").collection("players").document("placeholder").setData([
                 "This": "serves as a placeholder so this collection doesn't get deleted when there aren't any players on this team, temporarily"
             ])
             
+            addTeamPlayerNameListener()
+            addGameInfoListener()
         } catch {
             // do something
         }
-        
-        addTeamPlayerNameListener()
-        addGameInfoListener()
     }
     
     func startGameCollection(fullName: String, gameName: String) async {
@@ -344,13 +356,14 @@ import FirebaseFirestoreSwift
         docRef = db.collection("games").document(String(groupId))
         
         do {
-            gameInfo = GameInformation(group_id: groupId, is_ready: true, num_players: 1, turn: 1, game_name: gameName)
+            gameInfo = GameInformation(group_id: groupId, is_ready: true, num_teams: 1, turn: 1, game_name: gameName, num_players: 1)
             try docRef!.setData(from: gameInfo)
                         
             teamInfo = TeamInformation(team_num: 1)
             try docRef!.collection("teams").document(String(1)).setData(from: teamInfo)
             
             playerInfo = PlayerInformation(name: fullName, uid: UUID().uuidString, cards_in_hand: [CardItem(id: 39, value: "A", suit: "club"), CardItem(id: 40, value: "2", suit: "club"), CardItem(id: 26, value: "A", suit: "diamond"), CardItem(id: 27, value: "2", suit: "diamond")], is_lead: true, team_num: 1)
+            
             try docRef!.collection("teams").document(String(1)).collection("players").document(playerInfo!.uid).setData(from: playerInfo)
             try await docRef!.collection("teams").document("\(1)").collection("players").document("placeholder").setData([
                 "This": "serves as a placeholder so this collection doesn't get deleted when there aren't any players on this team, temporarily"

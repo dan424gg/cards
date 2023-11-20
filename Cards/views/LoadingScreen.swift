@@ -29,31 +29,26 @@ struct LoadingScreen: View {
                             await firebaseHelper.startGameCollection(fullName: fullName, gameName: gameName)
                             groupId = "\(firebaseHelper.getGroupId())"
                         } else {
-                            await firebaseHelper.joinGameCollection(fullName: fullName, id: Int(groupId)!, teamNum: teamNum, gameName: gameName)
+                            await firebaseHelper.joinGameCollection(fullName: fullName, id: Int(groupId)!, gameName: gameName)
                         }
                     }
                 HStack {
-                    Text("Your team:")
-                    TeamPicker(teamNum: $teamNum)
+                        Text("Want to change your team?    -->")
+                            .bold()
+                    TeamPicker()
                 }
             }
             
             VStack {
-                Text("Players:")
+//                Text("Players:")
                 HStack {
-                    VStack{
-                        Text("Team 1:")
-                        ForEach(firebaseHelper.players, id:\.self) { player in
-                            if player.team_num == 1 {
-                                Text(player.name)
-                            }
-                        }
-                    }
-                    VStack{
-                        Text("Team 2:")
-                        ForEach(firebaseHelper.players, id:\.self) { player in
-                            if player.team_num == 2 {
-                                Text(player.name)
+                    ForEach(firebaseHelper.teams, id:\.self) { team in
+                        VStack {
+                            Text("Team \(team.team_num):")
+                            ForEach(firebaseHelper.players, id:\.self) { player in
+                                if player.team_num == team.team_num {
+                                    Text(player.name)
+                                }
                             }
                         }
                     }
@@ -61,11 +56,28 @@ struct LoadingScreen: View {
             }
             
             VStack {
-                GameStartButton(gameName: gameName)
-                    .disabled(groupId == "Loading...")
+                GameStartButton()
+                    .disabled(groupId == "Loading..." || equalNumOfPlayersOnTeam(players: firebaseHelper.players))
             }
         }
     }
+}
+
+func equalNumOfPlayersOnTeam(players: [PlayerInformation]) -> Bool {
+    var teamDir = [String : Int]()
+    
+    for player in players {
+        teamDir.updateValue((teamDir["\(player.team_num)"] ?? 0 + 1), forKey: "\(player.team_num)")
+    }
+    
+    let numPlayers = teamDir.popFirst()?.value
+    for num in teamDir.values {
+        if num != numPlayers {
+            return false
+        }
+    }
+    
+    return true
 }
 
 struct LoadingScreen_Previews: PreviewProvider {

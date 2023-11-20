@@ -10,7 +10,7 @@ import SwiftUI
 struct Cribbage: View {
     var teams =  [TeamInformation.team_one, TeamInformation.team_two]
     var players = [PlayerInformation.player_one, PlayerInformation.player_two]
-    var game = GameInformation(group_id: 1000, is_ready: false, is_won: false, num_players: 2, turn: 2)
+    var game = GameInformation(group_id: 1000, is_ready: false, is_won: false, num_teams: 2, turn: 2)
     
     var controller = CribbageController()
     

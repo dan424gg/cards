@@ -184,13 +184,13 @@
 		1EBED90C2AD7BBFF008B85EE /* Cards */ = {
 			isa = PBXGroup;
 			children = (
-				1EE5F1292AE8A3750089162D /* Info.plist */,
-				1E25B49F2AD7CF8B008DFACE /* GoogleService-Info.plist */,
 				1EBED94A2AD7BF15008B85EE /* models */,
 				1EBED93F2AD7BCC6008B85EE /* views */,
 				1EBED93C2AD7BC8F008B85EE /* ui */,
 				1EBED90D2AD7BBFF008B85EE /* CardsApp.swift */,
 				1EBED90F2AD7BBFF008B85EE /* ContentView.swift */,
+				1EE5F1292AE8A3750089162D /* Info.plist */,
+				1E25B49F2AD7CF8B008DFACE /* GoogleService-Info.plist */,
 				1EBED9112AD7BC00008B85EE /* Assets.xcassets */,
 				1EBED9132AD7BC01008B85EE /* Preview Content */,
 			);

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CribbageBoard: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
-    var threePlayer = true
+    var numPlayers = 2
     var teamOnePoints = 70
     var teamTwoPoints = 60
     var teamThreePoints = 57
@@ -18,21 +18,21 @@ struct CribbageBoard: View {
     @State var pointsShown = false
     
     var trackWidthAdjustment: Double {
-        if threePlayer {
+        if (firebaseHelper.gameInfo?.num_teams ?? numPlayers) == 3 {
             return 5.0
         } else {
             return 5.0
         }
     }
     var trackPosAdjustment: Double {
-        if threePlayer {
+        if (firebaseHelper.gameInfo?.num_teams ?? numPlayers) == 3 {
             return 5.0
         } else {
             return 5.0
         }
     }
     var midYAdjustment: Double {
-        if threePlayer {
+        if (firebaseHelper.gameInfo?.num_teams ?? numPlayers) == 3 {
             return 7.5
         } else {
             return 5.0
@@ -81,7 +81,7 @@ struct CribbageBoard: View {
                     .fill(Color.gray.opacity(0.35))
                     
                     // path 3
-                    if threePlayer {
+                    if (firebaseHelper.gameInfo?.num_teams ?? numPlayers) == 3 {
                         Path { path in
                             path.move(to: CGPoint(x: rect.minX, y: rect.minY + (2 * trackPosAdjustment)))
                             path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY + (2 * trackPosAdjustment)))

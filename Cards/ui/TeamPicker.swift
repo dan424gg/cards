@@ -9,18 +9,26 @@ import SwiftUI
 
 struct TeamPicker: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
-    @Binding var teamNum: Int
+    @State var teamNum = 0
     
     var body: some View {
         VStack {
             Picker("Team", selection: $teamNum) {
-                ForEach(1...2, id:\.self) { num in
-                    Text("\(num)")
+                if (firebaseHelper.gameInfo?.num_players ?? 2) % 3 == 0 {
+                    ForEach(1...3, id:\.self) { num in
+                        Text("\(num)")
+                    }
+                } else {
+                    ForEach(1...2, id:\.self) { num in
+                        Text("\(num)")
+                    }
                 }
             }
         }
-        .onChange(of: teamNum) { _ in
-            print(teamNum)
+        .onChange(of: firebaseHelper.playerInfo?.team_num, initial: true) {
+            teamNum = firebaseHelper.playerInfo?.team_num ?? 2
+        }
+        .onChange(of: teamNum) {
             Task {
                 await firebaseHelper.changeTeam(newTeamNum: teamNum)
             }
@@ -30,7 +38,7 @@ struct TeamPicker: View {
 
 struct TeamPicker_Previews: PreviewProvider {
     static var previews: some View {
-        TeamPicker(teamNum: .constant(1))
+        TeamPicker()
             .environmentObject(FirebaseHelper())
     }
 }
