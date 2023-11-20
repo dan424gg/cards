@@ -10,7 +10,7 @@ import SwiftUI
 struct Cribbage: View {
     var teams =  [TeamInformation.team_one, TeamInformation.team_two]
     var players = [PlayerInformation.player_one, PlayerInformation.player_two]
-    var game = GameInformation(group_id: 1000, is_ready: false, is_won: false, num_players: 2, turn: 1)
+    var game = GameInformation(group_id: 1000, is_ready: false, is_won: false, num_players: 2, turn: 2)
     
     var controller = CribbageController()
     
@@ -22,9 +22,28 @@ struct Cribbage: View {
     var body: some View {
         VStack {
             VStack(alignment: .leading) {
-                Text("The Deal")
-                    .font(.title3)
-                    .foregroundStyle(.gray.opacity(0.7))
+                switch(firebaseHelper.gameInfo?.turn ?? game.turn) {
+                case 1:
+                    Text("The Deal")
+                        .font(.title3)
+                        .foregroundStyle(.gray.opacity(0.7))
+                case 2:
+                    Text("The Play")
+                        .font(.title3)
+                        .foregroundStyle(.gray.opacity(0.7))
+                case 3:
+                    Text("The Show")
+                        .font(.title3)
+                        .foregroundStyle(.gray.opacity(0.7))
+                case 4:
+                    Text("The Crib")
+                        .font(.title3)
+                        .foregroundStyle(.gray.opacity(0.7))
+                default:
+                    Text("Won't get here")
+                        .font(.title3)
+                        .foregroundStyle(.gray.opacity(0.7))
+                }
             }
             Spacer().frame(height: 375)
             VStack {
@@ -37,9 +56,13 @@ struct Cribbage: View {
                 case 2: TurnTwoView(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
                         .task {
                             isUiDisabled = false
-                            firebaseHelper.updatePlayer(newState: ["is_ready": false])
-                            if firebaseHelper.playerInfo!.is_lead {
-                                firebaseHelper.updateGame(newState: ["is_ready": false])
+                            firebaseHelper.updatePlayer(newState: 
+                                    ["is_ready": false]
+                            )
+                            if firebaseHelper.playerInfo?.is_lead ?? false {
+                                firebaseHelper.updateGame(newState:
+                                    ["is_ready": false]
+                                )
                             }
                         }
                         .transition(.slide)

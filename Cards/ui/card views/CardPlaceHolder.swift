@@ -11,7 +11,7 @@ struct CardPlaceHolder: View {
     var body: some View {
         ZStack {
                 RoundedRectangle(cornerRadius: 10)
-                    .fill(Color.gray.opacity(0.4))
+                    .fill(Color.gray.opacity(0.2))
                     .frame(width: 50, height: 100)
                     .overlay(
                         RoundedRectangle(cornerRadius: 10)

@@ -26,9 +26,9 @@ struct CardView: View {
                         .frame(width: 50, height: 100)
                     
                     RoundedRectangle(cornerRadius: 10)
-                        .fill(.blue.opacity(0.2))
+                        .fill(.blue.gradient)
                         .frame(width: width, height: height)
-                        .shadow(color: .gray, radius: 2, x: 0, y: 0)
+                        .shadow(color: .black, radius: 2, x: 0, y: 0)
                     
                     Image(systemName: "seal.fill")
                         .resizable()
@@ -77,24 +77,30 @@ struct CardView: View {
                     .degrees(backDegree), axis: (x: 0.0, y: 1.0, z: 0.0)
                 )
             }
-            .onTapGesture {
-                backside = !backside
+            .onAppear {
                 if backside {
-                    withAnimation(.linear(duration: 0.3)) {
-                        backDegree = -90
-                    }
-                    withAnimation(.linear(duration: 0.3).delay(0.3)) {
-                        frontDegree = 0
-                    }
-                } else {
-                    withAnimation(.linear(duration: 0.3)) {
-                        frontDegree = 90
-                    }
-                    withAnimation(.linear(duration: 0.3).delay(0.3)) {
-                        backDegree = 0
-                    }
+                    backDegree = -90.0
+                    frontDegree = 0.0
                 }
             }
+//            .onTapGesture {
+//                backside = !backside
+//                if backside {
+//                    withAnimation(.linear(duration: 0.3)) {
+//                        backDegree = -90
+//                    }
+//                    withAnimation(.linear(duration: 0.3).delay(0.3)) {
+//                        frontDegree = 0
+//                    }
+//                } else {
+//                    withAnimation(.linear(duration: 0.3)) {
+//                        frontDegree = 90
+//                    }
+//                    withAnimation(.linear(duration: 0.3).delay(0.3)) {
+//                        backDegree = 0
+//                    }
+//                }
+//            }
         }
     }
 }

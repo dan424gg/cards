@@ -8,13 +8,12 @@
 import SwiftUI
 
 struct GameStartButton: View {
-    var gameName: String = ""
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     
     var body: some View {
         VStack {
             NavigationLink {
-                GameView(gameName: gameName).navigationBarBackButtonHidden(true)
+                GameView().navigationBarBackButtonHidden(true)
             } label: {
                 Text("Play!")
             }

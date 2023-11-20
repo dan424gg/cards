@@ -26,10 +26,10 @@ struct LoadingScreen: View {
                 Text("Others can join with code: \(groupId)")
                     .task {
                         if groupId == "Loading..." {
-                            await firebaseHelper.startGameCollection(fullName: fullName)
+                            await firebaseHelper.startGameCollection(fullName: fullName, gameName: gameName)
                             groupId = "\(firebaseHelper.getGroupId())"
                         } else {
-                            await firebaseHelper.joinGameCollection(fullName: fullName, id: Int(groupId)!, teamNum: teamNum)
+                            await firebaseHelper.joinGameCollection(fullName: fullName, id: Int(groupId)!, teamNum: teamNum, gameName: gameName)
                         }
                     }
                 HStack {
