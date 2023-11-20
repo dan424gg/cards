@@ -14,7 +14,7 @@ struct TeamPicker: View {
     var body: some View {
         VStack {
             Picker("Team", selection: $teamNum) {
-                if (firebaseHelper.gameInfo?.num_players ?? 2) % 3 == 0 {
+                if (firebaseHelper.gameInfo?.num_teams ?? 2) == 3 {
                     ForEach(1...3, id:\.self) { num in
                         Text("\(num)")
                     }
@@ -25,9 +25,10 @@ struct TeamPicker: View {
                 }
             }
         }
-        .onChange(of: firebaseHelper.playerInfo?.team_num, initial: true) {
-            teamNum = firebaseHelper.playerInfo?.team_num ?? 2
-        }
+        .onAppear(perform: {
+            print("team info: \(firebaseHelper.playerInfo ?? PlayerInformation())")
+            teamNum = firebaseHelper.playerInfo?.team_num ?? 20
+        })
         .onChange(of: teamNum) {
             Task {
                 await firebaseHelper.changeTeam(newTeamNum: teamNum)
