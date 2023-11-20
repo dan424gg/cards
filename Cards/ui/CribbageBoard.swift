@@ -43,6 +43,7 @@ struct CribbageBoard: View {
         ZStack {
             GeometryReader { geo in
                 let rect = geo.frame(in: .local)
+
                 ZStack {
                     // team 1 path
                     Path { path in

@@ -49,7 +49,7 @@ struct GameView: View {
                 
                 DeckOfCardsView() 
                     .scaleEffect(x: 0.75, y: 0.75)
-                    .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 1.25 )
+                    .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 1.25)
                 
                 // game that is being played
                 VStack {
