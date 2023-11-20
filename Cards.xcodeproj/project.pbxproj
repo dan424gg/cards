@@ -445,10 +445,7 @@
 				1EBEF2C22AE4F579008A093B /* TeamInformation.swift in Sources */,
 				1EBED90E2AD7BBFF008B85EE /* CardsApp.swift in Sources */,
 				1ED272522B02A49C00B21600 /* NamesAroundTable.swift in Sources */,
-<<<<<<< HEAD
 				1E8D31A82B05644300FC9C68 /* DeckOfCardsView.swift in Sources */,
-=======
->>>>>>> origin/main
 				1EFA9F5D2AF5860000FA092C /* CribbageController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
