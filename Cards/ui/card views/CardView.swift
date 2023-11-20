@@ -83,24 +83,24 @@ struct CardView: View {
                     frontDegree = 0.0
                 }
             }
-            .onTapGesture {
-                backside = !backside
-                if backside {
-                    withAnimation(.linear(duration: 0.3)) {
-                        backDegree = -90
-                    }
-                    withAnimation(.linear(duration: 0.3).delay(0.3)) {
-                        frontDegree = 0
-                    }
-                } else {
-                    withAnimation(.linear(duration: 0.3)) {
-                        frontDegree = 90
-                    }
-                    withAnimation(.linear(duration: 0.3).delay(0.3)) {
-                        backDegree = 0
-                    }
-                }
-            }
+//            .onTapGesture {
+//                backside = !backside
+//                if backside {
+//                    withAnimation(.linear(duration: 0.3)) {
+//                        backDegree = -90
+//                    }
+//                    withAnimation(.linear(duration: 0.3).delay(0.3)) {
+//                        frontDegree = 0
+//                    }
+//                } else {
+//                    withAnimation(.linear(duration: 0.3)) {
+//                        frontDegree = 90
+//                    }
+//                    withAnimation(.linear(duration: 0.3).delay(0.3)) {
+//                        backDegree = 0
+//                    }
+//                }
+//            }
         }
     }
 }

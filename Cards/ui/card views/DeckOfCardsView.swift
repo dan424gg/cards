@@ -17,7 +17,7 @@ struct DeckOfCardsView: View {
         HStack(spacing: 50) {
             switch(game.game_name) {
             case "cribbage":
-                if game.turn == 2 {
+                if game.turn > 1 {
                     HStack(spacing: -40) {
                         ForEach(Array(team.crib.enumerated()), id: \.offset) { (index, card) in
                             CardView(cardItem: card, backside: true)
@@ -26,13 +26,11 @@ struct DeckOfCardsView: View {
                                 .disabled(true)
                         }
                     }
-                } else if game.turn == 3 {
-                    
                 }
                 
                 ZStack {
                     ForEach(Array(game.cards.shuffled().enumerated()), id: \.offset) { (index, card) in
-                        if (index == (game.cards.endIndex - 1)) && (game.turn == 2 || game.turn == 3 || game.turn == 4) {
+                        if (index == (game.cards.endIndex - 1)) && (game.turn > 1) {
                             CardView(cardItem: card, backside: false)
                                 .offset(y: -Double.random(in: -5.0...5.0) / 5.0)
                                 .rotationEffect(.degrees(Double.random(in: -5.0...5.0)))

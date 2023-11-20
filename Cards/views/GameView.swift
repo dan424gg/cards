@@ -47,7 +47,7 @@ struct GameView: View {
                     .rotationEffect(.degrees(0))
                     .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 1.7 )
                 
-                DeckOfCardsView()
+                DeckOfCardsView() 
                     .scaleEffect(x: 0.75, y: 0.75)
                     .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 1.25 )
                 
