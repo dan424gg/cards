@@ -202,7 +202,7 @@ import FirebaseFirestoreSwift
                                 do {
                                     self.teams.append(try change.document.data(as: TeamInformation.self))
                                 } catch {
-                                    print("error when adding appending a team to teams: \(error)")
+                                    print("error when appending a team to teams: \(error)")
                                 }
                                 
                                 change.document.reference.collection("players")
@@ -304,7 +304,7 @@ import FirebaseFirestoreSwift
                     "This": "serves as a placeholder so this collection doesn't get deleted when there aren't any players on this team, temporarily"
                 ])
             }
-
+            
             try docRef!.collection("teams").document("\(newTeamNum)").collection("players").document(playerInfo!.uid).setData(from: playerInfo)
             
         } catch {
@@ -326,19 +326,33 @@ import FirebaseFirestoreSwift
                     "num_teams": numTeams + 1,
                     "num_players": gameInfo!.num_players + 1
                 ])
+                
+                let teamNum = 2 /*(gameInfo!.num_players % 3) + 1*/
+                playerInfo = PlayerInformation(name: fullName, uid: UUID().uuidString, team_num: teamNum)
+                
+                teamInfo = TeamInformation(team_num: teamNum)
+                try docRef!.collection("teams").document("\(teamNum)").setData(from: teamInfo)
+                try await docRef!.collection("teams").document("\(teamNum)").collection("players").document("placeholder").setData([
+                    "This": "serves as a placeholder so this collection doesn't get deleted when there aren't any players on this team, temporarily"
+                ])
+                
+                try docRef!.collection("teams").document("\(teamNum)").collection("players").document(playerInfo!.uid).setData(from: playerInfo)
+                try await docRef!.collection("teams").document("\(teamNum)").collection("players").document("placeholder").setData([
+                    "This": "serves as a placeholder so this collection doesn't get deleted when there aren't any players on this team, temporarily"
+                ])
             } else {
                 updateGame(newState: [
                     "num_players": gameInfo!.num_players + 1
                 ])
+                
+                let teamNum = (gameInfo!.num_players % 3) + 1
+                playerInfo = PlayerInformation(name: fullName, uid: UUID().uuidString, team_num: teamNum)
+                
+                try docRef!.collection("teams").document("\(teamNum)").collection("players").document(playerInfo!.uid).setData(from: playerInfo)
+                try await docRef!.collection("teams").document("\(teamNum)").collection("players").document("placeholder").setData([
+                    "This": "serves as a placeholder so this collection doesn't get deleted when there aren't any players on this team, temporarily"
+                ])
             }
-            
-            let teamNum = (gameInfo!.num_players % 3) + 1
-            playerInfo = PlayerInformation(name: fullName, uid: UUID().uuidString, team_num: teamNum)
-            
-            try docRef!.collection("teams").document("\(teamNum)").collection("players").document(playerInfo!.uid).setData(from: playerInfo)
-            try await docRef!.collection("teams").document("\(teamNum)").collection("players").document("placeholder").setData([
-                "This": "serves as a placeholder so this collection doesn't get deleted when there aren't any players on this team, temporarily"
-            ])
             
             addTeamPlayerNameListener()
             addGameInfoListener()
