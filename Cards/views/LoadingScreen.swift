@@ -48,6 +48,9 @@ struct LoadingScreen: View {
                             ForEach(firebaseHelper.players, id:\.self) { player in
                                 if player.team_num == team.team_num {
                                     Text(player.name)
+                                        .onAppear(perform: {
+                                            print("\(player)")
+                                        })
                                 }
                             }
                         }
