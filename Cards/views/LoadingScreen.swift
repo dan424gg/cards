@@ -67,15 +67,16 @@ struct LoadingScreen: View {
 }
 
 func equalNumOfPlayersOnTeam(players: [PlayerInformation]) -> Bool {
-    var teamDir = [String : Int]()
+    var teamDict = [String : Int]()
     
     for player in players {
-        teamDir.updateValue((teamDir["\(player.team_num)"] ?? 0 + 1), forKey: "\(player.team_num)")
+        teamDict.updateValue(((teamDict["\(player.team_num)"] ?? 0) + 1), forKey: "\(player.team_num)")
     }
-    
-    let numPlayers = teamDir.popFirst()?.value
-    for num in teamDir.values {
-        if num != numPlayers {
+
+    let numPlayers = teamDict.popFirst()?.value
+    for num in teamDict.values {
+        if num != numPlayers! {
+
             return false
         }
     }
