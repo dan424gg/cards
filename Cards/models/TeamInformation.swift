@@ -12,7 +12,7 @@ import FirebaseFirestore
 
 
 public struct TeamInformation: Hashable, Codable {
-    var team_num: Int = 0
+    var team_num: Int = 1
     var crib: [CardItem] = []
     var has_crib: Bool = false
     var points: Int = 0

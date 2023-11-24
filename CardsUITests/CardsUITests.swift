@@ -7,6 +7,9 @@
 
 import XCTest
 
+//import FirebaseFirestore
+//import FirebaseFirestoreSwift
+
 final class CardsUITests: XCTestCase {
 
     override func setUpWithError() throws {
@@ -20,14 +23,37 @@ final class CardsUITests: XCTestCase {
 
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
+        
+        // delete player created in test
+//        Firestore.firestore().collection("games").document("1234").collection("teams").document("2").delete()
     }
 
     func testExample() throws {
         // UI tests must launch the application that they test.
+        
         let app = XCUIApplication()
         app.launch()
-
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+        app.buttons["Cribbage"].tap()
+        XCTAssert(app.buttons["Start a new game"].exists)
+        XCTAssert(app.buttons["Join an existing game"].exists)
+        
+        app.buttons["Join an existing game"].tap()
+        XCTAssert(app.staticTexts["Please enter a Group ID, and your name!"].exists)
+        
+        app.textFields["Group ID"].tap()
+        app.typeText("1234")
+        app.textFields["Full Name"].tap()
+        app.typeText("Test Player")
+        app.buttons["Submit"].tap()
+        XCTAssert(app.staticTexts["Hi Test Player!"].exists)
+        
+        let isEnabled = NSPredicate(format: "isEnabled == true")
+        let secondPlayButton = app.buttons["Play!"]
+        expectation(for: isEnabled, evaluatedWith: secondPlayButton, handler: nil)
+        waitForExpectations(timeout: 5, handler: nil)
+        
+        app.buttons["Play!"].tap()
+        XCTAssert(app.staticTexts["Cribbage"].exists)
     }
 
     func testLaunchPerformance() throws {

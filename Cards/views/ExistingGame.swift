@@ -10,8 +10,8 @@ import SwiftUISnackbar
 
 struct ExistingGame: View {
     var gameName: String
-    @State private var notValid: Bool = true
-    @State private var showSnackbar = false
+    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @State private var notValidGroupId: Bool = true
     @State private var groupId: Int = 0
     @State private var fullName: String = ""
     
@@ -25,7 +25,7 @@ struct ExistingGame: View {
     
     var body: some View {
         VStack {
-            Text("Please enter a Group ID,       and your name!")
+            Text("Please enter a Group ID, and your name!")
                 .font(.title2)
             TextField(
                 "Group ID",
@@ -38,15 +38,14 @@ struct ExistingGame: View {
             .onChange(of: isFocused) {
                 if isFocused {
                     // ensure snackbar isn't being shown
-                    showSnackbar = false
                 } else {
                     // determine validity of groupid
                     Task {
-                        if await FirebaseHelper().checkValidId(id: groupId) {
-                            notValid = false
+                        if await firebaseHelper.checkValidId(id: groupId) {
+                            notValidGroupId = false
                         } else {
-                            showSnackbar = true
-                            notValid = true
+                            notValidGroupId = true
+                            firebaseHelper.sendError(e: "Group ID is not valid!")
                         }
                     }
                 }
@@ -61,16 +60,33 @@ struct ExistingGame: View {
             
             
             NavigationLink {
-                LoadingScreen(groupId: String(groupId), fullName: fullName, gameName: gameName)
+                LoadingScreen(groupId: groupId, fullName: fullName, gameName: gameName)
             } label: {
                 Text("Submit")
                     .buttonStyle(.borderedProminent)
             }
-            .disabled(notValid && fullName == "")
+            .disabled(notValidGroupId || fullName == "")
         }
         .multilineTextAlignment(.center)
         .padding([.leading, .trailing], 48)
-        .snackbar(isShowing: $showSnackbar, title: "Group ID", text: "Group ID is not valid!", style: .error)
+        .snackbar(isShowing: $firebaseHelper.showError, 
+                  title: "Not Ready",
+                  text: firebaseHelper.error,
+                  style: .error,
+                  actionText: "dismiss",
+                  dismissOnTap: false,
+                  dismissAfter: nil,
+                  action: { firebaseHelper.showError = false; firebaseHelper.error = "" }
+        )
+        .snackbar(isShowing: $firebaseHelper.showWarning,
+                  title: "Not Ready",
+                  text: firebaseHelper.warning,
+                  style: .warning,
+                  actionText: "dismiss",
+                  dismissOnTap: false,
+                  dismissAfter: nil,
+                  action: { firebaseHelper.showWarning = false; firebaseHelper.warning = "" }
+        )
     }
 }
 

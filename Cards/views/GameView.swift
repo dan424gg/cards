@@ -82,8 +82,8 @@ struct GameView: View {
                     .offset(y: -10)
                     .scaleEffect(x: 2, y: 2)
             }
-            .snackbar(isShowing: $firebaseHelper.showSnackbar, title: "Not Ready", text: firebaseHelper.error, style: .error, actionText: "dismiss", dismissOnTap: false, dismissAfter: nil, action: { firebaseHelper.showSnackbar = false })
-            .snackbar(isShowing: $firebaseHelper.showSnackbar, title: "Not Ready", text: firebaseHelper.warning, style: .warning, actionText: "dismiss", dismissOnTap: false, dismissAfter: nil, action: { firebaseHelper.showSnackbar = false })
+            .snackbar(isShowing: $firebaseHelper.showWarning, title: "Not Ready", text: firebaseHelper.error, style: .error, actionText: "dismiss", dismissOnTap: false, dismissAfter: nil, action: { firebaseHelper.showWarning = false })
+            .snackbar(isShowing: $firebaseHelper.showError, title: "Not Ready", text: firebaseHelper.warning, style: .warning, actionText: "dismiss", dismissOnTap: false, dismissAfter: nil, action: { firebaseHelper.showError = false })
         }
     }
 }
