@@ -41,6 +41,7 @@
 		1ECCDABD2AE600DA00EFF167 /* GameStartButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECCDABC2AE600DA00EFF167 /* GameStartButton.swift */; };
 		1ECCDABF2AE606A800EFF167 /* TeamPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECCDABE2AE606A800EFF167 /* TeamPicker.swift */; };
 		1ED272522B02A49C00B21600 /* NamesAroundTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ED272512B02A49C00B21600 /* NamesAroundTable.swift */; };
+		1EE16CF92B10930600B35787 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 1EE16CF82B10930600B35787 /* FirebaseFirestore */; };
 		1EE5F12B2AE8A5EF0089162D /* CardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE5F12A2AE8A5EF0089162D /* CardItem.swift */; };
 		1EFA9F5B2AF584CC00FA092C /* TurnTwoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFA9F5A2AF584CC00FA092C /* TurnTwoView.swift */; };
 		1EFA9F5D2AF5860000FA092C /* CribbageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFA9F5C2AF5860000FA092C /* CribbageController.swift */; };
@@ -128,6 +129,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1EE16CF92B10930600B35787 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -340,6 +342,9 @@
 				1EBED9262AD7BC01008B85EE /* PBXTargetDependency */,
 			);
 			name = CardsUITests;
+			packageProductDependencies = (
+				1EE16CF82B10930600B35787 /* FirebaseFirestore */,
+			);
 			productName = CardsUITests;
 			productReference = 1EBED9242AD7BC01008B85EE /* CardsUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
@@ -816,6 +821,11 @@
 			productName = FirebaseAnalytics;
 		};
 		1EBED93A2AD7BC4E008B85EE /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1EBED9372AD7BC4E008B85EE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		1EE16CF82B10930600B35787 /* FirebaseFirestore */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 1EBED9372AD7BC4E008B85EE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;

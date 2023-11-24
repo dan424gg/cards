@@ -8,25 +8,19 @@
 import Foundation
 import SwiftUI
 
-class CribbageController {
-    
-    func readyPlayer(player: PlayerInformation, turn: Int) -> Bool {
-        switch (turn) {
-            case 1: if player.cards_in_hand.count == 4 { return true }
-            case 2: if player.cards_in_hand.count == 0 { return true }
-            default: return false
+class CribbageController: FirebaseHelper {
+    func readyPlayer(cardsDragged: Binding<[CardItem]>) -> Bool {
+        switch (gameInfo!.turn) {
+        case 1:
+            if gameInfo!.num_teams == 2 {
+                return true
+            }
+//        case 2:
+//        case 3:
+//        case 4:
+        default: return false
         }
         return false
-    }
-    
-    func moveToNextRound(players: [PlayerInformation]) -> Bool {
-        for player in players {
-            if !player.is_ready {
-                return false
-            }
-        }
-        
-        return true
     }
     
     func determineDealer(numPlayers: Int) -> Int {

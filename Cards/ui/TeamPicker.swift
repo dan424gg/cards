@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TeamPicker: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
-    @State var teamNum = 0
+    @State var teamNum = 1
     
     var body: some View {
         VStack {
@@ -26,8 +26,7 @@ struct TeamPicker: View {
             }
         }
         .onAppear(perform: {
-            print("team info: \(firebaseHelper.playerInfo ?? PlayerInformation())")
-            teamNum = firebaseHelper.playerInfo?.team_num ?? 20
+            teamNum = firebaseHelper.playerInfo?.team_num ?? 1
         })
         .onChange(of: teamNum) {
             Task {

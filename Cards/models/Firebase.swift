@@ -18,21 +18,22 @@ import FirebaseFirestoreSwift
     private var teamListeners = ListenerList()
     private var playerListeners = ListenerList()
         
-    @Published var db = Firestore.firestore()
+    @Published private var db = Firestore.firestore()
     @Published var gameInfo: GameInformation?
     @Published var playerInfo: PlayerInformation?
     @Published var teamInfo: TeamInformation?
     @Published var players: [PlayerInformation] = []
     @Published var teams: [TeamInformation] = []
     
-    @Published var showSnackbar: Bool = false
+    @Published var showWarning: Bool = false
     @Published var warning: String = ""
+    @Published var showError: Bool = false
     @Published var error: String = ""
     
     var docRef: DocumentReference!
         
     func initFirebaseHelper() {
-        self.gameInfo = nil
+        self.gameInfo = GameInformation()
         self.playerInfo = nil
         self.teamInfo = nil
         self.players = []
@@ -46,13 +47,13 @@ import FirebaseFirestoreSwift
     }
     
     func sendWarning(w: String) {
-        showSnackbar = true
         warning = w
+        showWarning = true
     }
     
     func sendError(e: String) {
-        showSnackbar = true
-        error = e
+        error = e     
+        showError = true
     }
     
     func updatePlayer(newState: [String: Any]) {
@@ -341,10 +342,10 @@ import FirebaseFirestoreSwift
     }
     
     func startGameCollection(fullName: String, gameName: String) async {
-        var groupId = 0
-        repeat {
-            groupId = Int.random(in: 10000..<99999)
-        } while (await checkValidId(id: groupId))
+        var groupId = 1234
+//        repeat {
+//            groupId = Int.random(in: 10000..<99999)
+//        } while (await checkValidId(id: groupId))
         
         docRef = db.collection("games").document(String(groupId))
         

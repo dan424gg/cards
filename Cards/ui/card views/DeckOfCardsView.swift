@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct DeckOfCardsView: View {
+    @EnvironmentObject var firebaseHelper: FirebaseHelper
+
     var game = GameInformation(group_id: 1000, is_ready: false, is_won: false, num_teams: 2, turn: 2, game_name: "cribbage")
     var team = TeamInformation(team_num: 1, crib: [CardItem(id: 0, value: "A", suit: "heart"), CardItem(id: 1, value: "5", suit: "heart"), CardItem(id: 2, value: "4", suit: "spade"), CardItem(id: 3, value: "K", suit: "heart")], has_crib: true, points: 50)
-    
-    @EnvironmentObject var firebaseHelper: FirebaseHelper
-    
+        
     var body: some View {
         HStack(spacing: 50) {
             switch(game.game_name) {

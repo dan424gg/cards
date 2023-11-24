@@ -17,7 +17,6 @@ struct ContentView: View {
                 GameButton(universalClicked: $universalClicked, gameName: "uno")
                 GameButton(universalClicked: $universalClicked, gameName: "rummy")
             }
-            .buttonStyle(.bordered)
         }
     }
 }

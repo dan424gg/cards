@@ -10,7 +10,7 @@ import SwiftUI
 
 struct LoadingScreen: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
-    @State var groupId = "Loading..."
+    @State var groupId = 0
     @State var teamNum = 1
     var fullName: String
     var gameName: String
@@ -23,13 +23,13 @@ struct LoadingScreen: View {
                         self.firebaseHelper.initFirebaseHelper()
                     }
                 Text("We're gonna start a game of \(gameName)!")
-                Text("Others can join with code: \(groupId)")
+                Text("Others can join with code: \(String(groupId))")
                     .task {
-                        if groupId == "Loading..." {
+                        if groupId == 0 {
                             await firebaseHelper.startGameCollection(fullName: fullName, gameName: gameName)
-                            groupId = "\(firebaseHelper.getGroupId())"
+                            groupId = firebaseHelper.getGroupId()
                         } else {
-                            await firebaseHelper.joinGameCollection(fullName: fullName, id: Int(groupId)!, gameName: gameName)
+                            await firebaseHelper.joinGameCollection(fullName: fullName, id: groupId, gameName: gameName)
                         }
                     }
                 HStack {
@@ -40,7 +40,6 @@ struct LoadingScreen: View {
             }
             
             VStack {
-//                Text("Players:")
                 HStack {
                     ForEach(firebaseHelper.teams, id:\.self) { team in
                         VStack {
@@ -48,9 +47,6 @@ struct LoadingScreen: View {
                             ForEach(firebaseHelper.players, id:\.self) { player in
                                 if player.team_num == team.team_num {
                                     Text(player.name)
-                                        .onAppear(perform: {
-                                            print("\(player)")
-                                        })
                                 }
                             }
                         }
@@ -58,15 +54,18 @@ struct LoadingScreen: View {
                 }
             }
             
-            VStack {
-                GameStartButton()
-                    .disabled(groupId == "Loading..." || equalNumOfPlayersOnTeam(players: firebaseHelper.players))
-            }
+            GameStartButton()
+                .padding()
+                .disabled(groupId == 0 || !equalNumOfPlayersOnTeam(players: firebaseHelper.players))
         }
     }
 }
 
 func equalNumOfPlayersOnTeam(players: [PlayerInformation]) -> Bool {
+    if players.count < 2 {
+        return false
+    }
+    
     var teamDict = [String : Int]()
     
     for player in players {
@@ -76,7 +75,6 @@ func equalNumOfPlayersOnTeam(players: [PlayerInformation]) -> Bool {
     let numPlayers = teamDict.popFirst()?.value
     for num in teamDict.values {
         if num != numPlayers! {
-
             return false
         }
     }
@@ -86,7 +84,7 @@ func equalNumOfPlayersOnTeam(players: [PlayerInformation]) -> Bool {
 
 struct LoadingScreen_Previews: PreviewProvider {
     static var previews: some View {
-        LoadingScreen(groupId: "52112", fullName: "Daniel Wells", gameName: "Cribbage")
+        LoadingScreen(groupId: 0, fullName: "Daniel Wells", gameName: "Cribbage")
             .environmentObject(FirebaseHelper())
     }
 }

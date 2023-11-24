@@ -9,10 +9,10 @@ import SwiftUI
 
 struct CribbageBoard: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
-    var numPlayers = 2
-    var teamOnePoints = 70
-    var teamTwoPoints = 60
-    var teamThreePoints = 57
+    var numPlayers = 3
+    var teamOnePoints = 120
+    var teamTwoPoints = 120
+    var teamThreePoints = 120
     
     var teams = [TeamInformation.team_one, TeamInformation.team_two, TeamInformation.team_two]
     @State var pointsShown = false
@@ -21,21 +21,21 @@ struct CribbageBoard: View {
         if (firebaseHelper.gameInfo?.num_teams ?? numPlayers) == 3 {
             return 5.0
         } else {
-            return 5.0
+            return 7.5
         }
     }
     var trackPosAdjustment: Double {
         if (firebaseHelper.gameInfo?.num_teams ?? numPlayers) == 3 {
             return 5.0
         } else {
-            return 5.0
+            return 7.5
         }
     }
     var midYAdjustment: Double {
         if (firebaseHelper.gameInfo?.num_teams ?? numPlayers) == 3 {
             return 7.5
         } else {
-            return 5.0
+            return 7.5
         }
     }
     

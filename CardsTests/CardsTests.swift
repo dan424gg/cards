@@ -6,6 +6,8 @@
 //
 
 import XCTest
+import SwiftUI
+
 import FirebaseCore
 import FirebaseFirestore
 import FirebaseFirestoreSwift
@@ -17,12 +19,16 @@ final class LoadingScreenTests: XCTestCase {
         var playerList: [PlayerInformation] = []
         
         playerList.append(PlayerInformation(uid: "1", team_num: 1))
+        XCTAssertFalse(equalNumOfPlayersOnTeam(players: playerList))
+
         playerList.append(PlayerInformation(uid: "2", team_num: 1))
+        XCTAssertTrue(equalNumOfPlayersOnTeam(players: playerList))
+
         playerList.append(PlayerInformation(uid: "3", team_num: 2))
         XCTAssertFalse(equalNumOfPlayersOnTeam(players: playerList))
         
-//        playerList.append(PlayerInformation(uid: "4", team_num: 2))
-//        XCTAssertTrue(equalNumOfPlayersOnTeam(players: playerList))
+        playerList.append(PlayerInformation(uid: "4", team_num: 2))
+        XCTAssertTrue(equalNumOfPlayersOnTeam(players: playerList))
     }
 }
 
