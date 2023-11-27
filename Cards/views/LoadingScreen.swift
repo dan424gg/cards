@@ -46,7 +46,7 @@ struct LoadingScreen: View {
                             Text("Team \(team.team_num):")
                             ForEach(firebaseHelper.players, id:\.self) { player in
                                 if player.team_num == team.team_num {
-                                    Text(player.name)
+                                    Text(player.name!)
                                 }
                             }
                         }

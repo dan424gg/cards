@@ -3,4 +3,114 @@
    uuid = "52D84923-A4D3-49DB-B62A-CB6DDE57D9AC"
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "809F34FF-918E-407D-8AD3-2E15BF987CDC"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CardsTests/CardsTests.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "33"
+            endingLineNumber = "33"
+            landmarkName = "testDeal()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "809F34FF-918E-407D-8AD3-2E15BF987CDC - 9462c5ed93297633"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for CardsTests.FirebaseTests.testDeal() async -&gt; ()"
+                  moduleName = "CardsTests"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/wells/coding/cards/CardsTests/CardsTests.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "29"
+                  endingLineNumber = "29"
+                  offsetFromSymbolStart = "256">
+               </Location>
+               <Location
+                  uuid = "809F34FF-918E-407D-8AD3-2E15BF987CDC - eedd7bb52cddc3d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for CardsTests.FirebaseTests.testDeal() async -&gt; ()"
+                  moduleName = "CardsTests"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/wells/coding/cards/CardsTests/CardsTests.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "29"
+                  endingLineNumber = "29"
+                  offsetFromSymbolStart = "1480">
+               </Location>
+               <Location
+                  uuid = "809F34FF-918E-407D-8AD3-2E15BF987CDC - 2b78aaac19d3b100"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(2) await resume partial function for CardsTests.FirebaseTests.testDeal() async -&gt; ()"
+                  moduleName = "CardsTests"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/wells/coding/cards/CardsTests/CardsTests.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "29"
+                  endingLineNumber = "29"
+                  offsetFromSymbolStart = "40">
+               </Location>
+               <Location
+                  uuid = "809F34FF-918E-407D-8AD3-2E15BF987CDC - 9462c5ed93297633"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for CardsTests.FirebaseTests.testDeal() async -&gt; ()"
+                  moduleName = "CardsTests"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/wells/coding/cards/CardsTests/CardsTests.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "29"
+                  endingLineNumber = "29"
+                  offsetFromSymbolStart = "128">
+               </Location>
+               <Location
+                  uuid = "809F34FF-918E-407D-8AD3-2E15BF987CDC - 6370a66a9b5a82d9"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () -&gt; Swift.Array&lt;Cards.CardItem&gt; in CardsTests.FirebaseTests.testDeal() async -&gt; ()"
+                  moduleName = "CardsTests"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/wells/coding/cards/CardsTests/CardsTests.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "28"
+                  endingLineNumber = "28"
+                  offsetFromSymbolStart = "20">
+               </Location>
+               <Location
+                  uuid = "809F34FF-918E-407D-8AD3-2E15BF987CDC - 8e57602ecdbc1ca4"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #2 (Swift.Array&lt;Cards.CardItem&gt;) -&gt; () in CardsTests.FirebaseTests.testDeal() async -&gt; ()"
+                  moduleName = "CardsTests"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/wells/coding/cards/CardsTests/CardsTests.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "28"
+                  endingLineNumber = "28"
+                  offsetFromSymbolStart = "36">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>

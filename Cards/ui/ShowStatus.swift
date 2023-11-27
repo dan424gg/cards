@@ -15,7 +15,7 @@ struct ShowStatus: View {
         if firebaseHelper.playerInfo == nil {
             ForEach(players, id: \.self) { player in
                 HStack {
-                    Text(player.name)
+                    Text(player.name!)
                     if player.is_ready {
                         Circle()
                             .fill(.green)
@@ -30,7 +30,7 @@ struct ShowStatus: View {
         } else {
             ForEach(firebaseHelper.players, id: \.self) { player in
                 HStack {
-                    Text(player.name)
+                    Text(player.name!)
                     if player.is_ready {
                         Circle()
                             .fill(.green)

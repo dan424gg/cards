@@ -17,7 +17,6 @@ public struct GameInformation: Hashable, Codable {
     var is_won: Bool = false
     var num_teams: Int = 0
     var turn: Int = 0
-    var count_points: Int = 0
     var game_name: String = ""
     var num_players: Int = 0
     var cards: [CardItem] = [

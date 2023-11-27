@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
+    @EnvironmentObject var firebaseHelper: FirebaseHelper
     @State var universalClicked = "A game"
     var body: some View {
         NavigationView {

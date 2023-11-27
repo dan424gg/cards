@@ -22,7 +22,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 struct CardsApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject private var firebaseHelper = FirebaseHelper()
-    
+        
     var body: some Scene {
         WindowGroup {
             ContentView()

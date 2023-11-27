@@ -7,14 +7,14 @@
 
 import XCTest
 
-//import FirebaseFirestore
-//import FirebaseFirestoreSwift
+import FirebaseFirestore
+import FirebaseFirestoreSwift
 
 final class CardsUITests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
-
+        
         // In UI tests it is usually best to stop immediately when a failure occurs.
         continueAfterFailure = false
 
@@ -23,9 +23,6 @@ final class CardsUITests: XCTestCase {
 
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
-        
-        // delete player created in test
-//        Firestore.firestore().collection("games").document("1234").collection("teams").document("2").delete()
     }
 
     func testExample() throws {
@@ -33,6 +30,7 @@ final class CardsUITests: XCTestCase {
         
         let app = XCUIApplication()
         app.launch()
+        app.launchArguments = ["testMode"]
         app.buttons["Cribbage"].tap()
         XCTAssert(app.buttons["Start a new game"].exists)
         XCTAssert(app.buttons["Join an existing game"].exists)

@@ -14,6 +14,27 @@ import FirebaseFirestoreSwift
 
 @testable import Cards
 
+final class FirebaseTests: XCTestCase {
+    @MainActor func testDeal() async {
+        let expectation = XCTestExpectation(description: "Open a file asynchronously.")
+
+        let firebaseHelper = FirebaseHelper()
+        firebaseHelper.players = [ PlayerInformation(uid: "1", team_num: 1), PlayerInformation(uid: "2", team_num: 2)]
+        firebaseHelper.playerInfo = firebaseHelper.players[0]
+        firebaseHelper.playerInfo!.is_dealer = true
+        
+        firebaseHelper.gameInfo = GameInformation()
+        firebaseHelper.gameInfo!.num_players = 6
+        firebaseHelper.gameInfo!.num_teams = 3
+        
+        firebaseHelper.teamInfo = TeamInformation(has_crib: false)
+        
+        var cardsInHand_Binding: [CardItem] = []
+        await firebaseHelper.dealCards(cardsInHand_binding: Binding(get: { cardsInHand_Binding }, set: { cardsInHand_Binding = $0}))
+        XCTAssert(cardsInHand_Binding.count == 4)
+    }
+}
+
 final class LoadingScreenTests: XCTestCase {
     func testEqualNumOfPlayersOnTeam() {
         var playerList: [PlayerInformation] = []
