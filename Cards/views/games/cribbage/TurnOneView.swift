@@ -40,7 +40,7 @@ struct TurnOneView: View {
                         }
                 }
                 
-                if firebaseHelper.playerInfo?.cards_in_hand.count ?? 6 == 6 {
+                if firebaseHelper.playerInfo?.cards_in_hand!.count ?? 6 == 6 {
                     if cardsDragged.count > 1 {
                         CardView(cardItem: cardsDragged[1])
                     } else {
@@ -74,7 +74,7 @@ struct TurnOneView: View {
                     "cards_in_hand": cardsInHand
                 ])
                 
-                var teamWithCrib = firebaseHelper.teams.first(where: { team in
+                let teamWithCrib = firebaseHelper.teams.first(where: { team in
                     team.has_crib
                 })
                 firebaseHelper.updateTeam(newState: ["crib": cardsDragged], team: teamWithCrib?.team_num)
@@ -86,7 +86,7 @@ struct TurnOneView: View {
         switch (firebaseHelper.gameInfo?.num_teams ?? 2) {
         case 2: return cardsDragged.count == 2
         case 3: 
-            if firebaseHelper.playerInfo?.cards_in_hand.count == 5 {
+            if firebaseHelper.playerInfo?.cards_in_hand!.count == 5 {
                 return cardsDragged.count == 1
             } else {
                 return cardsDragged.count == 0

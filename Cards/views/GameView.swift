@@ -60,7 +60,7 @@ struct GameView: View {
                             .onAppear(perform: {
                                 cardsDragged = []
                                 if firebaseHelper.playerInfo != nil && firebaseHelper.playerInfo!.cards_in_hand != [] {
-                                    cardsInHand = firebaseHelper.playerInfo!.cards_in_hand
+                                    cardsInHand = firebaseHelper.playerInfo!.cards_in_hand!
                                 } else {
                                     cardsInHand = [CardItem(id: 39, value: "A", suit: "club"), CardItem(id: 40, value: "2", suit: "club"), CardItem(id: 26, value: "A", suit: "diamond"), CardItem(id: 27, value: "2", suit: "diamond")]
                                 }
@@ -74,7 +74,7 @@ struct GameView: View {
                     .onAppear(perform: {
                         cardsDragged = []
                         if firebaseHelper.playerInfo != nil && firebaseHelper.playerInfo!.cards_in_hand != [] {
-                            cardsInHand = firebaseHelper.playerInfo!.cards_in_hand
+                            cardsInHand = firebaseHelper.playerInfo!.cards_in_hand!
                         } else {
                             cardsInHand = [CardItem(id: 39, value: "A", suit: "club"), CardItem(id: 40, value: "2", suit: "club"), CardItem(id: 26, value: "A", suit: "diamond"), CardItem(id: 27, value: "2", suit: "diamond")]
                         }

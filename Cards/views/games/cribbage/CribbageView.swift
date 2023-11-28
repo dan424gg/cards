@@ -30,7 +30,7 @@ struct Cribbage: View {
                             guard firebaseHelper.gameInfo != nil else {
                                 return
                             }
-                            if firebaseHelper.playerInfo!.is_lead {
+                            if firebaseHelper.playerInfo!.is_lead! {
                                 Task {
                                     await firebaseHelper.updateGame(newState: ["cards": GameInformation().cards.shuffled()])
                                 }

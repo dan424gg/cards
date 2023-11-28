@@ -15,23 +15,84 @@ import FirebaseFirestoreSwift
 @testable import Cards
 
 final class FirebaseTests: XCTestCase {
-    @MainActor func testDeal() async {
-        let expectation = XCTestExpectation(description: "Open a file asynchronously.")
-
-        let firebaseHelper = FirebaseHelper()
-        firebaseHelper.players = [ PlayerInformation(uid: "1", team_num: 1), PlayerInformation(uid: "2", team_num: 2)]
-        firebaseHelper.playerInfo = firebaseHelper.players[0]
-        firebaseHelper.playerInfo!.is_dealer = true
+    @MainActor func testTwoPlayerDeal() async {
+        var playerOne = FirebaseHelper()
+        playerOne.deleteGameCollection(id: 123)
+        await playerOne.startGameCollection(fullName: "1", gameName: "Cribbage", testGroupId: 123)
         
-        firebaseHelper.gameInfo = GameInformation()
-        firebaseHelper.gameInfo!.num_players = 6
-        firebaseHelper.gameInfo!.num_teams = 3
-        
-        firebaseHelper.teamInfo = TeamInformation(has_crib: false)
+        var playerTwo = FirebaseHelper()
+        await playerTwo.joinGameCollection(fullName: "2", id: 123, gameName: "Cribbage")
         
         var cardsInHand_Binding: [CardItem] = []
-        await firebaseHelper.dealCards(cardsInHand_binding: Binding(get: { cardsInHand_Binding }, set: { cardsInHand_Binding = $0}))
-        XCTAssert(cardsInHand_Binding.count == 4)
+        await playerOne.dealCards(cardsInHand_binding: Binding(get: { cardsInHand_Binding }, set: { cardsInHand_Binding = $0 }))
+        XCTAssert(playerOne.gameInfo!.cards.count == 46)
+        XCTAssert(playerOne.playerInfo!.cards_in_hand!.count == 6)
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 1.0)
+        
+        cardsInHand_Binding = []
+        await playerTwo.dealCards(cardsInHand_binding: Binding(get: { cardsInHand_Binding }, set: { cardsInHand_Binding = $0 }))
+        XCTAssert(playerTwo.gameInfo!.cards.count == 40)
+        XCTAssert(playerTwo.playerInfo!.cards_in_hand!.count == 6)
+    }
+    
+    @MainActor func testThreePlayerDeal() async {
+        var playerOne = FirebaseHelper()
+        playerOne.deleteGameCollection(id: 123)
+        await playerOne.startGameCollection(fullName: "1", gameName: "Cribbage", testGroupId: 123)
+        playerOne.updatePlayer(newState: ["is_dealer": true])
+        playerOne.updateTeam(newState: ["has_crib": true])
+        
+        var playerTwo = FirebaseHelper()
+        await playerTwo.joinGameCollection(fullName: "2", id: 123, gameName: "Cribbage")
+        
+        var playerThree = FirebaseHelper()
+        await playerThree.joinGameCollection(fullName: "3", id: 123, gameName: "Cribbage")
+        
+        var cardsInHand_Binding: [CardItem] = []
+        await playerOne.dealCards(cardsInHand_binding: Binding(get: { cardsInHand_Binding }, set: { cardsInHand_Binding = $0 }))
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 1.0)
+        
+        XCTAssert(playerOne.teamInfo!.crib.count == 1)
+    }
+    
+    @MainActor func testFourPlayerDeal() async {
+        var playerOne = FirebaseHelper()
+        playerOne.deleteGameCollection(id: 123)
+        await playerOne.startGameCollection(fullName: "1", gameName: "Cribbage", testGroupId: 123)
+        
+        var playerTwo = FirebaseHelper()
+        await playerTwo.joinGameCollection(fullName: "2", id: 123, gameName: "Cribbage")
+        
+        var cardsInHand_Binding: [CardItem] = []
+        await playerOne.dealCards(cardsInHand_binding: Binding(get: { cardsInHand_Binding }, set: { cardsInHand_Binding = $0 }))
+        XCTAssert(playerOne.gameInfo!.cards.count == 46)
+        XCTAssert(playerOne.playerInfo!.cards_in_hand!.count == 6)
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 1.0)
+        
+        cardsInHand_Binding = []
+        await playerTwo.dealCards(cardsInHand_binding: Binding(get: { cardsInHand_Binding }, set: { cardsInHand_Binding = $0 }))
+        XCTAssert(playerTwo.gameInfo!.cards.count == 40)
+        XCTAssert(playerTwo.playerInfo!.cards_in_hand!.count == 6)
+    }
+    
+    @MainActor func testSixPlayerDeal() async {
+        var playerOne = FirebaseHelper()
+        playerOne.deleteGameCollection(id: 123)
+        await playerOne.startGameCollection(fullName: "1", gameName: "Cribbage", testGroupId: 123)
+        
+        var playerTwo = FirebaseHelper()
+        await playerTwo.joinGameCollection(fullName: "2", id: 123, gameName: "Cribbage")
+        
+        var cardsInHand_Binding: [CardItem] = []
+        await playerOne.dealCards(cardsInHand_binding: Binding(get: { cardsInHand_Binding }, set: { cardsInHand_Binding = $0 }))
+        XCTAssert(playerOne.gameInfo!.cards.count == 46)
+        XCTAssert(playerOne.playerInfo!.cards_in_hand!.count == 6)
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 1.0)
+        
+        cardsInHand_Binding = []
+        await playerTwo.dealCards(cardsInHand_binding: Binding(get: { cardsInHand_Binding }, set: { cardsInHand_Binding = $0 }))
+        XCTAssert(playerTwo.gameInfo!.cards.count == 40)
+        XCTAssert(playerTwo.playerInfo!.cards_in_hand!.count == 6)
     }
 }
 

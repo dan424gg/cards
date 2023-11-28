@@ -17,8 +17,6 @@ import FirebaseFirestoreSwift
     private var teamPlayerNameListener: ListenerRegistration!
     private var teamListeners = ListenerList()
     private var playerListeners = ListenerList()
-        
-    var isHere = true
     
     @Published private var db = Firestore.firestore()
     @Published var gameInfo: GameInformation?
@@ -49,6 +47,10 @@ import FirebaseFirestoreSwift
         removeTeamPlayerNameListener()
     }
     
+    func deleteGameCollection(id: Int) {
+        db.collection("games").document("\(id)").delete()
+    }
+    
     func sendWarning(w: String) {
         warning = w
         showWarning = true
@@ -75,23 +77,25 @@ import FirebaseFirestoreSwift
                 case "name" where value is String:
                     playerInfo!.name = (value as! String)
                 case "cards_in_hand" where value is [CardItem]:
-                    playerInfo!.cards_in_hand = value as! [CardItem]
+                    playerInfo!.cards_in_hand = (value as! [CardItem])
                 case "team_num" where value is Int:
-                    playerInfo!.team_num = value as! Int
+                    playerInfo!.team_num = (value as! Int)
                 case "is_ready" where value is Bool:
-                    playerInfo!.is_ready = value as! Bool
+                    playerInfo!.is_ready = (value as! Bool)
+                case "is_dealer" where value is Bool:
+                    playerInfo!.is_dealer = (value as! Bool)
                 default:
                     print("Property '\(key)' doesn't exist when trying to update player!")
                     return
                 }
             }
 
-            let loc: Int? = players.firstIndex(where: { player in
-                player.uid == playerInfo!.uid
-            })
-            players[loc!] = playerInfo!
+//            let loc: Int? = players.firstIndex(where: { player in
+//                player.uid == playerInfo!.uid
+//            })
+//            players[loc!] = playerInfo!
             
-            try docRef.collection("teams").document("\(playerInfo!.team_num)").collection("players").document("\(playerInfo!.uid)").setData(from: playerInfo!, merge: true)
+            try docRef.collection("teams").document("\(playerInfo!.team_num!)").collection("players").document("\(playerInfo!.uid!)").setData(from: playerInfo!, merge: true)
         } catch {
             print("error in updatePlayer: \(error)")
         }
@@ -169,7 +173,7 @@ import FirebaseFirestoreSwift
                 }
             }
             
-            try docRef!.collection("teams").document("\(team ?? playerInfo!.team_num)").setData(from: teamInfo!, merge: true)
+            try docRef!.collection("teams").document("\(team ?? playerInfo!.team_num!)").setData(from: teamInfo!, merge: true)
         } catch {
             print("error in updateTeam: \(error)")
         }
@@ -338,11 +342,11 @@ import FirebaseFirestoreSwift
         
         do {
             // delete old player document and team document if there is no more players in it
-            if try await docRef!.collection("teams").document("\(player!.team_num)").collection("players").count.getAggregation(source: .server).count == 1 {
-                try await docRef!.collection("teams").document("\(player!.team_num)").delete()
+            if try await docRef!.collection("teams").document("\(player!.team_num!)").collection("players").count.getAggregation(source: .server).count == 1 {
+                try await docRef!.collection("teams").document("\(player!.team_num!)").delete()
                 await updateGame(newState: ["num_teams": gameInfo!.num_teams - 1])
             }
-            try await docRef!.collection("teams").document("\(player!.team_num)").collection("players").document(player!.uid).delete()
+            try await docRef!.collection("teams").document("\(player!.team_num!)").collection("players").document(player!.uid!).delete()
             
             player!.team_num = newTeamNum
             if await !checkTeamExists(teamNum: newTeamNum) {
@@ -353,7 +357,7 @@ import FirebaseFirestoreSwift
                 ])
             }
             
-            try docRef!.collection("teams").document("\(newTeamNum)").collection("players").document(player!.uid).setData(from: playerInfo)
+            try docRef!.collection("teams").document("\(newTeamNum)").collection("players").document(player!.uid!).setData(from: playerInfo)
             
         } catch {
             print("failed trying to change the team")
@@ -383,7 +387,7 @@ import FirebaseFirestoreSwift
             
             playerInfo = PlayerInformation(name: fullName, uid: UUID().uuidString, is_lead: true, team_num: 1, player_num: 0)
             
-            try docRef!.collection("teams").document(String(1)).collection("players").document(playerInfo!.uid).setData(from: playerInfo)
+            try docRef!.collection("teams").document(String(1)).collection("players").document(playerInfo!.uid!).setData(from: playerInfo!)
             try await docRef!.collection("teams").document("\(1)").collection("players").document("placeholder").setData([
                 "This": "serves as a placeholder so this collection doesn't get deleted when there aren't any players on this team, temporarily"
             ])
@@ -445,7 +449,7 @@ import FirebaseFirestoreSwift
                 ])
             }
             
-            try docRef!.collection("teams").document("\(teamNum)").collection("players").document(playerInfo!.uid).setData(from: playerInfo)
+            try docRef!.collection("teams").document("\(teamNum)").collection("players").document(playerInfo!.uid!).setData(from: playerInfo!)
 
             addTeamPlayerNameListener()
             await addGameInfoListener()
@@ -485,7 +489,7 @@ import FirebaseFirestoreSwift
         case 3:
             if gameInfo!.num_players == 3 {
                 if teamInfo!.has_crib {
-                    updateTeam(newState: ["crib": gameInfo!.cards.popLast()!])
+                    updateTeam(newState: ["crib": [gameInfo!.cards.popLast()!]])
                 }
                 for _ in 1...5 {
                     guard gameInfo!.cards != [] else {
@@ -498,11 +502,11 @@ import FirebaseFirestoreSwift
             }
             else {
                 let dealer = players.first(where: { player in
-                    player.is_dealer
+                    player.is_dealer!
                 })
-                if playerInfo!.is_dealer
+                if playerInfo!.is_dealer!
                        /* or if player is "to the left" of the dealer */
-                    || (playerInfo!.player_num + 1) % gameInfo!.num_players == dealer!.player_num {
+                    || (playerInfo!.player_num! + 1) % gameInfo!.num_players == dealer!.player_num! {
                     for _ in 1...4 {
                         guard gameInfo!.cards != [] else {
                             print("cards ran out in the middle of the deal")
@@ -525,7 +529,6 @@ import FirebaseFirestoreSwift
         default:
             return
         }
-        
         updatePlayer(newState: ["cards_in_hand": cardsInHand])
         await updateGame(newState: ["cards": gameInfo!.cards])
         cardsInHand_binding.wrappedValue = cardsInHand
