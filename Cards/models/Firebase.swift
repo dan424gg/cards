@@ -516,7 +516,7 @@ import FirebaseFirestoreSwift
                         cardsInHand.append(gameInfo!.cards.popLast()!)
                     }
                 } else {
-                    for _ in 0...5 {
+                    for _ in 1...5 {
                         guard gameInfo!.cards != [] else {
                             print("cards ran out in the middle of the deal")
                             return
