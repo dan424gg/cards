@@ -28,6 +28,21 @@ final class CardsUITests: XCTestCase {
     func testExample() throws {
         // UI tests must launch the application that they test.
         
+        let startingApp = XCUIApplication()
+        startingApp.launch()
+        startingApp.launchArguments = ["testMode"]
+        startingApp.buttons["Cribbage"].tap()
+        XCTAssert(startingApp.buttons["Start a new game"].exists)
+        XCTAssert(startingApp.buttons["Join an existing game"].exists)
+        
+        startingApp.buttons["Start a new game"].tap()
+        XCTAssert(startingApp.staticTexts["Please enter your name (or anything)!"].exists)
+        startingApp.textFields["Full Name"].tap()
+        startingApp.typeText("Test Player 1")
+        startingApp.buttons["Submit"].tap()
+        XCTAssert(startingApp.staticTexts["Hi Test Player 1!"].exists)
+
+        
         let app = XCUIApplication()
         app.launch()
         app.launchArguments = ["testMode"]
@@ -41,9 +56,9 @@ final class CardsUITests: XCTestCase {
         app.textFields["Group ID"].tap()
         app.typeText("1234")
         app.textFields["Full Name"].tap()
-        app.typeText("Test Player")
+        app.typeText("Test Player 2")
         app.buttons["Submit"].tap()
-        XCTAssert(app.staticTexts["Hi Test Player!"].exists)
+        XCTAssert(app.staticTexts["Hi Test Player 2!"].exists)
         
         let isEnabled = NSPredicate(format: "isEnabled == true")
         let secondPlayButton = app.buttons["Play!"]

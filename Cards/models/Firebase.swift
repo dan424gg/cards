@@ -368,12 +368,21 @@ import FirebaseFirestoreSwift
     
     func startGameCollection(fullName: String, gameName: String, testGroupId: Int? = nil) async {
         var groupId = 0
-        if testGroupId == nil {
+
+        let testMode =  ProcessInfo.processInfo.arguments.contains("testMode")
+        if testMode {
+            do {
+                try await Firestore.firestore().collection("games").document("1234").delete()
+                groupId = 1234
+            } catch {
+                // something
+            }
+        } else if testGroupId != nil {
+            groupId = testGroupId!
+        } else {
             repeat {
                 groupId = Int.random(in: 10000..<99999)
             } while (await checkValidId(id: groupId))
-        } else {
-            groupId = testGroupId!
         }
         
         docRef = db.collection("games").document(String(groupId))
@@ -400,14 +409,6 @@ import FirebaseFirestoreSwift
     }
     
     func joinGameCollection(fullName: String, id: Int, gameName: String) async {
-        let testMode =  ProcessInfo.processInfo.arguments.contains("testMode")
-        if testMode {
-            do {
-                try await Firestore.firestore().collection("games").document("1234").collection("teams").document("2").delete()
-            } catch {
-                // something
-            }
-        }
         docRef = db.collection("games").document(String(id))
 
         do {

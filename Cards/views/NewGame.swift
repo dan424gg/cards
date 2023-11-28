@@ -24,12 +24,14 @@ struct NewGame: View {
                 .border(.blue)
                 .padding([.leading, .trailing], 48)
             
-            NavigationLink {
-                LoadingScreen(fullName: fullName, gameName: gameName)
-            } label: {
-                Text("Submit")
+            NavigationStack {
+                NavigationLink {
+                    LoadingScreen(fullName: fullName, gameName: gameName)
+                } label: {
+                    Text("Submit")
+                }
+                .disabled(fullName == "")
             }
-            .disabled(fullName == "")
         }
     }
 }

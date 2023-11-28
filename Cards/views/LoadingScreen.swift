@@ -64,22 +64,14 @@ struct LoadingScreen: View {
 func equalNumOfPlayersOnTeam(players: [PlayerInformation]) -> Bool {
     if players.count < 2 {
         return false
-    }
-    
-    var teamDict = [String : Int]()
-    
-    for player in players {
-        teamDict.updateValue(((teamDict["\(player.team_num)"] ?? 0) + 1), forKey: "\(player.team_num)")
-    }
-
-    let numPlayers = teamDict.popFirst()?.value
-    for num in teamDict.values {
-        if num != numPlayers! {
-            return false
+    } else {
+        var numOfPlayers = [0,0,0]
+        for player in players {
+            numOfPlayers[player.team_num! - 1] += 1
         }
+        // if third team has no players, or the count is equal to another team
+        return numOfPlayers[0] == numOfPlayers[1] && (numOfPlayers[2] == 0 || numOfPlayers[0] == numOfPlayers[2])
     }
-    
-    return true
 }
 
 struct LoadingScreen_Previews: PreviewProvider {

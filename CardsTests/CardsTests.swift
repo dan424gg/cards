@@ -137,14 +137,21 @@ final class LoadingScreenTests: XCTestCase {
         playerList.append(PlayerInformation(uid: "1", team_num: 1))
         XCTAssertFalse(equalNumOfPlayersOnTeam(players: playerList))
 
-        playerList.append(PlayerInformation(uid: "2", team_num: 1))
+        playerList.append(PlayerInformation(uid: "2", team_num: 2))
         XCTAssertTrue(equalNumOfPlayersOnTeam(players: playerList))
 
-        playerList.append(PlayerInformation(uid: "3", team_num: 2))
+        playerList.append(PlayerInformation(uid: "3", team_num: 1))
         XCTAssertFalse(equalNumOfPlayersOnTeam(players: playerList))
         
         playerList.append(PlayerInformation(uid: "4", team_num: 2))
         XCTAssertTrue(equalNumOfPlayersOnTeam(players: playerList))
+        
+        playerList.append(PlayerInformation(uid: "5", team_num: 3))
+        XCTAssertFalse(equalNumOfPlayersOnTeam(players: playerList))
+        
+        playerList.append(PlayerInformation(uid: "6", team_num: 3))
+        XCTAssertTrue(equalNumOfPlayersOnTeam(players: playerList))
+
     }
 }
 
