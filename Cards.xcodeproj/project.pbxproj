@@ -19,6 +19,8 @@
 		1E4CC8F82AFB4A3500ECC77B /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4CC8F72AFB4A3500ECC77B /* GameView.swift */; };
 		1E8D31A82B05644300FC9C68 /* DeckOfCardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8D31A72B05644300FC9C68 /* DeckOfCardsView.swift */; };
 		1E939CFD2AE3606D00D64551 /* GameInformation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E939CFC2AE3606D00D64551 /* GameInformation.swift */; };
+		1E9B66EC2B16ACEB00CA1D22 /* FirebaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9B66EB2B16ACEB00CA1D22 /* FirebaseTests.swift */; };
+		1E9B66EE2B16ADBE00CA1D22 /* DealTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9B66ED2B16ADBE00CA1D22 /* DealTests.swift */; };
 		1E9C48F42AE7A4A3008C518D /* SwiftUISnackbar in Frameworks */ = {isa = PBXBuildFile; productRef = 1E9C48F32AE7A4A3008C518D /* SwiftUISnackbar */; };
 		1E9C48F62AE7B3F3008C518D /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9C48F52AE7B3F3008C518D /* CardView.swift */; };
 		1EA245802AED6F71003B0943 /* TurnOneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA2457F2AED6F71003B0943 /* TurnOneView.swift */; };
@@ -127,6 +129,8 @@
 		1E4CC8F72AFB4A3500ECC77B /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		1E8D31A72B05644300FC9C68 /* DeckOfCardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckOfCardsView.swift; sourceTree = "<group>"; };
 		1E939CFC2AE3606D00D64551 /* GameInformation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameInformation.swift; sourceTree = "<group>"; };
+		1E9B66EB2B16ACEB00CA1D22 /* FirebaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseTests.swift; sourceTree = "<group>"; };
+		1E9B66ED2B16ADBE00CA1D22 /* DealTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DealTests.swift; sourceTree = "<group>"; };
 		1E9C48F52AE7B3F3008C518D /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		1EA2457F2AED6F71003B0943 /* TurnOneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnOneView.swift; sourceTree = "<group>"; };
 		1EA245812AED70B3003B0943 /* CardInHandArea.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardInHandArea.swift; sourceTree = "<group>"; };
@@ -284,6 +288,8 @@
 			isa = PBXGroup;
 			children = (
 				1EBED91E2AD7BC01008B85EE /* CardsTests.swift */,
+				1E9B66EB2B16ACEB00CA1D22 /* FirebaseTests.swift */,
+				1E9B66ED2B16ADBE00CA1D22 /* DealTests.swift */,
 			);
 			path = CardsTests;
 			sourceTree = "<group>";
@@ -605,7 +611,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E9B66EC2B16ACEB00CA1D22 /* FirebaseTests.swift in Sources */,
 				1EBED91F2AD7BC01008B85EE /* CardsTests.swift in Sources */,
+				1E9B66EE2B16ADBE00CA1D22 /* DealTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
