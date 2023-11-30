@@ -19,8 +19,10 @@ struct GameStartButton: View {
             }
             .buttonStyle(.borderedProminent)
             .simultaneousGesture(TapGesture().onEnded {
-                if self.firebaseHelper.playerInfo != nil && self.firebaseHelper.playerInfo!.is_lead {
-                    self.firebaseHelper.updateGame(newState: ["is_ready": true])
+                if self.firebaseHelper.playerInfo != nil && self.firebaseHelper.playerInfo!.is_lead! {
+                    Task {
+                        await self.firebaseHelper.updateGame(newState: ["is_ready": true])
+                    }
                 }
             })
         }

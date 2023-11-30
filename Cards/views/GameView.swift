@@ -35,7 +35,7 @@ struct GameView: View {
                 }
                 
                 // "table"
-                Table()
+                PlayingTable()
                     .stroke(Color.gray.opacity(0.5))
                     .aspectRatio(1.15, contentMode: .fit)
                     .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 1.5 )
@@ -60,7 +60,7 @@ struct GameView: View {
                             .onAppear(perform: {
                                 cardsDragged = []
                                 if firebaseHelper.playerInfo != nil && firebaseHelper.playerInfo!.cards_in_hand != [] {
-                                    cardsInHand = firebaseHelper.playerInfo!.cards_in_hand
+                                    cardsInHand = firebaseHelper.playerInfo!.cards_in_hand!
                                 } else {
                                     cardsInHand = [CardItem(id: 39, value: "A", suit: "club"), CardItem(id: 40, value: "2", suit: "club"), CardItem(id: 26, value: "A", suit: "diamond"), CardItem(id: 27, value: "2", suit: "diamond")]
                                 }
@@ -74,7 +74,7 @@ struct GameView: View {
                     .onAppear(perform: {
                         cardsDragged = []
                         if firebaseHelper.playerInfo != nil && firebaseHelper.playerInfo!.cards_in_hand != [] {
-                            cardsInHand = firebaseHelper.playerInfo!.cards_in_hand
+                            cardsInHand = firebaseHelper.playerInfo!.cards_in_hand!
                         } else {
                             cardsInHand = [CardItem(id: 39, value: "A", suit: "club"), CardItem(id: 40, value: "2", suit: "club"), CardItem(id: 26, value: "A", suit: "diamond"), CardItem(id: 27, value: "2", suit: "diamond")]
                         }
@@ -88,7 +88,7 @@ struct GameView: View {
     }
 }
 
-struct Table: Shape {
+struct PlayingTable: Shape {
     func path(in rect: CGRect) -> Path {
         let r = rect.height / 2
         let center = CGPoint(x: rect.midX, y: rect.midY)

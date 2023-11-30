@@ -51,6 +51,17 @@
                ReferencedContainer = "container:Cards.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "1E114CC42B151B8B00503368"
+               BuildableName = "EarlGreyTests.xctest"
+               BlueprintName = "EarlGreyTests"
+               ReferencedContainer = "container:Cards.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

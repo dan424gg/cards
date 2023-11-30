@@ -58,14 +58,18 @@ struct ExistingGame: View {
             .textFieldStyle(RoundedBorderTextFieldStyle())
             .border(.blue)
             
-            
-            NavigationLink {
-                LoadingScreen(groupId: groupId, fullName: fullName, gameName: gameName)
-            } label: {
-                Text("Submit")
-                    .buttonStyle(.borderedProminent)
+            NavigationStack {
+                NavigationLink {
+                    LoadingScreen(groupId: groupId, fullName: fullName, gameName: gameName)
+                } label: {
+                    Text("Submit")
+                        .buttonStyle(.borderedProminent)
+                }
+                .disabled(notValidGroupId || fullName == "")
             }
-            .disabled(notValidGroupId || fullName == "")
+//            .navigationDestination(for: PlayerInformation.self) {_ in 
+//                LoadingScreen(groupId: groupId, fullName: fullName, gameName: gameName)
+//            }
         }
         .multilineTextAlignment(.center)
         .padding([.leading, .trailing], 48)

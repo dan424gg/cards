@@ -10,12 +10,9 @@ import SwiftUI
 struct Cribbage: View {
     var teams =  [TeamInformation.team_one, TeamInformation.team_two]
     var players = [PlayerInformation.player_one, PlayerInformation.player_two]
-    var game = GameInformation(group_id: 1000, is_ready: false, is_won: false, num_teams: 2, turn: 2)
-    
-    var controller = CribbageController()
+    var game = GameInformation(group_id: 1000, is_ready: false, is_won: false, num_teams: 2, turn: 1)
     
     @EnvironmentObject var firebaseHelper: FirebaseHelper
-    @State var isUiDisabled: Bool = false
     @Binding var cardsDragged: [CardItem]
     @Binding var cardsInHand: [CardItem]
     
@@ -29,14 +26,22 @@ struct Cribbage: View {
                         .foregroundStyle(.gray.opacity(0.7))
                     Spacer().frame(height: 375)
                     TurnOneView(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
-                        .disabled(isUiDisabled)
+                        .onAppear(perform: {
+                            guard firebaseHelper.gameInfo != nil else {
+                                return
+                            }
+                            if firebaseHelper.playerInfo!.is_lead! {
+                                Task {
+                                    await firebaseHelper.updateGame(newState: ["cards": GameInformation().cards.shuffled()])
+                                }
+                            }
+                        })
                 case 2:
                     Text("The Play")
                         .font(.title3)
                         .foregroundStyle(.gray.opacity(0.7))
                     Spacer().frame(height: 375)
                     TurnTwoView(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
-                        .disabled(isUiDisabled)
                 case 3:
                     Text("The Show")
                         .font(.title3)
@@ -55,12 +60,6 @@ struct Cribbage: View {
                         .foregroundStyle(.gray.opacity(0.7))
                 }
             }
-            
-            Button(isUiDisabled ? "Not Ready!" : "Ready!") {
-                isUiDisabled = !isUiDisabled
-                
-            }
-            .buttonStyle(.bordered)
         }
     }
 }
