@@ -252,6 +252,13 @@ import FirebaseFirestoreSwift
                 
                 do {
                     self.gameInfo = try snapshot!.data(as: GameInformation.self)
+                    if self.gameInfo!.num_players == 4 {
+                        if self.playerInfo!.team_num == 3 {
+                            Task {
+                                await self.changeTeam(newTeamNum: 2)
+                            }
+                        }
+                    }
                 } catch {
                     print("couldn't add a gameInfo listener")
                     print(error)
@@ -308,6 +315,7 @@ import FirebaseFirestoreSwift
                                     team.team_num == removedTeamData.team_num
                                 }
                                 
+                                _ = self.teamListeners.removeListener(uid: "\(self.teams[loc!].team_num)")
                                 self.teams.remove(at: loc!)
                             }
                         }
@@ -547,6 +555,40 @@ import FirebaseFirestoreSwift
         cardsInHand_binding.wrappedValue = cardsInHand
     }
 
+    
+    func joinGameCollection(fullName: String, id: Int, gameName: String) async {
+        docRef = db.collection("games").document(String(id))
+
+        do {
+            gameInfo = try await docRef!.getDocument().data(as: GameInformation.self)
+            
+            let numPlayers = gameInfo!.num_players + 1
+            let numTeams = (numPlayers % 3 == 0 || numPlayers == 5) ? 3 : 2
+
+            updateGame(newState: [
+                "num_teams": numTeams,
+                "num_players": numPlayers
+            ])
+            
+            let teamNum = ((numPlayers - 1) % 3) + 1
+            playerInfo = PlayerInformation(name: fullName, uid: UUID().uuidString, team_num: teamNum)
+
+            if await !checkTeamExists(teamNum: teamNum) {
+                teamInfo = TeamInformation(team_num: teamNum)
+                try docRef!.collection("teams").document("\(teamNum)").setData(from: teamInfo)
+                try await docRef!.collection("teams").document("\(teamNum)").collection("players").document("placeholder").setData([
+                    "This": "serves as a placeholder so this collection doesn't get deleted when there aren't any players on this team, temporarily"
+                ])
+            }
+            
+            try docRef!.collection("teams").document("\(teamNum)").collection("players").document(playerInfo!.uid).setData(from: playerInfo)
+
+            addTeamPlayerNameListener()
+            addGameInfoListener()
+        } catch {
+            // do something
+        }
+    }
     
     func checkValidId(id: Int) async ->  Bool {
         do {
