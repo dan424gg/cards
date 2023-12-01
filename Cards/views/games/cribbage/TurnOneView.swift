@@ -12,6 +12,7 @@ struct TurnOneView: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @Binding var cardsDragged: [CardItem]
     @Binding var cardsInHand: [CardItem]
+    @State var cardIsDisabled = false
     
     @State private var firstDropAreaBorderColor: Color = .clear
     @State private var firstDropAreaBorderWidth: CGFloat = 1.0
@@ -22,7 +23,7 @@ struct TurnOneView: View {
         VStack {
             HStack(spacing: 10) {
                 if cardsDragged.count > 0 {
-                    CardView(cardItem: cardsDragged[0])
+                    CardView(cardItem: cardsDragged[0], cardIsDisabled: $cardIsDisabled)
                 } else {
                     CardPlaceHolder()
                         .border(firstDropAreaBorderColor, width: firstDropAreaBorderWidth)
@@ -40,9 +41,9 @@ struct TurnOneView: View {
                         }
                 }
                 
-                if firebaseHelper.playerInfo?.cards_in_hand!.count ?? 6 == 6 {
+                if firebaseHelper.gameInfo?.num_teams ?? 2 == 2 {
                     if cardsDragged.count > 1 {
-                        CardView(cardItem: cardsDragged[1])
+                        CardView(cardItem: cardsDragged[1], cardIsDisabled: $cardIsDisabled)
                     } else {
                         CardPlaceHolder()
                             .border(secondDropAreaBorderColor, width: secondDropAreaBorderWidth)
@@ -69,6 +70,8 @@ struct TurnOneView: View {
             }
         })
         .onChange(of: cardsDragged) {
+            cardIsDisabled = true
+            
             if playerReady() {
                 firebaseHelper.updatePlayer(newState: [
                     "cards_in_hand": cardsInHand
@@ -77,6 +80,7 @@ struct TurnOneView: View {
                 let teamWithCrib = firebaseHelper.teams.first(where: { team in
                     team.has_crib
                 })
+                
                 firebaseHelper.updateTeam(newState: ["crib": cardsDragged], team: teamWithCrib?.team_num)
             }
         }

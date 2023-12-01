@@ -19,7 +19,7 @@ struct CardInHandArea: View {
             if cardsInHand != [] {
                 ZStack {
                     ForEach(Array(cardsInHand.enumerated()), id: \.offset) { (index, card) in
-                        CardView(cardItem: card/*, isDisabled: $isDisabled*/)
+                        CardView(cardItem: card, cardIsDisabled: .constant(false))
                             .offset(y: -50)
                             .rotationEffect(.degrees(-Double((cardsInHand.count - 1) * 6) + Double(index * 12)))
                     }

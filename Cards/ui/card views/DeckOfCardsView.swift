@@ -24,7 +24,7 @@ struct DeckOfCardsView: View {
                 if game.turn > 1 {
                     HStack(spacing: -40) {
                         ForEach(Array(teamWithCrib?.crib.enumerated() ?? tempTeam.crib.enumerated()), id: \.offset) { (index, card) in
-                            CardView(cardItem: card, backside: true)
+                            CardView(cardItem: card, cardIsDisabled: .constant(true), backside: true)
                                 .offset(y: -Double.random(in: -5.0...5.0) / 5.0)
                                 .rotationEffect(.degrees(Double.random(in: -5.0...5.0)))
                                 .disabled(true)
@@ -35,14 +35,13 @@ struct DeckOfCardsView: View {
                 ZStack {
                     ForEach(Array(firebaseHelper.gameInfo?.cards.shuffled().enumerated() ?? game.cards.shuffled().enumerated()), id: \.offset) { (index, card) in
                         if (index == (game.cards.endIndex - 1)) && (game.turn > 1) {
-                            CardView(cardItem: card, backside: false)
+                            CardView(cardItem: card, cardIsDisabled: .constant(true), backside: false)
                                 .offset(y: -Double.random(in: -5.0...5.0) / 5.0)
                                 .rotationEffect(.degrees(Double.random(in: -5.0...5.0)))
                         } else {
-                            CardView(cardItem: card, backside: true)
-                                .offset(y: -Double.random(in: -5.0...5.0) / 5.0)
-                                .rotationEffect(.degrees(Double.random(in: -5.0...5.0)))
-                                .disabled(true)
+                            CardView(cardItem: card, cardIsDisabled: .constant(true), backside: true)
+                                    .offset(y: -Double.random(in: -5.0...5.0) / 5.0)
+                                    .rotationEffect(.degrees(Double.random(in: -5.0...5.0)))
                         }
                     }
                 }
