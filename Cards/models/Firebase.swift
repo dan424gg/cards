@@ -252,6 +252,13 @@ import FirebaseFirestoreSwift
                 
                 do {
                     self.gameInfo = try snapshot!.data(as: GameInformation.self)
+                    if self.gameInfo!.num_players == 4 {
+                        if self.playerInfo!.team_num == 3 {
+                            Task {
+                                await self.changeTeam(newTeamNum: 2)
+                            }
+                        }
+                    }
                 } catch {
                     print("couldn't add a gameInfo listener")
                     print(error)
@@ -308,6 +315,7 @@ import FirebaseFirestoreSwift
                                     team.team_num == removedTeamData.team_num
                                 }
                                 
+                                _ = self.teamListeners.removeListener(uid: "\(self.teams[loc!].team_num)")
                                 self.teams.remove(at: loc!)
                             }
                         }
@@ -375,7 +383,6 @@ import FirebaseFirestoreSwift
     
     func startGameCollection(fullName: String, gameName: String, testGroupId: Int? = nil) async {
         var groupId = 0
-
         let testMode =  ProcessInfo.processInfo.arguments.contains("testMode")
         if testMode {
             do {

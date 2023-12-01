@@ -23,6 +23,9 @@ final class CardsUITests: XCTestCase {
 
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
+        
+        // delete player created in test
+//        Firestore.firestore().collection("games").document("1234").collection("teams").document("2").delete()
     }
 
     func testExample() throws {
