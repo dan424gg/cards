@@ -66,13 +66,13 @@ struct TurnOneView: View {
         .frame(height: 100)
         .onAppear(perform: {
             Task {
-                await firebaseHelper.dealCards(cardsInHand_binding: $cardsInHand)
+                await firebaseHelper.shuffleAndDealCards(cardsInHand_binding: $cardsInHand)
             }
         })
         .onChange(of: cardsDragged) {
-            cardIsDisabled = true
-            
             if playerReady() {
+                cardIsDisabled = true
+
                 firebaseHelper.updatePlayer(newState: [
                     "cards_in_hand": cardsInHand
                 ])

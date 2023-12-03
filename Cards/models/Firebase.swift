@@ -403,7 +403,7 @@ import FirebaseFirestoreSwift
         docRef = db.collection("games").document(String(groupId))
         
         do {
-            gameInfo = GameInformation(group_id: groupId, is_ready: true, num_teams: 1, turn: 0, game_name: gameName, num_players: 1)
+            gameInfo = GameInformation(group_id: groupId, is_ready: true, num_teams: 1, turn: 1, game_name: gameName, num_players: 1)
             try docRef!.setData(from: gameInfo)
                         
             teamInfo = TeamInformation(team_num: 1)
@@ -479,15 +479,16 @@ import FirebaseFirestoreSwift
         }
     }
     
-    func dealCards(cardsInHand_binding: Binding<[CardItem]>) async {
-        var cardsInHand = cardsInHand_binding.wrappedValue
-        
+    func shuffleAndDealCards(cardsInHand_binding: Binding<[CardItem]>) async {
         guard gameInfo != nil else {
             return
         }
+        var cardsInHand = cardsInHand_binding.wrappedValue
+        
+        await updateGame(newState: ["cards": GameInformation().cards.shuffled().shuffled()])
         
         switch (gameInfo?.num_teams ?? 2) {
-        case 2:
+        case 1, 2:
             if gameInfo?.num_players == 2 {
                 for _ in 1...6 {
                     guard gameInfo!.cards != [] else {
@@ -526,7 +527,7 @@ import FirebaseFirestoreSwift
                     player.is_dealer!
                 })
                 if playerInfo!.is_dealer!
-                       /* or if player is "to the left" of the dealer */
+                    /* or if player is "to the left" of the dealer */
                     || (playerInfo!.player_num! + 1) % gameInfo!.num_players == dealer!.player_num! {
                     for _ in 1...4 {
                         guard gameInfo!.cards != [] else {
@@ -550,6 +551,7 @@ import FirebaseFirestoreSwift
         default:
             return
         }
+        
         updatePlayer(newState: ["cards_in_hand": cardsInHand])
         await updateGame(newState: ["cards": gameInfo!.cards])
         cardsInHand_binding.wrappedValue = cardsInHand

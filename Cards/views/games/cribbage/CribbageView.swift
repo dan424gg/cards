@@ -26,16 +26,6 @@ struct Cribbage: View {
                         .foregroundStyle(.gray.opacity(0.7))
                     Spacer().frame(height: 375)
                     TurnOneView(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
-                        .onAppear(perform: {
-                            guard firebaseHelper.gameInfo != nil else {
-                                return
-                            }
-                            if firebaseHelper.playerInfo!.is_lead! {
-                                Task {
-                                    await firebaseHelper.updateGame(newState: ["cards": GameInformation().cards.shuffled()])
-                                }
-                            }
-                        })
                 case 2:
                     Text("The Play")
                         .font(.title3)

@@ -7,21 +7,34 @@
 
 import SwiftUI
 
+extension Animation {
+    static func slide(index: Int) -> Animation {
+        Animation.easeInOut(duration: 2.25)
+            .delay(1.0 * Double(index))
+    }
+    static func ripple(index: Int) -> Animation {
+        Animation.spring(dampingFraction: 0.5)
+            .speed(2)
+            .delay(0.03 * Double(index))
+    }
+}
+
 struct CardInHandArea: View {
-//    @Binding var isDisabled: Bool
+    @EnvironmentObject var firebaseHelper: FirebaseHelper
     @Binding var cardsDragged: [CardItem]
     @Binding var cardsInHand: [CardItem]
     
+    @State var doSomething: Bool = true
+    
     var body: some View {
         VStack {
-//            Text("Cards in hand")
-//                .font(.subheadline)
-            if cardsInHand != [] {
+            if doSomething {
                 ZStack {
                     ForEach(Array(cardsInHand.enumerated()), id: \.offset) { (index, card) in
                         CardView(cardItem: card, cardIsDisabled: .constant(false))
                             .offset(y: -50)
                             .rotationEffect(.degrees(-Double((cardsInHand.count - 1) * 6) + Double(index * 12)))
+                            .animation(.slide(index: index), value: doSomething)
                     }
                 }
                 .offset(y: 50)
@@ -36,10 +49,15 @@ struct CardInHandArea: View {
                 }
                 .padding()
             }
+            
+            Button("Do something") {
+                doSomething.toggle()
+            }
         }
     }
 }
 
 #Preview {
-    CardInHandArea(/*isDisabled: .constant(false), */cardsDragged: .constant([]), cardsInHand: .constant([CardItem(id: 39, value: "A", suit: "club"), CardItem(id: 40, value: "2", suit: "club"), CardItem(id: 26, value: "A", suit: "diamond"), CardItem(id: 27, value: "2", suit: "diamond"), CardItem(id: 39, value: "A", suit: "club"), CardItem(id: 40, value: "2", suit: "club"), CardItem(id: 26, value: "A", suit: "diamond"), CardItem(id: 27, value: "2", suit: "diamond")]))
+    CardInHandArea(cardsDragged: .constant([]), cardsInHand: .constant([CardItem(id: 39, value: "A", suit: "club"), CardItem(id: 40, value: "2", suit: "club"), CardItem(id: 26, value: "A", suit: "diamond"), CardItem(id: 27, value: "2", suit: "diamond"), CardItem(id: 39, value: "A", suit: "club"), CardItem(id: 40, value: "2", suit: "club"), CardItem(id: 26, value: "A", suit: "diamond"), CardItem(id: 27, value: "2", suit: "diamond")]))
+        .environmentObject(FirebaseHelper())
 }
