@@ -19,19 +19,17 @@ struct NewGame: View {
                 "Full Name",
                 text: $fullName
             )
-                .multilineTextAlignment(.center)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .border(.blue)
-                .padding([.leading, .trailing], 48)
+            .multilineTextAlignment(.center)
+            .textFieldStyle(RoundedBorderTextFieldStyle())
+            .border(.blue)
+            .padding([.leading, .trailing], 48)
             
-            NavigationStack {
-                NavigationLink {
-                    LoadingScreen(fullName: fullName, gameName: gameName)
-                } label: {
-                    Text("Submit")
-                }
-                .disabled(fullName == "")
+            NavigationLink {
+                LoadingScreen(fullName: fullName, gameName: gameName)
+            } label: {
+                Text("Submit")
             }
+            .disabled(fullName == "")
         }
     }
 }
