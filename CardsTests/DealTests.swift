@@ -109,7 +109,7 @@ final class DealTests: XCTestCase {
     }
     
     @MainActor func testSixPlayerDeal() async {
-        var playerOne = FirebaseHelper()
+        let playerOne = FirebaseHelper()
         var randId = 0
         repeat {
             randId = Int.random(in: 10000..<99999)
@@ -119,19 +119,19 @@ final class DealTests: XCTestCase {
         playerOne.updatePlayer(newState: ["is_dealer": true])
         playerOne.updateTeam(newState: ["has_crib": true])
         
-        var playerTwo = FirebaseHelper()
+        let playerTwo = FirebaseHelper()
         await playerTwo.joinGameCollection(fullName: "2", id: randId, gameName: "Cribbage")
         
-        var playerThree = FirebaseHelper()
+        let playerThree = FirebaseHelper()
         await playerThree.joinGameCollection(fullName: "3", id: randId, gameName: "Cribbage")
         
-        var playerFour = FirebaseHelper()
+        let playerFour = FirebaseHelper()
         await playerFour.joinGameCollection(fullName: "4", id: randId, gameName: "Cribbage")
         
-        var playerFive = FirebaseHelper()
+        let playerFive = FirebaseHelper()
         await playerFive.joinGameCollection(fullName: "5", id: randId, gameName: "Cribbage")
         
-        var playerSix = FirebaseHelper()
+        let playerSix = FirebaseHelper()
         await playerSix.joinGameCollection(fullName: "6", id: randId, gameName: "Cribbage")
         
         var cardsInHand_Binding: [CardItem] = []

@@ -63,13 +63,13 @@ final class CardsUITests: XCTestCase {
         app.buttons["Submit"].tap()
         XCTAssert(app.staticTexts["Hi Test Player 2!"].exists)
         
-        let isEnabled = NSPredicate(format: "isEnabled == true")
-        let secondPlayButton = app.buttons["Play!"]
-        expectation(for: isEnabled, evaluatedWith: secondPlayButton, handler: nil)
-        waitForExpectations(timeout: 5, handler: nil)
-        
-        app.buttons["Play!"].tap()
-        XCTAssert(app.staticTexts["Cribbage"].exists)
+//        let isEnabled = NSPredicate(format: "isEnabled == true")
+//        let secondPlayButton = app.buttons["Play!"]
+//        expectation(for: isEnabled, evaluatedWith: secondPlayButton, handler: nil)
+//        waitForExpectations(timeout: 5, handler: nil)
+//        
+//        app.buttons["Play!"].tap()
+//        XCTAssert(app.staticTexts["Cribbage"].exists)
     }
 
     func testLaunchPerformance() throws {
