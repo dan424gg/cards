@@ -383,6 +383,7 @@ import FirebaseFirestoreSwift
     
     func startGameCollection(fullName: String, gameName: String, testGroupId: Int? = nil) async {
         var groupId = 0
+
         let testMode =  ProcessInfo.processInfo.arguments.contains("testMode")
         if testMode {
             do {
@@ -477,16 +478,18 @@ import FirebaseFirestoreSwift
             print(error)
         }
     }
+
     
-    func dealCards(cardsInHand_binding: Binding<[CardItem]>) async {
-        var cardsInHand = cardsInHand_binding.wrappedValue
-        
+    func shuffleAndDealCards(cardsInHand_binding: Binding<[CardItem]>) async {
         guard gameInfo != nil else {
             return
         }
+        var cardsInHand = cardsInHand_binding.wrappedValue
+        
+        await updateGame(newState: ["cards": GameInformation().cards.shuffled().shuffled()])
         
         switch (gameInfo?.num_teams ?? 2) {
-        case 2:
+        case 1, 2:
             if gameInfo?.num_players == 2 {
                 for _ in 1...6 {
                     guard gameInfo!.cards != [] else {
@@ -525,7 +528,7 @@ import FirebaseFirestoreSwift
                     player.is_dealer!
                 })
                 if playerInfo!.is_dealer!
-                       /* or if player is "to the left" of the dealer */
+                    /* or if player is "to the left" of the dealer */
                     || (playerInfo!.player_num! + 1) % gameInfo!.num_players == dealer!.player_num! {
                     for _ in 1...4 {
                         guard gameInfo!.cards != [] else {
@@ -549,11 +552,11 @@ import FirebaseFirestoreSwift
         default:
             return
         }
+        
         updatePlayer(newState: ["cards_in_hand": cardsInHand])
         await updateGame(newState: ["cards": gameInfo!.cards])
         cardsInHand_binding.wrappedValue = cardsInHand
     }
-
     
     func checkValidId(id: Int) async ->  Bool {
         do {

@@ -15,6 +15,7 @@
 		1E20F1792AF3524100F2B368 /* CardPlaceHolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E20F1782AF3524100F2B368 /* CardPlaceHolder.swift */; };
 		1E25B4A02AD7CF8B008DFACE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1E25B49F2AD7CF8B008DFACE /* GoogleService-Info.plist */; };
 		1E25B4A42ADC528F008DFACE /* NewGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E25B4A32ADC528F008DFACE /* NewGame.swift */; };
+		1E265EEF2B1EB47D0040E8A9 /* GameHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E265EEE2B1EB47D0040E8A9 /* GameHeader.swift */; };
 		1E4338E72B0D460900E212CD /* ListenerList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4338E62B0D460900E212CD /* ListenerList.swift */; };
 		1E4CC8F82AFB4A3500ECC77B /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4CC8F72AFB4A3500ECC77B /* GameView.swift */; };
 		1E8D31A82B05644300FC9C68 /* DeckOfCardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8D31A72B05644300FC9C68 /* DeckOfCardsView.swift */; };
@@ -125,6 +126,7 @@
 		1E20F1782AF3524100F2B368 /* CardPlaceHolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardPlaceHolder.swift; sourceTree = "<group>"; };
 		1E25B49F2AD7CF8B008DFACE /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
 		1E25B4A32ADC528F008DFACE /* NewGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewGame.swift; sourceTree = "<group>"; };
+		1E265EEE2B1EB47D0040E8A9 /* GameHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameHeader.swift; sourceTree = "<group>"; };
 		1E4338E62B0D460900E212CD /* ListenerList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListenerList.swift; sourceTree = "<group>"; };
 		1E4CC8F72AFB4A3500ECC77B /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		1E8D31A72B05644300FC9C68 /* DeckOfCardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckOfCardsView.swift; sourceTree = "<group>"; };
@@ -313,6 +315,7 @@
 				1E20F1742AF33EA300F2B368 /* DiagonalLines.swift */,
 				1E06C9282B003CB300195F6D /* CribbageBoard.swift */,
 				1ED272512B02A49C00B21600 /* NamesAroundTable.swift */,
+				1E265EEE2B1EB47D0040E8A9 /* GameHeader.swift */,
 			);
 			path = ui;
 			sourceTree = "<group>";
@@ -581,6 +584,7 @@
 			files = (
 				1E06C9292B003CB300195F6D /* CribbageBoard.swift in Sources */,
 				1E25B4A42ADC528F008DFACE /* NewGame.swift in Sources */,
+				1E265EEF2B1EB47D0040E8A9 /* GameHeader.swift in Sources */,
 				1E939CFD2AE3606D00D64551 /* GameInformation.swift in Sources */,
 				1E20F1792AF3524100F2B368 /* CardPlaceHolder.swift in Sources */,
 				1EFA9F5B2AF584CC00FA092C /* TurnTwoView.swift in Sources */,

@@ -189,7 +189,7 @@ struct CribbageBoard: View {
         }
         .frame(width: 150, height: 65)
         .onTapGesture(perform: {
-            withAnimation {
+            withAnimation(.easeInOut) {
                 pointsShown.toggle()
             }
         })
