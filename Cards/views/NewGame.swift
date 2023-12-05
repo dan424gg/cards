@@ -19,10 +19,10 @@ struct NewGame: View {
                 "Full Name",
                 text: $fullName
             )
-                .multilineTextAlignment(.center)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .border(.blue)
-                .padding([.leading, .trailing], 48)
+            .multilineTextAlignment(.center)
+            .textFieldStyle(RoundedBorderTextFieldStyle())
+            .border(.blue)
+            .padding([.leading, .trailing], 48)
             
             NavigationStack {
                 NavigationLink {
