@@ -10,7 +10,7 @@ import SwiftUI
 
 struct LoadingScreen: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
-    @State var groupId = "Loading..."
+    @State var groupId = 0
     @State var teamNum = 1
     var fullName: String
     var gameName: String
@@ -23,54 +23,60 @@ struct LoadingScreen: View {
                         self.firebaseHelper.initFirebaseHelper()
                     }
                 Text("We're gonna start a game of \(gameName)!")
-                Text("Others can join with code: \(groupId)")
+                Text("Others can join with code: \(String(groupId))")
                     .task {
-                        if groupId == "Loading..." {
+                        if groupId == 0 {
                             await firebaseHelper.startGameCollection(fullName: fullName, gameName: gameName)
-                            groupId = "\(firebaseHelper.getGroupId())"
+                            groupId = firebaseHelper.getGroupId()
                         } else {
-                            await firebaseHelper.joinGameCollection(fullName: fullName, id: Int(groupId)!, teamNum: teamNum, gameName: gameName)
+                            await firebaseHelper.joinGameCollection(fullName: fullName, id: groupId, gameName: gameName)
                         }
                     }
                 HStack {
-                    Text("Your team:")
-                    TeamPicker(teamNum: $teamNum)
+                        Text("Want to change your team?    -->")
+                            .bold()
+                    TeamPicker()
                 }
             }
             
             VStack {
-                Text("Players:")
                 HStack {
-                    VStack{
-                        Text("Team 1:")
-                        ForEach(firebaseHelper.players, id:\.self) { player in
-                            if player.team_num == 1 {
-                                Text(player.name)
-                            }
-                        }
-                    }
-                    VStack{
-                        Text("Team 2:")
-                        ForEach(firebaseHelper.players, id:\.self) { player in
-                            if player.team_num == 2 {
-                                Text(player.name)
+                    ForEach(firebaseHelper.teams, id:\.self) { team in
+                        VStack {
+                            Text("Team \(team.team_num):")
+                            ForEach(firebaseHelper.players, id:\.self) { player in
+                                if player.team_num == team.team_num {
+                                    Text(player.name!)
+                                }
                             }
                         }
                     }
                 }
             }
             
-            VStack {
-                GameStartButton(gameName: gameName)
-                    .disabled(groupId == "Loading...")
-            }
+            GameStartButton()
+                .padding()
+                .disabled(groupId == 0 || !equalNumOfPlayersOnTeam(players: firebaseHelper.players))
         }
+    }
+}
+
+func equalNumOfPlayersOnTeam(players: [PlayerInformation]) -> Bool {
+    if players.count < 2 {
+        return false
+    } else {
+        var numOfPlayers = [0,0,0]
+        for player in players {
+            numOfPlayers[player.team_num! - 1] += 1
+        }
+        // if third team has no players, or the count is equal to another team
+        return numOfPlayers[0] == numOfPlayers[1] && (numOfPlayers[2] == 0 || numOfPlayers[0] == numOfPlayers[2])
     }
 }
 
 struct LoadingScreen_Previews: PreviewProvider {
     static var previews: some View {
-        LoadingScreen(groupId: "52112", fullName: "Daniel Wells", gameName: "Cribbage")
+        LoadingScreen(groupId: 0, fullName: "Daniel Wells", gameName: "Cribbage")
             .environmentObject(FirebaseHelper())
     }
 }

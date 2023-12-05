@@ -8,13 +8,20 @@
 
 /* Begin PBXBuildFile section */
 		1E06C9292B003CB300195F6D /* CribbageBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E06C9282B003CB300195F6D /* CribbageBoard.swift */; };
+		1E114CD02B151BE600503368 /* libTestLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E114CC02B151B3400503368 /* libTestLib.a */; };
+		1E114CD22B151E4D00503368 /* AppFramework.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1E114CBE2B151B3400503368 /* AppFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		1E114CE32B15275C00503368 /* EarlGrey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E114CE22B15275C00503368 /* EarlGrey.swift */; };
 		1E20F1752AF33EA300F2B368 /* DiagonalLines.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E20F1742AF33EA300F2B368 /* DiagonalLines.swift */; };
 		1E20F1792AF3524100F2B368 /* CardPlaceHolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E20F1782AF3524100F2B368 /* CardPlaceHolder.swift */; };
 		1E25B4A02AD7CF8B008DFACE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1E25B49F2AD7CF8B008DFACE /* GoogleService-Info.plist */; };
 		1E25B4A42ADC528F008DFACE /* NewGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E25B4A32ADC528F008DFACE /* NewGame.swift */; };
+		1E265EEF2B1EB47D0040E8A9 /* GameHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E265EEE2B1EB47D0040E8A9 /* GameHeader.swift */; };
+		1E4338E72B0D460900E212CD /* ListenerList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4338E62B0D460900E212CD /* ListenerList.swift */; };
 		1E4CC8F82AFB4A3500ECC77B /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4CC8F72AFB4A3500ECC77B /* GameView.swift */; };
 		1E8D31A82B05644300FC9C68 /* DeckOfCardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8D31A72B05644300FC9C68 /* DeckOfCardsView.swift */; };
 		1E939CFD2AE3606D00D64551 /* GameInformation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E939CFC2AE3606D00D64551 /* GameInformation.swift */; };
+		1E9B66EC2B16ACEB00CA1D22 /* FirebaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9B66EB2B16ACEB00CA1D22 /* FirebaseTests.swift */; };
+		1E9B66EE2B16ADBE00CA1D22 /* DealTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9B66ED2B16ADBE00CA1D22 /* DealTests.swift */; };
 		1E9C48F42AE7A4A3008C518D /* SwiftUISnackbar in Frameworks */ = {isa = PBXBuildFile; productRef = 1E9C48F32AE7A4A3008C518D /* SwiftUISnackbar */; };
 		1E9C48F62AE7B3F3008C518D /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9C48F52AE7B3F3008C518D /* CardView.swift */; };
 		1EA245802AED6F71003B0943 /* TurnOneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA2457F2AED6F71003B0943 /* TurnOneView.swift */; };
@@ -35,18 +42,52 @@
 		1EBED9492AD7BD88008B85EE /* CribbageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED9482AD7BD88008B85EE /* CribbageView.swift */; };
 		1EBED94C2AD7BF2C008B85EE /* Firebase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED94B2AD7BF2C008B85EE /* Firebase.swift */; };
 		1EBEF2C22AE4F579008A093B /* TeamInformation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBEF2C12AE4F579008A093B /* TeamInformation.swift */; };
-		1EC498432AF19B050047F54A /* ShowStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EC498422AF19B050047F54A /* ShowStatus.swift */; };
 		1ECBB9FC2ADE3B9B0046D4CA /* PlayerInformation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECBB9FB2ADE3B9B0046D4CA /* PlayerInformation.swift */; };
 		1ECCDABD2AE600DA00EFF167 /* GameStartButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECCDABC2AE600DA00EFF167 /* GameStartButton.swift */; };
 		1ECCDABF2AE606A800EFF167 /* TeamPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECCDABE2AE606A800EFF167 /* TeamPicker.swift */; };
 		1ED272522B02A49C00B21600 /* NamesAroundTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ED272512B02A49C00B21600 /* NamesAroundTable.swift */; };
+		1EE16CF92B10930600B35787 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 1EE16CF82B10930600B35787 /* FirebaseFirestore */; };
+		1EE16CFB2B10961100B35787 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 1EE16CFA2B10961100B35787 /* FirebaseFirestoreSwift */; };
 		1EE5F12B2AE8A5EF0089162D /* CardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE5F12A2AE8A5EF0089162D /* CardItem.swift */; };
 		1EFA9F5B2AF584CC00FA092C /* TurnTwoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFA9F5A2AF584CC00FA092C /* TurnTwoView.swift */; };
-		1EFA9F5D2AF5860000FA092C /* CribbageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFA9F5C2AF5860000FA092C /* CribbageController.swift */; };
-		1EFE00F92AF9B08F00B71623 /* Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFE00F82AF9B08F00B71623 /* Header.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		1E114CB92B151B3400503368 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1E114CB12B151B3400503368 /* EarlGrey.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FD62395120F56A9700049E81;
+			remoteInfo = CommonLib;
+		};
+		1E114CBB2B151B3400503368 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1E114CB12B151B3400503368 /* EarlGrey.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FDF9E03520F82D090005DCF2;
+			remoteInfo = UILib;
+		};
+		1E114CBD2B151B3400503368 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1E114CB12B151B3400503368 /* EarlGrey.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FD623A4920F957BE00049E81;
+			remoteInfo = AppFramework;
+		};
+		1E114CBF2B151B3400503368 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1E114CB12B151B3400503368 /* EarlGrey.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FD5048F820FB225100261CBE;
+			remoteInfo = TestLib;
+		};
+		1E114CCB2B151B8B00503368 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1EBED9022AD7BBFF008B85EE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1EBED9092AD7BBFF008B85EE;
+			remoteInfo = Cards;
+		};
 		1EBED91B2AD7BC01008B85EE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 1EBED9022AD7BBFF008B85EE /* Project object */;
@@ -63,15 +104,35 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		1E114CD12B151E1D00503368 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(TARGET_BUILD_DIR)/../../Cards.app/Frameworks";
+			dstSubfolderSpec = 0;
+			files = (
+				1E114CD22B151E4D00503368 /* AppFramework.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		1E06C9282B003CB300195F6D /* CribbageBoard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CribbageBoard.swift; sourceTree = "<group>"; };
+		1E114CB12B151B3400503368 /* EarlGrey.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EarlGrey.xcodeproj; path = ../EarlGrey/EarlGrey.xcodeproj; sourceTree = "<group>"; };
+		1E114CC52B151B8B00503368 /* EarlGreyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EarlGreyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1E114CE22B15275C00503368 /* EarlGrey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EarlGrey.swift; sourceTree = "<group>"; };
 		1E20F1742AF33EA300F2B368 /* DiagonalLines.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagonalLines.swift; sourceTree = "<group>"; };
 		1E20F1782AF3524100F2B368 /* CardPlaceHolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardPlaceHolder.swift; sourceTree = "<group>"; };
 		1E25B49F2AD7CF8B008DFACE /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
 		1E25B4A32ADC528F008DFACE /* NewGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewGame.swift; sourceTree = "<group>"; };
+		1E265EEE2B1EB47D0040E8A9 /* GameHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameHeader.swift; sourceTree = "<group>"; };
+		1E4338E62B0D460900E212CD /* ListenerList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListenerList.swift; sourceTree = "<group>"; };
 		1E4CC8F72AFB4A3500ECC77B /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		1E8D31A72B05644300FC9C68 /* DeckOfCardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckOfCardsView.swift; sourceTree = "<group>"; };
 		1E939CFC2AE3606D00D64551 /* GameInformation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameInformation.swift; sourceTree = "<group>"; };
+		1E9B66EB2B16ACEB00CA1D22 /* FirebaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseTests.swift; sourceTree = "<group>"; };
+		1E9B66ED2B16ADBE00CA1D22 /* DealTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DealTests.swift; sourceTree = "<group>"; };
 		1E9C48F52AE7B3F3008C518D /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		1EA2457F2AED6F71003B0943 /* TurnOneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnOneView.swift; sourceTree = "<group>"; };
 		1EA245812AED70B3003B0943 /* CardInHandArea.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardInHandArea.swift; sourceTree = "<group>"; };
@@ -91,7 +152,6 @@
 		1EBED9482AD7BD88008B85EE /* CribbageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CribbageView.swift; sourceTree = "<group>"; };
 		1EBED94B2AD7BF2C008B85EE /* Firebase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Firebase.swift; sourceTree = "<group>"; };
 		1EBEF2C12AE4F579008A093B /* TeamInformation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamInformation.swift; sourceTree = "<group>"; };
-		1EC498422AF19B050047F54A /* ShowStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowStatus.swift; sourceTree = "<group>"; };
 		1ECBB9FB2ADE3B9B0046D4CA /* PlayerInformation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerInformation.swift; sourceTree = "<group>"; };
 		1ECCDABC2AE600DA00EFF167 /* GameStartButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStartButton.swift; sourceTree = "<group>"; };
 		1ECCDABE2AE606A800EFF167 /* TeamPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamPicker.swift; sourceTree = "<group>"; };
@@ -99,11 +159,16 @@
 		1EE5F1292AE8A3750089162D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		1EE5F12A2AE8A5EF0089162D /* CardItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardItem.swift; sourceTree = "<group>"; };
 		1EFA9F5A2AF584CC00FA092C /* TurnTwoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnTwoView.swift; sourceTree = "<group>"; };
-		1EFA9F5C2AF5860000FA092C /* CribbageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CribbageController.swift; sourceTree = "<group>"; };
-		1EFE00F82AF9B08F00B71623 /* Header.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Header.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		1E114CC22B151B8B00503368 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1EBED9072AD7BBFF008B85EE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -126,12 +191,26 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E114CD02B151BE600503368 /* libTestLib.a in Frameworks */,
+				1EE16CF92B10930600B35787 /* FirebaseFirestore in Frameworks */,
+				1EE16CFB2B10961100B35787 /* FirebaseFirestoreSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1E114CB22B151B3400503368 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1E114CBA2B151B3400503368 /* libCommonLib.a */,
+				1E114CBC2B151B3400503368 /* libUILib.a */,
+				1E114CBE2B151B3400503368 /* AppFramework.framework */,
+				1E114CC02B151B3400503368 /* libTestLib.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		1EA2457B2AED6ED4003B0943 /* buttons */ = {
 			isa = PBXGroup;
 			children = (
@@ -163,6 +242,7 @@
 		1EBED9012AD7BBFF008B85EE = {
 			isa = PBXGroup;
 			children = (
+				1E114CB12B151B3400503368 /* EarlGrey.xcodeproj */,
 				1EBED90C2AD7BBFF008B85EE /* Cards */,
 				1EBED91D2AD7BC01008B85EE /* CardsTests */,
 				1EBED9272AD7BC01008B85EE /* CardsUITests */,
@@ -177,6 +257,7 @@
 				1EBED90A2AD7BBFF008B85EE /* Cards.app */,
 				1EBED91A2AD7BC01008B85EE /* CardsTests.xctest */,
 				1EBED9242AD7BC01008B85EE /* CardsUITests.xctest */,
+				1E114CC52B151B8B00503368 /* EarlGreyTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -184,13 +265,13 @@
 		1EBED90C2AD7BBFF008B85EE /* Cards */ = {
 			isa = PBXGroup;
 			children = (
-				1EE5F1292AE8A3750089162D /* Info.plist */,
-				1E25B49F2AD7CF8B008DFACE /* GoogleService-Info.plist */,
 				1EBED94A2AD7BF15008B85EE /* models */,
 				1EBED93F2AD7BCC6008B85EE /* views */,
 				1EBED93C2AD7BC8F008B85EE /* ui */,
 				1EBED90D2AD7BBFF008B85EE /* CardsApp.swift */,
 				1EBED90F2AD7BBFF008B85EE /* ContentView.swift */,
+				1EE5F1292AE8A3750089162D /* Info.plist */,
+				1E25B49F2AD7CF8B008DFACE /* GoogleService-Info.plist */,
 				1EBED9112AD7BC00008B85EE /* Assets.xcassets */,
 				1EBED9132AD7BC01008B85EE /* Preview Content */,
 			);
@@ -209,6 +290,8 @@
 			isa = PBXGroup;
 			children = (
 				1EBED91E2AD7BC01008B85EE /* CardsTests.swift */,
+				1E9B66EB2B16ACEB00CA1D22 /* FirebaseTests.swift */,
+				1E9B66ED2B16ADBE00CA1D22 /* DealTests.swift */,
 			);
 			path = CardsTests;
 			sourceTree = "<group>";
@@ -216,6 +299,7 @@
 		1EBED9272AD7BC01008B85EE /* CardsUITests */ = {
 			isa = PBXGroup;
 			children = (
+				1E114CE22B15275C00503368 /* EarlGrey.swift */,
 				1EBED9282AD7BC01008B85EE /* CardsUITests.swift */,
 				1EBED92A2AD7BC01008B85EE /* CardsUITestsLaunchTests.swift */,
 			);
@@ -228,11 +312,10 @@
 				1EA2457C2AED6F1F003B0943 /* card views */,
 				1EA2457B2AED6ED4003B0943 /* buttons */,
 				1ECCDABE2AE606A800EFF167 /* TeamPicker.swift */,
-				1EC498422AF19B050047F54A /* ShowStatus.swift */,
 				1E20F1742AF33EA300F2B368 /* DiagonalLines.swift */,
-				1EFE00F82AF9B08F00B71623 /* Header.swift */,
 				1E06C9282B003CB300195F6D /* CribbageBoard.swift */,
 				1ED272512B02A49C00B21600 /* NamesAroundTable.swift */,
+				1E265EEE2B1EB47D0040E8A9 /* GameHeader.swift */,
 			);
 			path = ui;
 			sourceTree = "<group>";
@@ -264,7 +347,7 @@
 				1ECBB9FB2ADE3B9B0046D4CA /* PlayerInformation.swift */,
 				1E939CFC2AE3606D00D64551 /* GameInformation.swift */,
 				1EBEF2C12AE4F579008A093B /* TeamInformation.swift */,
-				1EFA9F5C2AF5860000FA092C /* CribbageController.swift */,
+				1E4338E62B0D460900E212CD /* ListenerList.swift */,
 			);
 			path = models;
 			sourceTree = "<group>";
@@ -282,6 +365,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		1E114CC42B151B8B00503368 /* EarlGreyTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1E114CCD2B151B8B00503368 /* Build configuration list for PBXNativeTarget "EarlGreyTests" */;
+			buildPhases = (
+				1E114CC12B151B8B00503368 /* Sources */,
+				1E114CC22B151B8B00503368 /* Frameworks */,
+				1E114CC32B151B8B00503368 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1E114CCC2B151B8B00503368 /* PBXTargetDependency */,
+			);
+			name = EarlGreyTests;
+			productName = EarlGreyTests;
+			productReference = 1E114CC52B151B8B00503368 /* EarlGreyTests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		1EBED9092AD7BBFF008B85EE /* Cards */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1EBED92E2AD7BC01008B85EE /* Build configuration list for PBXNativeTarget "Cards" */;
@@ -330,6 +431,7 @@
 				1EBED9202AD7BC01008B85EE /* Sources */,
 				1EBED9212AD7BC01008B85EE /* Frameworks */,
 				1EBED9222AD7BC01008B85EE /* Resources */,
+				1E114CD12B151E1D00503368 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -337,6 +439,10 @@
 				1EBED9262AD7BC01008B85EE /* PBXTargetDependency */,
 			);
 			name = CardsUITests;
+			packageProductDependencies = (
+				1EE16CF82B10930600B35787 /* FirebaseFirestore */,
+				1EE16CFA2B10961100B35787 /* FirebaseFirestoreSwift */,
+			);
 			productName = CardsUITests;
 			productReference = 1EBED9242AD7BC01008B85EE /* CardsUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
@@ -348,9 +454,13 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1430;
+				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					1E114CC42B151B8B00503368 = {
+						CreatedOnToolsVersion = 15.0.1;
+						TestTargetID = 1EBED9092AD7BBFF008B85EE;
+					};
 					1EBED9092AD7BBFF008B85EE = {
 						CreatedOnToolsVersion = 14.3.1;
 					};
@@ -379,16 +489,61 @@
 			);
 			productRefGroup = 1EBED90B2AD7BBFF008B85EE /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 1E114CB22B151B3400503368 /* Products */;
+					ProjectRef = 1E114CB12B151B3400503368 /* EarlGrey.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				1EBED9092AD7BBFF008B85EE /* Cards */,
 				1EBED9192AD7BC01008B85EE /* CardsTests */,
 				1EBED9232AD7BC01008B85EE /* CardsUITests */,
+				1E114CC42B151B8B00503368 /* EarlGreyTests */,
 			);
 		};
 /* End PBXProject section */
 
+/* Begin PBXReferenceProxy section */
+		1E114CBA2B151B3400503368 /* libCommonLib.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libCommonLib.a;
+			remoteRef = 1E114CB92B151B3400503368 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		1E114CBC2B151B3400503368 /* libUILib.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libUILib.a;
+			remoteRef = 1E114CBB2B151B3400503368 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		1E114CBE2B151B3400503368 /* AppFramework.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = AppFramework.framework;
+			remoteRef = 1E114CBD2B151B3400503368 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		1E114CC02B151B3400503368 /* libTestLib.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTestLib.a;
+			remoteRef = 1E114CBF2B151B3400503368 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
 /* Begin PBXResourcesBuildPhase section */
+		1E114CC32B151B8B00503368 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1EBED9082AD7BBFF008B85EE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -416,16 +571,25 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		1E114CC12B151B8B00503368 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1EBED9062AD7BBFF008B85EE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				1E06C9292B003CB300195F6D /* CribbageBoard.swift in Sources */,
 				1E25B4A42ADC528F008DFACE /* NewGame.swift in Sources */,
+				1E265EEF2B1EB47D0040E8A9 /* GameHeader.swift in Sources */,
 				1E939CFD2AE3606D00D64551 /* GameInformation.swift in Sources */,
 				1E20F1792AF3524100F2B368 /* CardPlaceHolder.swift in Sources */,
 				1EFA9F5B2AF584CC00FA092C /* TurnTwoView.swift in Sources */,
 				1EE5F12B2AE8A5EF0089162D /* CardItem.swift in Sources */,
+				1E4338E72B0D460900E212CD /* ListenerList.swift in Sources */,
 				1E20F1752AF33EA300F2B368 /* DiagonalLines.swift in Sources */,
 				1EBED9102AD7BBFF008B85EE /* ContentView.swift in Sources */,
 				1ECBB9FC2ADE3B9B0046D4CA /* PlayerInformation.swift in Sources */,
@@ -437,16 +601,13 @@
 				1E4CC8F82AFB4A3500ECC77B /* GameView.swift in Sources */,
 				1EBED93E2AD7BC9A008B85EE /* GameButton.swift in Sources */,
 				1E9C48F62AE7B3F3008C518D /* CardView.swift in Sources */,
-				1EFE00F92AF9B08F00B71623 /* Header.swift in Sources */,
 				1EA245822AED70B3003B0943 /* CardInHandArea.swift in Sources */,
-				1EC498432AF19B050047F54A /* ShowStatus.swift in Sources */,
 				1EBED9452AD7BCFE008B85EE /* LoadingScreen.swift in Sources */,
 				1EBED9422AD7BCE7008B85EE /* ExistingGame.swift in Sources */,
 				1EBEF2C22AE4F579008A093B /* TeamInformation.swift in Sources */,
 				1EBED90E2AD7BBFF008B85EE /* CardsApp.swift in Sources */,
 				1ED272522B02A49C00B21600 /* NamesAroundTable.swift in Sources */,
 				1E8D31A82B05644300FC9C68 /* DeckOfCardsView.swift in Sources */,
-				1EFA9F5D2AF5860000FA092C /* CribbageController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -454,7 +615,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E9B66EC2B16ACEB00CA1D22 /* FirebaseTests.swift in Sources */,
 				1EBED91F2AD7BC01008B85EE /* CardsTests.swift in Sources */,
+				1E9B66EE2B16ADBE00CA1D22 /* DealTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -464,12 +627,18 @@
 			files = (
 				1EBED92B2AD7BC01008B85EE /* CardsUITestsLaunchTests.swift in Sources */,
 				1EBED9292AD7BC01008B85EE /* CardsUITests.swift in Sources */,
+				1E114CE32B15275C00503368 /* EarlGrey.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		1E114CCC2B151B8B00503368 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1EBED9092AD7BBFF008B85EE /* Cards */;
+			targetProxy = 1E114CCB2B151B8B00503368 /* PBXContainerItemProxy */;
+		};
 		1EBED91C2AD7BC01008B85EE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 1EBED9092AD7BBFF008B85EE /* Cards */;
@@ -483,6 +652,49 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		1E114CCE2B151B8B00503368 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 25UU64473F;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dan424gg.EarlGreyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Cards;
+			};
+			name = Debug;
+		};
+		1E114CCF2B151B8B00503368 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 25UU64473F;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dan424gg.EarlGreyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Cards;
+			};
+			name = Release;
+		};
 		1EBED92C2AD7BC01008B85EE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -533,7 +745,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -587,7 +799,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -668,7 +880,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 25UU64473F;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dan424gg.CardsTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -688,7 +900,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 25UU64473F;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dan424gg.CardsTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -708,12 +920,18 @@
 				DEVELOPMENT_TEAM = 25UU64473F;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
+				"OTHER_LDFLAGS[arch=*]" = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = dan424gg.CardsUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				"SWIFT_OBJC_BRIDGING_HEADER[arch=*]" = "Cards-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = Cards;
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = (
+					"/Users/wells/coding/EarlGrey/Submodules/eDistantObject/**",
+					"/Users/wells/coding/EarlGrey/**",
+				);
 			};
 			name = Debug;
 		};
@@ -726,18 +944,33 @@
 				DEVELOPMENT_TEAM = 25UU64473F;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
+				"OTHER_LDFLAGS[arch=*]" = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = dan424gg.CardsUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				"SWIFT_OBJC_BRIDGING_HEADER[arch=*]" = "Cards-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = Cards;
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = (
+					"/Users/wells/coding/EarlGrey/Submodules/eDistantObject/**",
+					"/Users/wells/coding/EarlGrey/**",
+				);
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		1E114CCD2B151B8B00503368 /* Build configuration list for PBXNativeTarget "EarlGreyTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1E114CCE2B151B8B00503368 /* Debug */,
+				1E114CCF2B151B8B00503368 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		1EBED9052AD7BBFF008B85EE /* Build configuration list for PBXProject "Cards" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -815,6 +1048,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 1EBED9372AD7BC4E008B85EE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
+		};
+		1EE16CF82B10930600B35787 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1EBED9372AD7BC4E008B85EE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		1EE16CFA2B10961100B35787 /* FirebaseFirestoreSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1EBED9372AD7BC4E008B85EE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestoreSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

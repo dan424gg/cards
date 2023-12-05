@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CardView: View {
     var cardItem: CardItem
+    @Binding var cardIsDisabled: Bool
     @State var backside = false
     @State var backDegree = 0.0
     @State var frontDegree = 90.0
@@ -49,6 +50,7 @@ struct CardView: View {
                 .rotation3DEffect(
                     .degrees(frontDegree), axis: (x: 0.0, y: 1.0, z: 0.0)
                 )
+//                .disabled(cardIsDisabled)
                 
                 // frontside
                 ZStack {
@@ -73,6 +75,7 @@ struct CardView: View {
                 .frame(width: 50, height: 100)
                 .draggable(cardItem)
                 .disabled(backside)
+//                .disabled(cardIsDisabled)
                 .rotation3DEffect(
                     .degrees(backDegree), axis: (x: 0.0, y: 1.0, z: 0.0)
                 )
@@ -106,5 +109,5 @@ struct CardView: View {
 }
 
 #Preview {
-    CardView(cardItem: CardItem(id:0, value: "K", suit: "diamond"))
+    CardView(cardItem: CardItem(id:0, value: "K", suit: "diamond"), cardIsDisabled: .constant(false))
 }

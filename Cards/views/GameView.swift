@@ -19,23 +19,13 @@ struct GameView: View {
     
     var body: some View {
         GeometryReader { geo in
+            GameHeader()
             ZStack {
-                NavigationLink("Exit") {
-                    ContentView()
-                        .navigationBarBackButtonHidden()
-                }
-                .position(CGPoint(x: 15, y: 0))
-                .padding()
-                
                 // header
-                VStack {
-                    Text("\(gameName.capitalized)")
-                        .font(.title2)
-                    Spacer()
-                }
+
                 
                 // "table"
-                Table()
+                PlayingTable()
                     .stroke(Color.gray.opacity(0.5))
                     .aspectRatio(1.15, contentMode: .fit)
                     .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 1.5 )
@@ -44,7 +34,7 @@ struct GameView: View {
                     .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 1.5 )
                 
                 CribbageBoard()
-                    .rotationEffect(.degrees(0))
+//                    .rotationEffect(.degrees(0))
                     .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 1.7 )
                 
                 DeckOfCardsView() 
@@ -56,39 +46,20 @@ struct GameView: View {
                     switch (gameName) {
                     case "cribbage":
                         Cribbage(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
-                            .offset(y: 210)
-                            .onAppear(perform: {
-                                cardsDragged = []
-                                if firebaseHelper.playerInfo != nil && firebaseHelper.playerInfo!.cards_in_hand != [] {
-                                    cardsInHand = firebaseHelper.playerInfo!.cards_in_hand
-                                } else {
-                                    cardsInHand = [CardItem(id: 39, value: "A", suit: "club"), CardItem(id: 40, value: "2", suit: "club"), CardItem(id: 26, value: "A", suit: "diamond"), CardItem(id: 27, value: "2", suit: "diamond")]
-                                }
-                            })
+                            .frame(width: geo.size.width, height: geo.size.height)
+                            .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 0.52)
                     default: EmptyView()
                     }
                 }
                 .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 4.75)
-                
-                CardInHandArea(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand).offset(y: 195)
-                    .onAppear(perform: {
-                        cardsDragged = []
-                        if firebaseHelper.playerInfo != nil && firebaseHelper.playerInfo!.cards_in_hand != [] {
-                            cardsInHand = firebaseHelper.playerInfo!.cards_in_hand
-                        } else {
-                            cardsInHand = [CardItem(id: 39, value: "A", suit: "club"), CardItem(id: 40, value: "2", suit: "club"), CardItem(id: 26, value: "A", suit: "diamond"), CardItem(id: 27, value: "2", suit: "diamond")]
-                        }
-                    })
-                    .offset(y: -10)
-                    .scaleEffect(x: 2, y: 2)
             }
-            .snackbar(isShowing: $firebaseHelper.showSnackbar, title: "Not Ready", text: firebaseHelper.error, style: .error, actionText: "dismiss", dismissOnTap: false, dismissAfter: nil, action: { firebaseHelper.showSnackbar = false })
-            .snackbar(isShowing: $firebaseHelper.showSnackbar, title: "Not Ready", text: firebaseHelper.warning, style: .warning, actionText: "dismiss", dismissOnTap: false, dismissAfter: nil, action: { firebaseHelper.showSnackbar = false })
+            .snackbar(isShowing: $firebaseHelper.showWarning, title: "Not Ready", text: firebaseHelper.error, style: .error, actionText: "dismiss", dismissOnTap: false, dismissAfter: nil, action: { firebaseHelper.showWarning = false })
+            .snackbar(isShowing: $firebaseHelper.showError, title: "Not Ready", text: firebaseHelper.warning, style: .warning, actionText: "dismiss", dismissOnTap: false, dismissAfter: nil, action: { firebaseHelper.showError = false })
         }
     }
 }
 
-struct Table: Shape {
+struct PlayingTable: Shape {
     func path(in rect: CGRect) -> Path {
         let r = rect.height / 2
         let center = CGPoint(x: rect.midX, y: rect.midY)
