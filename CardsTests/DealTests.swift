@@ -35,7 +35,6 @@ final class DealTests: XCTestCase {
         
         cardsInHand_Binding = []
         await playerTwo.shuffleAndDealCards(cardsInHand_binding: Binding(get: { cardsInHand_Binding }, set: { cardsInHand_Binding = $0 }))
-        print(playerTwo.gameInfo!.cards.count)
         XCTAssert(playerTwo.gameInfo!.cards.count == 40)
         XCTAssert(playerTwo.playerInfo!.cards_in_hand!.count == 6)
         
