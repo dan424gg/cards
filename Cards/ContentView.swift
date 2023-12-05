@@ -11,7 +11,7 @@ struct ContentView: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @State var universalClicked = "A game"
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack {
                 Text("What game do you want to play??")
                 GameButton(universalClicked: $universalClicked, gameName: "cribbage")

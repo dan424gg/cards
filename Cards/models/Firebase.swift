@@ -478,16 +478,18 @@ import FirebaseFirestoreSwift
             print(error)
         }
     }
+
     
-    func dealCards(cardsInHand_binding: Binding<[CardItem]>) async {
-        var cardsInHand = cardsInHand_binding.wrappedValue
-        
+    func shuffleAndDealCards(cardsInHand_binding: Binding<[CardItem]>) async {
         guard gameInfo != nil else {
             return
         }
+        var cardsInHand = cardsInHand_binding.wrappedValue
+        
+        await updateGame(newState: ["cards": GameInformation().cards.shuffled().shuffled()])
         
         switch (gameInfo?.num_teams ?? 2) {
-        case 2:
+        case 1, 2:
             if gameInfo?.num_players == 2 {
                 for _ in 1...6 {
                     guard gameInfo!.cards != [] else {
@@ -526,7 +528,7 @@ import FirebaseFirestoreSwift
                     player.is_dealer!
                 })
                 if playerInfo!.is_dealer!
-                       /* or if player is "to the left" of the dealer */
+                    /* or if player is "to the left" of the dealer */
                     || (playerInfo!.player_num! + 1) % gameInfo!.num_players == dealer!.player_num! {
                     for _ in 1...4 {
                         guard gameInfo!.cards != [] else {
@@ -550,44 +552,10 @@ import FirebaseFirestoreSwift
         default:
             return
         }
+        
         updatePlayer(newState: ["cards_in_hand": cardsInHand])
         await updateGame(newState: ["cards": gameInfo!.cards])
         cardsInHand_binding.wrappedValue = cardsInHand
-    }
-
-    
-    func joinGameCollection(fullName: String, id: Int, gameName: String) async {
-        docRef = db.collection("games").document(String(id))
-
-        do {
-            gameInfo = try await docRef!.getDocument().data(as: GameInformation.self)
-            
-            let numPlayers = gameInfo!.num_players + 1
-            let numTeams = (numPlayers % 3 == 0 || numPlayers == 5) ? 3 : 2
-
-            updateGame(newState: [
-                "num_teams": numTeams,
-                "num_players": numPlayers
-            ])
-            
-            let teamNum = ((numPlayers - 1) % 3) + 1
-            playerInfo = PlayerInformation(name: fullName, uid: UUID().uuidString, team_num: teamNum)
-
-            if await !checkTeamExists(teamNum: teamNum) {
-                teamInfo = TeamInformation(team_num: teamNum)
-                try docRef!.collection("teams").document("\(teamNum)").setData(from: teamInfo)
-                try await docRef!.collection("teams").document("\(teamNum)").collection("players").document("placeholder").setData([
-                    "This": "serves as a placeholder so this collection doesn't get deleted when there aren't any players on this team, temporarily"
-                ])
-            }
-            
-            try docRef!.collection("teams").document("\(teamNum)").collection("players").document(playerInfo!.uid).setData(from: playerInfo)
-
-            addTeamPlayerNameListener()
-            addGameInfoListener()
-        } catch {
-            // do something
-        }
     }
     
     func checkValidId(id: Int) async ->  Bool {
