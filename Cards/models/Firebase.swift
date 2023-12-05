@@ -486,7 +486,9 @@ import FirebaseFirestoreSwift
         }
         var cardsInHand = cardsInHand_binding.wrappedValue
         
-        await updateGame(newState: ["cards": GameInformation().cards.shuffled().shuffled()])
+        if playerInfo!.is_dealer! {
+            await updateGame(newState: ["cards": GameInformation().cards.shuffled().shuffled()])
+        }
         
         switch (gameInfo?.num_teams ?? 2) {
         case 1, 2:
