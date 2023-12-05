@@ -65,7 +65,6 @@ struct ExistingGame: View {
                     .buttonStyle(.borderedProminent)
             }
             .disabled(notValidGroupId || fullName == "")
-
         }
         .multilineTextAlignment(.center)
         .padding([.leading, .trailing], 48)

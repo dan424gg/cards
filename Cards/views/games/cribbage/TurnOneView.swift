@@ -80,7 +80,7 @@ struct TurnOneView: View {
                 let teamWithCrib = firebaseHelper.teams.first(where: { team in
                     team.has_crib
                 })
-                
+
                 firebaseHelper.updateTeam(newState: ["crib": cardsDragged], team: teamWithCrib?.team_num)
             }
         }
