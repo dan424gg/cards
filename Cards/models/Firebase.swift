@@ -403,7 +403,7 @@ import FirebaseFirestoreSwift
         docRef = db.collection("games").document(String(groupId))
         
         do {
-            gameInfo = GameInformation(group_id: groupId, is_ready: true, num_teams: 1, turn: 1, game_name: gameName, num_players: 1)
+            gameInfo = GameInformation(group_id: groupId, is_ready: true, num_teams: 1, turn: 0, game_name: gameName, num_players: 1)
             try docRef!.setData(from: gameInfo)
                         
             teamInfo = TeamInformation(team_num: 1)

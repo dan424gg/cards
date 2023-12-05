@@ -7,15 +7,11 @@
 
 import SwiftUI
 
-extension Animation {
-    static func slide(index: Int) -> Animation {
-        Animation.easeInOut(duration: 2.25)
-            .delay(1.0 * Double(index))
-    }
-    static func ripple(index: Int) -> Animation {
-        Animation.spring(dampingFraction: 0.5)
-            .speed(2)
-            .delay(0.03 * Double(index))
+extension AnyTransition {
+    static func custom(index: Int) -> AnyTransition {
+        AnyTransition
+            .move(edge: .bottom)
+            .animation(.default.delay(0.5 * Double(index)))
     }
 }
 
@@ -24,36 +20,38 @@ struct CardInHandArea: View {
     @Binding var cardsDragged: [CardItem]
     @Binding var cardsInHand: [CardItem]
     
-    @State var doSomething: Bool = true
-    
+    @State var firstTurn = false
+        
+    let transition = AnyTransition.slide.combined(with: .opacity)
+        
     var body: some View {
         VStack {
-            if doSomething {
-                ZStack {
-                    ForEach(Array(cardsInHand.enumerated()), id: \.offset) { (index, card) in
-                        CardView(cardItem: card, cardIsDisabled: .constant(false))
-                            .offset(y: -50)
-                            .rotationEffect(.degrees(-Double((cardsInHand.count - 1) * 6) + Double(index * 12)))
-                            .animation(.slide(index: index), value: doSomething)
-                    }
+            ZStack {
+                ForEach(Array(cardsInHand.enumerated().lazy), id: \.offset) { (index, card) in
+                    CardView(cardItem: card, cardIsDisabled: .constant(false))
+                        .offset(y: -50)
+                        .rotationEffect(.degrees(-Double((cardsInHand.count - 1) * 6) + Double(index * 12)))
                 }
-                .offset(y: 50)
-                .dropDestination(for: CardItem.self) { items, location in
-                    if !cardsInHand.contains(items.first!) {
-                        cardsInHand.append(items.first!)
-                        cardsDragged.removeAll(where: { card in
-                            card == items.first!
-                        })
-                    }
-                    return true
-                }
-                .padding()
+                .transition(.move(edge: .bottom))
             }
+            .animation(.default.delay(2.0), value: firstTurn)
+            .onAppear(perform: {
+                firstTurn.toggle()
+            })
             
-            Button("Do something") {
-                doSomething.toggle()
+            .offset(y: 50)
+            .dropDestination(for: CardItem.self) { items, location in
+                if !cardsInHand.contains(items.first!) {
+                    cardsInHand.append(items.first!)
+                    cardsDragged.removeAll(where: { card in
+                        card == items.first!
+                    })
+                }
+                return true
             }
+            .padding()
         }
+
     }
 }
 

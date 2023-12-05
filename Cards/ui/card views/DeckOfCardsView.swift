@@ -40,8 +40,8 @@ struct DeckOfCardsView: View {
                                 .rotationEffect(.degrees(Double.random(in: -5.0...5.0)))
                         } else {
                             CardView(cardItem: card, cardIsDisabled: .constant(true), backside: true)
-                                    .offset(y: -Double.random(in: -5.0...5.0) / 5.0)
-                                    .rotationEffect(.degrees(Double.random(in: -5.0...5.0)))
+                                .offset(y: -Double.random(in: -5.0...5.0) / 5.0)
+                                .rotationEffect(.degrees(Double.random(in: -5.0...5.0)))
                         }
                     }
                 }

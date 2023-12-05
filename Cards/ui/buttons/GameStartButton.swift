@@ -21,7 +21,7 @@ struct GameStartButton: View {
             .simultaneousGesture(TapGesture().onEnded {
                 if self.firebaseHelper.playerInfo != nil && self.firebaseHelper.playerInfo!.is_lead! {
                     Task {
-                        await self.firebaseHelper.updateGame(newState: ["is_ready": true])
+                        await self.firebaseHelper.updateGame(newState: ["is_ready": true, "turn": 1])
                     }
                 }
             })
