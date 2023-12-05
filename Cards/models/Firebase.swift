@@ -486,85 +486,9 @@ import FirebaseFirestoreSwift
         }
         var cardsInHand = cardsInHand_binding.wrappedValue
         
-        await updateGame(newState: ["cards": GameInformation().cards.shuffled().shuffled()])
-        
-        switch (gameInfo?.num_teams ?? 2) {
-        case 1, 2:
-            if gameInfo?.num_players == 2 {
-                for _ in 1...6 {
-                    guard gameInfo!.cards != [] else {
-                        print("cards ran out in the middle of the deal")
-                        return
-                    }
-                    
-                    cardsInHand.append(gameInfo!.cards.popLast()!)
-                }
-            } else {
-                for _ in 1...5 {
-                    guard gameInfo!.cards != [] else {
-                        print("cards ran out in the middle of the deal")
-                        return
-                    }
-                    
-                    cardsInHand.append(gameInfo!.cards.popLast()!)
-                }
-            }
-        case 3:
-            if gameInfo!.num_players == 3 {
-                if teamInfo!.has_crib {
-                    updateTeam(newState: ["crib": [gameInfo!.cards.popLast()!]])
-                }
-                for _ in 1...5 {
-                    guard gameInfo!.cards != [] else {
-                        print("cards ran out in the middle of the deal")
-                        return
-                    }
-                    
-                    cardsInHand.append(gameInfo!.cards.popLast()!)
-                }
-            }
-            else {
-                let dealer = players.first(where: { player in
-                    player.is_dealer!
-                })
-                if playerInfo!.is_dealer!
-                    /* or if player is "to the left" of the dealer */
-                    || (playerInfo!.player_num! + 1) % gameInfo!.num_players == dealer!.player_num! {
-                    for _ in 1...4 {
-                        guard gameInfo!.cards != [] else {
-                            print("cards ran out in the middle of the deal")
-                            return
-                        }
-                        
-                        cardsInHand.append(gameInfo!.cards.popLast()!)
-                    }
-                } else {
-                    for _ in 1...5 {
-                        guard gameInfo!.cards != [] else {
-                            print("cards ran out in the middle of the deal")
-                            return
-                        }
-                        
-                        cardsInHand.append(gameInfo!.cards.popLast()!)
-                    }
-                }
-            }
-        default:
-            return
+        if playerInfo!.is_dealer! {
+            await updateGame(newState: ["cards": GameInformation().cards.shuffled().shuffled()])
         }
-        
-        updatePlayer(newState: ["cards_in_hand": cardsInHand])
-        await updateGame(newState: ["cards": gameInfo!.cards])
-        cardsInHand_binding.wrappedValue = cardsInHand
-    }
-    
-    func shuffleAndDealCards(cardsInHand_binding: Binding<[CardItem]>) async {
-        guard gameInfo != nil else {
-            return
-        }
-        var cardsInHand = cardsInHand_binding.wrappedValue
-        
-        await updateGame(newState: ["cards": GameInformation().cards.shuffled().shuffled()])
         
         switch (gameInfo?.num_teams ?? 2) {
         case 1, 2:

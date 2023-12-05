@@ -20,21 +20,23 @@ struct CardInHandArea: View {
     @Binding var cardsDragged: [CardItem]
     @Binding var cardsInHand: [CardItem]
     
+    var showBackside = false
+    
     @State var firstTurn = false
-        
-    let transition = AnyTransition.slide.combined(with: .opacity)
-        
+
     var body: some View {
         VStack {
             ZStack {
-                ForEach(Array(cardsInHand.enumerated().lazy), id: \.offset) { (index, card) in
-                    CardView(cardItem: card, cardIsDisabled: .constant(false))
-                        .offset(y: -50)
-                        .rotationEffect(.degrees(-Double((cardsInHand.count - 1) * 6) + Double(index * 12)))
+                if firstTurn {
+                    ForEach(Array(cardsInHand.enumerated()), id: \.offset) { (index, card) in
+                        CardView(cardItem: card, cardIsDisabled: .constant(false), backside: showBackside)
+                            .offset(y: -50)
+                            .rotationEffect(.degrees(-Double((cardsInHand.count - 1) * 6) + Double(index * 12)))
+                    }
+//                    .transition(.move(edge: .bottom))
                 }
-                .transition(.move(edge: .bottom))
             }
-            .animation(.default.delay(2.0), value: firstTurn)
+//            .animation(.default.delay(2.0), value: firstTurn)
             .onAppear(perform: {
                 firstTurn.toggle()
             })
