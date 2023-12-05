@@ -31,7 +31,7 @@ final class DealTests: XCTestCase {
         await playerOne.shuffleAndDealCards(cardsInHand_binding: Binding(get: { cardsInHand_Binding }, set: { cardsInHand_Binding = $0 }))
         XCTAssert(playerOne.gameInfo!.cards.count == 46)
         XCTAssert(playerOne.playerInfo!.cards_in_hand!.count == 6)
-        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 2.0)
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 1.0)
         
         cardsInHand_Binding = []
         await playerTwo.shuffleAndDealCards(cardsInHand_binding: Binding(get: { cardsInHand_Binding }, set: { cardsInHand_Binding = $0 }))
