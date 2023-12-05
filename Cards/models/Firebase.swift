@@ -478,6 +478,7 @@ import FirebaseFirestoreSwift
             print(error)
         }
     }
+
     
     func shuffleAndDealCards(cardsInHand_binding: Binding<[CardItem]>) async {
         guard gameInfo != nil else {

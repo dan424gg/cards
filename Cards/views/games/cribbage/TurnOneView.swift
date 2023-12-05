@@ -72,7 +72,6 @@ struct TurnOneView: View {
         .onChange(of: cardsDragged) {
             if playerReady() {
                 cardIsDisabled = true
-
                 firebaseHelper.updatePlayer(newState: [
                     "cards_in_hand": cardsInHand
                 ])
@@ -80,7 +79,7 @@ struct TurnOneView: View {
                 let teamWithCrib = firebaseHelper.teams.first(where: { team in
                     team.has_crib
                 })
-                
+              
                 firebaseHelper.updateTeam(newState: ["crib": cardsDragged], team: teamWithCrib?.team_num)
             }
         }
