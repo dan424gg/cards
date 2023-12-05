@@ -28,12 +28,12 @@ struct NamesAroundTable: View {
                 }
                 .offset(y: -120)
                 .rotationEffect(.degrees(Double(startingRotation + (multiplier * index))))
-//                .onChange(of: firebaseHelper.players, initial: false, {
-//                    sortedPlayerList = firebaseHelper.players
-//                        .lazy
-//                        .filter { $0.player_num != firebaseHelper.playerInfo!.player_num}
-//                        .sorted(by: { $0.player_num! < $1.player_num!})
-//                })
+                .onChange(of: firebaseHelper.players, initial: false, {
+                    sortedPlayerList = firebaseHelper.players
+                        .lazy
+                        .filter { $0.player_num != firebaseHelper.playerInfo!.player_num}
+                        .sorted(by: { $0.player_num! < $1.player_num!})
+                })
             }
             .onAppear(perform: {
                 switch(firebaseHelper.gameInfo?.num_teams ?? 3) {
