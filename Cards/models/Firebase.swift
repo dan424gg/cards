@@ -145,7 +145,7 @@ import FirebaseFirestoreSwift
         }
     }
     
-    func updateTeam(newState: [String: Any], team: Int? = nil) {
+    func updateTeam(newState: [String: Any], cribUpdate: Bool = false) {
         guard docRef != nil else {
             print("docRef was nil before updating team information")
             return
@@ -154,13 +154,32 @@ import FirebaseFirestoreSwift
             print("teamInfo was nil before trying to update it's info!")
             return
         }
+        
         do {
             for temp in newState {
                 let property = temp.key
                 switch (property) {
                 case "crib":
-                    // needs testing
-                    teamInfo!.crib = temp.value as! [CardItem]
+                    if !teamInfo!.has_crib {
+                        // wait for crib to update
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [self] in
+                            var teamWithCrib = teams.first(where: { team in
+                                team.has_crib
+                            })
+                            
+                            _ = (temp.value as! [CardItem]).map { card in
+                                teamWithCrib?.crib.append(card)
+                            }
+                            
+                            do {
+                                try docRef!.collection("teams").document("\(teamWithCrib?.team_num ?? 0)").setData(from: teamWithCrib)
+                            } catch {
+                                print("error trying to update crib \(error)")
+                            }
+                        }
+                    } else {
+                        teamInfo!.crib = temp.value as! [CardItem]
+                    }
                     break
                 case "points":
                     teamInfo!.points = temp.value as! Int
@@ -174,7 +193,7 @@ import FirebaseFirestoreSwift
                 }
             }
             
-            try docRef!.collection("teams").document("\(team ?? playerInfo!.team_num!)").setData(from: teamInfo!, merge: true)
+            try docRef!.collection("teams").document("\(playerInfo!.team_num!)").setData(from: teamInfo!, merge: true)
         } catch {
             print("error in updateTeam: \(error)")
         }
@@ -406,11 +425,11 @@ import FirebaseFirestoreSwift
             gameInfo = GameInformation(group_id: groupId, is_ready: true, num_teams: 1, turn: 0, game_name: gameName, num_players: 1)
             try docRef!.setData(from: gameInfo)
                         
-            teamInfo = TeamInformation(team_num: 1)
+            teamInfo = TeamInformation(team_num: 1, has_crib: true)
             try docRef!.collection("teams").document(String(1)).setData(from: teamInfo)
             self.teams.append(teamInfo!)
             
-            playerInfo = PlayerInformation(name: fullName, uid: UUID().uuidString, is_lead: true, team_num: 1, player_num: 0)
+            playerInfo = PlayerInformation(name: fullName, uid: UUID().uuidString, is_lead: true, team_num: 1, is_dealer: true, player_num: 0)
             try docRef!.collection("players").document(playerInfo!.uid!).setData(from: playerInfo!)
             self.players.append(playerInfo!)
             
@@ -486,7 +505,7 @@ import FirebaseFirestoreSwift
         }
         var cardsInHand = cardsInHand_binding.wrappedValue
         
-        if playerInfo!.is_dealer! {
+        if playerInfo!.is_lead! {
             await updateGame(newState: ["cards": GameInformation().cards.shuffled().shuffled()])
         }
         
@@ -558,6 +577,16 @@ import FirebaseFirestoreSwift
         updatePlayer(newState: ["cards_in_hand": cardsInHand])
         await updateGame(newState: ["cards": gameInfo!.cards])
         cardsInHand_binding.wrappedValue = cardsInHand
+    }
+    
+    func checkIfPlayersAreReady() -> Bool {
+        for player in players {
+            if !player.is_ready! {
+                return false
+            }
+        }
+        
+        return true
     }
     
     func checkValidId(id: Int) async ->  Bool {

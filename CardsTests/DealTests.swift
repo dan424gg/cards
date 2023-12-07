@@ -38,6 +38,11 @@ final class DealTests: XCTestCase {
         XCTAssert(playerTwo.gameInfo!.cards.count == 40)
         XCTAssert(playerTwo.playerInfo!.cards_in_hand!.count == 6)
         
+        var playerOneCards = playerOne.playerInfo!.cards_in_hand!
+        for card in playerOneCards {
+            XCTAssertTrue(playerTwo.gameInfo!.cards.contains(where: { deckCard in deckCard == card}), "\(card) was found in the deck of cards!")
+        }
+        
         playerOne.deleteGameCollection(id: randId)
     }
     
@@ -49,8 +54,6 @@ final class DealTests: XCTestCase {
         } while (await playerOne.checkValidId(id: randId))
         
         await playerOne.startGameCollection(fullName: "1", gameName: "Cribbage", testGroupId: randId)
-        playerOne.updatePlayer(newState: ["is_dealer": true])
-        playerOne.updateTeam(newState: ["has_crib": true])
         
         var playerTwo = FirebaseHelper()
         await playerTwo.joinGameCollection(fullName: "2", id: randId, gameName: "Cribbage")

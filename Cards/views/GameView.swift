@@ -34,13 +34,6 @@ struct GameView: View {
                 DeckOfCardsView()
                     .scaleEffect(x: 0.65, y: 0.65)
                     .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 1.2)
-                    .onChange(of: firebaseHelper.gameInfo?.turn, initial: true, {
-                        if firebaseHelper.gameInfo?.turn == 1 {
-                            Task {
-                                await firebaseHelper.shuffleAndDealCards(cardsInHand_binding: $cardsInHand)
-                            }
-                        }
-                    })
                 
                 // game that is being played
                 VStack {
@@ -54,6 +47,15 @@ struct GameView: View {
                 }
                 .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 4.75)
             }
+            .onChange(of: firebaseHelper.gameInfo?.turn, initial: true, {
+                if firebaseHelper.gameInfo?.turn == 1 {
+                    // pick dealer
+                    
+                    Task {
+                        await firebaseHelper.shuffleAndDealCards(cardsInHand_binding: $cardsInHand)
+                    }
+                }
+            })
             .snackbar(isShowing: $firebaseHelper.showWarning, title: "Not Ready", text: firebaseHelper.error, style: .error, actionText: "dismiss", dismissOnTap: false, dismissAfter: nil, action: { firebaseHelper.showWarning = false })
             .snackbar(isShowing: $firebaseHelper.showError, title: "Not Ready", text: firebaseHelper.warning, style: .warning, actionText: "dismiss", dismissOnTap: false, dismissAfter: nil, action: { firebaseHelper.showError = false })
         }

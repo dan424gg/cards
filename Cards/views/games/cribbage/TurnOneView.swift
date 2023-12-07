@@ -21,7 +21,7 @@ struct TurnOneView: View {
     
     var body: some View {
         VStack {
-            switch (firebaseHelper.gameInfo?.num_players ?? 6) {
+            switch (firebaseHelper.gameInfo?.num_players ?? 4) {
             case 2:
                 HStack {
                     if cardsDragged.count == 0 {
@@ -120,19 +120,29 @@ struct TurnOneView: View {
             }
         }
         .frame(height: 100)
+        .onChange(of: firebaseHelper.players) {
+            if firebaseHelper.playerInfo!.is_lead! && firebaseHelper.checkIfPlayersAreReady() {
+                Task {
+                    await firebaseHelper.updateGame(newState: ["turn": firebaseHelper.gameInfo!.turn + 1])
+                }
+            }
+        }
         .onChange(of: cardsDragged) {
             if playerReady() {
+                print("got here")
+
                 cardIsDisabled = true
 
                 firebaseHelper.updatePlayer(newState: [
-                    "cards_in_hand": cardsInHand
+                    "cards_in_hand": cardsInHand,
+                    "is_ready": true
                 ])
                 
-                let teamWithCrib = firebaseHelper.teams.first(where: { team in
-                    team.has_crib
-                })
+//                let teamWithCrib = firebaseHelper.teams.first(where: { team in
+//                    team.has_crib
+//                })
 
-                firebaseHelper.updateTeam(newState: ["crib": cardsDragged], team: teamWithCrib?.team_num)
+                firebaseHelper.updateTeam(newState: ["crib": cardsDragged])
             }
         }
     }
@@ -141,7 +151,7 @@ struct TurnOneView: View {
         switch (firebaseHelper.gameInfo?.num_teams ?? 2) {
         case 2: return cardsDragged.count == 2
         case 3: 
-            if firebaseHelper.playerInfo?.cards_in_hand!.count == 5 {
+            if firebaseHelper.gameInfo!.num_players == 3 {
                 return cardsDragged.count == 1
             } else {
                 return cardsDragged.count == 0
