@@ -129,8 +129,6 @@ struct TurnOneView: View {
         }
         .onChange(of: cardsDragged) {
             if playerReady() {
-                print("got here")
-
                 cardIsDisabled = true
 
                 firebaseHelper.updatePlayer(newState: [
