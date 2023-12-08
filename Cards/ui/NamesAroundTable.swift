@@ -16,7 +16,7 @@ struct NamesAroundTable: View {
     var body: some View {
         ZStack {
             ForEach(Array(sortedPlayerList?.enumerated() 
-                          ?? [PlayerInformation.player_one, PlayerInformation.player_two, PlayerInformation.player_three, PlayerInformation.player_two, PlayerInformation.player_three, PlayerInformation.player_three].filter { $0.player_num != 1}
+                          ?? [PlayerInformation.player_one, PlayerInformation.player_two, PlayerInformation.player_three, PlayerInformation.player_four].filter { $0.player_num != 1}
                 .sorted(by: { $0.player_num! < $1.player_num!}).enumerated()), id: \.offset) {
                 (index, player) in
                 VStack(spacing: 0) {
@@ -36,7 +36,7 @@ struct NamesAroundTable: View {
                 })
             }
             .onAppear(perform: {
-                switch(firebaseHelper.gameInfo?.num_teams ?? 3) {
+                switch(firebaseHelper.gameInfo?.num_teams ?? 2) {
                 case 2:
                     if firebaseHelper.gameInfo?.num_players == 2 {
                         startingRotation = 0

@@ -20,11 +20,13 @@ struct GameHeader: View {
                 }
                 
                 HStack {
-                    Text(firebaseHelper.gameInfo?.game_name.capitalized ?? "Game")
-                        .font(.title2)
+                    VStack {
+                        Text(firebaseHelper.gameInfo?.game_name.capitalized ?? "Game")
+                            .font(.title2)
+                        Text("\(firebaseHelper.gameInfo?.group_id ?? 0)")
+                    }
                 }
             }
-//            .padding()
             Spacer()
         }
     }

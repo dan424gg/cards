@@ -37,6 +37,12 @@ final class DealTests: XCTestCase {
         await playerTwo.shuffleAndDealCards(cardsInHand_binding: Binding(get: { cardsInHand_Binding }, set: { cardsInHand_Binding = $0 }))
         XCTAssert(playerTwo.gameInfo!.cards.count == 40)
         XCTAssert(playerTwo.playerInfo!.cards_in_hand!.count == 6)
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 1.0)
+
+        var playerOneCards = playerOne.playerInfo!.cards_in_hand!
+        for card in playerOneCards {
+            XCTAssertFalse(playerTwo.gameInfo!.cards.contains(where: { deckCard in deckCard == card}), "\(card) was found in the deck of cards during twoPlayerDeal!")
+        }
         
         playerOne.deleteGameCollection(id: randId)
     }
@@ -49,8 +55,6 @@ final class DealTests: XCTestCase {
         } while (await playerOne.checkValidId(id: randId))
         
         await playerOne.startGameCollection(fullName: "1", gameName: "Cribbage", testGroupId: randId)
-        playerOne.updatePlayer(newState: ["is_dealer": true])
-        playerOne.updateTeam(newState: ["has_crib": true])
         
         var playerTwo = FirebaseHelper()
         await playerTwo.joinGameCollection(fullName: "2", id: randId, gameName: "Cribbage")
@@ -61,6 +65,35 @@ final class DealTests: XCTestCase {
         var cardsInHand_Binding: [CardItem] = []
         await playerOne.shuffleAndDealCards(cardsInHand_binding: Binding(get: { cardsInHand_Binding }, set: { cardsInHand_Binding = $0 }))
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 1.0)
+        XCTAssert(playerOne.gameInfo!.cards.count == 46)
+        XCTAssert(playerOne.playerInfo!.cards_in_hand!.count == 5)
+        
+        cardsInHand_Binding = []
+        await playerTwo.shuffleAndDealCards(cardsInHand_binding: Binding(get: { cardsInHand_Binding }, set: { cardsInHand_Binding = $0 }))
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 1.0)
+        XCTAssert(playerOne.gameInfo!.cards.count == 41)
+        XCTAssert(playerTwo.playerInfo!.cards_in_hand!.count == 5)
+        
+        cardsInHand_Binding = []
+        await playerThree.shuffleAndDealCards(cardsInHand_binding: Binding(get: { cardsInHand_Binding }, set: { cardsInHand_Binding = $0 }))
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 1.0)
+        XCTAssert(playerOne.gameInfo!.cards.count == 36)
+        XCTAssert(playerThree.playerInfo!.cards_in_hand!.count == 5)
+        
+        var playerOneCards = playerOne.playerInfo!.cards_in_hand!
+        for card in playerOneCards {
+            XCTAssertFalse(playerTwo.gameInfo!.cards.contains(where: { deckCard in deckCard == card}), "\(card) was found in the deck of cards during threePlayerDeal!")
+        }
+        
+        var playerTwoCards = playerTwo.playerInfo!.cards_in_hand!
+        for card in playerTwoCards {
+            XCTAssertFalse(playerThree.gameInfo!.cards.contains(where: { deckCard in deckCard == card}), "\(card) was found in the deck of cards during threePlayerDeal!")
+        }
+        
+        var playerThreeCards = playerThree.playerInfo!.cards_in_hand!
+        for card in playerThreeCards {
+            XCTAssertFalse(playerOne.gameInfo!.cards.contains(where: { deckCard in deckCard == card}), "\(card) was found in the deck of cards during threePlayerDeal!")
+        }
         
         XCTAssert(playerOne.teamInfo!.crib.count == 1)
         var teamWithCrib = playerThree.teams.first(where: { team in
@@ -94,14 +127,47 @@ final class DealTests: XCTestCase {
         
         var cardsInHand_Binding: [CardItem] = []
         await playerOne.shuffleAndDealCards(cardsInHand_binding: Binding(get: { cardsInHand_Binding }, set: { cardsInHand_Binding = $0 }))
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 1.0)
         XCTAssert(playerOne.gameInfo!.cards.count == 47)
         XCTAssert(playerOne.playerInfo!.cards_in_hand!.count == 5)
-        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 1.0)
         
         cardsInHand_Binding = []
         await playerTwo.shuffleAndDealCards(cardsInHand_binding: Binding(get: { cardsInHand_Binding }, set: { cardsInHand_Binding = $0 }))
-        XCTAssert(playerTwo.gameInfo!.cards.count == 42)
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 1.0)
+        XCTAssert(playerOne.gameInfo!.cards.count == 42)
         XCTAssert(playerTwo.playerInfo!.cards_in_hand!.count == 5)
+        
+        cardsInHand_Binding = []
+        await playerThree.shuffleAndDealCards(cardsInHand_binding: Binding(get: { cardsInHand_Binding }, set: { cardsInHand_Binding = $0 }))
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 1.0)
+        XCTAssert(playerOne.gameInfo!.cards.count == 37)
+        XCTAssert(playerThree.playerInfo!.cards_in_hand!.count == 5)
+        
+        cardsInHand_Binding = []
+        await playerFour.shuffleAndDealCards(cardsInHand_binding: Binding(get: { cardsInHand_Binding }, set: { cardsInHand_Binding = $0 }))
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 1.0)
+        XCTAssert(playerOne.gameInfo!.cards.count == 32)
+        XCTAssert(playerFour.playerInfo!.cards_in_hand!.count == 5)
+        
+        var playerOneCards = playerOne.playerInfo!.cards_in_hand!
+        for card in playerOneCards {
+            XCTAssertFalse(playerTwo.gameInfo!.cards.contains(where: { deckCard in deckCard == card}), "\(card) was found in the deck of cards during fourPlayerDeal!")
+        }
+        
+        var playerTwoCards = playerTwo.playerInfo!.cards_in_hand!
+        for card in playerTwoCards {
+            XCTAssertFalse(playerThree.gameInfo!.cards.contains(where: { deckCard in deckCard == card}), "\(card) was found in the deck of cards during fourPlayerDeal!")
+        }
+        
+        var playerThreeCards = playerThree.playerInfo!.cards_in_hand!
+        for card in playerThreeCards {
+            XCTAssertFalse(playerFour.gameInfo!.cards.contains(where: { deckCard in deckCard == card}), "\(card) was found in the deck of cards during fourPlayerDeal!")
+        }
+        
+        var playerFourCards = playerFour.playerInfo!.cards_in_hand!
+        for card in playerFourCards {
+            XCTAssertFalse(playerOne.gameInfo!.cards.contains(where: { deckCard in deckCard == card}), "\(card) was found in the deck of cards during fourPlayerDeal!")
+        }
         
         XCTAssert(playerOne.teamInfo!.crib.count == 0)
         
