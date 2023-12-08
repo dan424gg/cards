@@ -21,67 +21,126 @@ struct TurnOneView: View {
     
     var body: some View {
         VStack {
-            HStack(spacing: 10) {
-                if cardsDragged.count > 0 {
-                    CardView(cardItem: cardsDragged[0], cardIsDisabled: $cardIsDisabled)
-                } else {
-                    CardPlaceHolder()
-                        .border(firstDropAreaBorderColor, width: firstDropAreaBorderWidth)
-                        .dropDestination(for: CardItem.self) { items, location in
-                            if !cardsDragged.contains(items.first!) {
+            switch (firebaseHelper.gameInfo?.num_players ?? 4) {
+            case 2:
+                HStack {
+                    if cardsDragged.count == 0 {
+                        CardPlaceHolder()
+                            .border(firstDropAreaBorderColor, width: firstDropAreaBorderWidth)
+                            .dropDestination(for: CardItem.self) { items, location in
                                 cardsDragged.append(items.first!)
                                 cardsInHand.removeAll(where: { card in
                                     card == items.first!
                                 })
+                                return true
+                            } isTargeted: { inDropArea in
+                                firstDropAreaBorderColor = inDropArea ? .green : .clear
+                                firstDropAreaBorderWidth = inDropArea ? 7.0 : 1.0
                             }
-                            return true
-                        } isTargeted: { inDropArea in
-                            firstDropAreaBorderColor = inDropArea ? .green : .clear
-                            firstDropAreaBorderWidth = inDropArea ? 7.0 : 1.0
-                        }
-                }
-                
-                if firebaseHelper.gameInfo?.num_teams ?? 2 == 2 {
-                    if cardsDragged.count > 1 {
-                        CardView(cardItem: cardsDragged[1], cardIsDisabled: $cardIsDisabled)
-                    } else {
                         CardPlaceHolder()
                             .border(secondDropAreaBorderColor, width: secondDropAreaBorderWidth)
                             .dropDestination(for: CardItem.self) { items, location in
-                                if !cardsDragged.contains(items.first!) {
-                                    cardsDragged.append(items.first!)
-                                    cardsInHand.removeAll(where: { card in
-                                        card == items.first!
-                                    })
-                                }
+                                cardsDragged.append(items.first!)
+                                cardsInHand.removeAll(where: { card in
+                                    card == items.first!
+                                })
                                 return true
                             } isTargeted: { inDropArea in
                                 secondDropAreaBorderColor = inDropArea ? .green : .clear
                                 secondDropAreaBorderWidth = inDropArea ? 7.0 : 1.0
                             }
+                    } else {
+                        if cardsDragged.count == 1 {
+                            CardView(cardItem: cardsDragged[0], cardIsDisabled: .constant(true))
+                            CardPlaceHolder()
+                                .border(secondDropAreaBorderColor, width: secondDropAreaBorderWidth)
+                                .dropDestination(for: CardItem.self) { items, location in
+                                    cardsDragged.append(items.first!)
+                                    cardsInHand.removeAll(where: { card in
+                                        card == items.first!
+                                    })
+                                    return true
+                                } isTargeted: { inDropArea in
+                                    secondDropAreaBorderColor = inDropArea ? .green : .clear
+                                    secondDropAreaBorderWidth = inDropArea ? 7.0 : 1.0
+                                }
+                            
+                        } else {
+                            CardView(cardItem: cardsDragged[0], cardIsDisabled: .constant(true))
+                            CardView(cardItem: cardsDragged[1], cardIsDisabled: .constant(true))
+                        }
                     }
                 }
+            case 3,4:
+                if cardsDragged.count == 0 {
+                    CardPlaceHolder()
+                        .border(firstDropAreaBorderColor, width: firstDropAreaBorderWidth)
+                        .dropDestination(for: CardItem.self) { items, location in
+                            cardsDragged.append(items.first!)
+                            cardsInHand.removeAll(where: { card in
+                                card == items.first!
+                            })
+                            return true
+                        } isTargeted: { inDropArea in
+                            firstDropAreaBorderColor = inDropArea ? .green : .clear
+                            firstDropAreaBorderWidth = inDropArea ? 7.0 : 1.0
+                        }
+                } else {
+                    CardView(cardItem: cardsDragged[0], cardIsDisabled: .constant(true))
+                }
+            case 6:
+                let dealer = firebaseHelper.players.first(where: { player in
+                    player.is_dealer!
+                })
+                
+                if (firebaseHelper.playerInfo?.is_dealer! ?? true)
+                    /* or if player is "to the left" of the dealer */
+                    || ((firebaseHelper.playerInfo?.player_num! ?? 1 + 1) % (firebaseHelper.gameInfo?.num_players ?? 2)) != (dealer?.player_num! ?? 1) {
+                    Text("Waiting for players to discard...")
+                } else {
+                    if cardsDragged.count == 0 {
+                        CardPlaceHolder()
+                            .border(firstDropAreaBorderColor, width: firstDropAreaBorderWidth)
+                            .dropDestination(for: CardItem.self) { items, location in
+                                cardsDragged.append(items.first!)
+                                cardsInHand.removeAll(where: { card in
+                                    card == items.first!
+                                })
+                                return true
+                            } isTargeted: { inDropArea in
+                                firstDropAreaBorderColor = inDropArea ? .green : .clear
+                                firstDropAreaBorderWidth = inDropArea ? 7.0 : 1.0
+                            }
+                    } else {
+                        CardView(cardItem: cardsDragged[0], cardIsDisabled: .constant(true))
+                    }
+                }
+            default:
+                Text("don't get here")
             }
         }
         .frame(height: 100)
-        .onAppear(perform: {
-            Task {
-                await firebaseHelper.shuffleAndDealCards(cardsInHand_binding: $cardsInHand)
+        .onChange(of: firebaseHelper.players) {
+            if firebaseHelper.playerInfo!.is_lead! && firebaseHelper.checkIfPlayersAreReady() {
+                Task {
+                    await firebaseHelper.updateGame(newState: ["turn": firebaseHelper.gameInfo!.turn + 1])
+                }
             }
-        })
+        }
         .onChange(of: cardsDragged) {
             if playerReady() {
                 cardIsDisabled = true
 
                 firebaseHelper.updatePlayer(newState: [
-                    "cards_in_hand": cardsInHand
+                    "cards_in_hand": cardsInHand,
+                    "is_ready": true
                 ])
                 
-                let teamWithCrib = firebaseHelper.teams.first(where: { team in
-                    team.has_crib
-                })
+//                let teamWithCrib = firebaseHelper.teams.first(where: { team in
+//                    team.has_crib
+//                })
 
-                firebaseHelper.updateTeam(newState: ["crib": cardsDragged], team: teamWithCrib?.team_num)
+                firebaseHelper.updateTeam(newState: ["crib": cardsDragged])
             }
         }
     }
@@ -90,7 +149,7 @@ struct TurnOneView: View {
         switch (firebaseHelper.gameInfo?.num_teams ?? 2) {
         case 2: return cardsDragged.count == 2
         case 3: 
-            if firebaseHelper.playerInfo?.cards_in_hand!.count == 5 {
+            if firebaseHelper.gameInfo!.num_players == 3 {
                 return cardsDragged.count == 1
             } else {
                 return cardsDragged.count == 0

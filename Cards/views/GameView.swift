@@ -47,6 +47,15 @@ struct GameView: View {
                 }
                 .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 4.75)
             }
+            .onChange(of: firebaseHelper.gameInfo?.turn, initial: true, {
+                if firebaseHelper.gameInfo?.turn == 1 {
+                    // pick dealer
+                    
+                    Task {
+                        await firebaseHelper.shuffleAndDealCards(cardsInHand_binding: $cardsInHand)
+                    }
+                }
+            })
             .snackbar(isShowing: $firebaseHelper.showWarning, title: "Not Ready", text: firebaseHelper.error, style: .error, actionText: "dismiss", dismissOnTap: false, dismissAfter: nil, action: { firebaseHelper.showWarning = false })
             .snackbar(isShowing: $firebaseHelper.showError, title: "Not Ready", text: firebaseHelper.warning, style: .warning, actionText: "dismiss", dismissOnTap: false, dismissAfter: nil, action: { firebaseHelper.showError = false })
         }

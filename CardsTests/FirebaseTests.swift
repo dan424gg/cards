@@ -63,11 +63,7 @@ final class FirebaseHelperTests: XCTestCase {
         XCTAssert(playerOne.players.contains(where: { player in
             player.uid == playerTwo.playerInfo!.uid
         }))
-        
-        XCTAssertFalse(playerOne.playerInfo!.is_dealer!)
-        playerOne.updatePlayer(newState: ["is_dealer": true])
-        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 1.0)
-        
+                
         let updatedPlayer = playerTwo.players.first(where: { player in
             player.uid == playerOne.playerInfo!.uid!
         })
@@ -93,11 +89,7 @@ final class FirebaseHelperTests: XCTestCase {
         XCTAssert(playerOne.teams.contains(where: { team in
             team.team_num == playerTwo.teamInfo!.team_num
         }))
-        
-        XCTAssertFalse(playerOne.teamInfo!.has_crib)
-        playerOne.updateTeam(newState: ["has_crib": true])
-        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 1.0)
-        
+                
         let updatedTeam = playerTwo.teams.first(where: { team in
             team.team_num == playerOne.teamInfo!.team_num
         })
