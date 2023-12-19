@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct NewGame: View {
-    var gameName: String = "test"
+    @EnvironmentObject var firebaseHelper: FirebaseHelper
     @State private var fullName: String = ""
+    var gameName: String = "test"
     
     var body: some View {
         VStack {
@@ -26,10 +27,15 @@ struct NewGame: View {
             
             NavigationStack {
                 NavigationLink {
-                    LoadingScreen(fullName: fullName, gameName: gameName)
+                    LoadingScreen()
                 } label: {
                     Text("Submit")
                 }
+                .onTapGesture(perform: {
+                    Task{
+                        await firebaseHelper.startGameCollection(fullName: fullName, gameName: gameName)
+                    }
+                })
                 .disabled(fullName == "")
             }
         }

@@ -92,10 +92,6 @@ import FirebaseFirestoreSwift
                 }
             }
 
-//            let loc: Int? = players.firstIndex(where: { player in
-//                player.uid == playerInfo!.uid
-//            })
-//            players[loc!] = playerInfo!
             try docRef.collection("players").document("\(playerInfo!.uid!)").setData(from: playerInfo!, merge: true)
         } catch {
             print("error in updatePlayer: \(error)")
@@ -125,7 +121,7 @@ import FirebaseFirestoreSwift
                     gameInfo!.is_won = temp.value as! Bool
                     break
                 case "is_ready":
-                    gameInfo!.is_ready = temp.value as! Bool
+                    gameInfo!.is_playing = temp.value as! Bool
                     break
                 case "num_players":
                     gameInfo!.num_players = temp.value as! Int
@@ -353,42 +349,29 @@ import FirebaseFirestoreSwift
         teamsListener.remove()
     }
     
-    func getGroupId() -> Int {
-        guard gameInfo != nil else {
-            print("gameInfo was nil before trying to get group_id")
-            return 0
-        }
-        
-        return gameInfo!.group_id
-    }
+//    func getGroupId() -> Int {
+//        guard gameInfo != nil else {
+//            print("gameInfo was nil before trying to get group_id")
+//            return 0
+//        }
+//            
+//        return gameInfo!.group_id
+//    }
     
     func changeTeam(newTeamNum: Int) async {
         guard playerInfo != nil else {
             print("playerInfo was nil before trying to change it's team")
             return
         }
-        
-//        var player = playerInfo
-        
+                
         guard newTeamNum != playerInfo!.team_num else {
             return
         }
         
         do {
-            // delete old player document and team document if there is no more players in it
-//            if try await docRef!.collection("players").count.getAggregation(source: .server).count == 1 {
-//                try await docRef!.collection("players").document("\(player!.team_num!)").delete()
-//                await updateGame(newState: ["num_teams": gameInfo!.num_teams - 1])
-//            }
-//            try await docRef!.collection("players").document(player!.uid!).delete()
-            
-//            player!.team_num = newTeamNum
             if await !checkTeamExists(teamNum: newTeamNum) {
                 teamInfo = TeamInformation(team_num: newTeamNum)
                 try docRef!.collection("teams").document("\(newTeamNum)").setData(from: teamInfo)
-//                try await docRef!.collection("teams").document("\(newTeamNum)").collection("players").document("placeholder").setData([
-//                    "This": "serves as a placeholder so this collection doesn't get deleted when there aren't any players on this team, temporarily"
-//                ])
             }
             
             updatePlayer(newState: ["team_num": newTeamNum])
@@ -422,7 +405,7 @@ import FirebaseFirestoreSwift
         docRef = db.collection("games").document(String(groupId))
         
         do {
-            gameInfo = GameInformation(group_id: groupId, is_ready: true, num_teams: 1, turn: 0, game_name: gameName, num_players: 1)
+            gameInfo = GameInformation(group_id: groupId, num_teams: 1, turn: 0, game_name: gameName, num_players: 1)
             try docRef!.setData(from: gameInfo)
                         
             teamInfo = TeamInformation(team_num: 1, has_crib: true)
@@ -483,12 +466,7 @@ import FirebaseFirestoreSwift
                 teamInfo = TeamInformation(team_num: teamNum)
                 try docRef!.collection("teams").document("\(teamNum)").setData(from: teamInfo)
                 self.teams.append(teamInfo!)
-//                try await docRef!.collection("teams").document("\(teamNum)").collection("players").document("placeholder").setData([
-//                    "This": "serves as a placeholder so this collection doesn't get deleted when there aren't any players on this team, temporarily"
-//                ])
             }
-            
-//            try docRef!.collection("teams").document("\(teamNum)").collection("players").document(playerInfo!.uid!).setData(from: playerInfo!)
 
             addTeamsListener()
             await addPlayersListener()
