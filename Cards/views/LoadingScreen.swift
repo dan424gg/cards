@@ -10,28 +10,16 @@ import SwiftUI
 
 struct LoadingScreen: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
-    @State var groupId = 0
-    @State var teamNum = 1
-    var fullName: String
-    var gameName: String
     
     var body: some View {
         VStack {
             VStack {
-                Text("Hi \(fullName)!")
+                Text("Hi \(firebaseHelper.playerInfo?.name ?? "Player")!")
                     .task {
                         self.firebaseHelper.initFirebaseHelper()
                     }
-                Text("We're gonna start a game of \(gameName)!")
-                Text("Others can join with code: \(String(groupId))")
-                    .task {
-                        if groupId == 0 {
-                            await firebaseHelper.startGameCollection(fullName: fullName, gameName: gameName)
-                            groupId = firebaseHelper.getGroupId()
-                        } else {
-                            await firebaseHelper.joinGameCollection(fullName: fullName, id: groupId, gameName: gameName)
-                        }
-                    }
+                Text("We're gonna start a game of \(firebaseHelper.gameInfo?.game_name ?? "Game")!")
+                Text("Others can join with code: \(String(firebaseHelper.gameInfo?.group_id ?? 0))")
                 HStack {
                         Text("Want to change your team?    -->")
                             .bold()
@@ -56,7 +44,7 @@ struct LoadingScreen: View {
             
             GameStartButton()
                 .padding()
-                .disabled(groupId == 0 || !equalNumOfPlayersOnTeam(players: firebaseHelper.players))
+                .disabled((firebaseHelper.gameInfo?.group_id ?? 0) == 0 || !equalNumOfPlayersOnTeam(players: firebaseHelper.players))
         }
     }
 }
@@ -76,7 +64,7 @@ func equalNumOfPlayersOnTeam(players: [PlayerInformation]) -> Bool {
 
 struct LoadingScreen_Previews: PreviewProvider {
     static var previews: some View {
-        LoadingScreen(groupId: 0, fullName: "Daniel Wells", gameName: "Cribbage")
+        LoadingScreen()
             .environmentObject(FirebaseHelper())
     }
 }

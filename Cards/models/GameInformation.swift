@@ -13,7 +13,7 @@ import FirebaseFirestore
 
 public struct GameInformation: Hashable, Codable {
     var group_id: Int = 0
-    var is_ready: Bool = false
+    var is_playing: Bool = false
     var is_won: Bool = false
     var num_teams: Int = 0
     var turn: Int = 0

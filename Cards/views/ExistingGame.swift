@@ -59,11 +59,16 @@ struct ExistingGame: View {
             .border(.blue)
             
             NavigationLink {
-                LoadingScreen(groupId: groupId, fullName: fullName, gameName: gameName)
+                LoadingScreen()
             } label: {
                 Text("Submit")
                     .buttonStyle(.borderedProminent)
             }
+            .onTapGesture(perform: {
+                Task{
+                    await firebaseHelper.joinGameCollection(fullName: fullName, id: groupId, gameName: gameName)
+                }
+            })
             .disabled(notValidGroupId || fullName == "")
         }
         .multilineTextAlignment(.center)
