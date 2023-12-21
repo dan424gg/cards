@@ -42,9 +42,17 @@ struct LoadingScreen: View {
                 }
             }
             
-            GameStartButton()
-                .padding()
-                .disabled((firebaseHelper.gameInfo?.group_id ?? 0) == 0 || !equalNumOfPlayersOnTeam(players: firebaseHelper.players))
+            if firebaseHelper.playerInfo?.is_lead! ?? false {
+                GameStartButton()
+            } else {
+                Text("Waiting to start game...")
+            }
+        }
+        .fullScreenCover(isPresented: Binding(
+            get: { firebaseHelper.gameInfo?.is_playing ?? false },
+            set: {_ in }
+        )) {
+            GameView()
         }
     }
 }

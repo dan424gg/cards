@@ -28,14 +28,12 @@ struct NewGame: View {
             NavigationStack {
                 NavigationLink {
                     LoadingScreen()
+                        .task {
+                            await firebaseHelper.startGameCollection(fullName: fullName, gameName: gameName)
+                        }
                 } label: {
                     Text("Submit")
                 }
-                .onTapGesture(perform: {
-                    Task{
-                        await firebaseHelper.startGameCollection(fullName: fullName, gameName: gameName)
-                    }
-                })
                 .disabled(fullName == "")
             }
         }
