@@ -12,19 +12,14 @@ struct GameStartButton: View {
     
     var body: some View {
         VStack {
-            NavigationLink {
-                GameView().navigationBarBackButtonHidden(true)
-            } label: {
-                Text("Play!")
+            Button("Play!") {
+                Task {
+                    await self.firebaseHelper.updateGame(newState: ["is_playing": true, "turn": 1])
+                }
             }
             .buttonStyle(.borderedProminent)
-            .simultaneousGesture(TapGesture().onEnded {
-                if self.firebaseHelper.playerInfo != nil && self.firebaseHelper.playerInfo!.is_lead! {
-                    Task {
-                        await self.firebaseHelper.updateGame(newState: ["is_playing": true, "turn": 1])
-                    }
-                }
-            })
+            .padding()
+            .disabled((firebaseHelper.gameInfo?.group_id ?? 0) == 0 || !equalNumOfPlayersOnTeam(players: firebaseHelper.players))
         }
     }
 }

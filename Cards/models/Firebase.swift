@@ -120,7 +120,7 @@ import FirebaseFirestoreSwift
                 case "is_won":
                     gameInfo!.is_won = temp.value as! Bool
                     break
-                case "is_ready":
+                case "is_playing":
                     gameInfo!.is_playing = temp.value as! Bool
                     break
                 case "num_players":
@@ -129,7 +129,7 @@ import FirebaseFirestoreSwift
                 case "cards":
                     gameInfo!.cards = temp.value as! [CardItem]
                 default:
-                    print("property doesn't exist when trying to update game!")
+                    print("PROPERTY:\(property) doesn't exist when trying to update game!")
                     return
             }
         }
