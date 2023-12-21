@@ -4,6 +4,9 @@
 //
 //  Created by Daniel Wells on 11/13/23.
 //
+//
+//  When previewing view, make sure to set the default value on line 41
+//  and the corresponding default value for number of players
 
 import SwiftUI
 
@@ -15,9 +18,12 @@ struct NamesAroundTable: View {
     
     var body: some View {
         ZStack {
-            ForEach(Array(sortedPlayerList?.enumerated() 
-                          ?? [PlayerInformation.player_one, PlayerInformation.player_two, PlayerInformation.player_three, PlayerInformation.player_four].filter { $0.player_num != 1}
-                .sorted(by: { $0.player_num! < $1.player_num!}).enumerated()), id: \.offset) {
+            ForEach(Array(sortedPlayerList?.enumerated()
+                      ?? [PlayerInformation.player_one, PlayerInformation.player_two, PlayerInformation.player_three, PlayerInformation.player_four]
+                            .filter { $0.player_num != 1 }
+                            .sorted(by: { $0.player_num! < $1.player_num!})
+                            .enumerated()
+                     ), id: \.offset) {
                 (index, player) in
                 VStack(spacing: 0) {
                     Text(player.name!)
