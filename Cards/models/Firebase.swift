@@ -388,12 +388,7 @@ import FirebaseFirestoreSwift
 
         let testMode =  ProcessInfo.processInfo.arguments.contains("testMode")
         if testMode {
-            do {
-                try await Firestore.firestore().collection("games").document("1234").delete()
-                groupId = 1234
-            } catch {
-                // something
-            }
+            groupId = 1234
         } else if testGroupId != nil {
             groupId = testGroupId!
         } else {

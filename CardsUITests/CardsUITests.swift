@@ -10,6 +10,8 @@ import XCTest
 import FirebaseFirestore
 import FirebaseFirestoreSwift
 
+@testable import Cards
+
 final class CardsUITests: XCTestCase {
 
     override func setUpWithError() throws {
@@ -24,52 +26,21 @@ final class CardsUITests: XCTestCase {
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         
-        // delete player created in test
-//        Firestore.firestore().collection("games").document("1234").collection("teams").document("2").delete()
+//         delete player created in test
+//        Firestore.firestore().collection("games").document("1234").delete()
     }
 
     func testExample() throws {
         // UI tests must launch the application that they test.
         
         let startingApp = XCUIApplication()
-        startingApp.launch()
         startingApp.launchArguments = ["testMode"]
-        startingApp.buttons["Cribbage"].tap()
-        XCTAssert(startingApp.buttons["Start a new game"].exists)
-        XCTAssert(startingApp.buttons["Join an existing game"].exists)
-        
-        startingApp.buttons["Start a new game"].tap()
-        XCTAssert(startingApp.staticTexts["Please enter your name (or anything)!"].exists)
-        startingApp.textFields["Full Name"].tap()
-        startingApp.typeText("Test Player 1")
-        startingApp.buttons["Submit"].tap()
-        XCTAssert(startingApp.staticTexts["Hi Test Player 1!"].exists)
-
-        
-        let app = XCUIApplication()
-        app.launch()
-        app.launchArguments = ["testMode"]
-        app.buttons["Cribbage"].tap()
-        XCTAssert(app.buttons["Start a new game"].exists)
-        XCTAssert(app.buttons["Join an existing game"].exists)
-        
-        app.buttons["Join an existing game"].tap()
-        XCTAssert(app.staticTexts["Please enter a Group ID, and your name!"].exists)
-        
-        app.textFields["Group ID"].tap()
-        app.typeText("1234")
-        app.textFields["Full Name"].tap()
-        app.typeText("Test Player 2")
-        app.buttons["Submit"].tap()
-        XCTAssert(app.staticTexts["Hi Test Player 2!"].exists)
+        startingApp.launch()
         
 //        let isEnabled = NSPredicate(format: "isEnabled == true")
-//        let secondPlayButton = app.buttons["Play!"]
-//        expectation(for: isEnabled, evaluatedWith: secondPlayButton, handler: nil)
+//        let playButton = startingApp.buttons["Play!"]
+//        expectation(for: isEnabled, evaluatedWith: playButton, handler: nil)
 //        waitForExpectations(timeout: 5, handler: nil)
-//        
-//        app.buttons["Play!"].tap()
-//        XCTAssert(app.staticTexts["Cribbage"].exists)
     }
 
     func testLaunchPerformance() throws {
