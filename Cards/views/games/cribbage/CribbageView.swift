@@ -45,11 +45,17 @@ struct Cribbage: View {
                     .foregroundStyle(.gray.opacity(0.7))
             }
             
+            Button("increment turn") {
+                Task {
+                    await firebaseHelper.updateGame(newState: ["turn": ((firebaseHelper.gameInfo?.turn ?? 0) % 4) + 1])
+                }
+            }
+            
             CardInHandArea(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
                 .offset(y: 50)
                 .scaleEffect(x: 2, y: 2)
                 .onAppear(perform: {
-                    cardsInHand = [CardItem(id: 39, value: "A", suit: "club"), CardItem(id: 40, value: "2", suit: "club"), CardItem(id: 26, value: "6", suit: "diamond"), CardItem(id: 27, value: "2", suit: "diamond"), CardItem(id: 39, value: "7", suit: "club")]
+//                    cardsInHand = [CardItem(id: 39, value: "A", suit: "club"), CardItem(id: 40, value: "2", suit: "club"), CardItem(id: 26, value: "6", suit: "diamond"), CardItem(id: 27, value: "2", suit: "diamond"), CardItem(id: 39, value: "7", suit: "club")]
                 })
         }
     }

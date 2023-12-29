@@ -18,7 +18,6 @@ public struct PlayerInformation: Hashable, Codable {
     var is_lead: Bool? = false
     var team_num: Int? = 0
     var is_ready: Bool? = false
-    var is_dealer: Bool? = false
     var player_num: Int? = -1
 
     static var player_one = PlayerInformation(name: "Daniel", uid: "001", cards_in_hand: [CardItem(id: 39, value: "A", suit: "club"), CardItem(id: 40, value: "2", suit: "club"), CardItem(id: 26, value: "A", suit: "diamond"), CardItem(id: 27, value: "2", suit: "diamond")], is_lead: true, team_num: 1, player_num: 1)
@@ -33,7 +32,6 @@ public struct PlayerInformation: Hashable, Codable {
         case is_lead
         case team_num
         case is_ready
-        case is_dealer
         case player_num
     }
 }

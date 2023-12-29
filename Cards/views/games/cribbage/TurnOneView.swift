@@ -90,10 +90,10 @@ struct TurnOneView: View {
                 }
             case 6:
                 let dealer = firebaseHelper.players.first(where: { player in
-                    player.is_dealer!
+                    player.player_num == firebaseHelper.gameInfo?.dealer
                 })
                 
-                if (firebaseHelper.playerInfo?.is_dealer! ?? true)
+                if (firebaseHelper.playerInfo?.player_num == firebaseHelper.gameInfo?.dealer)
                     /* or if player is "to the left" of the dealer */
                     || ((firebaseHelper.playerInfo?.player_num! ?? 1 + 1) % (firebaseHelper.gameInfo?.num_players ?? 2)) != (dealer?.player_num! ?? 1) {
                     Text("Waiting for players to discard...")

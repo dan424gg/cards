@@ -72,27 +72,27 @@ import FirebaseFirestoreSwift
             print("playerInfo was nil before trying to update it's info!")
             return
         }
+        
+        var updatedPlayerInfo: PlayerInformation = playerInfo!
                 
         do {
             for (key, value) in newState {
                 switch key {
                 case "name" where value is String:
-                    playerInfo!.name = (value as! String)
+                    updatedPlayerInfo.name = (value as! String)
                 case "cards_in_hand" where value is [CardItem]:
-                    playerInfo!.cards_in_hand = (value as! [CardItem])
+                    updatedPlayerInfo.cards_in_hand = (value as! [CardItem])
                 case "team_num" where value is Int:
-                    playerInfo!.team_num = (value as! Int)
+                    updatedPlayerInfo.team_num = (value as! Int)
                 case "is_ready" where value is Bool:
-                    playerInfo!.is_ready = (value as! Bool)
-                case "is_dealer" where value is Bool:
-                    playerInfo!.is_dealer = (value as! Bool)
+                    updatedPlayerInfo.is_ready = (value as! Bool)
                 default:
                     print("Property '\(key)' doesn't exist when trying to update player!")
                     return
                 }
             }
 
-            try docRef.collection("players").document("\(playerInfo!.uid!)").setData(from: playerInfo!, merge: true)
+            try docRef.collection("players").document("\(updatedPlayerInfo.uid!)").setData(from: updatedPlayerInfo)
         } catch {
             print("error in updatePlayer: \(error)")
         }
@@ -108,26 +108,30 @@ import FirebaseFirestoreSwift
             return
         }
         
+        var updatedGameInfo = gameInfo!
+        
         for temp in newState {
             let property = temp.key
             switch (property) {
                 case "turn":
-                    gameInfo!.turn = temp.value as! Int
+                    updatedGameInfo.turn = temp.value as! Int
                     break
                 case "num_teams":
-                    gameInfo!.num_teams = temp.value as! Int
+                    updatedGameInfo.num_teams = temp.value as! Int
                     break
                 case "is_won":
-                    gameInfo!.is_won = temp.value as! Bool
+                    updatedGameInfo.is_won = temp.value as! Bool
                     break
                 case "is_playing":
-                    gameInfo!.is_playing = temp.value as! Bool
+                    updatedGameInfo.is_playing = temp.value as! Bool
                     break
                 case "num_players":
-                    gameInfo!.num_players = temp.value as! Int
+                    updatedGameInfo.num_players = temp.value as! Int
                     break
                 case "cards":
-                    gameInfo!.cards = temp.value as! [CardItem]
+                    updatedGameInfo.cards = temp.value as! [CardItem]
+                case "dealer":
+                    updatedGameInfo.dealer = temp.value as! Int
                 default:
                     print("PROPERTY:\(property) doesn't exist when trying to update game!")
                     return
@@ -135,7 +139,7 @@ import FirebaseFirestoreSwift
         }
         
         do {
-            try docRef!.setData(from: gameInfo!, merge: true)
+            try docRef!.setData(from: updatedGameInfo)
         } catch {
             print("couldn't update game")
         }
@@ -407,7 +411,7 @@ import FirebaseFirestoreSwift
             try docRef!.collection("teams").document(String(1)).setData(from: teamInfo)
             self.teams.append(teamInfo!)
             
-            playerInfo = PlayerInformation(name: fullName, uid: UUID().uuidString, is_lead: true, team_num: 1, is_dealer: true, player_num: 0)
+            playerInfo = PlayerInformation(name: fullName, uid: UUID().uuidString, is_lead: true, team_num: 1, player_num: 0)
             try docRef!.collection("players").document(playerInfo!.uid!).setData(from: playerInfo!)
             self.players.append(playerInfo!)
             
@@ -476,11 +480,18 @@ import FirebaseFirestoreSwift
         guard gameInfo != nil else {
             return
         }
-        var cardsInHand = cardsInHand_binding.wrappedValue
+        var cardsInHand: [CardItem] = []
         
         if playerInfo!.is_lead! {
-            await updateGame(newState: ["cards": GameInformation().cards.shuffled().shuffled()])
+            await updateGame(newState: ["cards": GameInformation().cards.shuffled()])
+        } else {
+            while gameInfo?.cards == GameInformation().cards {
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {
+                    print("something")
+                })
+            }
         }
+        
         
         switch (gameInfo?.num_teams ?? 2) {
         case 1, 2:
@@ -519,9 +530,9 @@ import FirebaseFirestoreSwift
             }
             else {
                 let dealer = players.first(where: { player in
-                    player.is_dealer!
+                    player.player_num == gameInfo?.dealer
                 })
-                if playerInfo!.is_dealer!
+                if playerInfo?.player_num == gameInfo?.dealer
                     /* or if player is "to the left" of the dealer */
                     || (playerInfo!.player_num! + 1) % gameInfo!.num_players == dealer!.player_num! {
                     for _ in 1...4 {
