@@ -12,6 +12,8 @@ struct GameView: View {
     @State var showSnackbar: Bool = true
     @State var cardsDragged: [CardItem] = []
     @State var cardsInHand: [CardItem] = []
+    
+    @State var firstTurn = true
         
     var body: some View {
         GeometryReader { geo in
@@ -28,7 +30,6 @@ struct GameView: View {
                 
                 CribbageBoard()
                     .scaleEffect(x: 0.9, y: 0.9)
-//                    .rotationEffect(.degrees(45))
                     .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 1.65 )
                 
                 DeckOfCardsView()
@@ -46,10 +47,26 @@ struct GameView: View {
                     }
                 }
                 .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 4.75)
+                
+                if firebaseHelper.playerInfo?.player_num == firebaseHelper.gameInfo?.dealer {
+                    Text("Dealer")
+                        .position(x: geo.size.width - 50, y: geo.size.height - 10)
+                }
             }
             .onChange(of: firebaseHelper.gameInfo?.turn, initial: true, {
                 if firebaseHelper.gameInfo?.turn == 1 {
-                    // pick dealer
+                    if firstTurn && firebaseHelper.playerInfo?.is_lead ?? true {
+                        // pick first dealer randomly
+                        var randDealer = Int.random(in: 0..<(firebaseHelper.gameInfo?.num_players ?? 1))
+                        Task {
+                            await firebaseHelper.updateGame(newState: ["dealer": randDealer])
+                        }
+                    } else if firebaseHelper.playerInfo?.is_lead ?? true {
+                        // rotate dealer
+                        Task {
+                            await firebaseHelper.updateGame(newState: ["dealer": ((firebaseHelper.gameInfo?.dealer ?? 0) + 1) % (firebaseHelper.gameInfo?.num_players ?? 2)])
+                        }
+                    }
                     
                     Task {
                         await firebaseHelper.shuffleAndDealCards(cardsInHand_binding: $cardsInHand)
