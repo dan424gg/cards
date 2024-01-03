@@ -14,25 +14,25 @@ struct CribbageBoard: View {
     var teamTwoPoints = 120
     var teamThreePoints = 120
     
-    var teams = [TeamInformation.team_one, TeamInformation.team_two, TeamInformation.team_two]
+    var teams = [TeamState.team_one, TeamState.team_two, TeamState.team_two]
     @State var pointsShown = false
     
     var trackWidthAdjustment: Double {
-        if (firebaseHelper.gameInfo?.num_teams ?? numPlayers) == 3 {
+        if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
             return 5.0
         } else {
             return 7.5
         }
     }
     var trackPosAdjustment: Double {
-        if (firebaseHelper.gameInfo?.num_teams ?? numPlayers) == 3 {
+        if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
             return 5.0
         } else {
             return 7.5
         }
     }
     var midYAdjustment: Double {
-        if (firebaseHelper.gameInfo?.num_teams ?? numPlayers) == 3 {
+        if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
             return 7.5
         } else {
             return 7.5
@@ -81,7 +81,7 @@ struct CribbageBoard: View {
                     .fill(Color.gray.opacity(0.35))
                     
                     // path 3
-                    if (firebaseHelper.gameInfo?.num_teams ?? numPlayers) == 3 {
+                    if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
                         Path { path in
                             path.move(to: CGPoint(x: rect.minX, y: rect.minY + (2 * trackPosAdjustment)))
                             path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY + (2 * trackPosAdjustment)))

@@ -10,8 +10,8 @@ import SwiftUI
 struct DeckOfCardsView: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
 
-    var game = GameInformation(group_id: 1000, is_playing: false, is_won: false, num_teams: 2, turn: 1, game_name: "cribbage")
-    var tempTeam = TeamInformation(team_num: 1, crib: [CardItem(id: 0, value: "A", suit: "heart"), CardItem(id: 1, value: "5", suit: "heart"), CardItem(id: 2, value: "4", suit: "spade"), CardItem(id: 3, value: "K", suit: "heart")], has_crib: true, points: 50)
+    var game = GameState(group_id: 1000, is_playing: false, is_won: false, num_teams: 2, turn: 1, game_name: "cribbage")
+    var tempTeam = TeamState(team_num: 1, crib: Array(0...3), has_crib: true, points: 50)
         
     var body: some View {
         HStack(spacing: 50) {
@@ -21,10 +21,10 @@ struct DeckOfCardsView: View {
                     team.has_crib
                 })
                 
-                if firebaseHelper.gameInfo?.turn ?? game.turn > 1 {
+                if firebaseHelper.gameState?.turn ?? game.turn > 1 {
                     HStack(spacing: -40) {
-                        ForEach(Array(teamWithCrib?.crib.enumerated() ?? tempTeam.crib.enumerated()), id: \.offset) { (index, card) in
-                            CardView(cardItem: card, cardIsDisabled: .constant(true), backside: false)
+                        ForEach(Array(teamWithCrib?.crib.enumerated() ?? tempTeam.crib.enumerated()), id: \.offset) { (index, cardId) in
+                            CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(true), backside: false)
                                 .offset(y: -Double.random(in: -5.0...5.0) / 5.0)
                                 .rotationEffect(.degrees(Double.random(in: -5.0...5.0)))
                                 .disabled(true)
@@ -33,26 +33,26 @@ struct DeckOfCardsView: View {
                 }
                 
                 ZStack {
-                    if firebaseHelper.gameInfo == nil {
-                        ForEach(Array(game.cards.enumerated()), id: \.offset) { (index, card) in
+                    if firebaseHelper.gameState == nil {
+                        ForEach(Array(game.cards.enumerated()), id: \.offset) { (index, cardId) in
                             if (index == 0) && (game.turn > 1) {
-                                CardView(cardItem: card, cardIsDisabled: .constant(true), backside: false)
+                                CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(true), backside: false)
                                     .offset(y: -Double.random(in: -5.0...5.0) / 5.0)
                                     .rotationEffect(.degrees(Double.random(in: -5.0...5.0)))
                             } else {
-                                CardView(cardItem: card, cardIsDisabled: .constant(true), backside: false)
+                                CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(true), backside: false)
                                     .offset(y: -Double.random(in: -5.0...5.0) / 5.0)
                                     .rotationEffect(.degrees(Double.random(in: -5.0...5.0)))
                             }
                         }
                     } else {
-                        ForEach(Array(firebaseHelper.gameInfo!.cards.enumerated()), id: \.offset) { (index, card) in
-                            if (index == 0) && (firebaseHelper.gameInfo!.turn > 1) {
-                                CardView(cardItem: card, cardIsDisabled: .constant(true), backside: false)
+                        ForEach(Array(firebaseHelper.gameState!.cards.enumerated()), id: \.offset) { (index, cardId) in
+                            if (index == 0) && (firebaseHelper.gameState!.turn > 1) {
+                                CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(true), backside: false)
                                     .offset(y: -Double.random(in: -5.0...5.0) / 5.0)
                                     .rotationEffect(.degrees(Double.random(in: -5.0...5.0)))
                             } else {
-                                CardView(cardItem: card, cardIsDisabled: .constant(true), backside: false)
+                                CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(true), backside: false)
                                     .offset(y: -Double.random(in: -5.0...5.0) / 5.0)
                                     .rotationEffect(.degrees(Double.random(in: -5.0...5.0)))
                             }

@@ -8,17 +8,17 @@
 import SwiftUI
 
 struct Cribbage: View {
-    var teams =  [TeamInformation.team_one, TeamInformation.team_two]
-    var players = [PlayerInformation.player_one, PlayerInformation.player_two]
-    var game = GameInformation(group_id: 1000, is_playing: false, is_won: false, num_teams: 2, turn: 1)
+    var teams =  [TeamState.team_one, TeamState.team_two]
+    var players = [PlayerState.player_one, PlayerState.player_two]
+    var game = GameState(group_id: 1000, is_playing: false, is_won: false, num_teams: 2, turn: 1)
     
     @EnvironmentObject var firebaseHelper: FirebaseHelper
-    @Binding var cardsDragged: [CardItem]
-    @Binding var cardsInHand: [CardItem]
+    @Binding var cardsDragged: [Int]
+    @Binding var cardsInHand: [Int]
     
     var body: some View {
         VStack {
-            switch(firebaseHelper.gameInfo?.turn ?? game.turn) {
+            switch(firebaseHelper.gameState?.turn ?? game.turn) {
             case 1:
                 Text("The Deal")
                     .font(.title3)
@@ -47,7 +47,7 @@ struct Cribbage: View {
             
             Button("increment turn") {
                 Task {
-                    await firebaseHelper.updateGame(newState: ["turn": ((firebaseHelper.gameInfo?.turn ?? 0) % 4) + 1])
+                    await firebaseHelper.updateGame(newState: ["turn": ((firebaseHelper.gameState?.turn ?? 0) % 4) + 1])
                 }
             }
             
@@ -63,7 +63,7 @@ struct Cribbage: View {
 
 struct Cribbage_Previews: PreviewProvider {
     static var previews: some View {
-        Cribbage(cardsDragged: .constant([CardItem(id: 39, value: "A", suit: "club")]), cardsInHand: .constant([]))
+        Cribbage(cardsDragged: .constant([]), cardsInHand: .constant([]))
             .environmentObject(FirebaseHelper())
     }
 }

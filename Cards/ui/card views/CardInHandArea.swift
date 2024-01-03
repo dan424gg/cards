@@ -17,8 +17,8 @@ extension AnyTransition {
 
 struct CardInHandArea: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
-    @Binding var cardsDragged: [CardItem]
-    @Binding var cardsInHand: [CardItem]
+    @Binding var cardsDragged: [Int]
+    @Binding var cardsInHand: [Int]
     
     var showBackside = false
     
@@ -28,8 +28,8 @@ struct CardInHandArea: View {
         VStack {
             ZStack {
                 if firstTurn {
-                    ForEach(Array(cardsInHand.enumerated()), id: \.offset) { (index, card) in
-                        CardView(cardItem: card, cardIsDisabled: .constant(false), backside: showBackside)
+                    ForEach(Array(cardsInHand.enumerated()), id: \.offset) { (index, cardId) in
+                        CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(false), backside: showBackside)
                             .offset(y: -50)
                             .rotationEffect(.degrees(-Double((cardsInHand.count - 1) * 6) + Double(index * 12)))
                     }
@@ -43,10 +43,10 @@ struct CardInHandArea: View {
             
             .offset(y: 50)
             .dropDestination(for: CardItem.self) { items, location in
-                if !cardsInHand.contains(items.first!) {
-                    cardsInHand.append(items.first!)
+                if !cardsInHand.contains(items.first!.id) {
+                    cardsInHand.append(items.first!.id)
                     cardsDragged.removeAll(where: { card in
-                        card == items.first!
+                        card == items.first!.id
                     })
                 }
                 return true
@@ -58,6 +58,6 @@ struct CardInHandArea: View {
 }
 
 #Preview {
-    CardInHandArea(cardsDragged: .constant([]), cardsInHand: .constant([CardItem(id: 39, value: "A", suit: "club"), CardItem(id: 40, value: "2", suit: "club"), CardItem(id: 26, value: "A", suit: "diamond"), CardItem(id: 27, value: "2", suit: "diamond"), CardItem(id: 39, value: "A", suit: "club"), CardItem(id: 40, value: "2", suit: "club"), CardItem(id: 26, value: "A", suit: "diamond"), CardItem(id: 27, value: "2", suit: "diamond")]))
+    CardInHandArea(cardsDragged: .constant([]), cardsInHand: .constant(Array(0...4)))
         .environmentObject(FirebaseHelper())
 }
