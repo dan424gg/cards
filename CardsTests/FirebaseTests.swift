@@ -176,14 +176,12 @@ final class FirebaseHelperTests: XCTestCase {
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         XCTAssertTrue(playerOne.gameState!.cards.contains(3), "TESTUPDATEGAME: single card: 3 wasn't removed locally!")
         XCTAssertTrue(playerTwo.gameState!.cards.contains(3), "TESTUPDATEGAME: single card: 3 wasn't removed in firebase!")
-
         
         // cardAction '.replace' test
         await playerOne.updateGame(newState: ["cards": [0, 1, 2, 3]], cardAction: .replace)
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         XCTAssertTrue(playerOne.gameState!.cards == [0, 1, 2, 3], "TESTUPDATEGAME: cards weren't replaced locally!")
         XCTAssertTrue(playerTwo.gameState!.cards == [0, 1, 2, 3], "TESTUPDATEGAME: cards weren't replaced in firebase!")
-        
         
         playerOne.deleteGameCollection(id: randId)
     }
@@ -200,19 +198,6 @@ final class FirebaseHelperTests: XCTestCase {
         let playerTwo = FirebaseHelper()
         await playerTwo.joinGameCollection(fullName: "2", id: randId, gameName: "Cribbage")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 1.0)
-        
-//        XCTAssert(playerOne.playerState?.cards_in_hand == [])
-//        XCTAssert(playerOne.teamState?.crib == [])
-//        
-//        let cards = Array(0...4)
-//        playerOne.updateCards(cards: cards)
-//        XCTAssert(playerOne.playerState?.cards_in_hand == cards, "cards were not updated in player's cards_in_hand!")
-//        
-//        playerOne.updateCards(cards: cards, crib: true)
-//        XCTAssert(playerOne.teamState?.crib == cards, "cards were not updated in team's crib!")
-//        
-//        playerOne.updateCards(cards: cards, uid: playerTwo.playerState!.uid)
-//        XCTAssert(playerTwo.playerState!.cards_in_hand == cards, "cards were not updated in playerTwo's cards_in_hand!")
         
         playerOne.deleteGameCollection(id: randId)
     }

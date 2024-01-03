@@ -101,7 +101,7 @@ import FirebaseFirestoreSwift
             print("docRef was nil before updating player information")
             return
         }
-        
+      
         if crib {
             let teamWithCrib = teams.first(where: { team in team.has_crib })
             docRef.collection("teams").document("\(teamWithCrib!.team_num)").updateData([
