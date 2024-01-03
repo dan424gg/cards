@@ -101,7 +101,7 @@ import FirebaseFirestoreSwift
             print("docRef was nil before updating player information")
             return
         }
-        
+      
         if crib {
             let teamWithCrib = teams.first(where: { team in team.has_crib })
             docRef.collection("teams").document("\(teamWithCrib!.team_num)").updateData([
@@ -114,7 +114,7 @@ import FirebaseFirestoreSwift
         }
     }
     
-    func updateGame(newState: [String: Any]) async {
+    func updateGame(newState: [String: Any], cardAction: CardUpdateType? = nil) async {
         guard docRef != nil else {
             print("docRef was nil before updating game information")
             return
@@ -124,40 +124,117 @@ import FirebaseFirestoreSwift
             return
         }
         
-        var updatedGameInfo = gameState!
-        
-        for temp in newState {
-            let property = temp.key
-            switch (property) {
-                case "turn":
-                    updatedGameInfo.turn = temp.value as! Int
-                    break
-                case "num_teams":
-                    updatedGameInfo.num_teams = temp.value as! Int
-                    break
-                case "is_won":
-                    updatedGameInfo.is_won = temp.value as! Bool
-                    break
-                case "is_playing":
-                    updatedGameInfo.is_playing = temp.value as! Bool
-                    break
-                case "num_players":
-                    updatedGameInfo.num_players = temp.value as! Int
-                    break
-                case "cards":
-                    updatedGameInfo.cards = temp.value as! [Int]
-                case "dealer":
-                    updatedGameInfo.dealer = temp.value as! Int
-                default:
-                    print("PROPERTY:\(property) doesn't exist when trying to update game!")
-                    return
-            }
-        }
-        
+        // type check
         do {
-            try docRef!.setData(from: updatedGameInfo)
+            for (key, value) in newState {
+                switch (key) {
+                    case "turn":
+                        guard type(of: value) is Int.Type else {
+                            print("\(key) needs to be Int in updateGame()!")
+                            return
+                        }
+                        
+                        try await docRef!.updateData([
+                            "\(key)": value
+                        ])
+                        
+                        break
+                        
+                    case "num_teams":
+                        guard type(of: value) is Int.Type else {
+                            print("\(key) needs to be Int in updateGame()!")
+                            return
+                        }
+                        
+                        try await docRef!.updateData([
+                            "\(key)": value
+                        ])
+                        
+                        break
+                        
+                    case "is_won":
+                        guard type(of: value) is Bool.Type else {
+                            print("\(key) needs to be Bool in updateGame()!")
+                            return
+                        }
+                        
+                        try await docRef!.updateData([
+                            "\(key)": value
+                        ])
+                        
+                        break      
+                        
+                    case "is_playing":
+                        guard type(of: value) is Bool.Type else {
+                            print("\(key) needs to be Bool in updateGame()!")
+                            return
+                        }
+                        
+                        try await docRef!.updateData([
+                            "\(key)": value
+                        ])
+                        
+                        break
+                        
+                    case "num_players":
+                        guard type(of: value) is Int.Type else {
+                            print("\(value) needs to be Int in updateGame()!")
+                            return
+                        }
+                        
+                        try await docRef!.updateData([
+                            "\(key)": value
+                        ])
+                        
+                        break
+                        
+                    case "cards":
+                        guard type(of: value) is [Int].Type else {
+                            print("\(value) needs to be [Int] in updateGame()!")
+                            return
+                        }
+                        
+                        switch (cardAction) {
+                            case .append:
+                                try await docRef!.updateData([
+                                    "\(key)": FieldValue.arrayUnion(value as! [Int])
+                                ])
+                                break
+                            case .remove:
+                                try await docRef!.updateData([
+                                    "\(key)": FieldValue.arrayRemove(value as! [Int])
+                                ])
+                                break
+                            case .replace:
+                                try await docRef!.updateData([
+                                    "\(key)": value as! [Int]
+                                ])
+                                break
+                            default:
+                                print("UDPATEGAME: you have to have a cardAction flag set to manipulate cards!")
+                                return
+                        }
+                        break
+                        
+                    case "dealer":
+                        guard type(of: value) is Int.Type else {
+                            print("\(value) needs to be Int in updateGame()!")
+                            return
+                        }
+                        
+                        try await docRef!.updateData([
+                            "\(key)": value
+                        ])
+                        
+                        break
+                        
+                    default:
+                        print("UPDATEGAME: key:\(key) doesn't exist when trying to update game!")
+                        return
+                }
+            }
         } catch {
-            print("couldn't update game")
+            print("UPDATEGAME: \(error)")
         }
     }
     
@@ -492,8 +569,7 @@ import FirebaseFirestoreSwift
             return
         }
         
-        await updateGame(newState: ["cards": GameState().cards.shuffled()])
-        print(gameState!.cards.shuffled())
+        await updateGame(newState: ["cards": GameState().cards.shuffled()], cardAction: .replace)
 //        var numberOfCards: Int {
 //            switch (gameState?.num_teams, gameState?.num_players) {
 //                case (2, 2):
@@ -610,5 +686,11 @@ import FirebaseFirestoreSwift
         } catch {
             return false
         }
+    }
+    
+    enum CardUpdateType {
+        case append
+        case remove
+        case replace
     }
 }
