@@ -9,8 +9,8 @@ import SwiftUI
 
 struct TurnTwoView: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
-    @Binding var cardsDragged: [CardItem]
-    @Binding var cardsInHand: [CardItem]
+    @Binding var cardsDragged: [Int]
+    @Binding var cardsInHand: [Int]
     
     @State private var dropAreaBorderColor: Color = .clear
     @State private var dropAreaBorderWidth: CGFloat = 1.0
@@ -21,6 +21,6 @@ struct TurnTwoView: View {
 }
 
 #Preview {
-    TurnTwoView(cardsDragged: .constant([CardItem(id: 0, value: "A", suit: "H")]), cardsInHand: .constant([]))
+    TurnTwoView(cardsDragged: .constant([0]), cardsInHand: .constant([]))
         .environmentObject(FirebaseHelper())
 }

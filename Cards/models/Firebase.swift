@@ -13,7 +13,7 @@ import FirebaseFirestoreSwift
 
 
 @MainActor class FirebaseHelper: ObservableObject {
-    private var gameInfoListener: ListenerRegistration!
+    private var gameStateListener: ListenerRegistration!
     private var teamsListener: ListenerRegistration!
     private var playersListener: ListenerRegistration!
     
@@ -21,12 +21,12 @@ import FirebaseFirestoreSwift
     private var playerListeners = ListenerList()
     
     @Published private var db = Firestore.firestore()
-    @Published var gameInfo: GameInformation?
-    @Published var teamInfo: TeamInformation?
-    @Published var playerInfo: PlayerInformation?
+    @Published var gameState: GameState?
+    @Published var teamState: TeamState?
+    @Published var playerState: PlayerState?
 
-    @Published var players: [PlayerInformation] = []
-    @Published var teams: [TeamInformation] = []
+    @Published var players: [PlayerState] = []
+    @Published var teams: [TeamState] = []
     
     @Published var showWarning: Bool = false
     @Published var warning: String = ""
@@ -36,9 +36,9 @@ import FirebaseFirestoreSwift
     var docRef: DocumentReference!
         
     func initFirebaseHelper() {
-        self.gameInfo = GameInformation()
-        self.playerInfo = nil
-        self.teamInfo = nil
+        self.gameState = GameState()
+        self.playerState = nil
+        self.teamState = nil
         self.players = []
         self.teams = []
         
@@ -63,17 +63,15 @@ import FirebaseFirestoreSwift
         showError = true
     }
     
-    func updatePlayer(newState: [String: Any]) {
+    func updatePlayer(newState: [String: Any], uid: String? = nil) {
         guard docRef != nil else {
             print("docRef was nil before updating player information")
             return
         }
-        guard playerInfo != nil else {
-            print("playerInfo was nil before trying to update it's info!")
-            return
-        }
         
-        var updatedPlayerInfo: PlayerInformation = playerInfo!
+        var updatedPlayerInfo: PlayerState = uid == nil ? playerState! : players.first(where: {
+            player in player.uid == uid!
+        })!
                 
         do {
             for (key, value) in newState {
@@ -81,13 +79,13 @@ import FirebaseFirestoreSwift
                 case "name" where value is String:
                     updatedPlayerInfo.name = (value as! String)
                 case "cards_in_hand" where value is [CardItem]:
-                    updatedPlayerInfo.cards_in_hand = (value as! [CardItem])
+                    updatedPlayerInfo.cards_in_hand = (value as! [Int])
                 case "team_num" where value is Int:
                     updatedPlayerInfo.team_num = (value as! Int)
                 case "is_ready" where value is Bool:
                     updatedPlayerInfo.is_ready = (value as! Bool)
                 default:
-                    print("Property '\(key)' doesn't exist when trying to update player!")
+                    print("PROPERTY:\(key) doesn't exist when trying to update player!")
                     return
                 }
             }
@@ -98,17 +96,35 @@ import FirebaseFirestoreSwift
         }
     }
     
+    func updateCards(cards: [Int]? = nil, crib: Bool = false, uid: String? = nil) {
+        guard docRef != nil else {
+            print("docRef was nil before updating player information")
+            return
+        }
+        
+        if crib {
+            let teamWithCrib = teams.first(where: { team in team.has_crib })
+            docRef.collection("teams").document("\(teamWithCrib!.team_num)").updateData([
+                "crib": FieldValue.arrayUnion(cards!)
+            ])
+        } else {
+            docRef.collection("players").document("\(uid ?? playerState!.uid!)").updateData([
+                "cards_in_hand": FieldValue.arrayUnion(cards!)
+            ])
+        }
+    }
+    
     func updateGame(newState: [String: Any]) async {
         guard docRef != nil else {
             print("docRef was nil before updating game information")
             return
         }
-        guard gameInfo != nil else {
-            print("gameInfo was nil before trying to update it's info!")
+        guard gameState != nil else {
+            print("gameState was nil before trying to update it's info!")
             return
         }
         
-        var updatedGameInfo = gameInfo!
+        var updatedGameInfo = gameState!
         
         for temp in newState {
             let property = temp.key
@@ -129,7 +145,7 @@ import FirebaseFirestoreSwift
                     updatedGameInfo.num_players = temp.value as! Int
                     break
                 case "cards":
-                    updatedGameInfo.cards = temp.value as! [CardItem]
+                    updatedGameInfo.cards = temp.value as! [Int]
                 case "dealer":
                     updatedGameInfo.dealer = temp.value as! Int
                 default:
@@ -145,12 +161,12 @@ import FirebaseFirestoreSwift
         }
     }
     
-    func updateTeam(newState: [String: Any], cribUpdate: Bool = false) {
+    func updateTeam(newState: [String: Any]) {
         guard docRef != nil else {
             print("docRef was nil before updating team information")
             return
         }
-        guard teamInfo != nil else {
+        guard teamState != nil else {
             print("teamInfo was nil before trying to update it's info!")
             return
         }
@@ -160,14 +176,14 @@ import FirebaseFirestoreSwift
                 let property = temp.key
                 switch (property) {
                 case "crib":
-                    if !teamInfo!.has_crib {
+                    if !teamState!.has_crib {
                         // wait for crib to update
                         DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [self] in
                             var teamWithCrib = teams.first(where: { team in
                                 team.has_crib
                             })
                             
-                            _ = (temp.value as! [CardItem]).map { card in
+                            _ = (temp.value as! [Int]).map { card in
                                 teamWithCrib?.crib.append(card)
                             }
                             
@@ -178,22 +194,22 @@ import FirebaseFirestoreSwift
                             }
                         }
                     } else {
-                        teamInfo!.crib = temp.value as! [CardItem]
+                        teamState!.crib = temp.value as! [Int]
                     }
                     break
                 case "points":
-                    teamInfo!.points = temp.value as! Int
+                    teamState!.points = temp.value as! Int
                     break
                 case "has_crib":
-                    teamInfo!.has_crib = temp.value as! Bool
+                    teamState!.has_crib = temp.value as! Bool
                     break
                 default:
-                    print("property doesn't exist when trying to update team!")
+                    print("PROPERTY:\(property) doesn't exist when trying to update team!")
                     return
                 }
             }
             
-            try docRef!.collection("teams").document("\(playerInfo!.team_num!)").setData(from: teamInfo!, merge: true)
+            try docRef!.collection("teams").document("\(playerState!.team_num!)").setData(from: teamState!, merge: true)
         } catch {
             print("error in updateTeam: \(error)")
         }
@@ -215,7 +231,7 @@ import FirebaseFirestoreSwift
                 do {
                     try snapshot?.documentChanges.forEach { change in
                         if change.type == .added {
-                            let newPlayerData = try change.document.data(as: PlayerInformation.self)
+                            let newPlayerData = try change.document.data(as: PlayerState.self)
                             if !self.players.contains(where: { player in
                                 player.uid == newPlayerData.uid
                             }) {
@@ -224,7 +240,7 @@ import FirebaseFirestoreSwift
                         }
                         
                         if change.type == .modified {
-                            let modifiedPlayerData = try change.document.data(as: PlayerInformation.self)
+                            let modifiedPlayerData = try change.document.data(as: PlayerState.self)
                             let loc = self.players.firstIndex { player in
                                 player.uid == modifiedPlayerData.uid
                             }
@@ -233,7 +249,7 @@ import FirebaseFirestoreSwift
                         }
                         
                         if change.type == .removed {
-                            let removedPlayerData = try change.document.data(as: PlayerInformation.self)
+                            let removedPlayerData = try change.document.data(as: PlayerState.self)
                             let loc = self.players.firstIndex { player in
                                 player.uid == removedPlayerData.uid
                             }
@@ -262,36 +278,36 @@ import FirebaseFirestoreSwift
             return
         }
         
-        gameInfoListener = docRef!
+        gameStateListener = docRef!
             .addSnapshotListener { (snapshot, error) in
                 guard snapshot != nil else {
-                    print("snapshot is nil when adding a gameInfo listener")
+                    print("snapshot is nil when adding a gameState listener")
                     return
                 }
                 
                 do {
-                    self.gameInfo = try snapshot!.data(as: GameInformation.self)
-                    if self.gameInfo!.num_players == 4 {
-                        if self.playerInfo!.team_num == 3 {
+                    self.gameState = try snapshot!.data(as: GameState.self)
+                    if self.gameState!.num_players == 4 {
+                        if self.playerState!.team_num == 3 {
                             Task {
                                 await self.changeTeam(newTeamNum: 2)
                             }
                         }
                     }
                 } catch {
-                    print("couldn't add a gameInfo listener")
+                    print("couldn't add a gameState listener")
                     print(error)
                 }
             }
     }
     
     func removeGameInfoListener() {
-        guard gameInfoListener != nil else {
-            print("gameInfoListener is nil before trying to remove listener")
+        guard gameStateListener != nil else {
+            print("gameStateListener is nil before trying to remove listener")
             return
         }
         
-        gameInfoListener.remove()
+        gameStateListener.remove()
     }
     
     func addTeamsListener() {
@@ -310,7 +326,7 @@ import FirebaseFirestoreSwift
                         try snapshot?.documentChanges.forEach { change in
                             if change.type == .added {
                                 do {
-                                    let newTeam = try change.document.data(as: TeamInformation.self)
+                                    let newTeam = try change.document.data(as: TeamState.self)
                                     if !self.teams.contains(where: { team in
                                         team.team_num == newTeam.team_num
                                     }) {
@@ -321,7 +337,7 @@ import FirebaseFirestoreSwift
                                 }
                             }
                             if change.type == .modified {
-                                let modifiedTeamData = try change.document.data(as: TeamInformation.self)
+                                let modifiedTeamData = try change.document.data(as: TeamState.self)
                                 let loc = self.teams.firstIndex { team in
                                     team.team_num == modifiedTeamData.team_num
                                 }
@@ -329,7 +345,7 @@ import FirebaseFirestoreSwift
                                 self.teams[loc!] = modifiedTeamData
                             }
                             if change.type == .removed {
-                                let removedTeamData = try change.document.data(as: TeamInformation.self)
+                                let removedTeamData = try change.document.data(as: TeamState.self)
                                 let loc = self.teams.firstIndex { team in
                                     team.team_num == removedTeamData.team_num
                                 }
@@ -353,29 +369,20 @@ import FirebaseFirestoreSwift
         teamsListener.remove()
     }
     
-//    func getGroupId() -> Int {
-//        guard gameInfo != nil else {
-//            print("gameInfo was nil before trying to get group_id")
-//            return 0
-//        }
-//            
-//        return gameInfo!.group_id
-//    }
-    
     func changeTeam(newTeamNum: Int) async {
-        guard playerInfo != nil else {
-            print("playerInfo was nil before trying to change it's team")
+        guard playerState != nil else {
+            print("playerState was nil before trying to change it's team")
             return
         }
                 
-        guard newTeamNum != playerInfo!.team_num else {
+        guard newTeamNum != playerState!.team_num else {
             return
         }
         
         do {
             if await !checkTeamExists(teamNum: newTeamNum) {
-                teamInfo = TeamInformation(team_num: newTeamNum)
-                try docRef!.collection("teams").document("\(newTeamNum)").setData(from: teamInfo)
+                teamState = TeamState(team_num: newTeamNum)
+                try docRef!.collection("teams").document("\(newTeamNum)").setData(from: teamState)
             }
             
             updatePlayer(newState: ["team_num": newTeamNum])
@@ -404,16 +411,16 @@ import FirebaseFirestoreSwift
         docRef = db.collection("games").document(String(groupId))
         
         do {
-            gameInfo = GameInformation(group_id: groupId, num_teams: 1, turn: 0, game_name: gameName, num_players: 1)
-            try docRef!.setData(from: gameInfo)
+            gameState = GameState(group_id: groupId, num_teams: 1, turn: 0, game_name: gameName, num_players: 1)
+            try docRef!.setData(from: gameState)
                         
-            teamInfo = TeamInformation(team_num: 1, has_crib: true)
-            try docRef!.collection("teams").document(String(1)).setData(from: teamInfo)
-            self.teams.append(teamInfo!)
+            teamState = TeamState(team_num: 1, has_crib: true)
+            try docRef!.collection("teams").document(String(1)).setData(from: teamState)
+            self.teams.append(teamState!)
             
-            playerInfo = PlayerInformation(name: fullName, uid: UUID().uuidString, is_lead: true, team_num: 1, player_num: 0)
-            try docRef!.collection("players").document(playerInfo!.uid!).setData(from: playerInfo!)
-            self.players.append(playerInfo!)
+            playerState = PlayerState(name: fullName, uid: UUID().uuidString, is_lead: true, team_num: 1, player_num: 0)
+            try docRef!.collection("players").document(playerState!.uid!).setData(from: playerState!)
+            self.players.append(playerState!)
             
         } catch {
             // do something
@@ -428,9 +435,9 @@ import FirebaseFirestoreSwift
         docRef = db.collection("games").document(String(id))
 
         do {
-            gameInfo = try await docRef!.getDocument().data(as: GameInformation.self)
+            gameState = try await docRef!.getDocument().data(as: GameState.self)
             
-            let numPlayers = gameInfo!.num_players + 1
+            let numPlayers = gameState!.num_players + 1
             // if the number of players are divisible by 3, or equal 5, then return 3 teams
             //      if number of players are equal to 5, they can only play in a 3 team game
             let numTeams = (numPlayers % 3 == 0 || numPlayers == 5) ? 3 : 2
@@ -457,14 +464,14 @@ import FirebaseFirestoreSwift
                 }
             }
             
-            playerInfo = PlayerInformation(name: fullName, uid: UUID().uuidString, team_num: teamNum, player_num: numPlayers - 1)
-            try docRef!.collection("players").document(playerInfo!.uid!).setData(from: playerInfo!)
-            self.players.append(playerInfo!)
+            playerState = PlayerState(name: fullName, uid: UUID().uuidString, team_num: teamNum, player_num: numPlayers - 1)
+            try docRef!.collection("players").document(playerState!.uid!).setData(from: playerState!)
+            self.players.append(playerState!)
 
             if await !checkTeamExists(teamNum: teamNum) {
-                teamInfo = TeamInformation(team_num: teamNum)
-                try docRef!.collection("teams").document("\(teamNum)").setData(from: teamInfo)
-                self.teams.append(teamInfo!)
+                teamState = TeamState(team_num: teamNum)
+                try docRef!.collection("teams").document("\(teamNum)").setData(from: teamState)
+                self.teams.append(teamState!)
             }
 
             addTeamsListener()
@@ -476,91 +483,106 @@ import FirebaseFirestoreSwift
     }
 
     
-    func shuffleAndDealCards(cardsInHand_binding: Binding<[CardItem]>) async {
-        guard gameInfo != nil else {
-            return
-        }
-        var cardsInHand: [CardItem] = []
-        
-        if playerInfo!.is_lead! {
-            await updateGame(newState: ["cards": GameInformation().cards.shuffled()])
-        } else {
-            while gameInfo?.cards == GameInformation().cards {
-                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {
-                    print("something")
-                })
-            }
-        }
-        
-        
-        switch (gameInfo?.num_teams ?? 2) {
-        case 1, 2:
-            if gameInfo?.num_players == 2 {
-                for _ in 1...6 {
-                    guard gameInfo!.cards != [] else {
-                        print("cards ran out in the middle of the deal")
-                        return
-                    }
-                    
-                    cardsInHand.append(gameInfo!.cards.popLast()!)
-                }
-            } else {
-                for _ in 1...5 {
-                    guard gameInfo!.cards != [] else {
-                        print("cards ran out in the middle of the deal")
-                        return
-                    }
-                    
-                    cardsInHand.append(gameInfo!.cards.popLast()!)
-                }
-            }
-        case 3:
-            if gameInfo!.num_players == 3 {
-                if teamInfo!.has_crib {
-                    updateTeam(newState: ["crib": [gameInfo!.cards.popLast()!]])
-                }
-                for _ in 1...5 {
-                    guard gameInfo!.cards != [] else {
-                        print("cards ran out in the middle of the deal")
-                        return
-                    }
-                    
-                    cardsInHand.append(gameInfo!.cards.popLast()!)
-                }
-            }
-            else {
-                let dealer = players.first(where: { player in
-                    player.player_num == gameInfo?.dealer
-                })
-                if playerInfo?.player_num == gameInfo?.dealer
-                    /* or if player is "to the left" of the dealer */
-                    || (playerInfo!.player_num! + 1) % gameInfo!.num_players == dealer!.player_num! {
-                    for _ in 1...4 {
-                        guard gameInfo!.cards != [] else {
-                            print("cards ran out in the middle of the deal")
-                            return
-                        }
-                        
-                        cardsInHand.append(gameInfo!.cards.popLast()!)
-                    }
-                } else {
-                    for _ in 1...5 {
-                        guard gameInfo!.cards != [] else {
-                            print("cards ran out in the middle of the deal")
-                            return
-                        }
-                        
-                        cardsInHand.append(gameInfo!.cards.popLast()!)
-                    }
-                }
-            }
-        default:
+    func shuffleAndDealCards(cardsInHand_binding: Binding<[Int]>) async {
+        guard gameState != nil else {
             return
         }
         
-        updatePlayer(newState: ["cards_in_hand": cardsInHand])
-        await updateGame(newState: ["cards": gameInfo!.cards])
-        cardsInHand_binding.wrappedValue = cardsInHand
+        guard playerState!.is_lead! else {
+            return
+        }
+        
+        await updateGame(newState: ["cards": GameState().cards.shuffled()])
+        print(gameState!.cards.shuffled())
+//        var numberOfCards: Int {
+//            switch (gameState?.num_teams, gameState?.num_players) {
+//                case (2, 2):
+//                    return 6
+//                case (3, 3):
+//                    
+//                    return 5
+//                default:
+//                    return 5
+//            }
+//        }
+//        
+//        for i in 0...numberOfCards {
+//            for player in players {
+//                updateCards(card: gameState!.cards.removeFirst(), uid: player.uid!)
+//            }
+//        }
+//        
+//        switch (gameState?.num_teams ?? 2) {
+//            case 1, 2:
+//                if gameState?.num_players == 2 {
+//                    var playerOneCards: [CardItem] = []
+//                    var playerTwoCards: [CardItem] = []
+//                
+//                    for _ in 1...6 {
+//                        guard gameState!.cards != [] else {
+//                            print("cards ran out in the middle of the deal")
+//                            return
+//                        }
+//                        playerOneCards.append(gameState!.cards.removeFirst())
+//                        playerTwoCards.append(gameState!.cards.removeFirst())
+//                    }
+//                } else {
+//                    for _ in 1...5 {
+//                        guard gameState!.cards != [] else {
+//                            print("cards ran out in the middle of the deal")
+//                            return
+//                        }
+//                        
+//                        cardsInHand.append(gameState!.cards.popLast()!)
+//                    }
+//                }
+//            case 3:
+//                if gameState!.num_players == 3 {
+//                    if teamInfo!.has_crib {
+//                        updateTeam(newState: ["crib": [gameState!.cards.popLast()!]])
+//                    }
+//                    for _ in 1...5 {
+//                        guard gameState!.cards != [] else {
+//                            print("cards ran out in the middle of the deal")
+//                            return
+//                        }
+//                        
+//                        cardsInHand.append(gameState!.cards.popLast()!)
+//                    }
+//                }
+//                else {
+//                    let dealer = players.first(where: { player in
+//                        player.player_num == gameState?.dealer
+//                    })
+//                    if playerState?.player_num == gameState?.dealer
+//                        /* or if player is "to the left" of the dealer */
+//                        || (playerState!.player_num! + 1) % gameState!.num_players == dealer!.player_num! {
+//                        for _ in 1...4 {
+//                            guard gameState!.cards != [] else {
+//                                print("cards ran out in the middle of the deal")
+//                                return
+//                            }
+//                            
+//                            cardsInHand.append(gameState!.cards.popLast()!)
+//                        }
+//                    } else {
+//                        for _ in 1...5 {
+//                            guard gameState!.cards != [] else {
+//                                print("cards ran out in the middle of the deal")
+//                                return
+//                            }
+//                            
+//                            cardsInHand.append(gameState!.cards.popLast()!)
+//                        }
+//                    }
+//                }
+//            default:
+//                return
+//        }
+//        
+//        updatePlayer(newState: ["cards_in_hand": cardsInHand])
+        await updateGame(newState: ["cards": gameState!.cards])
+//        cardsInHand_binding.wrappedValue = cardsInHand
     }
     
     func checkIfPlayersAreReady() -> Bool {

@@ -12,14 +12,14 @@ import SwiftUI
 
 struct NamesAroundTable: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
-    @State var sortedPlayerList: [PlayerInformation]?
+    @State var sortedPlayerList: [PlayerState]?
     @State var startingRotation = 0
     @State var multiplier = 0
     
     var body: some View {
         ZStack {
             ForEach(Array(sortedPlayerList?.enumerated()
-                      ?? [PlayerInformation.player_one, PlayerInformation.player_two, PlayerInformation.player_three, PlayerInformation.player_four]
+                      ?? [PlayerState.player_one, PlayerState.player_two, PlayerState.player_three, PlayerState.player_four]
                             .filter { $0.player_num != 1 }
                             .sorted(by: { $0.player_num! < $1.player_num!})
                             .enumerated()
@@ -37,14 +37,14 @@ struct NamesAroundTable: View {
                 .onChange(of: firebaseHelper.players, initial: false, {
                     sortedPlayerList = firebaseHelper.players
                         .lazy
-                        .filter { $0.player_num != firebaseHelper.playerInfo!.player_num}
+                        .filter { $0.player_num != firebaseHelper.playerState!.player_num}
                         .sorted(by: { $0.player_num! < $1.player_num!})
                 })
             }
             .onAppear(perform: {
-                switch(firebaseHelper.gameInfo?.num_teams ?? 2) {
+                switch(firebaseHelper.gameState?.num_teams ?? 2) {
                 case 2:
-                    if firebaseHelper.gameInfo?.num_players == 2 {
+                    if firebaseHelper.gameState?.num_players == 2 {
                         startingRotation = 0
                         multiplier = 0
                     } else {
@@ -52,7 +52,7 @@ struct NamesAroundTable: View {
                         multiplier = 90
                     }
                 case 3:
-                    if firebaseHelper.gameInfo?.num_players == 3 {
+                    if firebaseHelper.gameState?.num_players == 3 {
                         startingRotation = 315
                         multiplier = 90
                     } else {

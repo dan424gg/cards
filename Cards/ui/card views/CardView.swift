@@ -50,7 +50,6 @@ struct CardView: View {
                 .rotation3DEffect(
                     .degrees(frontDegree), axis: (x: 0.0, y: 1.0, z: 0.0)
                 )
-//                .disabled(cardIsDisabled)
                 
                 // frontside
                 ZStack {
@@ -59,23 +58,22 @@ struct CardView: View {
                         .stroke(Color.black, lineWidth: 1)
                     VStack (spacing: 30) {
                         VStack (alignment: .center, spacing: 0) {
-                            Text(cardItem.value)
+                            Text(cardItem.getCard().value)
                                 .font(.caption2)
-                            Image(systemName: "suit.\(cardItem.suit)")
+                            Image(systemName: "suit.\(cardItem.getCard().suit)")
                                 .imageScale(.small)
                         }
                         .position(CGPoint(x: 10, y: 20))
-                        Text(cardItem.value)
+                        Text(cardItem.getCard().value)
                             .font(.largeTitle)
                             .multilineTextAlignment(.center)
                             .position(x: 25, y: -10)
                     }
-                    .foregroundStyle(cardItem.suit == "spade" || cardItem.suit == "club" ? Color.black.opacity(0.8) : Color.red.opacity(0.8))
+                    .foregroundStyle(cardItem.getCard().suit == "spade" || cardItem.getCard().suit == "club" ? Color.black.opacity(0.8) : Color.red.opacity(0.8))
                 }
                 .frame(width: 50, height: 100)
                 .draggable(cardItem)
                 .disabled(backside)
-//                .disabled(cardIsDisabled)
                 .rotation3DEffect(
                     .degrees(backDegree), axis: (x: 0.0, y: 1.0, z: 0.0)
                 )
@@ -86,28 +84,10 @@ struct CardView: View {
                     frontDegree = 0.0
                 }
             }
-//            .onTapGesture {
-//                backside = !backside
-//                if backside {
-//                    withAnimation(.linear(duration: 0.3)) {
-//                        backDegree = -90
-//                    }
-//                    withAnimation(.linear(duration: 0.3).delay(0.3)) {
-//                        frontDegree = 0
-//                    }
-//                } else {
-//                    withAnimation(.linear(duration: 0.3)) {
-//                        frontDegree = 90
-//                    }
-//                    withAnimation(.linear(duration: 0.3).delay(0.3)) {
-//                        backDegree = 0
-//                    }
-//                }
-//            }
         }
     }
 }
 
 #Preview {
-    CardView(cardItem: CardItem(id:0, value: "K", suit: "diamond"), cardIsDisabled: .constant(false))
+    CardView(cardItem: CardItem(id: 0), cardIsDisabled: .constant(false))
 }

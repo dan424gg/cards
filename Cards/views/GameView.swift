@@ -10,8 +10,8 @@ import SwiftUI
 struct GameView: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @State var showSnackbar: Bool = true
-    @State var cardsDragged: [CardItem] = []
-    @State var cardsInHand: [CardItem] = []
+    @State var cardsDragged: [Int] = []
+    @State var cardsInHand: [Int] = []
     
     @State var firstTurn = true
         
@@ -38,7 +38,7 @@ struct GameView: View {
                 
                 // game that is being played
                 VStack {
-                    switch (firebaseHelper.gameInfo?.game_name ?? "cribbage") {
+                    switch (firebaseHelper.gameState?.game_name ?? "cribbage") {
                     case "cribbage":
                         Cribbage(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
                             .frame(width: geo.size.width, height: geo.size.height)
@@ -48,23 +48,23 @@ struct GameView: View {
                 }
                 .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 4.75)
                 
-                if firebaseHelper.playerInfo?.player_num == firebaseHelper.gameInfo?.dealer {
+                if firebaseHelper.playerState?.player_num == firebaseHelper.gameState?.dealer {
                     Text("Dealer")
                         .position(x: geo.size.width - 50, y: geo.size.height - 10)
                 }
             }
-            .onChange(of: firebaseHelper.gameInfo?.turn, initial: true, {
-                if firebaseHelper.gameInfo?.turn == 1 {
-                    if firstTurn && firebaseHelper.playerInfo?.is_lead ?? true {
+            .onChange(of: firebaseHelper.gameState?.turn, initial: true, {
+                if firebaseHelper.gameState?.turn == 1 {
+                    if firstTurn && firebaseHelper.playerState?.is_lead ?? true {
                         // pick first dealer randomly
-                        var randDealer = Int.random(in: 0..<(firebaseHelper.gameInfo?.num_players ?? 1))
+                        var randDealer = Int.random(in: 0..<(firebaseHelper.gameState?.num_players ?? 1))
                         Task {
                             await firebaseHelper.updateGame(newState: ["dealer": randDealer])
                         }
-                    } else if firebaseHelper.playerInfo?.is_lead ?? true {
+                    } else if firebaseHelper.playerState?.is_lead ?? true {
                         // rotate dealer
                         Task {
-                            await firebaseHelper.updateGame(newState: ["dealer": ((firebaseHelper.gameInfo?.dealer ?? 0) + 1) % (firebaseHelper.gameInfo?.num_players ?? 2)])
+                            await firebaseHelper.updateGame(newState: ["dealer": ((firebaseHelper.gameState?.dealer ?? 0) + 1) % (firebaseHelper.gameState?.num_players ?? 2)])
                         }
                     }
                     

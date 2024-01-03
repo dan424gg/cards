@@ -16,24 +16,24 @@ import FirebaseFirestoreSwift
 
 final class LoadingScreenTests: XCTestCase {
     func testEqualNumOfPlayersOnTeam() {
-        var playerList: [PlayerInformation] = []
+        var playerList: [PlayerState] = []
         
-        playerList.append(PlayerInformation(uid: "1", team_num: 1))
+        playerList.append(PlayerState(uid: "1", team_num: 1))
         XCTAssertFalse(equalNumOfPlayersOnTeam(players: playerList))
 
-        playerList.append(PlayerInformation(uid: "2", team_num: 2))
+        playerList.append(PlayerState(uid: "2", team_num: 2))
         XCTAssertTrue(equalNumOfPlayersOnTeam(players: playerList))
 
-        playerList.append(PlayerInformation(uid: "3", team_num: 1))
+        playerList.append(PlayerState(uid: "3", team_num: 1))
         XCTAssertFalse(equalNumOfPlayersOnTeam(players: playerList))
         
-        playerList.append(PlayerInformation(uid: "4", team_num: 2))
+        playerList.append(PlayerState(uid: "4", team_num: 2))
         XCTAssertTrue(equalNumOfPlayersOnTeam(players: playerList))
         
-        playerList.append(PlayerInformation(uid: "5", team_num: 3))
+        playerList.append(PlayerState(uid: "5", team_num: 3))
         XCTAssertFalse(equalNumOfPlayersOnTeam(players: playerList))
         
-        playerList.append(PlayerInformation(uid: "6", team_num: 3))
+        playerList.append(PlayerState(uid: "6", team_num: 3))
         XCTAssertTrue(equalNumOfPlayersOnTeam(players: playerList))
 
     }

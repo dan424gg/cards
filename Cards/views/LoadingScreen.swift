@@ -14,12 +14,12 @@ struct LoadingScreen: View {
     var body: some View {
         VStack {
             VStack {
-                Text("Hi \(firebaseHelper.playerInfo?.name ?? "Player")!")
+                Text("Hi \(firebaseHelper.playerState?.name ?? "Player")!")
                     .task {
                         self.firebaseHelper.initFirebaseHelper()
                     }
-                Text("We're gonna start a game of \(firebaseHelper.gameInfo?.game_name ?? "Game")!")
-                Text("Others can join with code: \(String(firebaseHelper.gameInfo?.group_id ?? 0))")
+                Text("We're gonna start a game of \(firebaseHelper.gameState?.game_name ?? "Game")!")
+                Text("Others can join with code: \(String(firebaseHelper.gameState?.group_id ?? 0))")
                 HStack {
                         Text("Want to change your team?    -->")
                             .bold()
@@ -42,14 +42,14 @@ struct LoadingScreen: View {
                 }
             }
             
-            if firebaseHelper.playerInfo?.is_lead! ?? false {
+            if firebaseHelper.playerState?.is_lead! ?? false {
                 GameStartButton()
             } else {
                 Text("Waiting to start game...")
             }
         }
         .fullScreenCover(isPresented: Binding(
-            get: { firebaseHelper.gameInfo?.is_playing ?? false },
+            get: { firebaseHelper.gameState?.is_playing ?? false },
             set: {_ in }
         )) {
             GameView()
@@ -57,7 +57,7 @@ struct LoadingScreen: View {
     }
 }
 
-func equalNumOfPlayersOnTeam(players: [PlayerInformation]) -> Bool {
+func equalNumOfPlayersOnTeam(players: [PlayerState]) -> Bool {
     if players.count < 2 {
         return false
     } else {
