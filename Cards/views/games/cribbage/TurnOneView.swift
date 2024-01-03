@@ -40,14 +40,76 @@ struct TurnOneView: View {
                         CardPlaceHolder()
                             .border(secondDropAreaBorderColor, width: secondDropAreaBorderWidth)
                             .dropDestination(for: CardItem.self) { items, location in
+                                cardsDragged.append(items.first!)
+                                cardsInHand.removeAll(where: { card in
+                                    card == items.first!
+                                })
+                                return true
+                            } isTargeted: { inDropArea in
+                                secondDropAreaBorderColor = inDropArea ? .green : .clear
+                                secondDropAreaBorderWidth = inDropArea ? 7.0 : 1.0
+                            }
+                    } else {
+                        if cardsDragged.count == 1 {
+                            CardView(cardItem: cardsDragged[0], cardIsDisabled: .constant(true))
+                            CardPlaceHolder()
+                                .border(secondDropAreaBorderColor, width: secondDropAreaBorderWidth)
+                                .dropDestination(for: CardItem.self) { items, location in
+                                    cardsDragged.append(items.first!)
+                                    cardsInHand.removeAll(where: { card in
+                                        card == items.first!
+                                    })
+                                    return true
+                                } isTargeted: { inDropArea in
+                                    secondDropAreaBorderColor = inDropArea ? .green : .clear
+                                    secondDropAreaBorderWidth = inDropArea ? 7.0 : 1.0
+                                }
+                            
+                        } else {
+                            CardView(cardItem: cardsDragged[0], cardIsDisabled: .constant(true))
+                            CardView(cardItem: cardsDragged[1], cardIsDisabled: .constant(true))
+                        }
+                    }
+                }
+            case 3,4:
+                if cardsDragged.count == 0 {
+                    CardPlaceHolder()
+                        .border(firstDropAreaBorderColor, width: firstDropAreaBorderWidth)
+                        .dropDestination(for: CardItem.self) { items, location in
+                            cardsDragged.append(items.first!)
+                            cardsInHand.removeAll(where: { card in
+                                card == items.first!
+                            })
+                            return true
+                        } isTargeted: { inDropArea in
+                            firstDropAreaBorderColor = inDropArea ? .green : .clear
+                            firstDropAreaBorderWidth = inDropArea ? 7.0 : 1.0
+                        }
+                } else {
+                    CardView(cardItem: cardsDragged[0], cardIsDisabled: .constant(true))
+                }
+            case 6:
+                let dealer = firebaseHelper.players.first(where: { player in
+                    player.is_dealer!
+                })
+                
+                if (firebaseHelper.playerInfo?.is_dealer! ?? true)
+                    /* or if player is "to the left" of the dealer */
+                    || ((firebaseHelper.playerInfo?.player_num! ?? 1 + 1) % (firebaseHelper.gameInfo?.num_players ?? 2)) != (dealer?.player_num! ?? 1) {
+                    Text("Waiting for players to discard...")
+                } else {
+                    if cardsDragged.count == 0 {
+                        CardPlaceHolder()
+                            .border(firstDropAreaBorderColor, width: firstDropAreaBorderWidth)
+                            .dropDestination(for: CardItem.self) { items, location in
                                 cardsDragged.append(items.first!.id)
                                 cardsInHand.removeAll(where: { card in
                                     card == items.first!.id
                                 })
                                 return true
                             } isTargeted: { inDropArea in
-                                secondDropAreaBorderColor = inDropArea ? .green : .clear
-                                secondDropAreaBorderWidth = inDropArea ? 7.0 : 1.0
+                                firstDropAreaBorderColor = inDropArea ? .green : .clear
+                                firstDropAreaBorderWidth = inDropArea ? 7.0 : 1.0
                             }
                     } 
 //                    else {
