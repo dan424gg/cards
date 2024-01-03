@@ -1,5 +1,5 @@
 //
-//  GameInformation.swift
+//  GameState.swift
 //  Cards
 //
 //  Created by Daniel Wells on 10/20/23.
@@ -11,7 +11,7 @@ import FirebaseCore
 import FirebaseFirestore
 
 
-public struct GameInformation: Hashable, Codable {
+public struct GameState: Hashable, Codable {
     var group_id: Int = 0
     var is_playing: Bool = false
     var is_won: Bool = false
