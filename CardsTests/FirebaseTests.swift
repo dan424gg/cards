@@ -89,6 +89,11 @@ final class FirebaseHelperTests: XCTestCase {
         XCTAssert(playerTwo.teams.contains(where: { team in
             team.team_num == playerOne.teamState!.team_num
         }))
+        
+        // test .modified
+        await playerOne.updateTeam(newState: ["points": 50])
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
+        XCTAssertTrue(playerTwo.teams.first(where: { team in team.team_num == 1 })?.points == 50)
                 
         playerOne.deleteGameCollection(id: randId)
     }
@@ -135,7 +140,6 @@ final class FirebaseHelperTests: XCTestCase {
             randId = Int.random(in: 10000..<99999)
         } while (await playerOne.checkValidId(id: randId))
         await playerOne.startGameCollection(fullName: "1", gameName: "Cribbage", testGroupId: randId)
-        playerOne.teamState!.has_crib = true
         
         let playerTwo = FirebaseHelper()
         await playerTwo.joinGameCollection(fullName: "2", id: randId, gameName: "Cribbage")
@@ -239,6 +243,25 @@ final class FirebaseHelperTests: XCTestCase {
         XCTAssertTrue(playerOne.players.first(where: { player in player.name == "2"})!.cards_in_hand! == [2, 3], "TESTUPDATEPLAYER: cards weren't replaced in firebase!")
     }
     
+    @MainActor func testUpdateTeam() async {
+        let playerOne = FirebaseHelper()
+        var randId = 0
+        repeat {
+            randId = Int.random(in: 10000..<99999)
+        } while (await playerOne.checkValidId(id: randId))
+        await playerOne.startGameCollection(fullName: "1", gameName: "Cribbage", testGroupId: randId)
+        
+        let playerTwo = FirebaseHelper()
+        await playerTwo.joinGameCollection(fullName: "2", id: randId, gameName: "Cribbage")
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
+        
+        await playerOne.updateTeam(newState: ["points": 50])
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
+        XCTAssertTrue(playerOne.teamState!.points == 50, "TESTUPDATETEAM: teamState wasn't updated locally!")
+        XCTAssertTrue(playerTwo.teams.first(where: { team in team.team_num == 1})!.points == 50, "TESTUPDATETEAM: teamState wasn't updated in firebase!")
+    }
+        
+    
     // TO-DO
     @MainActor func testUpdateCards() async {
         let playerOne = FirebaseHelper()
@@ -247,7 +270,6 @@ final class FirebaseHelperTests: XCTestCase {
             randId = Int.random(in: 10000..<99999)
         } while (await playerOne.checkValidId(id: randId))
         await playerOne.startGameCollection(fullName: "1", gameName: "Cribbage", testGroupId: randId)
-        playerOne.teamState!.has_crib = true
         
         let playerTwo = FirebaseHelper()
         await playerTwo.joinGameCollection(fullName: "2", id: randId, gameName: "Cribbage")

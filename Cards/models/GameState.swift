@@ -10,7 +10,6 @@ import SwiftUI
 import FirebaseCore
 import FirebaseFirestore
 
-
 public struct GameState: Hashable, Codable {
     var group_id: Int = 0
     var is_playing: Bool = false
@@ -20,5 +19,7 @@ public struct GameState: Hashable, Codable {
     var game_name: String = ""
     var num_players: Int = 0
     var dealer: Int = -1
+    var team_with_crib: Int = 0
+    var crib: [Int] = []
     var cards: [Int] = Array(0...51) // array containing int to reference to corresponding card
 }

@@ -169,16 +169,7 @@ import FirebaseFirestoreSwift
             return
         }
       
-        if crib {
-            let teamWithCrib = teams.first(where: { team in team.has_crib })
-            docRef.collection("teams").document("\(teamWithCrib!.team_num)").updateData([
-                "crib": FieldValue.arrayUnion(cards!)
-            ])
-        } else {
-            docRef.collection("players").document("\(uid ?? playerState!.uid!)").updateData([
-                "cards_in_hand": FieldValue.arrayUnion(cards!)
-            ])
-        }
+        
     }
     
     func updateGame(newState: [String: Any], cardAction: CardUpdateType? = nil) async {
@@ -306,52 +297,42 @@ import FirebaseFirestoreSwift
             print("docRef was nil before updating team information")
             return
         }
-        guard teamState != nil else {
-            print("teamInfo was nil before trying to update it's info!")
-            return
-        }
         
+        // type check updated states
         do {
-            for temp in newState {
-                let property = temp.key
-                switch (property) {
-                case "crib":
-                    if !teamState!.has_crib {
-                        // wait for crib to update
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [self] in
-                            var teamWithCrib = teams.first(where: { team in
-                                team.has_crib
-                            })
-                            
-                            _ = (temp.value as! [Int]).map { card in
-                                teamWithCrib?.crib.append(card)
-                            }
-                            
-                            do {
-                                try docRef!.collection("teams").document("\(teamWithCrib?.team_num ?? 0)").setData(from: teamWithCrib)
-                            } catch {
-                                print("error trying to update crib \(error)")
-                            }
+            for (key, value) in newState {
+                switch (key) {
+                    case "team_num":
+                        guard type(of: value) is Int.Type else {
+                            print("\(key) needs to be Int in updateTeam()!")
+                            return
                         }
-                    } else {
-                        teamState!.crib = temp.value as! [Int]
-                    }
-                    break
-                case "points":
-                    teamState!.points = temp.value as! Int
-                    break
-                case "has_crib":
-                    teamState!.has_crib = temp.value as! Bool
-                    break
-                default:
-                    print("PROPERTY:\(property) doesn't exist when trying to update team!")
-                    return
+                        
+                        try await docRef!.collection("teams").document("\(teamState!.team_num)").updateData([
+                            "\(key)": value
+                        ])
+                        
+                        break
+                        
+                    case "points":
+                        guard type(of: value) is Int.Type else {
+                            print("\(key) needs to be Int in updateTeam()!")
+                            return
+                        }
+                        
+                        try await docRef!.collection("teams").document("\(teamState!.team_num)").updateData([
+                            "\(key)": value
+                        ])
+                        
+                        break
+                        
+                    default:
+                        print("UPDATETEAM: key: \(key) doesn't exist when trying to update team!")
+                        return
                 }
             }
-            
-            try docRef!.collection("teams").document("\(playerState!.team_num!)").setData(from: teamState!, merge: true)
         } catch {
-            print("error in updateTeam: \(error)")
+            print("UPDATETEAM: \(error)")
         }
     }
     
@@ -469,24 +450,24 @@ import FirebaseFirestoreSwift
                     do {
                         try snapshot?.documentChanges.forEach { change in
                             if change.type == .added {
-                                do {
-                                    let newTeam = try change.document.data(as: TeamState.self)
-                                    if !self.teams.contains(where: { team in
-                                        team.team_num == newTeam.team_num
-                                    }) {
-                                        self.teams.append(newTeam)
-                                    }
-                                } catch {
-                                    print("error when appending a team to teams: \(error)")
+                                let newTeam = try change.document.data(as: TeamState.self)
+                                if !self.teams.contains(where: { team in
+                                    team.team_num == newTeam.team_num
+                                }) {
+                                    self.teams.append(newTeam)
                                 }
                             }
                             if change.type == .modified {
                                 let modifiedTeamData = try change.document.data(as: TeamState.self)
-                                let loc = self.teams.firstIndex { team in
-                                    team.team_num == modifiedTeamData.team_num
+                                if modifiedTeamData.team_num == self.teamState!.team_num {
+                                    self.teamState! = modifiedTeamData
+                                } else {
+                                    let loc = self.teams.firstIndex { team in
+                                        team.team_num == modifiedTeamData.team_num
+                                    }
+                                    
+                                    self.teams[loc!] = modifiedTeamData
                                 }
-                                
-                                self.teams[loc!] = modifiedTeamData
                             }
                             if change.type == .removed {
                                 let removedTeamData = try change.document.data(as: TeamState.self)
@@ -552,14 +533,14 @@ import FirebaseFirestoreSwift
             } while (await checkValidId(id: groupId))
         }
         
-        docRef = db.collection("games").document(String(groupId))
+        docRef = db.collection("games").document("\(groupId)")
         
         do {
             gameState = GameState(group_id: groupId, num_teams: 1, turn: 0, game_name: gameName, num_players: 1)
             try docRef!.setData(from: gameState)
                         
-            teamState = TeamState(team_num: 1, has_crib: true)
-            try docRef!.collection("teams").document(String(1)).setData(from: teamState)
+            teamState = TeamState(team_num: 1)
+            try docRef!.collection("teams").document("\(1)").setData(from: teamState)
             self.teams.append(teamState!)
             
             playerState = PlayerState(name: fullName, uid: UUID().uuidString, is_lead: true, team_num: 1, player_num: 0)
