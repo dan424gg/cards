@@ -35,6 +35,13 @@ struct GameView: View {
                 DeckOfCardsView()
                     .scaleEffect(x: 0.65, y: 0.65)
                     .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 1.2)
+                    .onChange(of: firebaseHelper.gameState?.turn, initial: true, {
+                        if firebaseHelper.gameState?.turn == 1 {
+                            Task {
+                                await firebaseHelper.shuffleAndDealCards(cardsInHand_binding: $cardsInHand)
+                            }
+                        }
+                    })
                 
                 // game that is being played
                 VStack {
