@@ -40,9 +40,9 @@ struct TurnOneView: View {
                         CardPlaceHolder()
                             .border(secondDropAreaBorderColor, width: secondDropAreaBorderWidth)
                             .dropDestination(for: CardItem.self) { items, location in
-                                cardsDragged.append(items.first!)
+                                cardsDragged.append(items.first!.id)
                                 cardsInHand.removeAll(where: { card in
-                                    card == items.first!
+                                    card == items.first!.id
                                 })
                                 return true
                             } isTargeted: { inDropArea in
@@ -51,23 +51,23 @@ struct TurnOneView: View {
                             }
                     } else {
                         if cardsDragged.count == 1 {
-                            CardView(cardItem: cardsDragged[0], cardIsDisabled: .constant(true))
+                            CardView(cardItem: CardItem(id: cardsDragged[0]), cardIsDisabled: .constant(true))
                             CardPlaceHolder()
                                 .border(secondDropAreaBorderColor, width: secondDropAreaBorderWidth)
                                 .dropDestination(for: CardItem.self) { items, location in
-                                    cardsDragged.append(items.first!)
+                                    cardsDragged.append(items.first!.id)
                                     cardsInHand.removeAll(where: { card in
-                                        card == items.first!
+                                        card == items.first!.id
                                     })
                                     return true
                                 } isTargeted: { inDropArea in
                                     secondDropAreaBorderColor = inDropArea ? .green : .clear
                                     secondDropAreaBorderWidth = inDropArea ? 7.0 : 1.0
                                 }
-                            
+
                         } else {
-                            CardView(cardItem: cardsDragged[0], cardIsDisabled: .constant(true))
-                            CardView(cardItem: cardsDragged[1], cardIsDisabled: .constant(true))
+                            CardView(cardItem: CardItem(id: cardsDragged[0]), cardIsDisabled: .constant(true))
+                            CardView(cardItem: CardItem(id: cardsDragged[1]), cardIsDisabled: .constant(true))
                         }
                     }
                 }
@@ -76,9 +76,9 @@ struct TurnOneView: View {
                     CardPlaceHolder()
                         .border(firstDropAreaBorderColor, width: firstDropAreaBorderWidth)
                         .dropDestination(for: CardItem.self) { items, location in
-                            cardsDragged.append(items.first!)
+                            cardsDragged.append(items.first!.id)
                             cardsInHand.removeAll(where: { card in
-                                card == items.first!
+                                card == items.first!.id
                             })
                             return true
                         } isTargeted: { inDropArea in
@@ -86,96 +86,30 @@ struct TurnOneView: View {
                             firstDropAreaBorderWidth = inDropArea ? 7.0 : 1.0
                         }
                 } else {
-                    CardView(cardItem: cardsDragged[0], cardIsDisabled: .constant(true))
+                    CardView(cardItem: CardItem(id: cardsDragged[0]), cardIsDisabled: .constant(true))
                 }
-            case 6:
-                let dealer = firebaseHelper.players.first(where: { player in
-                    player.is_dealer!
-                })
-                
-                if (firebaseHelper.playerInfo?.is_dealer! ?? true)
-                    /* or if player is "to the left" of the dealer */
-                    || ((firebaseHelper.playerInfo?.player_num! ?? 1 + 1) % (firebaseHelper.gameInfo?.num_players ?? 2)) != (dealer?.player_num! ?? 1) {
-                    Text("Waiting for players to discard...")
-                } else {
-                    if cardsDragged.count == 0 {
-                        CardPlaceHolder()
-                            .border(firstDropAreaBorderColor, width: firstDropAreaBorderWidth)
-                            .dropDestination(for: CardItem.self) { items, location in
-                                cardsDragged.append(items.first!.id)
-                                cardsInHand.removeAll(where: { card in
-                                    card == items.first!.id
-                                })
-                                return true
-                            } isTargeted: { inDropArea in
-                                firstDropAreaBorderColor = inDropArea ? .green : .clear
-                                firstDropAreaBorderWidth = inDropArea ? 7.0 : 1.0
-                            }
-                    } 
-//                    else {
-//                        if cardsDragged.count == 1 {
-//                            CardView(cardItem: CardItem(id: cardsDragged[0]), cardIsDisabled: .constant(true))
-//                            CardPlaceHolder()
-//                                .border(secondDropAreaBorderColor, width: secondDropAreaBorderWidth)
-//                                .dropDestination(for: CardItem.self) { items, location in
-//                                    cardsDragged.append(items.first!)
-//                                    cardsInHand.removeAll(where: { card in
-//                                        card == items.first!
-//                                    })
-//                                    return true
-//                                } isTargeted: { inDropArea in
-//                                    secondDropAreaBorderColor = inDropArea ? .green : .clear
-//                                    secondDropAreaBorderWidth = inDropArea ? 7.0 : 1.0
-//                                }
-//                            
-//                        } else {
-//                            CardView(cardItem: CardItem(id: cardsDragged[0]), cardIsDisabled: .constant(true))
-//                            CardView(cardItem: CardItem(id: cardsDragged[1]), cardIsDisabled: .constant(true))
-//                        }
-//                    }
-                }
-//            case 3,4:
-//                if cardsDragged.count == 0 {
-//                    CardPlaceHolder()
-//                        .border(firstDropAreaBorderColor, width: firstDropAreaBorderWidth)
-//                        .dropDestination(for: CardItem.self) { items, location in
-//                            cardsDragged.append(items.first!)
-//                            cardsInHand.removeAll(where: { card in
-//                                card == items.first!
-//                            })
-//                            return true
-//                        } isTargeted: { inDropArea in
-//                            firstDropAreaBorderColor = inDropArea ? .green : .clear
-//                            firstDropAreaBorderWidth = inDropArea ? 7.0 : 1.0
-//                        }
-//                } else {
-//                    CardView(cardItem: CardItem(id: cardsDragged[0]), cardIsDisabled: .constant(true))
-//                }
 //            case 6:
-//                let dealer = firebaseHelper.players.first(where: { player in
-//                    player.player_num == firebaseHelper.gameState?.dealer
-//                })
-//                
-//                if (firebaseHelper.playerState?.player_num == firebaseHelper.gameState?.dealer)
+//                if (firebaseHelper.playerInfo!.player_num == firebaseHelper.gameState?.dealer)
 //                    /* or if player is "to the left" of the dealer */
-//                    || ((firebaseHelper.playerState?.player_num! ?? 1 + 1) % (firebaseHelper.gameState?.num_players ?? 2)) != (dealer?.player_num! ?? 1) {
+//                    || ((firebaseHelper.playerInfo?.player_num! ?? 1 + 1) % (firebaseHelper.gameInfo?.num_players ?? 2)) != (firebaseHelper.gameState?.dealer ?? 1) {
 //                    Text("Waiting for players to discard...")
 //                } else {
 //                    if cardsDragged.count == 0 {
 //                        CardPlaceHolder()
 //                            .border(firstDropAreaBorderColor, width: firstDropAreaBorderWidth)
 //                            .dropDestination(for: CardItem.self) { items, location in
-//                                cardsDragged.append(items.first!)
+//                                cardsDragged.append(items.first!.id)
 //                                cardsInHand.removeAll(where: { card in
-//                                    card == items.first!
+//                                    card == items.first!.id
 //                                })
 //                                return true
 //                            } isTargeted: { inDropArea in
 //                                firstDropAreaBorderColor = inDropArea ? .green : .clear
 //                                firstDropAreaBorderWidth = inDropArea ? 7.0 : 1.0
 //                            }
-//                    } else {
-//                        CardView(cardItem: cardsDragged[0], cardIsDisabled: .constant(true))
+//                    } 
+//                    else {
+//                        CardView(cardItem: CardItem(id: cardsDragged[0]), cardIsDisabled: .constant(true))
 //                    }
 //                }
             default:
@@ -194,16 +128,16 @@ struct TurnOneView: View {
             if playerReady() {
                 cardIsDisabled = true
 
-                firebaseHelper.updatePlayer(newState: [
-                    "cards_in_hand": cardsInHand,
-                    "is_ready": true
-                ])
-                
-//                let teamWithCrib = firebaseHelper.teams.first(where: { team in
-//                    team.has_crib
-//                })
+                Task {
+                    await firebaseHelper.updatePlayer(newState: [
+                        "cards_in_hand": cardsDragged,
+                        "is_ready": true
+                    ], cardAction: .remove)
+                    
+                    await firebaseHelper.updateTeam(newState: ["crib": cardsDragged])
+                }
 
-                firebaseHelper.updateTeam(newState: ["crib": cardsDragged])
+                
             }
         }
     }
