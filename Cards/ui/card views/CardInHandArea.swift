@@ -33,18 +33,18 @@ struct CardInHandArea: View {
                             .offset(y: -50)
                             .rotationEffect(.degrees(-Double((cardsInHand.count - 1) * 6) + Double(index * 12)))
                     }
-//                    .transition(.move(edge: .bottom))
                 }
             }
-//            .animation(.default.delay(2.0), value: firstTurn)
+            .onChange(of: firebaseHelper.playerState!.cards_in_hand, initial: true, {
+                cardsInHand = firebaseHelper.playerState!.cards_in_hand!
+            })
             .onAppear(perform: {
                 firstTurn.toggle()
             })
-            
             .offset(y: 50)
             .dropDestination(for: CardItem.self) { items, location in
                 if !cardsInHand.contains(items.first!.id) {
-                    cardsInHand.append(items.first!.id)
+//                    updatePlayer(newState: ["cards_in_hand": items], uid: <#T##String?#>, cardAction: <#T##CardUpdateType?#>)
                     cardsDragged.removeAll(where: { card in
                         card == items.first!.id
                     })

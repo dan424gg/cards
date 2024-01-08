@@ -63,74 +63,131 @@ import FirebaseFirestoreSwift
         showError = true
     }
     
-    func updatePlayer(newState: [String: Any], uid: String? = nil) {
+    func updatePlayer(newState: [String: Any], uid: String? = nil, cardAction: CardUpdateType? = nil) async {
         guard docRef != nil else {
             print("docRef was nil before updating player information")
+            return
+        }
+        guard playerState != nil else {
+            print("playerState is nil when trying to update player!")
             return
         }
         
-        var updatedPlayerInfo: PlayerState = uid == nil ? playerState! : players.first(where: {
-            player in player.uid == uid!
-        })!
-                
+        // type check updated states
         do {
             for (key, value) in newState {
-                switch key {
-                case "name" where value is String:
-                    updatedPlayerInfo.name = (value as! String)
-                case "cards_in_hand" where value is [CardItem]:
-                    updatedPlayerInfo.cards_in_hand = (value as! [Int])
-                case "team_num" where value is Int:
-                    updatedPlayerInfo.team_num = (value as! Int)
-                case "is_ready" where value is Bool:
-                    updatedPlayerInfo.is_ready = (value as! Bool)
-                default:
-                    print("PROPERTY:\(key) doesn't exist when trying to update player!")
-                    return
+                switch (key) {
+                    case "name":
+                        guard type(of: value) is String.Type else {
+                            print("\(key) needs to be String in updatePlayer()!")
+                            return
+                        }
+                        
+                        try await docRef.collection("players").document("\(uid ?? playerState!.uid!)").updateData([
+                            "\(key)": value
+                        ])
+
+                        break
+                        
+                    case "cards_in_hand":
+                        guard type(of: value) is [Int].Type else {
+                            print("\(value) needs to be [Int] in updatePlayer()!")
+                            return
+                        }
+                        
+                        switch (cardAction) {
+                            case .append:
+                                try await docRef.collection("players").document("\(uid ?? playerState!.uid!)").updateData([
+                                    "\(key)": FieldValue.arrayUnion(value as! [Int])
+                                ])
+                                break
+                            case .remove:
+                                try await docRef.collection("players").document("\(uid ?? playerState!.uid!)").updateData([
+                                    "\(key)": FieldValue.arrayRemove(value as! [Int])
+                                ])
+                                break
+                            case .replace:
+                                try await docRef.collection("players").document("\(uid ?? playerState!.uid!)").updateData([
+                                    "\(key)": value as! [Int]
+                                ])
+                                break
+                            default:
+                                print("UPDATEPLAYER: you have to have a cardAction flag set to manipulate cards!")
+                                return
+                        }
+                        break
+                    
+                    case "is_ready":
+                        guard type(of: value) is Bool.Type else {
+                            print("\(key) needs to be Bool in updatePlayer()!")
+                            return
+                        }
+                        
+                        try await docRef.collection("players").document("\(uid ?? playerState!.uid!)").updateData([
+                            "\(key)": value
+                        ])
+
+                        break
+                    
+                    case "team_num":
+                        guard type(of: value) is Int.Type else {
+                            print("\(key) needs to be Int in updatePlayer()!")
+                            return
+                        }
+                        
+                        try await docRef.collection("players").document("\(uid ?? playerState!.uid!)").updateData([
+                            "\(key)": value
+                        ])
+
+                        break
+                        
+                    case "player_num":
+                        guard type(of: value) is Int.Type else {
+                            print("\(key) needs to be Int in updatePlayer()!")
+                            return
+                        }
+                        
+                        try await docRef.collection("players").document("\(uid ?? playerState!.uid!)").updateData([
+                            "\(key)": value
+                        ])
+
+                        break
+                        
+                    default:
+                        print("UPDATEPLAYER: property: \(key) doesn't exist or can't be changed when trying to update player!")
+                        return
                 }
             }
-
-            try docRef.collection("players").document("\(updatedPlayerInfo.uid!)").setData(from: updatedPlayerInfo)
         } catch {
-            print("error in updatePlayer: \(error)")
+            print("UPDATEPLAYER: \(error)")
         }
     }
-    
-    func updateCards(cards: [Int]? = nil, crib: Bool = false, uid: String? = nil) {
-        guard docRef != nil else {
-            print("docRef was nil before updating player information")
-            return
-        }
-      
-        if crib {
-            let teamWithCrib = teams.first(where: { team in team.has_crib })
-            docRef.collection("teams").document("\(teamWithCrib!.team_num)").updateData([
-                "crib": FieldValue.arrayUnion(cards!)
-            ])
-        } else {
-            docRef.collection("players").document("\(uid ?? playerState!.uid!)").updateData([
-                "cards_in_hand": FieldValue.arrayUnion(cards!)
-            ])
-        }
-    }
-    
+   
     func updateGame(newState: [String: Any], cardAction: CardUpdateType? = nil) async {
         guard docRef != nil else {
             print("docRef was nil before updating game information")
             return
         }
-        guard gameState != nil else {
-            print("gameState was nil before trying to update it's info!")
-            return
-        }
-        
-        // type check
+      
+        // type check updated states
         do {
             for (key, value) in newState {
                 switch (key) {
-                    case "turn":
-                        guard type(of: value) is Int.Type else {
-                            print("\(key) needs to be Int in updateGame()!")
+                    case "is_playing":
+                        guard type(of: value) is Bool.Type else {
+                            print("\(key) needs to be Bool in updateGame()!")
+                            return
+                        }
+                        
+                        try await docRef!.updateData([
+                            "\(key)": value
+                        ])
+                        
+                        break
+                        
+                    case "is_won":
+                        guard type(of: value) is Bool.Type else {
+                            print("\(key) needs to be Bool in updateGame()!")
                             return
                         }
                         
@@ -152,21 +209,9 @@ import FirebaseFirestoreSwift
                         
                         break
                         
-                    case "is_won":
-                        guard type(of: value) is Bool.Type else {
-                            print("\(key) needs to be Bool in updateGame()!")
-                            return
-                        }
-                        
-                        try await docRef!.updateData([
-                            "\(key)": value
-                        ])
-                        
-                        break      
-                        
-                    case "is_playing":
-                        guard type(of: value) is Bool.Type else {
-                            print("\(key) needs to be Bool in updateGame()!")
+                    case "turn":
+                        guard type(of: value) is Int.Type else {
+                            print("\(key) needs to be Int in updateGame()!")
                             return
                         }
                         
@@ -175,7 +220,7 @@ import FirebaseFirestoreSwift
                         ])
                         
                         break
-                        
+
                     case "num_players":
                         guard type(of: value) is Int.Type else {
                             print("\(value) needs to be Int in updateGame()!")
@@ -186,6 +231,58 @@ import FirebaseFirestoreSwift
                             "\(key)": value
                         ])
                         
+                        break
+                        
+                    case "dealer":
+                        guard type(of: value) is Int.Type else {
+                            print("\(value) needs to be Int in updateGame()!")
+                            return
+                        }
+                        
+                        try await docRef!.updateData([
+                            "\(key)": value
+                        ])
+                        
+                        break
+                        
+                    case "team_with_crib":
+                        guard type(of: value) is Int.Type else {
+                            print("\(value) needs to be Int in updateGame()!")
+                            return
+                        }
+                        
+                        try await docRef!.updateData([
+                            "\(key)": value
+                        ])
+                        
+                        break
+                    
+                    case "crib":
+                        guard type(of: value) is [Int].Type else {
+                            print("\(value) needs to be [Int] in updateGame()!")
+                            return
+                        }
+                        
+                        switch (cardAction) {
+                            case .append:
+                                try await docRef!.updateData([
+                                    "\(key)": FieldValue.arrayUnion(value as! [Int])
+                                ])
+                                break
+                            case .remove:
+                                try await docRef!.updateData([
+                                    "\(key)": FieldValue.arrayRemove(value as! [Int])
+                                ])
+                                break
+                            case .replace:
+                                try await docRef!.updateData([
+                                    "\(key)": value as! [Int]
+                                ])
+                                break
+                            default:
+                                print("UPDATEGAME: you have to have a cardAction flag set to manipulate the crib!")
+                                return
+                        }
                         break
                         
                     case "cards":
@@ -216,18 +313,6 @@ import FirebaseFirestoreSwift
                         }
                         break
                         
-                    case "dealer":
-                        guard type(of: value) is Int.Type else {
-                            print("\(value) needs to be Int in updateGame()!")
-                            return
-                        }
-                        
-                        try await docRef!.updateData([
-                            "\(key)": value
-                        ])
-                        
-                        break
-                        
                     default:
                         print("UPDATEGAME: key:\(key) doesn't exist when trying to update game!")
                         return
@@ -238,57 +323,47 @@ import FirebaseFirestoreSwift
         }
     }
     
-    func updateTeam(newState: [String: Any]) {
+    func updateTeam(newState: [String: Any], cardAction: CardUpdateType? = nil) async {
         guard docRef != nil else {
             print("docRef was nil before updating team information")
             return
         }
-        guard teamState != nil else {
-            print("teamInfo was nil before trying to update it's info!")
-            return
-        }
         
+        // type check updated states
         do {
-            for temp in newState {
-                let property = temp.key
-                switch (property) {
-                case "crib":
-                    if !teamState!.has_crib {
-                        // wait for crib to update
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [self] in
-                            var teamWithCrib = teams.first(where: { team in
-                                team.has_crib
-                            })
-                            
-                            _ = (temp.value as! [Int]).map { card in
-                                teamWithCrib?.crib.append(card)
-                            }
-                            
-                            do {
-                                try docRef!.collection("teams").document("\(teamWithCrib?.team_num ?? 0)").setData(from: teamWithCrib)
-                            } catch {
-                                print("error trying to update crib \(error)")
-                            }
+            for (key, value) in newState {
+                switch (key) {
+                    case "team_num":
+                        guard type(of: value) is Int.Type else {
+                            print("\(key) needs to be Int in updateTeam()!")
+                            return
                         }
-                    } else {
-                        teamState!.crib = temp.value as! [Int]
-                    }
-                    break
-                case "points":
-                    teamState!.points = temp.value as! Int
-                    break
-                case "has_crib":
-                    teamState!.has_crib = temp.value as! Bool
-                    break
-                default:
-                    print("PROPERTY:\(property) doesn't exist when trying to update team!")
-                    return
+                        
+                        try await docRef!.collection("teams").document("\(teamState!.team_num)").updateData([
+                            "\(key)": value
+                        ])
+                        
+                        break
+                        
+                    case "points":
+                        guard type(of: value) is Int.Type else {
+                            print("\(key) needs to be Int in updateTeam()!")
+                            return
+                        }
+                        
+                        try await docRef!.collection("teams").document("\(teamState!.team_num)").updateData([
+                            "\(key)": value
+                        ])
+                        
+                        break
+                        
+                    default:
+                        print("UPDATETEAM: key: \(key) doesn't exist when trying to update team!")
+                        return
                 }
             }
-            
-            try docRef!.collection("teams").document("\(playerState!.team_num!)").setData(from: teamState!, merge: true)
         } catch {
-            print("error in updateTeam: \(error)")
+            print("UPDATETEAM: \(error)")
         }
     }
     
@@ -318,11 +393,15 @@ import FirebaseFirestoreSwift
                         
                         if change.type == .modified {
                             let modifiedPlayerData = try change.document.data(as: PlayerState.self)
-                            let loc = self.players.firstIndex { player in
-                                player.uid == modifiedPlayerData.uid
+                            if modifiedPlayerData.uid == playerState!.uid! {
+                                playerState! = modifiedPlayerData
+                            } else {
+                                let loc = self.players.firstIndex { player in
+                                    player.uid == modifiedPlayerData.uid
+                                }
+                                
+                                self.players[loc!] = modifiedPlayerData
                             }
-                            
-                            self.players[loc!] = modifiedPlayerData
                         }
                         
                         if change.type == .removed {
@@ -402,24 +481,24 @@ import FirebaseFirestoreSwift
                     do {
                         try snapshot?.documentChanges.forEach { change in
                             if change.type == .added {
-                                do {
-                                    let newTeam = try change.document.data(as: TeamState.self)
-                                    if !self.teams.contains(where: { team in
-                                        team.team_num == newTeam.team_num
-                                    }) {
-                                        self.teams.append(newTeam)
-                                    }
-                                } catch {
-                                    print("error when appending a team to teams: \(error)")
+                                let newTeam = try change.document.data(as: TeamState.self)
+                                if !self.teams.contains(where: { team in
+                                    team.team_num == newTeam.team_num
+                                }) {
+                                    self.teams.append(newTeam)
                                 }
                             }
                             if change.type == .modified {
                                 let modifiedTeamData = try change.document.data(as: TeamState.self)
-                                let loc = self.teams.firstIndex { team in
-                                    team.team_num == modifiedTeamData.team_num
+                                if modifiedTeamData.team_num == self.teamState!.team_num {
+                                    self.teamState! = modifiedTeamData
+                                } else {
+                                    let loc = self.teams.firstIndex { team in
+                                        team.team_num == modifiedTeamData.team_num
+                                    }
+                                    
+                                    self.teams[loc!] = modifiedTeamData
                                 }
-                                
-                                self.teams[loc!] = modifiedTeamData
                             }
                             if change.type == .removed {
                                 let removedTeamData = try change.document.data(as: TeamState.self)
@@ -462,7 +541,7 @@ import FirebaseFirestoreSwift
                 try docRef!.collection("teams").document("\(newTeamNum)").setData(from: teamState)
             }
             
-            updatePlayer(newState: ["team_num": newTeamNum])
+           await updatePlayer(newState: ["team_num": newTeamNum])
             
         } catch {
             print("failed trying to change the team")
@@ -485,14 +564,14 @@ import FirebaseFirestoreSwift
             } while (await checkValidId(id: groupId))
         }
         
-        docRef = db.collection("games").document(String(groupId))
+        docRef = db.collection("games").document("\(groupId)")
         
         do {
             gameState = GameState(group_id: groupId, num_teams: 1, turn: 0, game_name: gameName, num_players: 1)
             try docRef!.setData(from: gameState)
                         
-            teamState = TeamState(team_num: 1, has_crib: true)
-            try docRef!.collection("teams").document(String(1)).setData(from: teamState)
+            teamState = TeamState(team_num: 1)
+            try docRef!.collection("teams").document("\(1)").setData(from: teamState)
             self.teams.append(teamState!)
             
             playerState = PlayerState(name: fullName, uid: UUID().uuidString, is_lead: true, team_num: 1, player_num: 0)
@@ -559,106 +638,50 @@ import FirebaseFirestoreSwift
         }
     }
 
-    
-    func shuffleAndDealCards(cardsInHand_binding: Binding<[Int]>) async {
+    func shuffleAndDealCards() async {
         guard gameState != nil else {
             return
         }
-        
-        guard playerState!.is_lead! else {
+        guard playerState!.player_num! == gameState!.dealer else {
             return
         }
         
-        await updateGame(newState: ["cards": GameState().cards.shuffled()], cardAction: .replace)
-//        var numberOfCards: Int {
-//            switch (gameState?.num_teams, gameState?.num_players) {
-//                case (2, 2):
-//                    return 6
-//                case (3, 3):
-//                    
-//                    return 5
-//                default:
-//                    return 5
-//            }
-//        }
-//        
-//        for i in 0...numberOfCards {
-//            for player in players {
-//                updateCards(card: gameState!.cards.removeFirst(), uid: player.uid!)
-//            }
-//        }
-//        
-//        switch (gameState?.num_teams ?? 2) {
-//            case 1, 2:
-//                if gameState?.num_players == 2 {
-//                    var playerOneCards: [CardItem] = []
-//                    var playerTwoCards: [CardItem] = []
-//                
-//                    for _ in 1...6 {
-//                        guard gameState!.cards != [] else {
-//                            print("cards ran out in the middle of the deal")
-//                            return
-//                        }
-//                        playerOneCards.append(gameState!.cards.removeFirst())
-//                        playerTwoCards.append(gameState!.cards.removeFirst())
-//                    }
-//                } else {
-//                    for _ in 1...5 {
-//                        guard gameState!.cards != [] else {
-//                            print("cards ran out in the middle of the deal")
-//                            return
-//                        }
-//                        
-//                        cardsInHand.append(gameState!.cards.popLast()!)
-//                    }
-//                }
-//            case 3:
-//                if gameState!.num_players == 3 {
-//                    if teamInfo!.has_crib {
-//                        updateTeam(newState: ["crib": [gameState!.cards.popLast()!]])
-//                    }
-//                    for _ in 1...5 {
-//                        guard gameState!.cards != [] else {
-//                            print("cards ran out in the middle of the deal")
-//                            return
-//                        }
-//                        
-//                        cardsInHand.append(gameState!.cards.popLast()!)
-//                    }
-//                }
-//                else {
-//                    let dealer = players.first(where: { player in
-//                        player.player_num == gameState?.dealer
-//                    })
-//                    if playerState?.player_num == gameState?.dealer
-//                        /* or if player is "to the left" of the dealer */
-//                        || (playerState!.player_num! + 1) % gameState!.num_players == dealer!.player_num! {
-//                        for _ in 1...4 {
-//                            guard gameState!.cards != [] else {
-//                                print("cards ran out in the middle of the deal")
-//                                return
-//                            }
-//                            
-//                            cardsInHand.append(gameState!.cards.popLast()!)
-//                        }
-//                    } else {
-//                        for _ in 1...5 {
-//                            guard gameState!.cards != [] else {
-//                                print("cards ran out in the middle of the deal")
-//                                return
-//                            }
-//                            
-//                            cardsInHand.append(gameState!.cards.popLast()!)
-//                        }
-//                    }
-//                }
-//            default:
-//                return
-//        }
-//        
-//        updatePlayer(newState: ["cards_in_hand": cardsInHand])
-        await updateGame(newState: ["cards": gameState!.cards])
-//        cardsInHand_binding.wrappedValue = cardsInHand
+        // ensure cards_in_hand is cleared for all players
+        for player in players {
+            await updatePlayer(newState: ["cards_in_hand": [Int]()], uid: player.uid, cardAction: .replace)
+        }
+        
+        // ensure crib is cleared
+        await updateGame(newState: ["crib": [Int](), "cards": GameState().cards.shuffled()], cardAction: .replace)
+        
+        let numberOfPlayers = gameState!.num_players
+        var numberOfCards: Int {
+            if numberOfPlayers == 2 {
+                return 6
+            } else {
+                return 5
+            }
+        }
+        
+        // check for 3 player edge case
+        if numberOfPlayers == 3 {
+            await updateGame(newState: ["crib": [gameState!.cards.removeFirst()]], cardAction: .append)
+        }
+        
+        for i in 0..<numberOfCards {
+            for player in players {
+                // check for 6 person edge case
+                if numberOfPlayers == 6 &&
+                    i == 4 &&
+                    (player.player_num == gameState!.dealer ||
+                        ((player.player_num! + 1) % gameState!.num_players) == gameState!.dealer) {
+                    continue
+                }
+                await updatePlayer(newState: ["cards_in_hand": [gameState!.cards.removeFirst()]], uid: player.uid, cardAction: .append)
+            }
+        }
+        
+        await updateGame(newState: ["cards": gameState!.cards], cardAction: .replace)
     }
     
     func checkIfPlayersAreReady() -> Bool {
