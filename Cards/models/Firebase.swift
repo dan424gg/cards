@@ -163,15 +163,6 @@ import FirebaseFirestoreSwift
         }
     }
     
-    func updateCards(cards: [Int]? = nil, crib: Bool = false, uid: String? = nil) {
-        guard docRef != nil else {
-            print("docRef was nil before updating player information")
-            return
-        }
-      
-        
-    }
-    
     func updateGame(newState: [String: Any], cardAction: CardUpdateType? = nil) async {
         guard docRef != nil else {
             print("docRef was nil before updating game information")
@@ -182,9 +173,21 @@ import FirebaseFirestoreSwift
         do {
             for (key, value) in newState {
                 switch (key) {
-                    case "turn":
-                        guard type(of: value) is Int.Type else {
-                            print("\(key) needs to be Int in updateGame()!")
+                    case "is_playing":
+                        guard type(of: value) is Bool.Type else {
+                            print("\(key) needs to be Bool in updateGame()!")
+                            return
+                        }
+                        
+                        try await docRef!.updateData([
+                            "\(key)": value
+                        ])
+                        
+                        break
+                        
+                    case "is_won":
+                        guard type(of: value) is Bool.Type else {
+                            print("\(key) needs to be Bool in updateGame()!")
                             return
                         }
                         
@@ -206,21 +209,9 @@ import FirebaseFirestoreSwift
                         
                         break
                         
-                    case "is_won":
-                        guard type(of: value) is Bool.Type else {
-                            print("\(key) needs to be Bool in updateGame()!")
-                            return
-                        }
-                        
-                        try await docRef!.updateData([
-                            "\(key)": value
-                        ])
-                        
-                        break      
-                        
-                    case "is_playing":
-                        guard type(of: value) is Bool.Type else {
-                            print("\(key) needs to be Bool in updateGame()!")
+                    case "turn":
+                        guard type(of: value) is Int.Type else {
+                            print("\(key) needs to be Int in updateGame()!")
                             return
                         }
                         
@@ -229,7 +220,7 @@ import FirebaseFirestoreSwift
                         ])
                         
                         break
-                        
+
                     case "num_players":
                         guard type(of: value) is Int.Type else {
                             print("\(value) needs to be Int in updateGame()!")
@@ -240,6 +231,58 @@ import FirebaseFirestoreSwift
                             "\(key)": value
                         ])
                         
+                        break
+                        
+                    case "dealer":
+                        guard type(of: value) is Int.Type else {
+                            print("\(value) needs to be Int in updateGame()!")
+                            return
+                        }
+                        
+                        try await docRef!.updateData([
+                            "\(key)": value
+                        ])
+                        
+                        break
+                        
+                    case "team_with_crib":
+                        guard type(of: value) is Int.Type else {
+                            print("\(value) needs to be Int in updateGame()!")
+                            return
+                        }
+                        
+                        try await docRef!.updateData([
+                            "\(key)": value
+                        ])
+                        
+                        break
+                    
+                    case "crib":
+                        guard type(of: value) is [Int].Type else {
+                            print("\(value) needs to be [Int] in updateGame()!")
+                            return
+                        }
+                        
+                        switch (cardAction) {
+                            case .append:
+                                try await docRef!.updateData([
+                                    "\(key)": FieldValue.arrayUnion(value as! [Int])
+                                ])
+                                break
+                            case .remove:
+                                try await docRef!.updateData([
+                                    "\(key)": FieldValue.arrayRemove(value as! [Int])
+                                ])
+                                break
+                            case .replace:
+                                try await docRef!.updateData([
+                                    "\(key)": value as! [Int]
+                                ])
+                                break
+                            default:
+                                print("UDPATEGAME: you have to have a cardAction flag set to manipulate the crib!")
+                                return
+                        }
                         break
                         
                     case "cards":
@@ -268,18 +311,6 @@ import FirebaseFirestoreSwift
                                 print("UDPATEGAME: you have to have a cardAction flag set to manipulate cards!")
                                 return
                         }
-                        break
-                        
-                    case "dealer":
-                        guard type(of: value) is Int.Type else {
-                            print("\(value) needs to be Int in updateGame()!")
-                            return
-                        }
-                        
-                        try await docRef!.updateData([
-                            "\(key)": value
-                        ])
-                        
                         break
                         
                     default:
@@ -607,106 +638,50 @@ import FirebaseFirestoreSwift
         }
     }
 
-    
-    func shuffleAndDealCards(cardsInHand_binding: Binding<[Int]>) async {
+    func shuffleAndDealCards() async {
         guard gameState != nil else {
             return
         }
-        
-        guard playerState!.is_lead! else {
+        guard playerState!.player_num! == gameState!.dealer else {
             return
         }
         
-        await updateGame(newState: ["cards": GameState().cards.shuffled()], cardAction: .replace)
-//        var numberOfCards: Int {
-//            switch (gameState?.num_teams, gameState?.num_players) {
-//                case (2, 2):
-//                    return 6
-//                case (3, 3):
-//                    
-//                    return 5
-//                default:
-//                    return 5
-//            }
-//        }
-//        
-//        for i in 0...numberOfCards {
-//            for player in players {
-//                updateCards(card: gameState!.cards.removeFirst(), uid: player.uid!)
-//            }
-//        }
-//        
-//        switch (gameState?.num_teams ?? 2) {
-//            case 1, 2:
-//                if gameState?.num_players == 2 {
-//                    var playerOneCards: [CardItem] = []
-//                    var playerTwoCards: [CardItem] = []
-//                
-//                    for _ in 1...6 {
-//                        guard gameState!.cards != [] else {
-//                            print("cards ran out in the middle of the deal")
-//                            return
-//                        }
-//                        playerOneCards.append(gameState!.cards.removeFirst())
-//                        playerTwoCards.append(gameState!.cards.removeFirst())
-//                    }
-//                } else {
-//                    for _ in 1...5 {
-//                        guard gameState!.cards != [] else {
-//                            print("cards ran out in the middle of the deal")
-//                            return
-//                        }
-//                        
-//                        cardsInHand.append(gameState!.cards.popLast()!)
-//                    }
-//                }
-//            case 3:
-//                if gameState!.num_players == 3 {
-//                    if teamInfo!.has_crib {
-//                        updateTeam(newState: ["crib": [gameState!.cards.popLast()!]])
-//                    }
-//                    for _ in 1...5 {
-//                        guard gameState!.cards != [] else {
-//                            print("cards ran out in the middle of the deal")
-//                            return
-//                        }
-//                        
-//                        cardsInHand.append(gameState!.cards.popLast()!)
-//                    }
-//                }
-//                else {
-//                    let dealer = players.first(where: { player in
-//                        player.player_num == gameState?.dealer
-//                    })
-//                    if playerState?.player_num == gameState?.dealer
-//                        /* or if player is "to the left" of the dealer */
-//                        || (playerState!.player_num! + 1) % gameState!.num_players == dealer!.player_num! {
-//                        for _ in 1...4 {
-//                            guard gameState!.cards != [] else {
-//                                print("cards ran out in the middle of the deal")
-//                                return
-//                            }
-//                            
-//                            cardsInHand.append(gameState!.cards.popLast()!)
-//                        }
-//                    } else {
-//                        for _ in 1...5 {
-//                            guard gameState!.cards != [] else {
-//                                print("cards ran out in the middle of the deal")
-//                                return
-//                            }
-//                            
-//                            cardsInHand.append(gameState!.cards.popLast()!)
-//                        }
-//                    }
-//                }
-//            default:
-//                return
-//        }
-//        
-//        updatePlayer(newState: ["cards_in_hand": cardsInHand])
-        await updateGame(newState: ["cards": gameState!.cards])
-//        cardsInHand_binding.wrappedValue = cardsInHand
+        // ensure cards_in_hand is cleared for all players
+        for player in players {
+            await updatePlayer(newState: ["cards_in_hand": [Int]()], uid: player.uid, cardAction: .replace)
+        }
+        
+        // ensure crib is cleared
+        await updateGame(newState: ["crib": [Int](), "cards": GameState().cards.shuffled()], cardAction: .replace)
+        
+        let numberOfPlayers = gameState!.num_players
+        var numberOfCards: Int {
+            if numberOfPlayers == 2 {
+                return 6
+            } else {
+                return 5
+            }
+        }
+        
+        // check for 3 player edge case
+        if numberOfPlayers == 3 {
+            await updateGame(newState: ["crib": [gameState!.cards.removeFirst()]], cardAction: .append)
+        }
+        
+        for i in 0..<numberOfCards {
+            for player in players {
+                // check for 6 person edge case
+                if numberOfPlayers == 6 &&
+                    i == 4 &&
+                    (player.player_num == gameState!.dealer ||
+                        ((player.player_num! + 1) % gameState!.num_players) == gameState!.dealer) {
+                    continue
+                }
+                await updatePlayer(newState: ["cards_in_hand": [gameState!.cards.removeFirst()]], uid: player.uid, cardAction: .append)
+            }
+        }
+        
+        await updateGame(newState: ["cards": gameState!.cards], cardAction: .replace)
     }
     
     func checkIfPlayersAreReady() -> Bool {

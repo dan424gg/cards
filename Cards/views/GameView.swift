@@ -38,7 +38,7 @@ struct GameView: View {
                     .onChange(of: firebaseHelper.gameState?.turn, initial: true, {
                         if firebaseHelper.gameState?.turn == 1 {
                             Task {
-                                await firebaseHelper.shuffleAndDealCards(cardsInHand_binding: $cardsInHand)
+                                await firebaseHelper.shuffleAndDealCards()
                             }
                         }
                     })
@@ -76,7 +76,7 @@ struct GameView: View {
                     }
                     
                     Task {
-                        await firebaseHelper.shuffleAndDealCards(cardsInHand_binding: $cardsInHand)
+                        await firebaseHelper.shuffleAndDealCards()
                     }
                 }
             })

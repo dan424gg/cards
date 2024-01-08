@@ -260,10 +260,8 @@ final class FirebaseHelperTests: XCTestCase {
         XCTAssertTrue(playerOne.teamState!.points == 50, "TESTUPDATETEAM: teamState wasn't updated locally!")
         XCTAssertTrue(playerTwo.teams.first(where: { team in team.team_num == 1})!.points == 50, "TESTUPDATETEAM: teamState wasn't updated in firebase!")
     }
-        
     
-    // TO-DO
-    @MainActor func testUpdateCards() async {
+    @MainActor func testShuffleAndDeal() async {
         let playerOne = FirebaseHelper()
         var randId = 0
         repeat {
@@ -275,7 +273,58 @@ final class FirebaseHelperTests: XCTestCase {
         await playerTwo.joinGameCollection(fullName: "2", id: randId, gameName: "Cribbage")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         
-        playerOne.deleteGameCollection(id: randId)
+        // test that players have correct number of cards in hands
+        await playerOne.updateGame(newState: ["dealer": 0])
+        await playerOne.shuffleAndDealCards()
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
+
+        XCTAssertNotEqual(playerOne.gameState!.cards, playerOne.gameState!.cards.sorted())
+        XCTAssertTrue(playerOne.playerState!.cards_in_hand!.count == 6)
+        XCTAssertTrue(playerTwo.playerState!.cards_in_hand!.count == 6)
+        
+        // add another player (3)
+        let playerThree = FirebaseHelper()
+        await playerThree.joinGameCollection(fullName: "3", id: randId, gameName: "Cribbage")
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
+        
+        await playerOne.shuffleAndDealCards()
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
+        XCTAssertTrue(playerOne.playerState!.cards_in_hand!.count == 5)
+        XCTAssertTrue(playerTwo.playerState!.cards_in_hand!.count == 5)
+        XCTAssertTrue(playerThree.playerState!.cards_in_hand!.count == 5)
+        XCTAssertTrue(playerOne.gameState!.crib.count == 1)
+        
+        // add another player (4)
+        let playerFour = FirebaseHelper()
+        await playerFour.joinGameCollection(fullName: "4", id: randId, gameName: "Cribbage")
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
+        
+        await playerOne.shuffleAndDealCards()
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
+        XCTAssertTrue(playerOne.playerState!.cards_in_hand!.count == 5)
+        XCTAssertTrue(playerTwo.playerState!.cards_in_hand!.count == 5)
+        XCTAssertTrue(playerThree.playerState!.cards_in_hand!.count == 5)
+        XCTAssertTrue(playerFour.playerState!.cards_in_hand!.count == 5)
+        XCTAssertTrue(playerOne.gameState!.crib.count == 0)
+        
+        // add another two players (6)
+        let playerFive = FirebaseHelper()
+        await playerFive.joinGameCollection(fullName: "5", id: randId, gameName: "Cribbage")
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
+        let playerSix = FirebaseHelper()
+        await playerSix.joinGameCollection(fullName: "6", id: randId, gameName: "Cribbage")
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
+        
+        await playerOne.shuffleAndDealCards()
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
+        XCTAssertTrue(playerOne.playerState!.cards_in_hand!.count == 4)
+        XCTAssertTrue(playerTwo.playerState!.cards_in_hand!.count == 5)
+        XCTAssertTrue(playerThree.playerState!.cards_in_hand!.count == 5)
+        XCTAssertTrue(playerFour.playerState!.cards_in_hand!.count == 5)
+        XCTAssertTrue(playerFive.playerState!.cards_in_hand!.count == 5)
+        XCTAssertTrue(playerSix.playerState!.cards_in_hand!.count == 4)
+        XCTAssertTrue(playerOne.gameState!.cards.count == 24)
+        XCTAssertTrue(playerOne.gameState!.crib.count == 0)
     }
 }
 
