@@ -162,13 +162,13 @@ import FirebaseFirestoreSwift
             print("UPDATEPLAYER: \(error)")
         }
     }
-    
+   
     func updateGame(newState: [String: Any], cardAction: CardUpdateType? = nil) async {
         guard docRef != nil else {
             print("docRef was nil before updating game information")
             return
         }
-        
+      
         // type check updated states
         do {
             for (key, value) in newState {
@@ -280,7 +280,7 @@ import FirebaseFirestoreSwift
                                 ])
                                 break
                             default:
-                                print("UDPATEGAME: you have to have a cardAction flag set to manipulate the crib!")
+                                print("UPDATEGAME: you have to have a cardAction flag set to manipulate the crib!")
                                 return
                         }
                         break
