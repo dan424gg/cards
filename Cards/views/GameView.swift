@@ -35,22 +35,15 @@ struct GameView: View {
                 DeckOfCardsView()
                     .scaleEffect(x: 0.65, y: 0.65)
                     .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 1.2)
-                    .onChange(of: firebaseHelper.gameState?.turn, initial: true, {
-                        if firebaseHelper.gameState?.turn == 1 {
-                            Task {
-                                await firebaseHelper.shuffleAndDealCards()
-                            }
-                        }
-                    })
                 
                 // game that is being played
                 VStack {
                     switch (firebaseHelper.gameState?.game_name ?? "cribbage") {
-                    case "cribbage":
-                        Cribbage(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
-                            .frame(width: geo.size.width, height: geo.size.height)
-                            .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 0.52)
-                    default: EmptyView()
+                        case "cribbage":
+                            Cribbage(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
+                                .frame(width: geo.size.width, height: geo.size.height)
+                                .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 0.52)
+                        default: EmptyView()
                     }
                 }
                 .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 4.75)
@@ -64,17 +57,23 @@ struct GameView: View {
                 if firebaseHelper.gameState?.turn == 1 {
                     if firstTurn && firebaseHelper.playerState?.is_lead ?? true {
                         // pick first dealer randomly
-                        var randDealer = Int.random(in: 0..<(firebaseHelper.gameState?.num_players ?? 1))
+                        let randDealer = Int.random(in: 0..<(firebaseHelper.gameState?.num_players ?? 1))
+                        
                         Task {
                             await firebaseHelper.updateGame(newState: ["dealer": randDealer])
                         }
+                        
+                        firstTurn = false
                     } else if firebaseHelper.playerState?.is_lead ?? true {
                         // rotate dealer
                         Task {
                             await firebaseHelper.updateGame(newState: ["dealer": ((firebaseHelper.gameState?.dealer ?? 0) + 1) % (firebaseHelper.gameState?.num_players ?? 2)])
                         }
                     }
-                    
+                }
+            })
+            .onChange(of: firebaseHelper.gameState!.dealer, initial: true, {
+                if firebaseHelper.playerState!.player_num == firebaseHelper.gameState!.dealer {
                     Task {
                         await firebaseHelper.shuffleAndDealCards()
                     }

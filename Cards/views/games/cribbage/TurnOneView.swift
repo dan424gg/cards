@@ -136,8 +136,6 @@ struct TurnOneView: View {
                     
                     await firebaseHelper.updateTeam(newState: ["crib": cardsDragged])
                 }
-
-                
             }
         }
     }
