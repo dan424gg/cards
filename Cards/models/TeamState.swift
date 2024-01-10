@@ -17,7 +17,8 @@ public struct TeamState: Hashable, Codable {
     
     static let team_one = TeamState(team_num: 1, points: 50)
     static let team_two = TeamState(team_num: 2, points: 46)
-
+    static let team_three = TeamState(team_num: 3, points: 73)
+    
 //    enum CodingKeys: String, CodingKey {
 //        case crib
 //        case has_crib

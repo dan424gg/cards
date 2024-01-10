@@ -20,10 +20,10 @@ public struct PlayerState: Hashable, Codable {
     var is_ready: Bool? = false
     var player_num: Int? = -1
 
-    static var player_one = PlayerState(name: "Daniel", uid: "001", cards_in_hand: Array(39...42), is_lead: true, team_num: 1, player_num: 1)
-    static var player_two = PlayerState(name: "Katie", uid: "002", cards_in_hand: Array(39...42), is_lead: false, team_num: 2, player_num: 2)
-    static var player_three = PlayerState(name: "Ben", uid: "001", cards_in_hand: Array(39...42), is_lead: true, team_num: 1, player_num: 3)
-    static var player_four = PlayerState(name: "Alex", uid: "002", cards_in_hand: Array(39...42), is_lead: false, team_num: 2, player_num: 4)
+    static var player_one = PlayerState(name: "Daniel", uid: "1", cards_in_hand: Array(39...42), is_lead: true, team_num: 1, player_num: 0)
+    static var player_two = PlayerState(name: "Katie", uid: "2", cards_in_hand: Array(35...38), is_lead: false, team_num: 2, player_num: 1)
+    static var player_three = PlayerState(name: "Ben", uid: "3", cards_in_hand: Array(31...34), is_lead: false, team_num: 3, player_num: 2)
+    static var player_four = PlayerState(name: "Alex", uid: "4", cards_in_hand: Array(27...30), is_lead: false, team_num: 2, player_num: 3)
     
     enum CodingKeys: CodingKey {
         case name

@@ -16,7 +16,7 @@ struct CribbageBoard: View {
     @State var teamTwoPoints = 0
     @State var teamThreePoints = 54
 
-    @State var pointsShown = false
+    @State var showPoints = false
     @State var teamOneLength: CGFloat = 0.0
     @State var teamTwoLength: CGFloat = 0.0
     @State var teamThreeLength: CGFloat = 0.0
@@ -148,7 +148,7 @@ struct CribbageBoard: View {
                     .stroke(.green.opacity(0.8), lineWidth: trackWidthAdjustment)
                 }
                 .zIndex(0)
-                .blur(radius: pointsShown ? 7 : 0)
+                .blur(radius: showPoints ? 7 : 0)
                 
                 HStack {
                     if firebaseHelper.teams == [] {
@@ -180,21 +180,21 @@ struct CribbageBoard: View {
                     }
                 }
                 .zIndex(0)
-                .opacity(pointsShown ? 1.0 : 0.0)
+                .opacity(showPoints ? 1.0 : 0.0)
                 .frame(width: rect.width + 5)
             }
         }
         .frame(width: 150, height: 65)
-        
-        Button("increment") {
-            teamOnePoints += 7
-            teamTwoPoints += 7
-        }
-//        .onTapGesture(perform: {
-//            withAnimation(.easeInOut) {
-//                pointsShown.toggle()
-//            }
-//        })
+        .onTapGesture(perform: {
+            withAnimation(.easeInOut) {
+                showPoints = true
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.3) {
+                withAnimation(.easeInOut) {
+                    showPoints = false
+                }
+            }
+        })
     }
 }
 
