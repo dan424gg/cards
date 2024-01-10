@@ -23,7 +23,7 @@ struct CardView: View {
                 // backside
                 ZStack {
                     RoundedRectangle(cornerRadius: 10)
-                        .stroke(.black.opacity(0.7), lineWidth: 3)
+                        .stroke(.black.opacity(0.7), lineWidth: 1)
                         .frame(width: 50, height: 100)
                     
                     RoundedRectangle(cornerRadius: 10)

@@ -19,7 +19,7 @@ struct NamesAroundTable: View {
     var body: some View {
         ZStack {
             ForEach(Array(sortedPlayerList?.enumerated()
-                      ?? [PlayerState.player_one, PlayerState.player_two, PlayerState.player_three, PlayerState.player_four]
+                      ?? [PlayerState.player_one, PlayerState.player_two, PlayerState.player_three]
                             .filter { $0.player_num != 1 }
                             .sorted(by: { $0.player_num! < $1.player_num!})
                             .enumerated()
@@ -42,26 +42,26 @@ struct NamesAroundTable: View {
                 })
             }
             .onAppear(perform: {
-                switch(firebaseHelper.gameState?.num_teams ?? 2) {
-                case 2:
-                    if firebaseHelper.gameState?.num_players == 2 {
+                switch(firebaseHelper.gameState?.num_teams ?? 3) {
+                    case 2:
+                        if firebaseHelper.gameState?.num_players == 2 {
+                            startingRotation = 0
+                            multiplier = 0
+                        } else {
+                            startingRotation = 270
+                            multiplier = 90
+                        }
+                    case 3:
+                        if firebaseHelper.gameState?.num_players ?? 3 == 3 {
+                            startingRotation = 315
+                            multiplier = 90
+                        } else {
+                            startingRotation = 240
+                            multiplier = 60
+                        }
+                    default:
                         startingRotation = 0
                         multiplier = 0
-                    } else {
-                        startingRotation = 270
-                        multiplier = 90
-                    }
-                case 3:
-                    if firebaseHelper.gameState?.num_players == 3 {
-                        startingRotation = 315
-                        multiplier = 90
-                    } else {
-                        startingRotation = 240
-                        multiplier = 60
-                    }
-                default:
-                    startingRotation = 0
-                    multiplier = 0
                 }
             })
         }
