@@ -323,7 +323,7 @@ import FirebaseFirestoreSwift
         }
     }
     
-    func updateTeam(newState: [String: Any], cardAction: CardUpdateType? = nil) async {
+    func updateTeam(newState: [String: Any]) async {
         guard docRef != nil else {
             print("docRef was nil before updating team information")
             return
@@ -395,13 +395,13 @@ import FirebaseFirestoreSwift
                             let modifiedPlayerData = try change.document.data(as: PlayerState.self)
                             if modifiedPlayerData.uid == playerState!.uid! {
                                 playerState! = modifiedPlayerData
-                            } else {
-                                let loc = self.players.firstIndex { player in
-                                    player.uid == modifiedPlayerData.uid
-                                }
-                                
-                                self.players[loc!] = modifiedPlayerData
                             }
+                            
+                            let loc = self.players.firstIndex { player in
+                                player.uid == modifiedPlayerData.uid
+                            }
+                            
+                            self.players[loc!] = modifiedPlayerData
                         }
                         
                         if change.type == .removed {
@@ -492,13 +492,12 @@ import FirebaseFirestoreSwift
                                 let modifiedTeamData = try change.document.data(as: TeamState.self)
                                 if modifiedTeamData.team_num == self.teamState!.team_num {
                                     self.teamState! = modifiedTeamData
-                                } else {
-                                    let loc = self.teams.firstIndex { team in
-                                        team.team_num == modifiedTeamData.team_num
-                                    }
-                                    
-                                    self.teams[loc!] = modifiedTeamData
+                                } 
+                                let loc = self.teams.firstIndex { team in
+                                    team.team_num == modifiedTeamData.team_num
                                 }
+                                
+                                self.teams[loc!] = modifiedTeamData
                             }
                             if change.type == .removed {
                                 let removedTeamData = try change.document.data(as: TeamState.self)

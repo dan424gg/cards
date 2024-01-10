@@ -6,16 +6,20 @@
 //
 
 import SwiftUI
+import CoreGraphics
 
 struct CribbageBoard: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     var numPlayers = 3
-    var teamOnePoints = 120
-    var teamTwoPoints = 120
-    var teamThreePoints = 120
-    
-    var teams = [TeamState.team_one, TeamState.team_two, TeamState.team_two]
+    var teams: [TeamState] = [TeamState(team_num: 1, points: 53), TeamState(team_num: 2, points: 74), TeamState(team_num: 3, points: 61)]
+    @State var teamOnePoints = 0
+    @State var teamTwoPoints = 0
+    @State var teamThreePoints = 54
+
     @State var pointsShown = false
+    @State var teamOneLength: CGFloat = 0.0
+    @State var teamTwoLength: CGFloat = 0.0
+    @State var teamThreeLength: CGFloat = 0.0
     
     var trackWidthAdjustment: Double {
         if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
@@ -121,6 +125,7 @@ struct CribbageBoard: View {
                         path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY - (trackWidthAdjustment / 2)))
                         path.addArc(center: CGPoint(x: rect.minX, y: ((rect.midY - midYAdjustment) / 2) + rect.midY), radius: ((rect.midY + midYAdjustment) / 2) - (trackWidthAdjustment / 2), startAngle: .degrees(90), endAngle: .degrees(270), clockwise: false)
                         path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY - midYAdjustment + (trackWidthAdjustment / 2)))
+                        print(path.length())
                     }
                     .trim(from: 0, to: Double(firebaseHelper.teams.first(where: { team in
                         team.team_num == 1
@@ -135,20 +140,12 @@ struct CribbageBoard: View {
                         path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY - trackPosAdjustment - (trackWidthAdjustment / 2)))
                         path.addArc(center: CGPoint(x: rect.minX, y: ((rect.midY - midYAdjustment) / 2) + rect.midY), radius: ((rect.midY + midYAdjustment) / 2) - trackPosAdjustment - (trackWidthAdjustment / 2), startAngle: .degrees(90), endAngle: .degrees(270), clockwise: false)
                         path.addLine(to: CGPoint(x: rect.maxX, y: (rect.midY - midYAdjustment) + trackPosAdjustment + (trackWidthAdjustment / 2)))
+                        print(path.length())
                     }
-                    .trim(from: 0, to: Double(firebaseHelper.teams.first(where: { team in
+                    .trimmedPath(from: 0, to: Double(firebaseHelper.teams.first(where: { team in
                         team.team_num == 2
                     })?.points ?? teams[1].points) / 121.0)
                     .stroke(.green.opacity(0.8), lineWidth: trackWidthAdjustment)
-                    
-                    //                Path { path in
-                    //                    path.move(to: CGPoint(x: rect.midX, y: 0))
-                    //                    path.addLine(to: CGPoint(x: rect.midX, y: rect.maxY))
-                    //                }.stroke(.black, lineWidth: 0.5)
-                    //                Path { path in
-                    //                    path.move(to: CGPoint(x: 0, y: rect.midY))
-                    //                    path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY))
-                    //                }.stroke(.black, lineWidth: 0.5)
                 }
                 .zIndex(0)
                 .blur(radius: pointsShown ? 7 : 0)
@@ -188,13 +185,76 @@ struct CribbageBoard: View {
             }
         }
         .frame(width: 150, height: 65)
-        .onTapGesture(perform: {
-            withAnimation(.easeInOut) {
-                pointsShown.toggle()
-            }
-        })
+        
+        Button("increment") {
+            teamOnePoints += 7
+            teamTwoPoints += 7
+        }
+//        .onTapGesture(perform: {
+//            withAnimation(.easeInOut) {
+//                pointsShown.toggle()
+//            }
+//        })
     }
 }
+
+extension Path {
+    func length() -> CGFloat {
+        var length: CGFloat = 0.0
+        var currentPoint: CGPoint = .zero
+
+        forEach { element in
+            switch element {
+            case let .move(to: to):
+                currentPoint = to
+            case let .line(to: to):
+                length += currentPoint.distance(to: to)
+                currentPoint = to
+            case let .quadCurve(to: to, control: control):
+                length += currentPoint.quadraticBezierDistance(to: to, control: control)
+                currentPoint = to
+            case let .curve(to: to, control1: control1, control2: control2):
+                length += currentPoint.cubicBezierDistance(to: to, control1: control1, control2: control2)
+                currentPoint = to
+            case .closeSubpath:
+                break
+            }
+        }
+
+        return length
+    }
+}
+
+extension CGPoint {
+    func distance(to point: CGPoint) -> CGFloat {
+        return hypot(point.x - x, point.y - y)
+    }
+
+    func quadraticBezierDistance(to point: CGPoint, control: CGPoint) -> CGFloat {
+        let t: CGFloat = 0.5
+        let controlPoint1 = CGPoint(x: x + t * (control.x - x), y: y + t * (control.y - y))
+        let controlPoint2 = CGPoint(x: point.x + t * (control.x - point.x), y: point.y + t * (control.y - point.y))
+        let midPoint = controlPoint1.lerp(to: controlPoint2, t: t)
+        return distance(to: midPoint) + midPoint.distance(to: controlPoint2)
+    }
+
+    func cubicBezierDistance(to point: CGPoint, control1: CGPoint, control2: CGPoint) -> CGFloat {
+        let t: CGFloat = 0.5
+        let controlPoint1 = CGPoint(x: x + t * (control1.x - x), y: y + t * (control1.y - y))
+        let controlPoint2 = CGPoint(x: control1.x + t * (control2.x - control1.x), y: control1.y + t * (control2.y - control1.y))
+        let controlPoint3 = CGPoint(x: control2.x + t * (point.x - control2.x), y: control2.y + t * (point.y - control2.y))
+        let midPoint1 = controlPoint1.lerp(to: controlPoint2, t: t)
+        let midPoint2 = controlPoint2.lerp(to: controlPoint3, t: t)
+        let finalMidPoint = midPoint1.lerp(to: midPoint2, t: t)
+        return distance(to: finalMidPoint) + finalMidPoint.distance(to: controlPoint3)
+    }
+
+    func lerp(to destination: CGPoint, t: CGFloat) -> CGPoint {
+        return CGPoint(x: x + (destination.x - x) * t, y: y + (destination.y - y) * t)
+    }
+}
+
+
 
 #Preview {
     CribbageBoard()

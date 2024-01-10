@@ -48,32 +48,32 @@ struct GameView: View {
                 }
                 .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 4.75)
                 
-                if firebaseHelper.playerState?.player_num == firebaseHelper.gameState?.dealer {
+                if firebaseHelper.playerState?.player_num ?? 1 == firebaseHelper.gameState?.dealer ?? 1 {
                     Text("Dealer")
                         .position(x: geo.size.width - 50, y: geo.size.height - 10)
                 }
             }
             .onChange(of: firebaseHelper.gameState?.turn, initial: true, {
-                if firebaseHelper.gameState?.turn == 1 {
-                    if firstTurn && firebaseHelper.playerState?.is_lead ?? true {
-                        // pick first dealer randomly
-                        let randDealer = Int.random(in: 0..<(firebaseHelper.gameState?.num_players ?? 1))
-                        
-                        Task {
-                            await firebaseHelper.updateGame(newState: ["dealer": randDealer])
-                        }
-                        
-                        firstTurn = false
-                    } else if firebaseHelper.playerState?.is_lead ?? true {
-                        // rotate dealer
-                        Task {
-                            await firebaseHelper.updateGame(newState: ["dealer": ((firebaseHelper.gameState?.dealer ?? 0) + 1) % (firebaseHelper.gameState?.num_players ?? 2)])
-                        }
+                if firebaseHelper.gameState?.turn == 1 &&
+                    firstTurn &&
+                        firebaseHelper.playerState?.is_lead ?? true {
+                            // pick first dealer randomly
+                            let randDealer = Int.random(in: 0..<(firebaseHelper.gameState?.num_players ?? 1))
+                            
+                            Task {
+                                await firebaseHelper.updateGame(newState: ["dealer": randDealer])
+                            }
+                            
+                            firstTurn = false
+                } else if firebaseHelper.playerState?.is_lead ?? true {
+                    // rotate dealer
+                    Task {
+                        await firebaseHelper.updateGame(newState: ["dealer": ((firebaseHelper.gameState?.dealer ?? 0) + 1) % (firebaseHelper.gameState?.num_players ?? 2)])
                     }
                 }
             })
-            .onChange(of: firebaseHelper.gameState!.dealer, initial: true, {
-                if firebaseHelper.playerState!.player_num == firebaseHelper.gameState!.dealer {
+            .onChange(of: firebaseHelper.gameState?.dealer, initial: true, {
+                if firebaseHelper.playerState?.player_num == firebaseHelper.gameState?.dealer {
                     Task {
                         await firebaseHelper.shuffleAndDealCards()
                     }
