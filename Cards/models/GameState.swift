@@ -22,9 +22,15 @@ public struct GameState: Hashable, Codable {
     var team_with_crib: Int = 0
     var crib: [Int] = []
     var cards: [Int] = Array(0...51) // array containing int to reference to corresponding card
-    var starterCard: Int = -1
+    var starter_card: Int = -1
     
-    static var game: GameState = GameState(group_id: 1234, is_playing: true, num_teams: 3, turn: 1, game_name: "cribbage", num_players: 3, dealer: 0, team_with_crib: 1, crib: Array(0...3), cards: GameState().cards.shuffled(), starterCard: 19)
+    // used during "The Play"
+    var play_cards: [Int] = []
+    var running_sum: Int = 0
+    var num_go: Int = 0
+    
+    
+    static var game: GameState = GameState(group_id: 1234, is_playing: true, num_teams: 3, turn: 1, game_name: "cribbage", num_players: 3, dealer: 0, team_with_crib: 1, crib: Array(0...3), cards: GameState().cards.shuffled(), starter_card: 19)
 }
 
 public class GameObservable: ObservableObject {

@@ -18,6 +18,7 @@ struct DeckOfCardsView: View {
             HStack(spacing: 50) {
                 switch(gameObservable.game.game_name) {
                     case "cribbage":
+                        // displaying the crib
                         if firebaseHelper.gameState?.turn ?? gameObservable.game.turn > 1 {
                             HStack(spacing: -33) {
                                 if firebaseHelper.gameState?.turn ?? gameObservable.game.turn == 4 {
@@ -36,6 +37,7 @@ struct DeckOfCardsView: View {
                             }
                         }
                         
+                        // displaying the deck
                         ZStack {
                             if firebaseHelper.gameState == nil {
                                 ForEach(Array(gameObservable.game.cards.enumerated()), id: \.offset) { (index, cardId) in
@@ -45,19 +47,19 @@ struct DeckOfCardsView: View {
                                 }
                                 
                                 if gameObservable.game.turn > 1 {
-                                    CardView(cardItem: CardItem(id: gameObservable.game.starterCard), cardIsDisabled: .constant(true), backside: false)
+                                    CardView(cardItem: CardItem(id: gameObservable.game.starter_card), cardIsDisabled: .constant(true), backside: false)
                                         .offset(y: -Double.random(in: -5.0...5.0) / 5.0)
                                         .rotationEffect(.degrees(Double.random(in: -5.0...5.0)))
                                 }
                             } else {
                                 ForEach(Array(firebaseHelper.gameState!.cards.enumerated()), id: \.offset) { (index, cardId) in
-                                    CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(true), backside: false)
+                                    CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(true), backside: true)
                                         .offset(y: -Double.random(in: -5.0...5.0) / 5.0)
                                         .rotationEffect(.degrees(Double.random(in: -5.0...5.0)))
                                 }
                                 
                                 if firebaseHelper.gameState!.turn > 1 {
-                                    CardView(cardItem: CardItem(id: firebaseHelper.gameState!.starterCard), cardIsDisabled: .constant(true), backside: false)
+                                    CardView(cardItem: CardItem(id: firebaseHelper.gameState!.starter_card), cardIsDisabled: .constant(true), backside: false)
                                         .offset(y: -Double.random(in: -5.0...5.0) / 5.0)
                                         .rotationEffect(.degrees(Double.random(in: -5.0...5.0)))
                                 }
@@ -67,7 +69,7 @@ struct DeckOfCardsView: View {
                 }
             }
             
-            // used for preview testing
+//             used for preview testing
 //            Button("increment") {
 //                gameObservable.game.turn = (gameObservable.game.turn % 4) + 1
 //            }

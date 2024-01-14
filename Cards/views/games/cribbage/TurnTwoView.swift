@@ -17,6 +17,12 @@ struct TurnTwoView: View {
     
     var body: some View {
         Text("Turn two!")
+            .onAppear(perform: {
+                cardsDragged = []
+                Task {
+                    await firebaseHelper.updatePlayer(newState: ["is_ready": false])
+                }
+            })
     }
 }
 

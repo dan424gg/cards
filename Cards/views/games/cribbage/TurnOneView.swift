@@ -117,7 +117,7 @@ struct TurnOneView: View {
         }
         .frame(height: 100)
         .onChange(of: firebaseHelper.players) {
-            if firebaseHelper.playerState!.is_lead! && firebaseHelper.checkIfPlayersAreReady() {
+            if firebaseHelper.playerState!.is_lead! && firebaseHelper.playersAreReady() {
                 Task {
                     await firebaseHelper.updateGame(newState: ["turn": firebaseHelper.gameState!.turn + 1])
                 }
@@ -133,7 +133,7 @@ struct TurnOneView: View {
                         "is_ready": true
                     ], cardAction: .remove)
                     
-                    await firebaseHelper.updateTeam(newState: ["crib": cardsDragged])
+                    await firebaseHelper.updateGame(newState: ["crib": cardsDragged], cardAction: .append)
                 }
             }
         }

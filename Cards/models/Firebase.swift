@@ -313,6 +313,18 @@ import FirebaseFirestoreSwift
                         }
                         break
                         
+                    case "starter_card":
+                        guard type(of: value) is Int.Type else {
+                            print("\(value) needs to be Int in updateGame()!")
+                            return
+                        }
+                        
+                        try await docRef!.updateData([
+                            "\(key)": value
+                        ])
+                        
+                        break
+                        
                     default:
                         print("UPDATEGAME: key:\(key) doesn't exist when trying to update game!")
                         return
@@ -680,10 +692,84 @@ import FirebaseFirestoreSwift
             }
         }
         
-        await updateGame(newState: ["cards": gameState!.cards], cardAction: .replace)
+        await updateGame(newState: ["starter_card": gameState!.cards.removeFirst(), "cards": gameState!.cards], cardAction: .replace)
     }
     
-    func checkIfPlayersAreReady() -> Bool {
+    func checkForPoints(cardNumber: Int? = nil) async -> Int {
+        guard let cardNumber = cardNumber else {
+            if gameState!.num_go == (gameState!.num_players - 1) {
+                await updateGame(newState: ["num_go": 0])
+                return 1
+            } else {
+                await updateGame(newState: ["num_go": gameState!.num_go + 1])
+                return 0
+            }
+        }
+        
+        var points = 0
+        let card = CardItem(id: cardNumber).getCard()
+        let lastThreeCards = gameState!.play_cards.suffix(3)
+        
+        // Check for 15
+        if card.point_value + gameState!.running_sum == 15 {
+            points += 2
+        }
+        
+        // Check for pairs, pair royal, and double pair royal
+        let lastIndex = lastThreeCards.endIndex - 1
+        if lastIndex >= 0 && card.value == CardItem(id: lastThreeCards[lastIndex]).getCard().value {
+            points += 2
+            if lastIndex >= 1 && card.value == CardItem(id: lastThreeCards[lastIndex - 1]).getCard().value {
+                points += 4
+                if lastIndex >= 2 && card.value == CardItem(id: lastThreeCards[lastIndex - 2]).getCard().value {
+                    points += 6
+                }
+            }
+        }
+        
+        // Check for run
+        points += checkForRun(cardNumber: cardNumber)
+        
+        // Check for 31
+        if card.point_value + gameState!.running_sum == 31 {
+            points += 2
+        }
+        
+        await updateGame(newState: ["running_sum": (gameState!.running_sum + card.point_value) % 31])
+        return points
+    }
+    
+    func checkForRun(cardNumber: Int) -> Int {
+        guard let playCards = gameState?.play_cards else {
+            return 0
+        }
+        guard playCards.count >= 2 else {
+            return 0
+        }
+        
+        var maxNumOfCardsInRun = 0
+        
+        for i in 2...playCards.count {
+            var numOfCardsInRun = 0
+            let runOfCards = Array(playCards.suffix(i) + [cardNumber]).sorted()
+            
+            for c in 1..<runOfCards.count {
+                if runOfCards[c] - runOfCards[c - 1] != 1 || [13, 26, 39].contains(runOfCards[c]) {
+                    numOfCardsInRun = 0
+                    break
+                }
+                
+                numOfCardsInRun += 1
+            }
+            
+            maxNumOfCardsInRun = max(numOfCardsInRun + 1, maxNumOfCardsInRun)
+        }
+        
+        return maxNumOfCardsInRun >= 3 ? maxNumOfCardsInRun : 0
+    }
+
+    
+    func playersAreReady() -> Bool {
         for player in players {
             if !player.is_ready! {
                 return false

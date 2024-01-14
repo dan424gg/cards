@@ -41,6 +41,7 @@ struct Cribbage: View {
                         .foregroundStyle(.gray.opacity(0.7))
             }
             
+            // used for testing preview
             Button("increment turn") {
                 if firebaseHelper.gameState == nil {
                     gameObservable.game.turn = (gameObservable.game.turn % 4) + 1
@@ -55,15 +56,10 @@ struct Cribbage: View {
             CardInHandArea(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
                 .offset(y: 50)
                 .scaleEffect(x: 2, y: 2)
-                .onAppear(perform: {
-                    cardsInHand = [4, 17, 29, 31, 1, 13]
-                })
+//                .onAppear(perform: {
+//                    cardsInHand = [4, 17, 29, 31, 1, 13]
+//                })
         }
-        .onChange(of: firebaseHelper.gameState?.turn, {
-            if firebaseHelper.gameState?.turn ?? 1 == 1 {
-                cardsDragged = []
-            }
-        })
     }
 }
 
