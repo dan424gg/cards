@@ -73,7 +73,8 @@ struct GameView: View {
                 }
             })
             .onChange(of: firebaseHelper.gameState?.dealer, initial: true, {
-                if firebaseHelper.playerState?.player_num == firebaseHelper.gameState?.dealer {
+                if firebaseHelper.playerState?.player_num == firebaseHelper.gameState?.dealer &&
+                    firebaseHelper.gameState?.turn == 1 {
                     Task {
                         await firebaseHelper.shuffleAndDealCards()
                     }

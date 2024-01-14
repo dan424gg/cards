@@ -241,6 +241,8 @@ final class FirebaseHelperTests: XCTestCase {
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         XCTAssertTrue(playerTwo.playerState!.cards_in_hand! == [2, 3], "TESTUPDATEPLAYER: cards weren't replaced locally!")
         XCTAssertTrue(playerOne.players.first(where: { player in player.name == "2"})!.cards_in_hand! == [2, 3], "TESTUPDATEPLAYER: cards weren't replaced in firebase!")
+
+        playerOne.deleteGameCollection(id: randId)
     }
     
     @MainActor func testUpdateTeam() async {
@@ -259,6 +261,8 @@ final class FirebaseHelperTests: XCTestCase {
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         XCTAssertTrue(playerOne.teamState!.points == 50, "TESTUPDATETEAM: teamState wasn't updated locally!")
         XCTAssertTrue(playerTwo.teams.first(where: { team in team.team_num == 1})!.points == 50, "TESTUPDATETEAM: teamState wasn't updated in firebase!")
+        
+        playerOne.deleteGameCollection(id: randId)
     }
     
     @MainActor func testShuffleAndDeal() async {
@@ -281,6 +285,8 @@ final class FirebaseHelperTests: XCTestCase {
         XCTAssertNotEqual(playerOne.gameState!.cards, playerOne.gameState!.cards.sorted())
         XCTAssertTrue(playerOne.playerState!.cards_in_hand!.count == 6)
         XCTAssertTrue(playerTwo.playerState!.cards_in_hand!.count == 6)
+        XCTAssertTrue(playerOne.gameState!.starter_card != -1)
+        XCTAssertFalse(playerOne.gameState!.cards.contains(playerOne.gameState!.starter_card))
         
         // add another player (3)
         let playerThree = FirebaseHelper()
@@ -323,8 +329,111 @@ final class FirebaseHelperTests: XCTestCase {
         XCTAssertTrue(playerFour.playerState!.cards_in_hand!.count == 5)
         XCTAssertTrue(playerFive.playerState!.cards_in_hand!.count == 5)
         XCTAssertTrue(playerSix.playerState!.cards_in_hand!.count == 4)
-        XCTAssertTrue(playerOne.gameState!.cards.count == 24)
+        XCTAssertTrue(playerOne.gameState!.cards.count == 23)
         XCTAssertTrue(playerOne.gameState!.crib.count == 0)
+        
+        playerOne.deleteGameCollection(id: randId)
+    }
+    
+    @MainActor func testCheckForRun() async {
+        let playerOne = FirebaseHelper()
+        var randId = 0
+        repeat {
+            randId = Int.random(in: 10000..<99999)
+        } while (await playerOne.checkValidId(id: randId))
+        await playerOne.startGameCollection(fullName: "1", gameName: "Cribbage", testGroupId: randId)
+        
+        playerOne.gameState!.play_cards = [0, 1]
+        XCTAssert(playerOne.checkForRun(cardNumber: 2) == 3)
+        
+        playerOne.gameState!.play_cards = [0, 1]
+        XCTAssert(playerOne.checkForRun(cardNumber: 51) == 0)
+        
+        playerOne.gameState!.play_cards = [0, 1]
+        XCTAssert(playerOne.checkForRun(cardNumber: 51) == 0)
+        
+        playerOne.gameState!.play_cards = [11, 12]
+        XCTAssert(playerOne.checkForRun(cardNumber: 13) == 0)
+        
+        playerOne.gameState!.play_cards = [2, 0, 1]
+        XCTAssert(playerOne.checkForRun(cardNumber: 3) == 4)
+        
+        playerOne.gameState!.play_cards = [13, 11]
+        XCTAssert(playerOne.checkForRun(cardNumber: 12) == 0)
+        
+        playerOne.gameState!.play_cards = [11]
+        XCTAssert(playerOne.checkForRun(cardNumber: 12) == 0)
+        
+        playerOne.gameState!.play_cards = [0]
+        XCTAssert(playerOne.checkForRun(cardNumber: 12) == 0)
+
+        playerOne.deleteGameCollection(id: randId)
+    }
+    
+    @MainActor func testCheckForPoints() async {
+        var result = 0
+        let playerOne = FirebaseHelper()
+        var randId = 0
+        repeat {
+            randId = Int.random(in: 10000..<99999)
+        } while (await playerOne.checkValidId(id: randId))
+        await playerOne.startGameCollection(fullName: "1", gameName: "Cribbage", testGroupId: randId)
+        
+        let playerTwo = FirebaseHelper()
+        await playerTwo.joinGameCollection(fullName: "2", id: randId, gameName: "Cribbage")
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
+        
+        // test for sum of 15
+        playerOne.gameState!.running_sum = 5
+        result = await playerOne.checkForPoints(cardNumber: 11)
+        XCTAssertEqual(result, 2)
+        
+        // test for sum of 31
+        playerOne.gameState!.running_sum = 21
+        result = await playerOne.checkForPoints(cardNumber: 11)
+        XCTAssertEqual(result, 2)
+        
+        // test for pair
+        playerOne.gameState!.play_cards = [0]
+        result = await playerOne.checkForPoints(cardNumber: 26)
+        XCTAssertEqual(result, 2)
+        
+        // test for pair royal
+        playerOne.gameState!.play_cards = [0, 13]
+        result = await playerOne.checkForPoints(cardNumber: 26)
+        XCTAssertEqual(result, 6)
+        
+        // test for double pair royal
+        playerOne.gameState!.play_cards = [0, 13, 39]
+        result = await playerOne.checkForPoints(cardNumber: 26)
+        XCTAssertEqual(result, 12)
+        
+        // test for sequence of 3
+        playerOne.gameState!.play_cards = [0, 2]
+        result = await playerOne.checkForPoints(cardNumber: 1)
+        XCTAssertEqual(result, 3)
+        
+        // test for sequence of 4
+        playerOne.gameState!.play_cards = [0, 2, 3]
+        result = await playerOne.checkForPoints(cardNumber: 1)
+        XCTAssertEqual(result, 4)
+        
+        // test for sequence
+        playerOne.gameState!.play_cards = [0, 2, 4, 3]
+        result = await playerOne.checkForPoints(cardNumber: 1)
+        XCTAssertEqual(result, 5)
+        
+        // test when last in a go
+        playerOne.gameState!.num_go = 1
+        result = await playerOne.checkForPoints()
+        XCTAssertEqual(result, 1)
+        
+        // test when first or in the middle of a go
+        playerOne.gameState!.num_go = 0
+        result = await playerOne.checkForPoints()
+        XCTAssertEqual(result, 0)
+
+        playerOne.deleteGameCollection(id: randId)
     }
 }
 
