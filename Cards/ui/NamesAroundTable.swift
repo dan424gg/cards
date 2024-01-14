@@ -28,9 +28,6 @@ struct NamesAroundTable: View {
                 (index, player) in
                 VStack(spacing: 0) {
                     Text(player.name!)
-                    if firebaseHelper.gameState!.turn == 2 {
-                        
-                    }
                     CardInHandArea(cardsDragged: .constant([]), cardsInHand: Binding(get: { player.cards_in_hand! }, set: { _ in }), showBackside: true)
                         .rotationEffect(.degrees(180))
                         .scaleEffect(x: 0.5, y: 0.5)
