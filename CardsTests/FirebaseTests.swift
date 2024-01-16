@@ -153,7 +153,7 @@ final class FirebaseHelperTests: XCTestCase {
         
         // array variable tests
         // cardAction '.remove' test
-        await playerOne.updateGame(newState: ["cards": [0, 1, 2, 3]], cardAction: .remove)
+        await playerOne.updateGame(newState: ["cards": [0, 1, 2, 3]], action: .remove)
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         _ = [0, 1, 2, 3].map { card in
             XCTAssertFalse(playerOne.gameState!.cards.contains(card), "TESTUPDATEGAME: card: \(card) wasn't removed locally!")
@@ -163,7 +163,7 @@ final class FirebaseHelperTests: XCTestCase {
         }
         
         // cardAction '.append' test
-        await playerOne.updateGame(newState: ["cards": [0, 1, 2]], cardAction: .append)
+        await playerOne.updateGame(newState: ["cards": [0, 1, 2]], action: .append)
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         _ = [0, 1, 2].map { card in
             XCTAssertTrue(playerOne.gameState!.cards.contains(card), "TESTUPDATEGAME: card: \(card) wasn't removed locally!")
@@ -172,13 +172,13 @@ final class FirebaseHelperTests: XCTestCase {
             XCTAssertTrue(playerTwo.gameState!.cards.contains(card), "TESTUPDATEGAME: card: \(card) wasn't removed in firebase!")
         }
         
-        await playerOne.updateGame(newState: ["cards": [3]], cardAction: .append)
+        await playerOne.updateGame(newState: ["cards": [3]], action: .append)
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         XCTAssertTrue(playerOne.gameState!.cards.contains(3), "TESTUPDATEGAME: single card: 3 wasn't removed locally!")
         XCTAssertTrue(playerTwo.gameState!.cards.contains(3), "TESTUPDATEGAME: single card: 3 wasn't removed in firebase!")
         
         // cardAction '.replace' test
-        await playerOne.updateGame(newState: ["cards": [0, 1, 2, 3]], cardAction: .replace)
+        await playerOne.updateGame(newState: ["cards": [0, 1, 2, 3]], action: .replace)
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         XCTAssertTrue(playerOne.gameState!.cards == [0, 1, 2, 3], "TESTUPDATEGAME: cards weren't replaced locally!")
         XCTAssertTrue(playerTwo.gameState!.cards == [0, 1, 2, 3], "TESTUPDATEGAME: cards weren't replaced in firebase!")

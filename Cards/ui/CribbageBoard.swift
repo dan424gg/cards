@@ -6,20 +6,20 @@
 //
 
 import SwiftUI
+import Combine
 import CoreGraphics
 
 struct CribbageBoard: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     var numPlayers = 3
-    var teams: [TeamState] = [TeamState(team_num: 1, points: 53), TeamState(team_num: 2, points: 74), TeamState(team_num: 3, points: 61)]
+    var previewTeams: [TeamState] = [TeamState(team_num: 1, points: 53), TeamState(team_num: 2, points: 74), TeamState(team_num: 3, points: 61)]
+    @State var teams: [TeamState] = []
+    @State var showPoints = false
+    @State var timer: Timer?
+    
     @State var teamOnePoints = 0
     @State var teamTwoPoints = 0
     @State var teamThreePoints = 54
-
-    @State var showPoints = false
-    @State var teamOneLength: CGFloat = 0.0
-    @State var teamTwoLength: CGFloat = 0.0
-    @State var teamThreeLength: CGFloat = 0.0
     
     var trackWidthAdjustment: Double {
         if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
@@ -111,10 +111,8 @@ struct CribbageBoard: View {
                             path.addArc(center: CGPoint(x: rect.minX, y: ((rect.midY - midYAdjustment) / 2) + rect.midY), radius: ((rect.midY + midYAdjustment) / 2) - (2 * trackPosAdjustment) - (trackWidthAdjustment / 2), startAngle: .degrees(90), endAngle: .degrees(270), clockwise: false)
                             path.addLine(to: CGPoint(x: rect.maxX, y: (rect.midY - midYAdjustment) + (2 * trackPosAdjustment) + (trackWidthAdjustment / 2)))
                         }
-                        .trim(from: 0, to: Double(firebaseHelper.teams.first(where: { team in
-                            team.team_num == 3
-                        })?.points ?? teams[2].points) / 121.0)
-                        .stroke(.blue.opacity(0.8), lineWidth: trackWidthAdjustment)
+                        .trim(from: 0, to: Double(teams == [] ? previewTeams[2].points : teams[2].points) / 121.0)
+                        .stroke(Color(teams == [] ? previewTeams[2].color : teams[2].color).opacity(0.8), lineWidth: trackWidthAdjustment)
                     }
                     
                     // path 1 point line
@@ -127,10 +125,8 @@ struct CribbageBoard: View {
                         path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY - midYAdjustment + (trackWidthAdjustment / 2)))
                         print(path.length())
                     }
-                    .trim(from: 0, to: Double(firebaseHelper.teams.first(where: { team in
-                        team.team_num == 1
-                    })?.points ?? teams[0].points) / 121.0)
-                    .stroke(.red.opacity(0.8), lineWidth: trackWidthAdjustment)
+                    .trim(from: 0, to: Double(teams == [] ? previewTeams[0].points : teams[0].points) / 121.0)
+                    .stroke(Color(teams == [] ? previewTeams[0].color : teams[0].color).opacity(0.8), lineWidth: trackWidthAdjustment)
                     
                     // path 2 point line
                     Path { path in
@@ -142,10 +138,8 @@ struct CribbageBoard: View {
                         path.addLine(to: CGPoint(x: rect.maxX, y: (rect.midY - midYAdjustment) + trackPosAdjustment + (trackWidthAdjustment / 2)))
                         print(path.length())
                     }
-                    .trimmedPath(from: 0, to: Double(firebaseHelper.teams.first(where: { team in
-                        team.team_num == 2
-                    })?.points ?? teams[1].points) / 121.0)
-                    .stroke(.green.opacity(0.8), lineWidth: trackWidthAdjustment)
+                    .trim(from: 0, to: Double(teams == [] ? previewTeams[1].points : teams[1].points) / 121.0)
+                    .stroke(Color(teams == [] ? previewTeams[1].color : teams[1].color).opacity(0.8), lineWidth: trackWidthAdjustment)
                 }
                 .zIndex(0)
                 .blur(radius: showPoints ? 7 : 0)
@@ -187,13 +181,24 @@ struct CribbageBoard: View {
         .frame(width: 150, height: 65)
         .onTapGesture(perform: {
             withAnimation(.easeInOut) {
-                showPoints = true
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.3) {
-                withAnimation(.easeInOut) {
+                if showPoints {
+                    timer?.invalidate()
+                    timer = nil
                     showPoints = false
+                } else {
+                    showPoints = true
+                    timer = Timer.scheduledTimer(withTimeInterval: 2.3, repeats: false, block: { _ in
+                        withAnimation(.easeInOut) {
+                            showPoints = false
+                        }
+                    })
                 }
             }
+        })
+        .onChange(of: firebaseHelper.teams, initial: true, {
+            teams = firebaseHelper.teams.sorted(by: {
+                $0.team_num < $1.team_num
+            })
         })
     }
 }

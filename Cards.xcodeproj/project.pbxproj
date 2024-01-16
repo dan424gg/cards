@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1E002C142B54A3A800948BE5 /* TeamColorPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E002C132B54A3A800948BE5 /* TeamColorPicker.swift */; };
+		1E002C162B54AAD100948BE5 /* ColorSquare.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E002C152B54AAD100948BE5 /* ColorSquare.swift */; };
+		1E002C182B54B89E00948BE5 /* PickerItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E002C172B54B89E00948BE5 /* PickerItems.swift */; };
 		1E06C9292B003CB300195F6D /* CribbageBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E06C9282B003CB300195F6D /* CribbageBoard.swift */; };
 		1E114CD02B151BE600503368 /* libTestLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E114CC02B151B3400503368 /* libTestLib.a */; };
 		1E114CD22B151E4D00503368 /* AppFramework.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1E114CBE2B151B3400503368 /* AppFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -43,7 +46,7 @@
 		1EBEF2C22AE4F579008A093B /* TeamState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBEF2C12AE4F579008A093B /* TeamState.swift */; };
 		1ECBB9FC2ADE3B9B0046D4CA /* PlayerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECBB9FB2ADE3B9B0046D4CA /* PlayerState.swift */; };
 		1ECCDABD2AE600DA00EFF167 /* GameStartButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECCDABC2AE600DA00EFF167 /* GameStartButton.swift */; };
-		1ECCDABF2AE606A800EFF167 /* TeamPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECCDABE2AE606A800EFF167 /* TeamPicker.swift */; };
+		1ECCDABF2AE606A800EFF167 /* TeamNumberPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECCDABE2AE606A800EFF167 /* TeamNumberPicker.swift */; };
 		1ED272522B02A49C00B21600 /* NamesAroundTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ED272512B02A49C00B21600 /* NamesAroundTable.swift */; };
 		1EE16CF92B10930600B35787 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 1EE16CF82B10930600B35787 /* FirebaseFirestore */; };
 		1EE16CFB2B10961100B35787 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 1EE16CFA2B10961100B35787 /* FirebaseFirestoreSwift */; };
@@ -117,6 +120,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1E002C132B54A3A800948BE5 /* TeamColorPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamColorPicker.swift; sourceTree = "<group>"; };
+		1E002C152B54AAD100948BE5 /* ColorSquare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorSquare.swift; sourceTree = "<group>"; };
+		1E002C172B54B89E00948BE5 /* PickerItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerItems.swift; sourceTree = "<group>"; };
 		1E06C9282B003CB300195F6D /* CribbageBoard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CribbageBoard.swift; sourceTree = "<group>"; };
 		1E114CB12B151B3400503368 /* EarlGrey.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EarlGrey.xcodeproj; path = ../EarlGrey/EarlGrey.xcodeproj; sourceTree = "<group>"; };
 		1E114CC52B151B8B00503368 /* EarlGreyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EarlGreyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -152,7 +158,7 @@
 		1EBEF2C12AE4F579008A093B /* TeamState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamState.swift; sourceTree = "<group>"; };
 		1ECBB9FB2ADE3B9B0046D4CA /* PlayerState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerState.swift; sourceTree = "<group>"; };
 		1ECCDABC2AE600DA00EFF167 /* GameStartButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStartButton.swift; sourceTree = "<group>"; };
-		1ECCDABE2AE606A800EFF167 /* TeamPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamPicker.swift; sourceTree = "<group>"; };
+		1ECCDABE2AE606A800EFF167 /* TeamNumberPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamNumberPicker.swift; sourceTree = "<group>"; };
 		1ED272512B02A49C00B21600 /* NamesAroundTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NamesAroundTable.swift; sourceTree = "<group>"; };
 		1EE5F1292AE8A3750089162D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		1EE5F12A2AE8A5EF0089162D /* CardItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardItem.swift; sourceTree = "<group>"; };
@@ -308,11 +314,14 @@
 			children = (
 				1EA2457C2AED6F1F003B0943 /* card views */,
 				1EA2457B2AED6ED4003B0943 /* buttons */,
-				1ECCDABE2AE606A800EFF167 /* TeamPicker.swift */,
+				1ECCDABE2AE606A800EFF167 /* TeamNumberPicker.swift */,
 				1E20F1742AF33EA300F2B368 /* DiagonalLines.swift */,
 				1E06C9282B003CB300195F6D /* CribbageBoard.swift */,
 				1ED272512B02A49C00B21600 /* NamesAroundTable.swift */,
 				1E265EEE2B1EB47D0040E8A9 /* GameHeader.swift */,
+				1E002C132B54A3A800948BE5 /* TeamColorPicker.swift */,
+				1E002C152B54AAD100948BE5 /* ColorSquare.swift */,
+				1E002C172B54B89E00948BE5 /* PickerItems.swift */,
 			);
 			path = ui;
 			sourceTree = "<group>";
@@ -591,19 +600,22 @@
 				1EBED9102AD7BBFF008B85EE /* ContentView.swift in Sources */,
 				1ECBB9FC2ADE3B9B0046D4CA /* PlayerState.swift in Sources */,
 				1EA245802AED6F71003B0943 /* TurnOneView.swift in Sources */,
-				1ECCDABF2AE606A800EFF167 /* TeamPicker.swift in Sources */,
+				1ECCDABF2AE606A800EFF167 /* TeamNumberPicker.swift in Sources */,
 				1ECCDABD2AE600DA00EFF167 /* GameStartButton.swift in Sources */,
 				1EBED9492AD7BD88008B85EE /* CribbageView.swift in Sources */,
 				1EBED94C2AD7BF2C008B85EE /* Firebase.swift in Sources */,
+				1E002C162B54AAD100948BE5 /* ColorSquare.swift in Sources */,
 				1E4CC8F82AFB4A3500ECC77B /* GameView.swift in Sources */,
 				1EBED93E2AD7BC9A008B85EE /* GameButton.swift in Sources */,
 				1E9C48F62AE7B3F3008C518D /* CardView.swift in Sources */,
 				1EA245822AED70B3003B0943 /* CardInHandArea.swift in Sources */,
+				1E002C142B54A3A800948BE5 /* TeamColorPicker.swift in Sources */,
 				1EBED9452AD7BCFE008B85EE /* LoadingScreen.swift in Sources */,
 				1EBED9422AD7BCE7008B85EE /* ExistingGame.swift in Sources */,
 				1EBEF2C22AE4F579008A093B /* TeamState.swift in Sources */,
 				1EBED90E2AD7BBFF008B85EE /* CardsApp.swift in Sources */,
 				1ED272522B02A49C00B21600 /* NamesAroundTable.swift in Sources */,
+				1E002C182B54B89E00948BE5 /* PickerItems.swift in Sources */,
 				1E8D31A82B05644300FC9C68 /* DeckOfCardsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
