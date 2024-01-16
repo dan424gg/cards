@@ -133,7 +133,7 @@ struct TurnOneView: View {
                         "is_ready": true
                     ], cardAction: .remove)
                     
-                    await firebaseHelper.updateGame(newState: ["crib": cardsDragged], cardAction: .append)
+                    await firebaseHelper.updateGame(newState: ["crib": cardsDragged], action: .append)
                 }
             }
         }

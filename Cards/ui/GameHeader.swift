@@ -23,7 +23,7 @@ struct GameHeader: View {
                     VStack {
                         Text(firebaseHelper.gameState?.game_name.capitalized ?? "Game")
                             .font(.title2)
-                        Text("\(firebaseHelper.gameState?.group_id ?? 0)")
+                        Text(String(firebaseHelper.gameState?.group_id ?? 0))
                     }
                 }
             }

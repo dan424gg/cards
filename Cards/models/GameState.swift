@@ -23,6 +23,7 @@ public struct GameState: Hashable, Codable {
     var crib: [Int] = []
     var cards: [Int] = Array(0...51) // array containing int to reference to corresponding card
     var starter_card: Int = -1
+    var colors_available: [String] = ["Red", "Blue", "Teal", "Green", "Yellow", "Orange"]
     
     // used during "The Play"
     var play_cards: [Int] = []

@@ -42,15 +42,18 @@ struct Cribbage: View {
             }
             
             // used for testing preview
-            Button("increment turn") {
-                if firebaseHelper.gameState == nil {
-                    gameObservable.game.turn = (gameObservable.game.turn % 4) + 1
-                    print(gameObservable.game.turn)
-                } else {
-                    Task {
-                        await firebaseHelper.updateGame(newState: ["turn": ((firebaseHelper.gameState?.turn ?? 0) % 4) + 1])
-                    }
+            Button("increment team points") {
+                Task {
+                    await firebaseHelper.updateTeam(newState: ["points": firebaseHelper.teamState!.points + 7])
                 }
+//                if firebaseHelper.gameState == nil {
+//                    gameObservable.game.turn = (gameObservable.game.turn % 4) + 1
+//                    print(gameObservable.game.turn)
+//                } else {
+//                    Task {
+//                        await firebaseHelper.updateGame(newState: ["turn": ((firebaseHelper.gameState?.turn ?? 0) % 4) + 1])
+//                    }
+//                }
             }
             
             CardInHandArea(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)

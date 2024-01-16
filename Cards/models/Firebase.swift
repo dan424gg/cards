@@ -63,7 +63,7 @@ import FirebaseFirestoreSwift
         showError = true
     }
     
-    func updatePlayer(newState: [String: Any], uid: String? = nil, cardAction: CardUpdateType? = nil) async {
+    func updatePlayer(newState: [String: Any], uid: String? = nil, cardAction: ArrayActionType? = nil) async {
         guard docRef != nil else {
             print("docRef was nil before updating player information")
             return
@@ -163,7 +163,7 @@ import FirebaseFirestoreSwift
         }
     }
    
-    func updateGame(newState: [String: Any], cardAction: CardUpdateType? = nil) async {
+    func updateGame(newState: [String: Any], action: ArrayActionType? = nil) async {
         guard docRef != nil else {
             print("docRef was nil before updating game information")
             return
@@ -263,7 +263,7 @@ import FirebaseFirestoreSwift
                             return
                         }
                         
-                        switch (cardAction) {
+                        switch (action) {
                             case .append:
                                 try await docRef!.updateData([
                                     "\(key)": FieldValue.arrayUnion(value as! [Int])
@@ -291,7 +291,7 @@ import FirebaseFirestoreSwift
                             return
                         }
                         
-                        switch (cardAction) {
+                        switch (action) {
                             case .append:
                                 try await docRef!.updateData([
                                     "\(key)": FieldValue.arrayUnion(value as! [Int])
@@ -323,6 +323,34 @@ import FirebaseFirestoreSwift
                             "\(key)": value
                         ])
                         
+                        break
+                        
+                    case "colors_available":
+                        guard type(of: value) is [String].Type else {
+                            print("\(value) needs to be [String] in updateGame()!")
+                            return
+                        }
+                        
+                        switch (action) {
+                            case .append:
+                                try await docRef!.updateData([
+                                    "\(key)": FieldValue.arrayUnion(value as! [String])
+                                ])
+                                break
+                            case .remove:
+                                try await docRef!.updateData([
+                                    "\(key)": FieldValue.arrayRemove(value as! [String])
+                                ])
+                                break
+                            case .replace:
+                                try await docRef!.updateData([
+                                    "\(key)": value as! [String]
+                                ])
+                                break
+                            default:
+                                print("UDPATEGAME: you have to have an action flag set to manipulate cards!")
+                                return
+                        }
                         break
                         
                     default:
@@ -363,6 +391,20 @@ import FirebaseFirestoreSwift
                             return
                         }
                         
+                        try await docRef!.collection("teams").document("\(teamState!.team_num)").updateData([
+                            "\(key)": value
+                        ])
+                        
+                        break
+                        
+                    case "color":
+                        guard type(of: value) is String.Type else {
+                            print("\(key) needs to be String in updateTeam()!")
+                            return
+                        }
+                        
+                        await updateGame(newState: ["colors_available": teamState!.color], action: .remove)
+                        await updateGame(newState: ["colors_available": value], action: .append)
                         try await docRef!.collection("teams").document("\(teamState!.team_num)").updateData([
                             "\(key)": value
                         ])
@@ -663,7 +705,7 @@ import FirebaseFirestoreSwift
         }
         
         // ensure crib is cleared
-        await updateGame(newState: ["crib": [Int](), "cards": GameState().cards.shuffled()], cardAction: .replace)
+        await updateGame(newState: ["crib": [Int](), "cards": GameState().cards.shuffled()], action: .replace)
         
         let numberOfPlayers = gameState!.num_players
         var numberOfCards: Int {
@@ -676,7 +718,7 @@ import FirebaseFirestoreSwift
         
         // check for 3 player edge case
         if numberOfPlayers == 3 {
-            await updateGame(newState: ["crib": [gameState!.cards.removeFirst()]], cardAction: .append)
+            await updateGame(newState: ["crib": [gameState!.cards.removeFirst()]], action: .append)
         }
         
         for i in 0..<numberOfCards {
@@ -692,7 +734,7 @@ import FirebaseFirestoreSwift
             }
         }
         
-        await updateGame(newState: ["starter_card": gameState!.cards.removeFirst(), "cards": gameState!.cards], cardAction: .replace)
+        await updateGame(newState: ["starter_card": gameState!.cards.removeFirst(), "cards": gameState!.cards], action: .replace)
     }
     
     func checkForPoints(cardNumber: Int? = nil) async -> Int {
@@ -796,7 +838,7 @@ import FirebaseFirestoreSwift
         }
     }
     
-    enum CardUpdateType {
+    enum ArrayActionType {
         case append
         case remove
         case replace
