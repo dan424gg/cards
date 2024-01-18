@@ -14,7 +14,7 @@ import FirebaseFirestore
 public struct TeamState: Hashable, Codable {
     var team_num: Int = 0
     var points: Int = 0
-    var color: String = ["Red", "Blue", "Green", "Orange"].randomElement()!
+    var color: String = "White"
     
     static let team_one = TeamState(team_num: 1, points: 50)
     static let team_two = TeamState(team_num: 2, points: 46)

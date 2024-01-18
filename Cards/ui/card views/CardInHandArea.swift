@@ -7,13 +7,6 @@
 
 import SwiftUI
 
-extension AnyTransition {
-    static func custom(index: Int) -> AnyTransition {
-        AnyTransition
-            .move(edge: .bottom)
-            .animation(.default.delay(0.5 * Double(index)))
-    }
-}
 
 struct CardInHandArea: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper

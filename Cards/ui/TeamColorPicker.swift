@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TeamColorPicker: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
-    @State var teamColor: String = "Red"
+    @State var teamColor: String = "White"
     @State var listOfColorsAvailable: [String] = []
         
     var body: some View {
@@ -29,13 +29,21 @@ struct TeamColorPicker: View {
             }
         } label: {
             Rectangle()
-                .fill(Color(teamColor))
+                .fill(teamColor == "" ? .white : Color(teamColor))
                 .aspectRatio(1.0, contentMode: .fill)
         }
         .frame(width: 15, height: 15)
         .onAppear(perform: {
-            teamColor = firebaseHelper.teamState?.color ?? ""
+            guard firebaseHelper.teamState != nil else {
+                return
+            }
+            guard firebaseHelper.gameState != nil else {
+                return
+            }
+            
+            teamColor = firebaseHelper.teamState?.color == "White" ? firebaseHelper.gameState!.colors_available.randomElement()! : firebaseHelper.teamState!.color
             Task {
+                await firebaseHelper.updateTeam(newState: ["color": teamColor])
                 await firebaseHelper.updateGame(newState: ["colors_available": [teamColor]], action: .remove)
             }
         })

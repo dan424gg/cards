@@ -61,6 +61,7 @@ struct LoadingScreen: View {
                                         TeamColorPicker()
                                     }
                                 }
+                                
                                 ForEach(firebaseHelper.players, id:\.self) { player in
                                     if player.team_num == team.team_num {
                                         Text(player.name!)
