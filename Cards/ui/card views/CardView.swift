@@ -58,18 +58,18 @@ struct CardView: View {
                         .stroke(Color.black, lineWidth: 1)
                     VStack (spacing: 30) {
                         VStack (alignment: .center, spacing: 0) {
-                            Text(cardItem.getCard().value)
+                            Text(cardItem.card.value)
                                 .font(.caption2)
-                            Image(systemName: "suit.\(cardItem.getCard().suit)")
+                            Image(systemName: "suit.\(cardItem.card.suit)")
                                 .imageScale(.small)
                         }
                         .position(CGPoint(x: 10, y: 20))
-                        Text(cardItem.getCard().value)
+                        Text(cardItem.card.value)
                             .font(.largeTitle)
                             .multilineTextAlignment(.center)
                             .position(x: 25, y: -10)
                     }
-                    .foregroundStyle(cardItem.getCard().suit == "spade" || cardItem.getCard().suit == "club" ? Color.black.opacity(0.8) : Color.red.opacity(0.8))
+                    .foregroundStyle(cardItem.card.suit == "spade" || cardItem.card.suit == "club" ? Color.black.opacity(0.8) : Color.red.opacity(0.8))
                 }
                 .frame(width: 50, height: 100)
                 .draggable(cardItem)

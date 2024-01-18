@@ -42,10 +42,10 @@ struct Cribbage: View {
             }
             
             // used for testing preview
-            Button("increment team points") {
-                Task {
-                    await firebaseHelper.updateTeam(newState: ["points": firebaseHelper.teamState!.points + 7])
-                }
+//            Button("increment team points") {
+//                Task {
+//                    await firebaseHelper.updateTeam(newState: ["points": firebaseHelper.teamState!.points + 7])
+//                }
 //                if firebaseHelper.gameState == nil {
 //                    gameObservable.game.turn = (gameObservable.game.turn % 4) + 1
 //                    print(gameObservable.game.turn)
@@ -54,7 +54,7 @@ struct Cribbage: View {
 //                        await firebaseHelper.updateGame(newState: ["turn": ((firebaseHelper.gameState?.turn ?? 0) % 4) + 1])
 //                    }
 //                }
-            }
+//            }
             
             CardInHandArea(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
                 .offset(y: 50)
@@ -63,6 +63,12 @@ struct Cribbage: View {
 //                    cardsInHand = [4, 17, 29, 31, 1, 13]
 //                })
         }
+        .onChange(of: firebaseHelper.gameState?.turn, {
+            cardsDragged = []
+            Task {
+                await firebaseHelper.updatePlayer(newState: ["is_ready": false])
+            }
+        })
     }
 }
 

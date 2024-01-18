@@ -344,29 +344,32 @@ final class FirebaseHelperTests: XCTestCase {
         await playerOne.startGameCollection(fullName: "1", gameName: "Cribbage", testGroupId: randId)
         
         playerOne.gameState!.play_cards = [0, 1]
-        XCTAssert(playerOne.checkForRun(cardNumber: 2) == 3)
+        XCTAssert(playerOne.checkForRun(cardInPlay: 2) == 3)
         
         playerOne.gameState!.play_cards = [0, 1]
-        XCTAssert(playerOne.checkForRun(cardNumber: 51) == 0)
+        XCTAssert(playerOne.checkForRun(cardInPlay: 51) == 0)
         
         playerOne.gameState!.play_cards = [0, 1]
-        XCTAssert(playerOne.checkForRun(cardNumber: 51) == 0)
+        XCTAssert(playerOne.checkForRun(cardInPlay: 51) == 0)
         
         playerOne.gameState!.play_cards = [11, 12]
-        XCTAssert(playerOne.checkForRun(cardNumber: 13) == 0)
+        XCTAssert(playerOne.checkForRun(cardInPlay: 13) == 0)
         
         playerOne.gameState!.play_cards = [2, 0, 1]
-        XCTAssert(playerOne.checkForRun(cardNumber: 3) == 4)
+        XCTAssert(playerOne.checkForRun(cardInPlay: 3) == 4)
         
         playerOne.gameState!.play_cards = [13, 11]
-        XCTAssert(playerOne.checkForRun(cardNumber: 12) == 0)
+        XCTAssert(playerOne.checkForRun(cardInPlay: 12) == 0)
         
         playerOne.gameState!.play_cards = [11]
-        XCTAssert(playerOne.checkForRun(cardNumber: 12) == 0)
+        XCTAssert(playerOne.checkForRun(cardInPlay: 12) == 0)
         
         playerOne.gameState!.play_cards = [0]
-        XCTAssert(playerOne.checkForRun(cardNumber: 12) == 0)
+        XCTAssert(playerOne.checkForRun(cardInPlay: 12) == 0)
 
+        playerOne.gameState!.play_cards = [2, 1]
+        XCTAssertEqual(playerOne.checkForRun(cardInPlay: 39), 3)
+        
         playerOne.deleteGameCollection(id: randId)
     }
     
@@ -385,42 +388,42 @@ final class FirebaseHelperTests: XCTestCase {
         
         // test for sum of 15
         playerOne.gameState!.running_sum = 5
-        result = await playerOne.checkForPoints(cardNumber: 11)
+        result = await playerOne.checkForPoints(cardInPlay: 11)
         XCTAssertEqual(result, 2)
         
         // test for sum of 31
         playerOne.gameState!.running_sum = 21
-        result = await playerOne.checkForPoints(cardNumber: 11)
+        result = await playerOne.checkForPoints(cardInPlay: 11)
         XCTAssertEqual(result, 2)
         
         // test for pair
         playerOne.gameState!.play_cards = [0]
-        result = await playerOne.checkForPoints(cardNumber: 26)
+        result = await playerOne.checkForPoints(cardInPlay: 26)
         XCTAssertEqual(result, 2)
         
         // test for pair royal
         playerOne.gameState!.play_cards = [0, 13]
-        result = await playerOne.checkForPoints(cardNumber: 26)
+        result = await playerOne.checkForPoints(cardInPlay: 26)
         XCTAssertEqual(result, 6)
         
         // test for double pair royal
         playerOne.gameState!.play_cards = [0, 13, 39]
-        result = await playerOne.checkForPoints(cardNumber: 26)
+        result = await playerOne.checkForPoints(cardInPlay: 26)
         XCTAssertEqual(result, 12)
         
         // test for sequence of 3
         playerOne.gameState!.play_cards = [0, 2]
-        result = await playerOne.checkForPoints(cardNumber: 1)
+        result = await playerOne.checkForPoints(cardInPlay: 1)
         XCTAssertEqual(result, 3)
         
         // test for sequence of 4
         playerOne.gameState!.play_cards = [0, 2, 3]
-        result = await playerOne.checkForPoints(cardNumber: 1)
+        result = await playerOne.checkForPoints(cardInPlay: 1)
         XCTAssertEqual(result, 4)
         
         // test for sequence
         playerOne.gameState!.play_cards = [0, 2, 4, 3]
-        result = await playerOne.checkForPoints(cardNumber: 1)
+        result = await playerOne.checkForPoints(cardInPlay: 1)
         XCTAssertEqual(result, 5)
         
         // test when last in a go

@@ -327,7 +327,7 @@ import FirebaseFirestoreSwift
                         
                     case "colors_available":
                         guard type(of: value) is [String].Type else {
-                            print("\(value) needs to be [String] in updateGame()!")
+                            print("\(value) needs to be [String] for \"colors_available\" in updateGame()!")
                             return
                         }
                         
@@ -353,6 +353,58 @@ import FirebaseFirestoreSwift
                         }
                         break
                         
+                    case "play_cards":
+                        guard type(of: value) is [Int].Type else {
+                            print("\(value) needs to be [Int] in updateGame()!")
+                            return
+                        }
+                        
+                        switch (action) {
+                            case .append:
+                                try await docRef!.updateData([
+                                    "\(key)": FieldValue.arrayUnion(value as! [Int])
+                                ])
+                                break
+                            case .remove:
+                                try await docRef!.updateData([
+                                    "\(key)": FieldValue.arrayRemove(value as! [Int])
+                                ])
+                                break
+                            case .replace:
+                                try await docRef!.updateData([
+                                    "\(key)": value as! [Int]
+                                ])
+                                break
+                            default:
+                                print("UDPATEGAME: you have to have a cardAction flag set to manipulate cards!")
+                                return
+                        }
+                        break
+                        
+                    case "running_sum":
+                        guard type(of: value) is Int.Type else {
+                            print("\(value) needs to be Int in updateGame()!")
+                            return
+                        }
+                        
+                        try await docRef!.updateData([
+                            "\(key)": value
+                        ])
+                        
+                        break
+                        
+                    case "num_go":
+                        guard type(of: value) is Int.Type else {
+                            print("\(value) needs to be Int in updateGame()!")
+                            return
+                        }
+                        
+                        try await docRef!.updateData([
+                            "\(key)": value
+                        ])
+                        
+                        break
+                        
                     default:
                         print("UPDATEGAME: key:\(key) doesn't exist when trying to update game!")
                         return
@@ -366,6 +418,10 @@ import FirebaseFirestoreSwift
     func updateTeam(newState: [String: Any]) async {
         guard docRef != nil else {
             print("docRef was nil before updating team information")
+            return
+        }
+        guard teamState != nil else {
+            print("teamState was nil before updating team information")
             return
         }
         
@@ -402,9 +458,7 @@ import FirebaseFirestoreSwift
                             print("\(key) needs to be String in updateTeam()!")
                             return
                         }
-                        
-                        await updateGame(newState: ["colors_available": teamState!.color], action: .remove)
-                        await updateGame(newState: ["colors_available": value], action: .append)
+
                         try await docRef!.collection("teams").document("\(teamState!.team_num)").updateData([
                             "\(key)": value
                         ])
@@ -547,6 +601,7 @@ import FirebaseFirestoreSwift
                                 if modifiedTeamData.team_num == self.teamState!.team_num {
                                     self.teamState! = modifiedTeamData
                                 } 
+                                
                                 let loc = self.teams.firstIndex { team in
                                     team.team_num == modifiedTeamData.team_num
                                 }
@@ -737,66 +792,118 @@ import FirebaseFirestoreSwift
         await updateGame(newState: ["starter_card": gameState!.cards.removeFirst(), "cards": gameState!.cards], action: .replace)
     }
     
-    func checkForPoints(cardNumber: Int? = nil) async -> Int {
-        guard let cardNumber = cardNumber else {
+    func checkForPoints(cardInPlay: Int? = nil, pointsCallOut: Binding<[String]>? = nil) async -> Int {
+        var pointsCallOutValue = pointsCallOut?.wrappedValue ?? []
+        
+        guard let cardNumber = cardInPlay else {
             if gameState!.num_go == (gameState!.num_players - 1) {
-                await updateGame(newState: ["num_go": 0])
+                await updateGame(newState: ["num_go": 0, "running_sum": 0, "play_cards": []], action: .replace)
+                pointsCallOutValue.append("GO for 1!")
                 return 1
             } else {
                 await updateGame(newState: ["num_go": gameState!.num_go + 1])
+                pointsCallOutValue.append("GO!")
                 return 0
             }
         }
         
         var points = 0
-        let card = CardItem(id: cardNumber).getCard()
+        let card = CardItem(id: cardNumber).card
         let lastThreeCards = gameState!.play_cards.suffix(3)
         
         // Check for 15
-        if card.point_value + gameState!.running_sum == 15 {
+        if card.pointValue + gameState!.running_sum == 15 {
             points += 2
+            pointsCallOutValue.append("15 for \(points)!")
         }
         
         // Check for pairs, pair royal, and double pair royal
         let lastIndex = lastThreeCards.endIndex - 1
-        if lastIndex >= 0 && card.value == CardItem(id: lastThreeCards[lastIndex]).getCard().value {
+        var setCallOut: String = ""
+        if lastIndex >= 0 && card.value == CardItem(id: lastThreeCards[lastIndex]).card.value {
             points += 2
-            if lastIndex >= 1 && card.value == CardItem(id: lastThreeCards[lastIndex - 1]).getCard().value {
+            setCallOut = "Pair for \(points)!"
+            if lastIndex >= 1 && card.value == CardItem(id: lastThreeCards[lastIndex - 1]).card.value {
                 points += 4
-                if lastIndex >= 2 && card.value == CardItem(id: lastThreeCards[lastIndex - 2]).getCard().value {
+                setCallOut = "Pair Royal for \(points)!"
+                if lastIndex >= 2 && card.value == CardItem(id: lastThreeCards[lastIndex - 2]).card.value {
                     points += 6
+                    setCallOut = "Double Pair Royal for \(points)!"
                 }
             }
         }
+        pointsCallOutValue.append(setCallOut)
         
         // Check for run
-        points += checkForRun(cardNumber: cardNumber)
-        
-        // Check for 31
-        if card.point_value + gameState!.running_sum == 31 {
-            points += 2
+        let numberOfCardsInRun = checkForRun(cardInPlay: cardNumber)
+        if numberOfCardsInRun != 0 {
+            points += numberOfCardsInRun
+            pointsCallOutValue.append("Run of \(numberOfCardsInRun) for \(points)!")
         }
         
-        await updateGame(newState: ["running_sum": (gameState!.running_sum + card.point_value) % 31])
+        // Check for 31
+        if card.pointValue + gameState!.running_sum == 31 {
+            points += 2
+            await updateGame(newState: ["running_sum": 0, "play_cards": []], action: .replace)
+            pointsCallOutValue.append("31 for \(points)!")
+        }
+        
+        var maxPlayCardsCount: Int {
+            if gameState?.num_players == 2 {
+                return 12
+            } else if gameState?.num_players == 3 {
+                return 15
+            } else if gameState?.num_players == 4 {
+                return 20
+            } else if gameState?.num_players == 6 {
+                return 28
+            } else {
+                return 0
+            }
+        }
+        
+        if (players.allSatisfy({ player in player.cards_in_hand!.count == 0 })) {
+            points += 1
+            pointsCallOutValue.append("\(points) for last card!")
+        }
+        
+        if (gameState?.num_go ?? 0) > 0 {
+            await updateGame(newState: ["num_go": 0])
+        }
+        
+        await updateGame(newState: [
+            "running_sum": (gameState!.running_sum + card.pointValue) % 31,
+            "play_cards": [cardNumber]
+        ], action: .append)
+        pointsCallOut?.wrappedValue = pointsCallOutValue
         return points
     }
     
-    func checkForRun(cardNumber: Int) -> Int {
-        guard let playCards = gameState?.play_cards else {
+    func checkForRun(cardInPlay: Int) -> Int {
+        guard var playCards = gameState?.play_cards else {
             return 0
         }
         guard playCards.count >= 2 else {
             return 0
         }
         
+        playCards.append(cardInPlay)
+        playCards = playCards.map {
+            if [13, 26, 39].contains($0) {
+                return 0
+            } else {
+                return $0
+            }
+        }
+        
         var maxNumOfCardsInRun = 0
         
         for i in 2...playCards.count {
             var numOfCardsInRun = 0
-            let runOfCards = Array(playCards.suffix(i) + [cardNumber]).sorted()
+            let runOfCards = Array(playCards.suffix(i)).sorted()
             
             for c in 1..<runOfCards.count {
-                if runOfCards[c] - runOfCards[c - 1] != 1 || [13, 26, 39].contains(runOfCards[c]) {
+                if (runOfCards[c] % 13) - (runOfCards[c - 1] % 13) != 1 {
                     numOfCardsInRun = 0
                     break
                 }

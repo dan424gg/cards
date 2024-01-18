@@ -31,7 +31,7 @@ public struct GameState: Hashable, Codable {
     var num_go: Int = 0
     
     
-    static var game: GameState = GameState(group_id: 1234, is_playing: true, num_teams: 3, turn: 1, game_name: "cribbage", num_players: 3, dealer: 0, team_with_crib: 1, crib: Array(0...3), cards: GameState().cards.shuffled(), starter_card: 19)
+    static var game: GameState = GameState(group_id: 1234, is_playing: true, num_teams: 3, turn: 2, game_name: "cribbage", num_players: 3, dealer: 0, team_with_crib: 1, crib: Array(0...3), cards: GameState().cards.shuffled(), starter_card: 19)
 }
 
 public class GameObservable: ObservableObject {
