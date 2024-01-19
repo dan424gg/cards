@@ -12,34 +12,36 @@ import SwiftUI
 
 
 struct TimedTextContainer: View {
-    @State private var isVisible = true
+    @State private var string: String = ""
+    @State private var idx: Int = 0
     @Binding var textArray: [String]
-
+    
     var visibilityFor: TimeInterval
-    var delay: TimeInterval
-
+    
     var body: some View {
-        if !textArray.isEmpty, isVisible {
-            Text(textArray[0])
-                .font(.title)
-                .id(UUID())
-                .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .opacity))
-                .animation(.easeInOut, value: isVisible)
-                .onAppear {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + visibilityFor) {
-                        withAnimation {
-                            isVisible = false
-                            _ = textArray.removeFirst()
-                        }
-                    }
-                    
-                    DispatchQueue.main.asyncAfter(deadline: .now() + visibilityFor + delay) {
-                        withAnimation {
-                            isVisible = true
+        Text(string)
+            .font(.title)
+            .id(string)
+            .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .opacity))
+            .onChange(of: textArray, initial: true, {
+                if !textArray.isEmpty {
+                    for i in 0...textArray.count {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + (visibilityFor * Double(i))) {
+                            if i == textArray.count {
+                                withAnimation {
+                                    string = ""
+                                    textArray.removeAll()
+                                }
+                            }
+                            else {
+                                withAnimation {
+                                    string = textArray[i]
+                                }
+                            }
                         }
                     }
                 }
-        }
+            })
     }
 }
 

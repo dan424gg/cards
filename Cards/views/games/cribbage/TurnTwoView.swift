@@ -59,7 +59,7 @@ struct TurnTwoView: View {
                     .buttonStyle(.bordered)
                 }
             }
-            TimedTextContainer(textArray: $pointsCallOut, visibilityFor: 2.0, delay: 1.0)
+            TimedTextContainer(textArray: $pointsCallOut, visibilityFor: 2.0)
         }
         .onChange(of: cardsDragged, {
             Task {
