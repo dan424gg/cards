@@ -12,6 +12,8 @@ struct TurnTwoView: View {
     @Binding var cardsDragged: [Int]
     @Binding var cardsInHand: [Int]
     
+    var otherPlayer: Bool
+    
     @State private var dropAreaBorderColor: Color = .clear
     @State private var dropAreaBorderWidth: CGFloat = 1.0
     @State private var pointsCallOut: [String] = []
@@ -33,30 +35,41 @@ struct TurnTwoView: View {
                     }
                 }
                 .dropDestination(for: CardItem.self) { items, location in
-                    Task {
-                        let points = await firebaseHelper.checkForPoints(cardInPlay: items.first!.id, pointsCallOut: $pointsCallOut)
-                        await firebaseHelper.updateTeam(newState: ["points": firebaseHelper.teamState!.points + points])
-                    }
-                    cardsDragged.append(items.first!.id)
-                    cardsInHand.removeAll(where: { card in
-                        card == items.first!.id
-                    })
-                    return true
-                } isTargeted: { inDropArea in
-                    dropAreaBorderColor = inDropArea ? .green : .clear
-                    dropAreaBorderWidth = inDropArea ? 7.0 : 1.0
-                }
-                
-                VStack {
-                    Text("\(firebaseHelper.gameState?.running_sum ?? 14)")
-                        .bold()
-                    Button("Go") {
+                    if !otherPlayer {
                         Task {
-                            let points = await firebaseHelper.checkForPoints(cardInPlay: nil, pointsCallOut: $pointsCallOut)
+                            var callouts: [String] = []
+                            let points = await firebaseHelper.checkForPoints(cardInPlay: items.first!.id, pointsCallOut: &callouts)
+                            pointsCallOut = callouts
                             await firebaseHelper.updateTeam(newState: ["points": firebaseHelper.teamState!.points + points])
                         }
+                        cardsDragged.append(items.first!.id)
+                        cardsInHand.removeAll(where: { card in
+                            card == items.first!.id
+                        })
+                        return true
                     }
-                    .buttonStyle(.bordered)
+                    return false
+                } isTargeted: { inDropArea in
+                    if !otherPlayer {
+                        dropAreaBorderColor = inDropArea ? .green : .clear
+                        dropAreaBorderWidth = inDropArea ? 7.0 : 1.0
+                    }
+                }
+                
+                if !otherPlayer {
+                    VStack {
+                        Text("\(firebaseHelper.gameState?.running_sum ?? 14)")
+                            .bold()
+                        Button("Go") {
+                            Task {
+                                var callouts: [String] = []
+                                let points = await firebaseHelper.checkForPoints(cardInPlay: nil, pointsCallOut: &callouts)
+                                pointsCallOut = callouts
+                                await firebaseHelper.updateTeam(newState: ["points": firebaseHelper.teamState!.points + points])
+                            }
+                        }
+                        .buttonStyle(.bordered)
+                    }
                 }
             }
             TimedTextContainer(textArray: $pointsCallOut, visibilityFor: 2.0)
@@ -64,17 +77,25 @@ struct TurnTwoView: View {
         .onChange(of: cardsDragged, {
             Task {
                 await firebaseHelper.updatePlayer(newState: ["cards_in_hand": cardsDragged], cardAction: .remove)
+                await firebaseHelper.updatePlayer(newState: ["cards_dragged": cardsDragged], cardAction: .append)
             }
         })
+        .task {
+            guard firebaseHelper.gameState != nil else {
+                return
+            }
+            await firebaseHelper.updateGame(newState: ["player_turn": (firebaseHelper.gameState!.dealer + 1) % firebaseHelper.gameState!.num_players])
+        }
         .onDisappear {
             Task {
                 await firebaseHelper.updatePlayer(newState: ["cards_in_hand": cardsDragged], cardAction: .replace)
+                await firebaseHelper.updatePlayer(newState: ["cards_dragged": []], cardAction: .replace)
             }
         }
     }
 }
 
 #Preview {
-    TurnTwoView(cardsDragged: .constant([0]), cardsInHand: .constant([]))
+    TurnTwoView(cardsDragged: .constant([0]), cardsInHand: .constant([]), otherPlayer: false)
         .environmentObject(FirebaseHelper())
 }

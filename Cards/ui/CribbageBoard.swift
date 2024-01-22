@@ -12,7 +12,7 @@ import CoreGraphics
 struct CribbageBoard: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     var numPlayers = 3
-    var previewTeams: [TeamState] = [TeamState(team_num: 1, points: 53), TeamState(team_num: 2, points: 74), TeamState(team_num: 3, points: 61)]
+    var previewTeams: [TeamState] = [TeamState(team_num: 1, points: 53, color: "Red"), TeamState(team_num: 2, points: 74, color: "Blue"), TeamState(team_num: 3, points: 61, color: "Green")]
     @State var teams: [TeamState] = []
     @State var showPoints = false
     @State var timer: Timer?

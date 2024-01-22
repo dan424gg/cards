@@ -112,7 +112,35 @@ import FirebaseFirestoreSwift
                                 ])
                                 break
                             default:
-                                print("UPDATEPLAYER: you have to have a cardAction flag set to manipulate cards!")
+                                print("UPDATEPLAYER: you have to have an action flag set to manipulate cards!")
+                                return
+                        }
+                        break
+                        
+                    case "cards_dragged":
+                        guard type(of: value) is [Int].Type else {
+                            print("\(value) needs to be [Int] in updatePlayer()!")
+                            return
+                        }
+                        
+                        switch (cardAction) {
+                            case .append:
+                                try await docRef.collection("players").document("\(uid ?? playerState!.uid!)").updateData([
+                                    "\(key)": FieldValue.arrayUnion(value as! [Int])
+                                ])
+                                break
+                            case .remove:
+                                try await docRef.collection("players").document("\(uid ?? playerState!.uid!)").updateData([
+                                    "\(key)": FieldValue.arrayRemove(value as! [Int])
+                                ])
+                                break
+                            case .replace:
+                                try await docRef.collection("players").document("\(uid ?? playerState!.uid!)").updateData([
+                                    "\(key)": value as! [Int]
+                                ])
+                                break
+                            default:
+                                print("UPDATEPLAYER: you have to have an action flag set to manipulate cards!")
                                 return
                         }
                         break
@@ -175,7 +203,7 @@ import FirebaseFirestoreSwift
                 switch (key) {
                     case "is_playing":
                         guard type(of: value) is Bool.Type else {
-                            print("\(key) needs to be Bool in updateGame()!")
+                            print("\(key): \(value) needs to be Bool in updateGame()!")
                             return
                         }
                         
@@ -187,7 +215,7 @@ import FirebaseFirestoreSwift
                         
                     case "is_won":
                         guard type(of: value) is Bool.Type else {
-                            print("\(key) needs to be Bool in updateGame()!")
+                            print("\(key): \(value) needs to be Bool in updateGame()!")
                             return
                         }
                         
@@ -199,7 +227,7 @@ import FirebaseFirestoreSwift
                         
                     case "num_teams":
                         guard type(of: value) is Int.Type else {
-                            print("\(key) needs to be Int in updateGame()!")
+                            print("\(key): \(value) needs to be Int in updateGame()!")
                             return
                         }
                         
@@ -211,7 +239,7 @@ import FirebaseFirestoreSwift
                         
                     case "turn":
                         guard type(of: value) is Int.Type else {
-                            print("\(key) needs to be Int in updateGame()!")
+                            print("\(key): \(value) needs to be Int in updateGame()!")
                             return
                         }
                         
@@ -223,7 +251,7 @@ import FirebaseFirestoreSwift
 
                     case "num_players":
                         guard type(of: value) is Int.Type else {
-                            print("\(value) needs to be Int in updateGame()!")
+                            print("\(key): \(value) needs to be Int in updateGame()!")
                             return
                         }
                         
@@ -235,7 +263,7 @@ import FirebaseFirestoreSwift
                         
                     case "dealer":
                         guard type(of: value) is Int.Type else {
-                            print("\(value) needs to be Int in updateGame()!")
+                            print("\(key): \(value) needs to be Int in updateGame()!")
                             return
                         }
                         
@@ -247,7 +275,7 @@ import FirebaseFirestoreSwift
                         
                     case "team_with_crib":
                         guard type(of: value) is Int.Type else {
-                            print("\(value) needs to be Int in updateGame()!")
+                            print("\(key): \(value) needs to be Int in updateGame()!")
                             return
                         }
                         
@@ -259,7 +287,7 @@ import FirebaseFirestoreSwift
                     
                     case "crib":
                         guard type(of: value) is [Int].Type else {
-                            print("\(value) needs to be [Int] in updateGame()!")
+                            print("\(key): \(value) needs to be [Int] in updateGame()!")
                             return
                         }
                         
@@ -287,7 +315,7 @@ import FirebaseFirestoreSwift
                         
                     case "cards":
                         guard type(of: value) is [Int].Type else {
-                            print("\(value) needs to be [Int] in updateGame()!")
+                            print("\(key): \(value) needs to be [Int] in updateGame()!")
                             return
                         }
                         
@@ -315,7 +343,7 @@ import FirebaseFirestoreSwift
                         
                     case "starter_card":
                         guard type(of: value) is Int.Type else {
-                            print("\(value) needs to be Int in updateGame()!")
+                            print("\(key): \(value) needs to be Int in updateGame()!")
                             return
                         }
                         
@@ -327,7 +355,7 @@ import FirebaseFirestoreSwift
                         
                     case "colors_available":
                         guard type(of: value) is [String].Type else {
-                            print("\(value) needs to be [String] for \"colors_available\" in updateGame()!")
+                            print("\(key): \(value) needs to be [String] for \"colors_available\" in updateGame()!")
                             return
                         }
                         
@@ -355,7 +383,7 @@ import FirebaseFirestoreSwift
                         
                     case "play_cards":
                         guard type(of: value) is [Int].Type else {
-                            print("\(value) needs to be [Int] in updateGame()!")
+                            print("\(key): \(value) needs to be [Int] in updateGame()!")
                             return
                         }
                         
@@ -383,7 +411,7 @@ import FirebaseFirestoreSwift
                         
                     case "running_sum":
                         guard type(of: value) is Int.Type else {
-                            print("\(value) needs to be Int in updateGame()!")
+                            print("\(key): \(value) needs to be Int in updateGame()!")
                             return
                         }
                         
@@ -395,7 +423,19 @@ import FirebaseFirestoreSwift
                         
                     case "num_go":
                         guard type(of: value) is Int.Type else {
-                            print("\(value) needs to be Int in updateGame()!")
+                            print("\(key): \(value) needs to be Int in updateGame()!")
+                            return
+                        }
+                        
+                        try await docRef!.updateData([
+                            "\(key)": value
+                        ])
+                        
+                        break
+                        
+                    case "player_turn":
+                        guard type(of: value) is Int.Type else {
+                            print("\(key): \(value) needs to be Int in updateGame()!")
                             return
                         }
                         
@@ -792,17 +832,15 @@ import FirebaseFirestoreSwift
         await updateGame(newState: ["starter_card": gameState!.cards.removeFirst(), "cards": gameState!.cards], action: .replace)
     }
     
-    func checkForPoints(cardInPlay: Int? = nil, pointsCallOut: Binding<[String]>? = nil) async -> Int {
-        var pointsCallOutValue = pointsCallOut?.wrappedValue ?? []
-        
+    func checkForPoints(cardInPlay: Int? = nil, pointsCallOut: inout [String]) async -> Int {        
         guard let cardNumber = cardInPlay else {
             if gameState!.num_go == (gameState!.num_players - 1) {
+                pointsCallOut.append("GO for 1!")
                 await updateGame(newState: ["num_go": 0, "running_sum": 0, "play_cards": []], action: .replace)
-                pointsCallOutValue.append("GO for 1!")
                 return 1
             } else {
+                pointsCallOut.append("GO!")
                 await updateGame(newState: ["num_go": gameState!.num_go + 1])
-                pointsCallOutValue.append("GO!")
                 return 0
             }
         }
@@ -814,7 +852,7 @@ import FirebaseFirestoreSwift
         // Check for 15
         if card.pointValue + gameState!.running_sum == 15 {
             points += 2
-            pointsCallOutValue.append("15 for \(points)!")
+            pointsCallOut.append("15 for \(points)!")
         }
         
         // Check for pairs, pair royal, and double pair royal
@@ -832,20 +870,20 @@ import FirebaseFirestoreSwift
                 }
             }
         }
-        pointsCallOutValue.append(setCallOut)
+        pointsCallOut.append(setCallOut)
         
         // Check for run
         let numberOfCardsInRun = checkForRun(cardInPlay: cardNumber)
         if numberOfCardsInRun != 0 {
             points += numberOfCardsInRun
-            pointsCallOutValue.append("Run of \(numberOfCardsInRun) for \(points)!")
+            pointsCallOut.append("Run of \(numberOfCardsInRun) for \(points)!")
         }
         
         // Check for 31
         if card.pointValue + gameState!.running_sum == 31 {
             points += 2
+            pointsCallOut.append("31 for \(points)!")
             await updateGame(newState: ["running_sum": 0, "play_cards": []], action: .replace)
-            pointsCallOutValue.append("31 for \(points)!")
         }
         
         var maxPlayCardsCount: Int {
@@ -864,7 +902,7 @@ import FirebaseFirestoreSwift
         
         if (players.allSatisfy({ player in player.cards_in_hand!.count == 0 })) {
             points += 1
-            pointsCallOutValue.append("\(points) for last card!")
+            pointsCallOut.append("\(points) for last card!")
         }
         
         if (gameState?.num_go ?? 0) > 0 {
@@ -875,7 +913,7 @@ import FirebaseFirestoreSwift
             "running_sum": (gameState!.running_sum + card.pointValue) % 31,
             "play_cards": [cardNumber]
         ], action: .append)
-        pointsCallOut?.wrappedValue = pointsCallOutValue
+//        pointsCallOut?.wrappedValue = pointsCallOut
         return points
     }
     

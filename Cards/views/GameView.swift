@@ -12,8 +12,8 @@ struct GameView: View {
     @State var showSnackbar: Bool = true
     @State var cardsDragged: [Int] = []
     @State var cardsInHand: [Int] = []
-    
     @State var firstTurn = true
+    @State var scale: Double = 0.0
         
     var body: some View {
         GeometryReader { geo in
@@ -24,6 +24,12 @@ struct GameView: View {
                     .stroke(Color.gray.opacity(0.5))
                     .aspectRatio(1.15, contentMode: .fit)
                     .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 1.5 )
+                    .overlay(content: {
+                        PlayingTable()
+                            .stroke(Color.green)
+                            .aspectRatio(1.15, contentMode: .fit)
+                            .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 1.5 )
+                    })
                 
                 NamesAroundTable()
                     .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 1.5 )
@@ -40,9 +46,11 @@ struct GameView: View {
                 VStack {
                     switch (firebaseHelper.gameState?.game_name ?? "cribbage") {
                         case "cribbage":
-                            Cribbage(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
-                                .frame(width: geo.size.width, height: geo.size.height)
-                                .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 0.52)
+                            if firebaseHelper.playerState?.player_num ?? 1 == firebaseHelper.gameState?.player_turn ?? 1 {
+                                Cribbage(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
+                                    .frame(width: geo.size.width, height: geo.size.height)
+                                    .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 0.52)
+                            }
                         default: EmptyView()
                     }
                 }
@@ -53,6 +61,22 @@ struct GameView: View {
                         .position(x: geo.size.width - 50, y: geo.size.height - 10)
                 }
             }
+            .overlay(content: {
+                if firebaseHelper.gameState?.player_turn ?? 0 == firebaseHelper.playerState?.player_num ?? 1 {
+                    RoundedRectangle(cornerRadius: 57.0, style: .continuous)
+                        .stroke(Color("greenForPlayerPlaying"), lineWidth: 25.0)
+                        .opacity(scale)
+                        .ignoresSafeArea()
+                        .onAppear {
+                            let baseAnimation = Animation.easeInOut(duration: 2.0)
+                            let repeated = baseAnimation.repeatForever(autoreverses: true)
+                            
+                            withAnimation(repeated) {
+                                scale = 0.8
+                            }
+                        }
+                }
+            })
             .onChange(of: firebaseHelper.gameState?.turn, initial: true, {
                 if firebaseHelper.gameState?.turn == 1 &&
                     firstTurn &&

@@ -24,6 +24,7 @@ public struct GameState: Hashable, Codable {
     var cards: [Int] = Array(0...51) // array containing int to reference to corresponding card
     var starter_card: Int = -1
     var colors_available: [String] = ["Red", "Blue", "Teal", "Green", "Yellow", "Orange"]
+    var player_turn: Int = 0
     
     // used during "The Play"
     var play_cards: [Int] = []

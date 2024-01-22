@@ -20,20 +20,25 @@ struct NamesAroundTable: View {
     var body: some View {
         ZStack {
             ForEach(Array(sortedPlayerList?.enumerated()
-                      ?? [PlayerState.player_one, PlayerState.player_two, PlayerState.player_three]
-                            .filter { $0.player_num != 1 }
-                            .sorted(by: { $0.player_num! < $1.player_num!})
-                            .enumerated()
-                     ), id: \.offset) {
-                (index, player) in
-                VStack(spacing: 0) {
+                      ?? [PlayerState.player_one, PlayerState.player_two, PlayerState.player_three].filter { $0.player_num != 1 }.sorted(by: { $0.player_num! < $1.player_num!}).enumerated()
+                     ), id: \.offset) { (index, player) in
+                VStack(spacing: -25) {
                     Text(player.name!)
-                    CardInHandArea(cardsDragged: .constant([]), cardsInHand: Binding(get: { player.cards_in_hand! }, set: { _ in }), showBackside: true)
-                        .rotationEffect(.degrees(180))
-                        .scaleEffect(x: 0.5, y: 0.5)
-                        .offset(y: -25)
+                        .foregroundStyle((firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn) == player.player_num ? Color("greenForPlayerPlaying") : .black)
+//                        .padding(3.0)
+                    if firebaseHelper.gameState?.turn ?? gameObservable.game.turn == 2 {
+                        TurnTwoView(cardsDragged: .constant(player.cards_dragged), cardsInHand: .constant([]), otherPlayer: true)
+                            .rotationEffect(.degrees(180))
+                            .scaleEffect(x: 0.5, y: 0.5)
+                    } else {
+                        CardInHandArea(cardsDragged: .constant([]), cardsInHand: Binding(get: { player.cards_in_hand! }, set: { _ in }), showBackside: true)
+                            .rotationEffect(.degrees(180))
+                            .scaleEffect(x: 0.5, y: 0.5)
+                    }
                 }
-                .offset(y: -120)
+//                .padding(8)
+//                .border((firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn) == player.player_num ? Color("greenForPlayerPlaying") : .clear, width: 4.5)
+                .offset(y: -140)
                 .rotationEffect(.degrees(Double(startingRotation + (multiplier * index))))
                 .onChange(of: firebaseHelper.players, initial: false, {
                     sortedPlayerList = firebaseHelper.players

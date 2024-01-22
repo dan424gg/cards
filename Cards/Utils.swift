@@ -32,8 +32,8 @@ struct TimedTextContainer: View {
                                     string = ""
                                     textArray.removeAll()
                                 }
-                            }
-                            else {
+                            } else {
+                                print("utils: \(textArray)\n")
                                 withAnimation {
                                     string = textArray[i]
                                 }
@@ -66,8 +66,13 @@ struct StrokeText: View {
 
 extension String {
     func trim() -> String {
-    return self.trimmingCharacters(in: NSCharacterSet.whitespaces)
-   }
+        return self.trimmingCharacters(in: NSCharacterSet.whitespaces)
+    }
+    func width(usingFont font: UIFont) -> CGFloat {
+        let fontAttributes = [NSAttributedString.Key.font: font]
+        let size = self.size(withAttributes: fontAttributes)
+        return size.width
+    }
 }
 
 extension UTType {

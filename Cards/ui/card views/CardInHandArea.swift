@@ -25,7 +25,7 @@ struct CardInHandArea: View {
                 }
             }
             .onChange(of: firebaseHelper.playerState?.cards_in_hand, initial: true, {
-                cardsInHand = firebaseHelper.playerState?.cards_in_hand ?? []
+                cardsInHand = firebaseHelper.playerState?.cards_in_hand ?? [1,2,3]
             })
             .offset(y: 50)
             .dropDestination(for: CardItem.self) { items, location in

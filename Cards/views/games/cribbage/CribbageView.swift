@@ -25,7 +25,7 @@ struct Cribbage: View {
                     Text("The Play")
                         .font(.title3)
                         .foregroundStyle(.gray.opacity(0.7))
-                    TurnTwoView(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
+                    TurnTwoView(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand, otherPlayer: false)
                 case 3:
                     Text("The Show")
                         .font(.title3)
