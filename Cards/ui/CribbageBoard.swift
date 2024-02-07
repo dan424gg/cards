@@ -12,7 +12,7 @@ import CoreGraphics
 struct CribbageBoard: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     var numPlayers = 3
-    var previewTeams: [TeamState] = [TeamState(team_num: 1, points: 53), TeamState(team_num: 2, points: 74), TeamState(team_num: 3, points: 61)]
+    var previewTeams: [TeamState] = [TeamState(team_num: 1, points: 53, color: "Red"), TeamState(team_num: 2, points: 74, color: "Blue"), TeamState(team_num: 3, points: 61, color: "Green")]
     @State var teams: [TeamState] = []
     @State var showPoints = false
     @State var timer: Timer?
@@ -123,7 +123,6 @@ struct CribbageBoard: View {
                         path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY - (trackWidthAdjustment / 2)))
                         path.addArc(center: CGPoint(x: rect.minX, y: ((rect.midY - midYAdjustment) / 2) + rect.midY), radius: ((rect.midY + midYAdjustment) / 2) - (trackWidthAdjustment / 2), startAngle: .degrees(90), endAngle: .degrees(270), clockwise: false)
                         path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY - midYAdjustment + (trackWidthAdjustment / 2)))
-                        print(path.length())
                     }
                     .trim(from: 0, to: Double(teams == [] ? previewTeams[0].points : teams[0].points) / 121.0)
                     .stroke(Color(teams == [] ? previewTeams[0].color : teams[0].color).opacity(0.8), lineWidth: trackWidthAdjustment)
@@ -136,7 +135,6 @@ struct CribbageBoard: View {
                         path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY - trackPosAdjustment - (trackWidthAdjustment / 2)))
                         path.addArc(center: CGPoint(x: rect.minX, y: ((rect.midY - midYAdjustment) / 2) + rect.midY), radius: ((rect.midY + midYAdjustment) / 2) - trackPosAdjustment - (trackWidthAdjustment / 2), startAngle: .degrees(90), endAngle: .degrees(270), clockwise: false)
                         path.addLine(to: CGPoint(x: rect.maxX, y: (rect.midY - midYAdjustment) + trackPosAdjustment + (trackWidthAdjustment / 2)))
-                        print(path.length())
                     }
                     .trim(from: 0, to: Double(teams == [] ? previewTeams[1].points : teams[1].points) / 121.0)
                     .stroke(Color(teams == [] ? previewTeams[1].color : teams[1].color).opacity(0.8), lineWidth: trackWidthAdjustment)
@@ -146,7 +144,7 @@ struct CribbageBoard: View {
                 
                 HStack {
                     if firebaseHelper.teams == [] {
-                        ForEach(teams, id: \.self) { team in
+                        ForEach(teams.sorted(by: { $0.team_num < $1.team_num }), id: \.self) { team in
                             VStack {
                                 Text("\(team.team_num)")
                                     .font(.headline)
@@ -159,7 +157,7 @@ struct CribbageBoard: View {
                             }
                         }
                     } else {
-                        ForEach(firebaseHelper.teams, id: \.self) { team in
+                        ForEach(firebaseHelper.teams.sorted(by: { $0.team_num < $1.team_num }), id: \.self) { team in
                             VStack {
                                 Text("\(team.team_num)")
                                     .font(.headline)

@@ -12,8 +12,8 @@ struct GameView: View {
     @State var showSnackbar: Bool = true
     @State var cardsDragged: [Int] = []
     @State var cardsInHand: [Int] = []
-    
     @State var firstTurn = true
+    @State var scale: Double = 0.0
         
     var body: some View {
         GeometryReader { geo in
@@ -42,19 +42,39 @@ struct GameView: View {
                         case "cribbage":
                             Cribbage(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
                                 .frame(width: geo.size.width, height: geo.size.height)
-                                .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 0.52)
-                        default: EmptyView()
+                                .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 0.85)
+                        default:
+                            Text("\(firebaseHelper.gameState?.game_name ?? "nothing")")
                     }
                 }
-                .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 4.75)
+                
+                CardInHandArea(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
+                    .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 0.72)
+                    .scaleEffect(x: 2, y: 2)
                 
                 if firebaseHelper.playerState?.player_num ?? 1 == firebaseHelper.gameState?.dealer ?? 1 {
                     Text("Dealer")
                         .position(x: geo.size.width - 50, y: geo.size.height - 10)
                 }
             }
+            .overlay(content: {
+                if firebaseHelper.gameState?.player_turn ?? 0 == firebaseHelper.playerState?.player_num ?? 1 && firebaseHelper.gameState?.turn == 2 {
+                    RoundedRectangle(cornerRadius: 57.0, style: .continuous)
+                        .stroke(Color("greenForPlayerPlaying"), lineWidth: 25.0)
+                        .opacity(scale)
+                        .ignoresSafeArea()
+                        .onAppear {
+                            let baseAnimation = Animation.easeInOut(duration: 2.0)
+                            let repeated = baseAnimation.repeatForever(autoreverses: true)
+                            
+                            withAnimation(repeated) {
+                                scale = 0.8
+                            }
+                        }
+                }
+            })
             .onChange(of: firebaseHelper.gameState?.turn, initial: true, {
-                if firebaseHelper.gameState?.turn == 1 &&
+                if firebaseHelper.gameState?.turn == 0 &&
                     firstTurn &&
                         firebaseHelper.playerState?.is_lead ?? true {
                             // pick first dealer randomly

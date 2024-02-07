@@ -22,10 +22,7 @@ struct Cribbage: View {
                         .foregroundStyle(.gray.opacity(0.7))
                     TurnOneView(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
                 case 2:
-                    Text("The Play")
-                        .font(.title3)
-                        .foregroundStyle(.gray.opacity(0.7))
-                    TurnTwoView(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
+                    TurnTwoView(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand, otherPlayer: false)
                 case 3:
                     Text("The Show")
                         .font(.title3)
@@ -55,20 +52,19 @@ struct Cribbage: View {
 //                    }
 //                }
 //            }
-            
-            CardInHandArea(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
-                .offset(y: 50)
-                .scaleEffect(x: 2, y: 2)
-//                .onAppear(perform: {
-//                    cardsInHand = [4, 17, 29, 31, 1, 13]
-//                })
         }
-        .onChange(of: firebaseHelper.gameState?.turn, {
-            cardsDragged = []
-            Task {
-                await firebaseHelper.updatePlayer(newState: ["is_ready": false])
+        .onChange(of: firebaseHelper.players) {
+            if firebaseHelper.playerState!.is_lead && firebaseHelper.playersAreReady() {
+                Task {
+                    if (firebaseHelper.gameState!.turn == 2) {
+                        await firebaseHelper.updateGame(newState: ["play_cards": [] as! [Int]], action: .replace)
+                    }
+                    await firebaseHelper.unreadyAllPlayers()
+//                    try await Task.sleep(nanoseconds: UInt64(2.0 * Double(NSEC_PER_SEC)))
+                    await firebaseHelper.updateGame(newState: ["turn": firebaseHelper.gameState!.turn + 1])
+                }
             }
-        })
+        }
     }
 }
 

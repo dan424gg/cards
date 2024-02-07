@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TeamPicker: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
-    @State var teamNum = 1
+    @State var teamNum = 0
     
     var body: some View {
         VStack {
@@ -25,12 +25,22 @@ struct TeamPicker: View {
                 }
             }
         }
-        .onAppear(perform: {
-            teamNum = firebaseHelper.playerState?.team_num ?? 1
+        .onChange(of: firebaseHelper.playerState?.team_num, initial: true, {
+            guard firebaseHelper.playerState != nil else {
+                return
+            }
+            
+            if (firebaseHelper.playerState!.team_num != teamNum) {
+                print("in here")
+                teamNum = firebaseHelper.playerState!.team_num
+            }
         })
         .onChange(of: teamNum) {
-            Task {
-                await firebaseHelper.changeTeam(newTeamNum: teamNum)
+            if (firebaseHelper.playerState!.team_num != teamNum) {
+                print("in here too")
+                Task {
+                    await firebaseHelper.changeTeam(newTeamNum: teamNum)
+                }
             }
         }
     }

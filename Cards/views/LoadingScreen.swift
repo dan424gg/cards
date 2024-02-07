@@ -13,13 +13,11 @@ struct LoadingScreen: View {
     @StateObject private var teamOne = TeamObservable(team: TeamState.team_one)
     @StateObject private var teamTwo = TeamObservable(team: TeamState.team_two)
     
+    
     var body: some View {
         VStack {
             VStack {
                 Text("Hi \(firebaseHelper.playerState?.name ?? "Player")!")
-                    .task {
-                        self.firebaseHelper.initFirebaseHelper()
-                    }
                 Text("We're gonna start a game of \(firebaseHelper.gameState?.game_name ?? "Game")!")
                 Text("Others can join with code: \(String(firebaseHelper.gameState?.group_id ?? 0))")
                 HStack {
@@ -64,7 +62,7 @@ struct LoadingScreen: View {
                                 
                                 ForEach(firebaseHelper.players, id:\.self) { player in
                                     if player.team_num == team.team_num {
-                                        Text(player.name!)
+                                        Text(player.name)
                                     }
                                 }
                             }
@@ -73,7 +71,7 @@ struct LoadingScreen: View {
                 }
             }
             
-            if firebaseHelper.playerState?.is_lead! ?? false {
+            if firebaseHelper.playerState?.is_lead ?? false {
                 GameStartButton()
             } else {
                 Text("Waiting to start game...")
@@ -94,7 +92,7 @@ func equalNumOfPlayersOnTeam(players: [PlayerState]) -> Bool {
     } else {
         var numOfPlayers = [0,0,0]
         for player in players {
-            numOfPlayers[player.team_num! - 1] += 1
+            numOfPlayers[player.team_num - 1] += 1
         }
         // if third team has no players, or the count is equal to another team
         return numOfPlayers[0] == numOfPlayers[1] && (numOfPlayers[2] == 0 || numOfPlayers[0] == numOfPlayers[2])

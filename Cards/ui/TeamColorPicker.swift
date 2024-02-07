@@ -33,19 +33,8 @@ struct TeamColorPicker: View {
                 .aspectRatio(1.0, contentMode: .fill)
         }
         .frame(width: 15, height: 15)
-        .onAppear(perform: {
-            guard firebaseHelper.teamState != nil else {
-                return
-            }
-            guard firebaseHelper.gameState != nil else {
-                return
-            }
-            
-            teamColor = firebaseHelper.teamState?.color == "White" ? firebaseHelper.gameState!.colors_available.randomElement()! : firebaseHelper.teamState!.color
-            Task {
-                await firebaseHelper.updateTeam(newState: ["color": teamColor])
-                await firebaseHelper.updateGame(newState: ["colors_available": [teamColor]], action: .remove)
-            }
+        .onChange(of: firebaseHelper.teamState, initial: true, {
+            teamColor = firebaseHelper.teamState?.color ?? "White" 
         })
         .onChange(of: firebaseHelper.gameState?.colors_available, initial: true, {
             listOfColorsAvailable = firebaseHelper.gameState?.colors_available ?? ["Red", "Blue", "Teal", "Green", "Yellow", "Orange"]
