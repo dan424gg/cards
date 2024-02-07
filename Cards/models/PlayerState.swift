@@ -12,13 +12,13 @@ import FirebaseFirestore
 
 
 public struct PlayerState: Hashable, Codable {
-    var name: String? = ""
-    var uid: String? = ""
-    var cards_in_hand: [Int]? = []
-    var is_lead: Bool? = false
-    var team_num: Int? = 0
-    var is_ready: Bool? = false
-    var player_num: Int? = -1
+    var name: String = ""
+    var uid: String = ""
+    var cards_in_hand: [Int] = []
+    var is_lead: Bool = false
+    var team_num: Int = 0
+    var is_ready: Bool = false
+    var player_num: Int = -1
     var cards_dragged: [Int] = []
 
     static var player_one = PlayerState(name: "Daniel", uid: "1", cards_in_hand: Array(39...42), is_lead: true, team_num: 1, player_num: 0, cards_dragged: Array(0...3))
@@ -34,5 +34,6 @@ public struct PlayerState: Hashable, Codable {
         case team_num
         case is_ready
         case player_num
+        case cards_dragged
     }
 }

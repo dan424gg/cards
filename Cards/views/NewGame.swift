@@ -10,6 +10,8 @@ import SwiftUI
 struct NewGame: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @State private var fullName: String = ""
+    @FocusState private var focusedField: FocusField?
+    
     var gameName: String = "test"
     
     var body: some View {

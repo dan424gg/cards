@@ -13,63 +13,50 @@ import SwiftUI
 struct NamesAroundTable: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @StateObject private var gameObservable = GameObservable(game: GameState.game)
-    @State var sortedPlayerList: [PlayerState]?
+    @State var sortedPlayerList: [PlayerState] = []
     @State var startingRotation = 0
     @State var multiplier = 0
     
     var body: some View {
         ZStack {
-            ForEach(Array(sortedPlayerList?.enumerated()
-                      ?? [PlayerState.player_one, PlayerState.player_two, PlayerState.player_three].filter { $0.player_num != 1 }.sorted(by: { $0.player_num! < $1.player_num!}).enumerated()
-                     ), id: \.offset) { (index, player) in
-                VStack(spacing: -25) {
-                    Text(player.name!)
-                        .foregroundStyle((firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn) == player.player_num ? Color("greenForPlayerPlaying") : .black)
-//                        .padding(3.0)
-                    if firebaseHelper.gameState?.turn ?? gameObservable.game.turn == 2 {
-                        TurnTwoView(cardsDragged: .constant(player.cards_dragged), cardsInHand: .constant([]), otherPlayer: true)
-                            .rotationEffect(.degrees(180))
-                            .scaleEffect(x: 0.5, y: 0.5)
-                    } else {
-                        CardInHandArea(cardsDragged: .constant([]), cardsInHand: Binding(get: { player.cards_in_hand! }, set: { _ in }), showBackside: true)
-                            .rotationEffect(.degrees(180))
-                            .scaleEffect(x: 0.5, y: 0.5)
-                    }
-                }
-//                .padding(8)
-//                .border((firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn) == player.player_num ? Color("greenForPlayerPlaying") : .clear, width: 4.5)
-                .offset(y: -140)
-                .rotationEffect(.degrees(Double(startingRotation + (multiplier * index))))
-                .onChange(of: firebaseHelper.players, initial: false, {
-                    sortedPlayerList = firebaseHelper.players
-                        .lazy
-                        .filter { $0.player_num != firebaseHelper.playerState!.player_num}
-                        .sorted(by: { $0.player_num! < $1.player_num!})
-                })
+            ForEach(Array(sortedPlayerList.enumerated()), id: \.offset) { (index, player) in
+                PlayerView(player: player, index: index)
+                    .offset(y: -140)
+                    .rotationEffect(.degrees(Double(startingRotation + (multiplier * index))))
             }
-            .onAppear(perform: {
-                switch(firebaseHelper.gameState?.num_teams ?? 3) {
-                    case 2:
-                        if firebaseHelper.gameState?.num_players == 2 {
-                            startingRotation = 0
-                            multiplier = 0
-                        } else {
-                            startingRotation = 270
-                            multiplier = 90
-                        }
-                    case 3:
-                        if firebaseHelper.gameState?.num_players ?? 3 == 3 {
-                            startingRotation = 315
-                            multiplier = 90
-                        } else {
-                            startingRotation = 240
-                            multiplier = 60
-                        }
-                    default:
-                        startingRotation = 0
-                        multiplier = 0
+        }
+        .onChange(of: firebaseHelper.players, initial: true, {
+            sortedPlayerList = firebaseHelper.players == [] ? [PlayerState.player_one, PlayerState.player_two, PlayerState.player_three] : firebaseHelper.players
+                .lazy
+                .filter { $0.player_num != firebaseHelper.playerState!.player_num}
+                .sorted(by: { $0.player_num < $1.player_num })
+        })
+        .onAppear(perform: {
+            updateMultiplierAndRotation()
+        })
+    }
+    
+    func updateMultiplierAndRotation() {
+        switch(firebaseHelper.gameState?.num_teams ?? 2) {
+            case 2:
+                if firebaseHelper.gameState?.num_players ?? 4 == 2 {
+                    startingRotation = 0
+                    multiplier = 0
+                } else {
+                    startingRotation = 270
+                    multiplier = 90
                 }
-            })
+            case 3:
+                if firebaseHelper.gameState?.num_players ?? 3 == 3 {
+                    startingRotation = 315
+                    multiplier = 90
+                } else {
+                    startingRotation = 240
+                    multiplier = 60
+                }
+            default:
+                startingRotation = 0
+                multiplier = 0
         }
     }
 }

@@ -30,13 +30,13 @@ struct GameButton: View {
                     NavigationLink {
                         NewGame(gameName: gameName)
                     } label: {
-                        Text("Start a new game")
+                        Text("New Game")
                     }
                     
                     NavigationLink {
                         ExistingGame(gameName: gameName)
                     } label: {
-                        Text("Join an existing game")
+                        Text("Join Game")
                     }
                 }
                 .buttonStyle(.borderedProminent)

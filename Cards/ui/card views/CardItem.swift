@@ -11,8 +11,27 @@ struct CardItem: Codable, Identifiable, Transferable {
         CodableRepresentation(for: CardItem.self, contentType: .card)
     }
     
-    var id: Int
+    static func < (lhs: CardItem, rhs: CardItem) -> Bool {
+        return (lhs.id % 13) < (rhs.id % 13)
+    }
     
+    static func > (lhs: CardItem, rhs: CardItem) -> Bool {
+        return (lhs.id % 13) > (rhs.id % 13)
+    }
+    
+    static func <= (lhs: CardItem, rhs: CardItem) -> Bool {
+        return (lhs.id % 13) <= (rhs.id % 13)
+    }
+    
+    static func >= (lhs: CardItem, rhs: CardItem) -> Bool {
+        return (lhs.id % 13) >= (rhs.id % 13)
+    }
+    
+    static func == (lhs: CardItem, rhs: CardItem) -> Bool {
+        return (lhs.id % 13) == (rhs.id % 13)
+    }
+    
+    var id: Int
     var card: Card {
         return Card(id: id)
     }
@@ -27,19 +46,19 @@ struct Card: Codable {
         let valueIndex = id % 13
         
         switch suitIndex {
-        case 0: suit = "spade"
-        case 1: suit = "heart"
-        case 2: suit = "diamond"
-        case 3: suit = "club"
-        default: suit = ""
+            case 0: suit = "spade"
+            case 1: suit = "heart"
+            case 2: suit = "diamond"
+            case 3: suit = "club"
+            default: suit = ""
         }
         
         switch valueIndex {
-        case 0: value = "A"
-        case 10: value = "J"
-        case 11: value = "Q"
-        case 12: value = "K"
-        default: value = "\(valueIndex + 1)"
+            case 0: value = "A"
+            case 10: value = "J"
+            case 11: value = "Q"
+            case 12: value = "K"
+            default: value = "\(valueIndex + 1)"
         }
     }
     

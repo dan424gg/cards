@@ -27,14 +27,9 @@ struct CardInHandArea: View {
             .onChange(of: firebaseHelper.playerState?.cards_in_hand, initial: true, {
                 cardsInHand = firebaseHelper.playerState?.cards_in_hand ?? [1,2,3]
             })
-            .offset(y: 50)
             .dropDestination(for: CardItem.self) { items, location in
-                let tempCardArr = items.map { $0.id }
-                
                 if !cardsInHand.contains(items.first!.id) {
-                    Task {
-                        await firebaseHelper.updatePlayer(newState: ["cards_in_hand": tempCardArr], cardAction: .append)
-                    }
+                    cardsInHand.append(items.first!.id)
                     cardsDragged.removeAll(where: { card in
                         card == items.first!.id
                     })

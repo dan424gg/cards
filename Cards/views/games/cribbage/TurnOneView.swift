@@ -90,7 +90,7 @@ struct TurnOneView: View {
                     }
                 case 6:
                     if (firebaseHelper.playerState!.player_num == firebaseHelper.gameState?.dealer) ||
-                        ((firebaseHelper.playerState!.player_num! + 1) % (firebaseHelper.gameState!.num_players)) != (firebaseHelper.gameState?.dealer ?? 1) {
+                        ((firebaseHelper.playerState!.player_num + 1) % (firebaseHelper.gameState!.num_players)) != (firebaseHelper.gameState?.dealer ?? 1) {
                         Text("Waiting for players to discard...")
                     } else {
                         if cardsDragged.count == 0 {
@@ -116,14 +116,7 @@ struct TurnOneView: View {
             }
         }
         .frame(height: 100)
-        .onChange(of: firebaseHelper.players) {
-            if firebaseHelper.playerState!.is_lead! && firebaseHelper.playersAreReady() {
-                Task {
-                    await firebaseHelper.updateGame(newState: ["turn": firebaseHelper.gameState!.turn + 1])
-                }
-            }
-        }
-        .onChange(of: cardsDragged) {
+        .onChange(of: cardsDragged) {            
             if playerReady() {
                 cardIsDisabled = true
 
@@ -137,20 +130,33 @@ struct TurnOneView: View {
                 }
             }
         }
+        .onDisappear {
+            cardsDragged = []
+        }
     }
     
     func playerReady() -> Bool {
-        switch (firebaseHelper.gameState?.num_teams ?? 2) {
-        case 2: return cardsDragged.count == 2
-        case 3: 
-            if firebaseHelper.gameState!.num_players == 3 {
-                return cardsDragged.count == 1
-            } else {
-                return cardsDragged.count == 0
-            }
-        default:
+        guard firebaseHelper.gameState != nil, firebaseHelper.playerState != nil else {
             return false
         }
+        
+        switch (firebaseHelper.gameState!.num_teams) {
+            case 2: return firebaseHelper.gameState!.num_players == 2 ? cardsDragged.count == 2 : cardsDragged.count == 1
+            case 3:
+                if firebaseHelper.gameState!.num_players == 3 {
+                    return cardsDragged.count == 1
+                } else {
+                    // if player is dealer or to the left of the dealer
+                    if (firebaseHelper.playerState!.player_num == firebaseHelper.gameState!.dealer ||
+                        ((firebaseHelper.playerState!.player_num + 1) % firebaseHelper.gameState!.num_players) == firebaseHelper.gameState!.dealer) {
+                        return true
+                    } else {
+                        return cardsDragged.count == 1
+                    }
+                }
+            default:
+                return false
+            }
     }
 }
 

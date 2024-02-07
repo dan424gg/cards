@@ -15,6 +15,34 @@ import FirebaseFirestoreSwift
 @testable import Cards
 
 final class LoadingScreenTests: XCTestCase {
+    @MainActor func testPlayerThreeChangesTeamWhenFourthJoins() async {
+        let playerOne = FirebaseHelper()
+        var randId = 0
+        repeat {
+            randId = Int.random(in: 10000..<99999)
+        } while (await playerOne.checkValidId(id: "\(randId)"))
+        await playerOne.startGameCollection(fullName: "1", gameName: "Cribbage", testGroupId: randId)
+        
+        let playerTwo = FirebaseHelper()
+        await playerTwo.joinGameCollection(fullName: "2", id: "\(randId)", gameName: "Cribbage")
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
+        
+        let playerThree = FirebaseHelper()
+        await playerThree.joinGameCollection(fullName: "3", id: "\(randId)", gameName: "Cribbage")
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
+
+        let playerFour = FirebaseHelper()
+        await playerFour.joinGameCollection(fullName: "4", id: "\(randId)", gameName: "Cribbage")
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
+        
+        XCTAssertTrue(playerThree.teamState!.team_num == 1)
+        
+        XCTAssertTrue(playerFour.teamState!.team_num == 2)
+        XCTAssertFalse(playerFour.teams.contains(where: { $0.team_num == 3 }))
+        
+        await playerOne.deleteGameCollection(id: randId)
+    }
+    
     func testEqualNumOfPlayersOnTeam() {
         var playerList: [PlayerState] = []
         
@@ -35,7 +63,24 @@ final class LoadingScreenTests: XCTestCase {
         
         playerList.append(PlayerState(uid: "6", team_num: 3))
         XCTAssertTrue(equalNumOfPlayersOnTeam(players: playerList))
-
+    }
+    
+    func testCardItemOperators() {
+        var arr = [1, 3, 5, 2, 4]
+        XCTAssertEqual(arr.sorted(by: { CardItem(id: $0) < CardItem(id: $1) }), [1,2,3,4,5])
+        
+    // values: A,  2,  A,  2,  A, 4
+        arr = [0, 14, 13, 27, 26, 4]
+        XCTAssertEqual(arr.sorted(by: { CardItem(id: $0) < CardItem(id: $1) }), [0,13,26,14,27,4]) // asc
+        
+        arr = [0, 14, 13, 27, 26, 4]
+        XCTAssertEqual(arr.sorted(by: { CardItem(id: $0) <= CardItem(id: $1) }), [26,13,0,27,14,4]) // asc (desc)
+        
+        arr = [0, 14, 13, 27, 26, 4]
+        XCTAssertEqual(arr.sorted(by: { CardItem(id: $0) > CardItem(id: $1) }), [4,14,27,0,13,26]) // desc (asc)
+        
+        arr = [0, 14, 13, 27, 26, 4]
+        XCTAssertEqual(arr.sorted(by: { CardItem(id: $0) >= CardItem(id: $1) }), [4,27,14,26,13,0]) // desc
     }
 }
 
@@ -68,16 +113,20 @@ final class ListenerListTests: XCTestCase {
         let listener = Firestore.firestore().collection("games").addSnapshotListener{_,_ in }
         let list = ListenerList()
         
-        for i in 0...4 {
+        for i in 0...3 {
             list.addListener(uid: "\(i)", listenerObject: listener)
         }
         
+        XCTAssertFalse(list.removeListener(uid: "\(5)"), "uid: 5 doesn't exist")
         _ = list.removeListener(uid: "\(3)")
         XCTAssertFalse(list.contains(uid: "\(3)"), "removePlayerListener didn't remove uid: 3")
         _ = list.removeListener(uid: "\(0)")
-        XCTAssertFalse(list.contains(uid: "\(0)"), "removePlayerListener didn't remove uid: 3")
-        _ = list.removeListener(uid: "\(4)")
-        XCTAssertFalse(list.contains(uid: "\(4)"), "removePlayerListener didn't remove uid: 3")
+        XCTAssertFalse(list.contains(uid: "\(0)"), "removePlayerListener didn't remove uid: 0")
+        _ = list.removeListener(uid: "\(2)")
+        XCTAssertFalse(list.contains(uid: "\(2)"), "removePlayerListener didn't remove uid: 2")
+        _ = list.removeListener(uid: "\(1)")
+        XCTAssertFalse(list.contains(uid: "\(1)"), "removePlayerListener didn't remove uid: 1")
+        XCTAssertFalse(list.removeListener(uid: "\(1)"), "uid: 1 doesn't exist")
     }
     
     func testPop() {

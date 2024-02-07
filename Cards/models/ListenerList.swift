@@ -42,7 +42,7 @@ class ListenerList {
             return true
         } else {
             var cur = head
-            while cur?.next?.uid != uid {
+            while cur?.next?.uid != uid && cur?.next != nil {
                 cur = cur?.next
             }
             

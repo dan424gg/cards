@@ -9,47 +9,32 @@ import SwiftUI
 import SwiftUISnackbar
 
 struct ExistingGame: View {
-    var gameName: String
     @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @FocusState private var isFocused: Bool
     @State private var notValidGroupId: Bool = true
-    @State private var groupId: Int = 0
+    @State private var notValidFullName: Bool = true
+    @State private var groupId: String = ""
     @State private var fullName: String = ""
     
-    @FocusState private var isFocused: Bool
+    var gameName: String
+
     
     private let groupIdFormatter: NumberFormatter = {
-            let formatter = NumberFormatter()
-            formatter.zeroSymbol = ""
-            return formatter
+        let formatter = NumberFormatter()
+        formatter.zeroSymbol = ""
+        return formatter
         }()
     
     var body: some View {
         VStack {
-            Text("Please enter a Group ID, and your name!")
+            Text("Please enter a Group ID and your name!")
                 .font(.title2)
             TextField(
                 "Group ID",
-                value: $groupId,
-                formatter: groupIdFormatter
+                text: $groupId
             )
             .textFieldStyle(RoundedBorderTextFieldStyle())
             .border(.blue)
-            .focused($isFocused)
-            .onChange(of: isFocused) {
-                if isFocused {
-                    // ensure snackbar isn't being shown
-                } else {
-                    // determine validity of groupid
-                    Task {
-                        if await firebaseHelper.checkValidId(id: groupId) {
-                            notValidGroupId = false
-                        } else {
-                            notValidGroupId = true
-                            firebaseHelper.sendError(e: "Group ID is not valid!")
-                        }
-                    }
-                }
-            }
             
             TextField(
                 "Full Name",
@@ -60,10 +45,8 @@ struct ExistingGame: View {
             
             NavigationLink {
                 LoadingScreen()
-                    .onAppear {
-                        Task {
-                            await firebaseHelper.joinGameCollection(fullName: fullName, id: groupId, gameName: gameName)
-                        }
+                    .task {
+                        await firebaseHelper.joinGameCollection(fullName: fullName, id: groupId, gameName: gameName)
                     }
             } label: {
                 Text("Submit")
@@ -71,6 +54,17 @@ struct ExistingGame: View {
             }
             .disabled(notValidGroupId || fullName == "")
         }
+        .onChange(of: groupId, {
+            Task {
+                if (await !firebaseHelper.checkValidId(id: groupId) || groupId.count != 5 || groupId == "") {
+                    notValidGroupId = true
+                    firebaseHelper.sendWarning(w: "Group ID is not valid!")
+                } else {
+                    notValidGroupId = false
+                    firebaseHelper.resetWarning()
+                }
+            }
+        })
         .multilineTextAlignment(.center)
         .padding([.leading, .trailing], 48)
         .snackbar(isShowing: $firebaseHelper.showError, 

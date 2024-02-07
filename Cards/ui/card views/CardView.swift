@@ -8,12 +8,21 @@
 import SwiftUI
 
 struct CardView: View {
+    @EnvironmentObject var firebaseHelper: FirebaseHelper
     var cardItem: CardItem
     @Binding var cardIsDisabled: Bool
     @State var backside = false
     @State var backDegree = 0.0
     @State var frontDegree = 90.0
+    @State var naturalOffset = false
+    @State var rotationOffset: Double = 0.0
+    @State var positionOffset: Double = 0.0
+    @State var notUsable: Bool = false
     
+    var cardArrs: [[Int]] {[
+        firebaseHelper.gameState?.play_cards ?? [],
+        firebaseHelper.playerState?.cards_in_hand ?? []
+    ]}
     var width = 50.0
     var height = 100.0
 
@@ -55,6 +64,7 @@ struct CardView: View {
                 ZStack {
                     RoundedRectangle(cornerRadius: 10)
                         .fill(Color.white)
+                        .fill(notUsable ? Color.gray.opacity(0.35) : Color.clear)
                         .stroke(Color.black, lineWidth: 1)
                     VStack (spacing: 30) {
                         VStack (alignment: .center, spacing: 0) {
@@ -83,11 +93,31 @@ struct CardView: View {
                     backDegree = -90.0
                     frontDegree = 0.0
                 }
+                
+                if naturalOffset {
+                    var rng = RandomNumberGeneratorWithSeed(seed: cardItem.id * (firebaseHelper.gameState?.group_id ?? 1))
+                    // [-5,5)
+                    rotationOffset = (Double(Int(rng.next()) % 10000) / 1000.0) - 5.0
+                    // [-1,1)
+                    positionOffset = (Double(Int(rng.next()) % 10000) / 5000.0) - 1.0
+                }
             }
+            .onChange(of: [firebaseHelper.gameState?.play_cards, firebaseHelper.playerState?.cards_in_hand], initial: true, {
+                guard firebaseHelper.gameState != nil, firebaseHelper.playerState != nil, firebaseHelper.gameState!.turn == 2 else {
+                    return
+                }
+                
+                if (firebaseHelper.gameState!.starter_card != cardItem.id && !firebaseHelper.playerState!.cards_in_hand.contains(cardItem.id) && !firebaseHelper.gameState!.play_cards.contains(cardItem.id)) {
+                    notUsable = true
+                }
+            })
+            .offset(y: positionOffset)
+            .rotationEffect(.degrees(rotationOffset))
         }
     }
 }
 
 #Preview {
-    CardView(cardItem: CardItem(id: 0), cardIsDisabled: .constant(false))
+    CardView(cardItem: CardItem(id: 14), cardIsDisabled: .constant(false))
+        .environmentObject(FirebaseHelper())
 }
