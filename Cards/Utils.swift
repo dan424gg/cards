@@ -112,6 +112,18 @@ extension CGPoint {
     }
 }
 
+extension Array {
+    func `if`(_ condition: Bool, then modify: (inout [Element]) -> Void, else elseModify: (inout [Element]) -> Void) -> [Element] {
+        var result = self
+        if condition {
+            modify(&result)
+        } else {
+            elseModify(&result)
+        }
+        return result
+    }
+}
+
 extension Path {
     func length() -> CGFloat {
         var length: CGFloat = 0.0
@@ -159,7 +171,7 @@ extension View {
     /// - Parameters:
     ///   - condition: The condition to evaluate.
     ///   - transform: The transform to apply to the source `View`.
-    /// - Returns: Either the original `View` or the modified `View` if the condition is `true`.
+    /// - Returns: Either the original `View` or the modified `View` if the condition is `true`.   
     @ViewBuilder func `if`<Content: View>(_ condition: Bool, transform: (Self) -> Content) -> some View {
         if condition {
             transform(self)
@@ -167,4 +179,13 @@ extension View {
             self
         }
     }
+
+    @ViewBuilder func `if`<Content: View>(_ condition: Bool, transform: (Self) -> Content, else elseTransform: (Self) -> Content) -> some View {
+        if condition {
+            transform(self)
+        } else {
+            elseTransform(self)
+        }
+    }
+
 }

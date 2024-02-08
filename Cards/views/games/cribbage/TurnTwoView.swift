@@ -105,6 +105,15 @@ struct TurnTwoView: View {
                 })
             }
         }
+        .onAppear {
+            guard firebaseHelper.playerState != nil, firebaseHelper.gameState != nil, firebaseHelper.playerState!.is_lead else {
+                return
+            }
+            
+            Task {
+                await firebaseHelper.updateGame(newState: ["player_turn": (firebaseHelper.gameState!.dealer + 1) % firebaseHelper.gameState!.num_players])
+            }
+        }
         .if(!otherPlayer) { view in
             view
                 .onChange(of: firebaseHelper.playerState?.cards_in_hand, {
