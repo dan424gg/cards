@@ -83,6 +83,26 @@ struct StrokeText: View {
     }
 }
 
+extension Array {
+    func `if`(_ condition: Bool, _ transform: (inout [Element]) -> Void, else elseModify: (inout [Element]) -> Void) -> [Element] {
+        var result = self
+        if condition {
+            transform(&result)
+        } else {
+            elseModify(&result)
+        }
+        return result
+    }
+    
+    func `if`(_ condition: Bool, _ transform: (inout [Element]) -> Void) -> [Element] {
+        var result = self
+        if condition {
+            transform(&result)
+        }
+        return result
+    }
+}
+
 extension CGPoint {
     func distance(to point: CGPoint) -> CGFloat {
         return hypot(point.x - x, point.y - y)
@@ -109,18 +129,6 @@ extension CGPoint {
 
     func lerp(to destination: CGPoint, t: CGFloat) -> CGPoint {
         return CGPoint(x: x + (destination.x - x) * t, y: y + (destination.y - y) * t)
-    }
-}
-
-extension Array {
-    func `if`(_ condition: Bool, then modify: (inout [Element]) -> Void, else elseModify: (inout [Element]) -> Void) -> [Element] {
-        var result = self
-        if condition {
-            modify(&result)
-        } else {
-            elseModify(&result)
-        }
-        return result
     }
 }
 
@@ -172,7 +180,7 @@ extension View {
     ///   - condition: The condition to evaluate.
     ///   - transform: The transform to apply to the source `View`.
     /// - Returns: Either the original `View` or the modified `View` if the condition is `true`.   
-    @ViewBuilder func `if`<Content: View>(_ condition: Bool, transform: (Self) -> Content) -> some View {
+    @ViewBuilder func `if`<Content: View>(_ condition: Bool, _ transform: (Self) -> Content) -> some View {
         if condition {
             transform(self)
         } else {
@@ -180,7 +188,7 @@ extension View {
         }
     }
 
-    @ViewBuilder func `if`<Content: View>(_ condition: Bool, transform: (Self) -> Content, else elseTransform: (Self) -> Content) -> some View {
+    @ViewBuilder func `if`<Content: View>(_ condition: Bool, _ transform: (Self) -> Content, else elseTransform: (Self) -> Content) -> some View {
         if condition {
             transform(self)
         } else {

@@ -22,19 +22,23 @@ struct NamesAroundTable: View {
         ZStack {
             ForEach(Array(sortedPlayerList.enumerated()), id: \.offset) { (index, player) in
                 PlayerView(player: player, index: index)
-                    .if(firebaseHelper.gameState?.turn ?? gameObservable.game.turn == 3, transform: {
+                    .if(firebaseHelper.gameState?.turn ?? gameObservable.game.turn == 3) {
                         // gives rotation needed during turn 3 for cribbage
                         $0.rotationEffect(firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn == player.player_num ? .degrees(180.0) : .degrees(0.0))
-                    })
+                    }
                     .offset(y: -140)
                     .rotationEffect(applyRotation(index: index))
+                    .if(firebaseHelper.gameState?.turn ?? gameObservable.game.turn == 3 && (firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn == index)) {
+                        // gives offset needed during turn 3 for cribbage
+                        $0.offset(y: 100)
+                    }
             }
-            Button("rotate") {
-                withAnimation(.snappy(duration: 1.5, extraBounce: 0.15)) {
-                    tableRotation += 180
-                    gameObservable.game.player_turn = (gameObservable.game.player_turn + 1) % sortedPlayerList.count
-                }
-            }
+//            Button("rotate") {
+//                withAnimation(.snappy(duration: 1.5, extraBounce: 0.15)) {
+//                    tableRotation += 180
+//                    gameObservable.game.player_turn = (gameObservable.game.player_turn + 1) % sortedPlayerList.count
+//                }
+//            }
         }
         .onChange(of: firebaseHelper.players, initial: true, {
             guard firebaseHelper.playerState != nil, firebaseHelper.gameState != nil else {
@@ -47,18 +51,23 @@ struct NamesAroundTable: View {
                 .lazy
                 .sorted(by: { $0.player_num < $1.player_num })
             
-            let beforePlayer = playerList[0..<firebaseHelper.playerState!.player_num]
-            let afterPlayer = playerList[firebaseHelper.playerState!.player_num..<playerList.count]
-            
-            // rotate players list
-            sortedPlayerList = Array(afterPlayer + beforePlayer)
-                .if(firebaseHelper.gameState!.turn < 3,
-                    then: { array in
+            if (firebaseHelper.gameState!.turn < 3) {
+                let beforePlayer = playerList[0..<firebaseHelper.playerState!.player_num]
+                let afterPlayer = playerList[firebaseHelper.playerState!.player_num..<playerList.count]
+                
+                // rotate players list
+                sortedPlayerList = Array(afterPlayer + beforePlayer)
+                    .if(firebaseHelper.gameState!.turn < 3) { array in
                         array = array.filter { $0.player_num != firebaseHelper.playerState!.player_num }
-                    },
-                    else: { array in
-                        // Do something else if the condition is false
-                    })
+                    }
+            } else {
+                sortedPlayerList = playerList
+            }
+        })
+        .onChange(of: firebaseHelper.gameState?.player_turn, {
+            withAnimation(.snappy(duration: 1.5, extraBounce: 0.2)) {
+                tableRotation = (tableRotation + 180) % 360
+            }
         })
         .onAppear(perform: {
             updateMultiplierAndRotation()

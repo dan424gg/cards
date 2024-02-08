@@ -18,18 +18,22 @@ struct PlayerView: View {
     @State var multiplier = 0
     
     var body: some View {
-        VStack(spacing: -35) {
-            if (firebaseHelper.gameState?.turn ?? 3 == 3 && firebaseHelper.gameState?.player_turn ?? 0 == player.player_num) {
+        if (firebaseHelper.gameState?.turn ?? 3 == 3 && firebaseHelper.gameState?.player_turn ?? 0 == player.player_num) {
+            VStack {
+                Text(player.name)
+                    .font(.title3)
+                    .foregroundStyle(((firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn) == player.player_num && firebaseHelper.gameState?.turn == 2) ? Color("greenForPlayerPlaying") : .black)
                 HStack {
                     ForEach(player.cards_in_hand, id: \.self) { card in
                         CardView(cardItem: CardItem(id: card), cardIsDisabled: .constant(false))
                     }
                 }
-                .scaleEffect(x: 0.5, y: 0.5)
-                .frame(width: 50, height: 125)
-                Text(player.name)
-                    .foregroundStyle(((firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn) == player.player_num && firebaseHelper.gameState?.turn == 2) ? Color("greenForPlayerPlaying") : .black)
-            } else {
+            }
+            .rotationEffect(.degrees(Double(startingRotation + (multiplier * index))))
+            .scaleEffect(x: 0.75, y: 0.75)
+            .frame(width: 200, height: 125)
+        } else {
+            VStack(spacing: -35) {
                 Text(player.name)
                     .foregroundStyle(((firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn) == player.player_num && firebaseHelper.gameState?.turn == 2) ? Color("greenForPlayerPlaying") : .black)
                 if (firebaseHelper.gameState?.turn ?? 3 == 2) {
@@ -44,8 +48,8 @@ struct PlayerView: View {
                         .frame(width: 50, height: 125)
                 }
             }
+            .rotationEffect(.degrees(Double(startingRotation + (multiplier * index))))
         }
-//        .rotationEffect(.degrees(Double(startingRotation + (multiplier * index))))
     }
 }
 

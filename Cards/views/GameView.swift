@@ -48,9 +48,12 @@ struct GameView: View {
                     }
                 }
                 
-                CardInHandArea(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
-                    .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 0.72)
-                    .scaleEffect(x: 2, y: 2)
+                if (firebaseHelper.gameState?.turn ?? 3 < 3) {
+                    CardInHandArea(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
+                        .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 0.72)
+                        .scaleEffect(x: 2, y: 2)
+                        .transition(.move(edge: .bottom))
+                }
                 
                 if firebaseHelper.playerState?.player_num ?? 1 == firebaseHelper.gameState?.dealer ?? 1 {
                     Text("Dealer")

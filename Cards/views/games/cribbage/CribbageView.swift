@@ -15,34 +15,38 @@ struct Cribbage: View {
     @Binding var cardsInHand: [Int]
     
     var body: some View {
-        VStack {
-            switch(firebaseHelper.gameState?.turn ?? gameObservable.game.turn) {
-                case 1:
-                    Text("The Deal")
-                        .font(.title3)
-                        .foregroundStyle(.gray.opacity(0.7))
-                    TurnOneView(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
-                case 2:
-                    TurnTwoView(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand, otherPlayer: false)
-                case 3:
-                    Text("The Show")
-                        .font(.title3)
-                        .foregroundStyle(.gray.opacity(0.7))
-                case 4:
-                    Text("The Crib")
-                        .font(.title3)
-                        .foregroundStyle(.gray.opacity(0.7))
-
-                default:
-                    Text("Won't get here")
-                        .font(.title3)
-                        .foregroundStyle(.gray.opacity(0.7))
-            }
-            
-//             used for testing preview
-            Button("increment player turn") {
-                Task {
-                    await firebaseHelper.updateGame(newState: ["player_turn": (firebaseHelper.gameState!.player_turn + 1) % firebaseHelper.gameState!.num_players])
+        ZStack {
+            VStack {
+                switch(firebaseHelper.gameState?.turn ?? gameObservable.game.turn) {
+                    case 1:
+                        Text("The Deal")
+                            .font(.title3)
+                            .foregroundStyle(.gray.opacity(0.7))
+                        TurnOneView(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
+                    case 2:
+                        TurnTwoView(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand, otherPlayer: false)
+                    case 3:
+                        VStack {
+                            Text("The Show")
+                                .font(.title3)
+                                .foregroundStyle(.gray.opacity(0.7))
+                            // used for testing preview
+                            Button("increment player turn") {
+                                Task {
+                                    await firebaseHelper.updateGame(newState: ["player_turn": (firebaseHelper.gameState!.player_turn + 1) % firebaseHelper.gameState!.num_players])
+                                }
+                            }
+                        }
+                        .offset(y: -70)
+                    case 4:
+                        Text("The Crib")
+                            .font(.title3)
+                            .foregroundStyle(.gray.opacity(0.7))
+                        
+                    default:
+                        Text("Won't get here")
+                            .font(.title3)
+                            .foregroundStyle(.gray.opacity(0.7))
                 }
             }
         }

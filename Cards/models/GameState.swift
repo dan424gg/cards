@@ -15,7 +15,7 @@ public struct GameState: Hashable, Codable {
     var is_playing: Bool = false
     var is_won: Bool = false
     var num_teams: Int = 0
-    var turn: Int = 1
+    var turn: Int = -1
     var game_name: String = ""
     var num_players: Int = 0
     var dealer: Int = -1
