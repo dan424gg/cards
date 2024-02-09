@@ -15,7 +15,7 @@ public struct GameState: Hashable, Codable {
     var is_playing: Bool = false
     var is_won: Bool = false
     var num_teams: Int = 0
-    var turn: Int = 1
+    var turn: Int = -1
     var game_name: String = ""
     var num_players: Int = 0
     var dealer: Int = -1
@@ -24,14 +24,14 @@ public struct GameState: Hashable, Codable {
     var cards: [Int] = Array(0...51) // array containing int that reference a playing card
     var starter_card: Int = -1
     var colors_available: [String] = ["Red", "Blue", "Teal", "Green", "Yellow", "Orange"]
-    var player_turn: Int = 0
+    var player_turn: Int = -1
     
     // used during "The Play"
     var play_cards: [Int] = []
     var running_sum: Int = 0
     var num_go: Int = 0
     
-    static var game: GameState = GameState(group_id: 1234, is_playing: true, num_teams: 3, turn: 2, game_name: "cribbage", num_players: 3, dealer: 0, team_with_crib: 1, crib: Array(0...3), cards: GameState().cards.shuffled(), starter_card: 19)
+    static var game: GameState = GameState(group_id: 1234, is_playing: true, num_teams: 3, turn: 3, game_name: "cribbage", num_players: 3, dealer: 0, team_with_crib: 1, crib: Array(0...3), cards: GameState().cards.shuffled(), starter_card: 19, player_turn: 0)
     
     enum CodingKeys: CodingKey {
         case group_id

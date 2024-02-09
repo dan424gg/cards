@@ -121,12 +121,12 @@ struct TurnOneView: View {
                 cardIsDisabled = true
 
                 Task {
-                    await firebaseHelper.updatePlayer(newState: [
+                    await firebaseHelper.updatePlayer([
                         "cards_in_hand": cardsDragged,
                         "is_ready": true
-                    ], cardAction: .remove)
+                    ], arrayAction: .remove)
                     
-                    await firebaseHelper.updateGame(newState: ["crib": cardsDragged], action: .append)
+                    await firebaseHelper.updateGame(["crib": cardsDragged], arrayAction: .append)
                 }
             }
         }

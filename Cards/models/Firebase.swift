@@ -89,7 +89,7 @@ import FirebaseFirestoreSwift
         showError = false
     }
     
-    func updatePlayer(newState: [String: Any], uid: String? = nil, cardAction: ArrayActionType? = nil) async {
+    func updatePlayer(_ newState: [String: Any], uid: String? = nil, arrayAction: ArrayActionType? = nil) async {
         guard docRef != nil else {
             print("docRef was nil before updating player information")
             return
@@ -121,7 +121,7 @@ import FirebaseFirestoreSwift
                             return
                         }
                         
-                        switch (cardAction) {
+                        switch (arrayAction) {
                             case .append:
                                 try await docRef.collection("players").document("\(uid ?? playerState!.uid)").updateData([
                                     "\(key)": FieldValue.arrayUnion(value as! [Int])
@@ -149,7 +149,7 @@ import FirebaseFirestoreSwift
                             return
                         }
                                                 
-                        switch (cardAction) {
+                        switch (arrayAction) {
                             case .append:
                                 try await docRef.collection("players").document("\(uid ?? playerState!.uid)").updateData([
                                     "\(key)": FieldValue.arrayUnion(value as! [Int])
@@ -217,7 +217,7 @@ import FirebaseFirestoreSwift
         }
     }
    
-    func updateGame(newState: [String: Any], action: ArrayActionType? = nil) async {
+    func updateGame(_ newState: [String: Any], arrayAction: ArrayActionType? = nil) async {
         guard docRef != nil else {
             print("docRef was nil before updating game information")
             return
@@ -317,7 +317,7 @@ import FirebaseFirestoreSwift
                             return
                         }
                         
-                        switch (action) {
+                        switch (arrayAction) {
                             case .append:
                                 try await docRef!.updateData([
                                     "\(key)": FieldValue.arrayUnion(value as! [Int])
@@ -345,7 +345,7 @@ import FirebaseFirestoreSwift
                             return
                         }
                         
-                        switch (action) {
+                        switch (arrayAction) {
                             case .append:
                                 try await docRef!.updateData([
                                     "\(key)": FieldValue.arrayUnion(value as! [Int])
@@ -385,7 +385,7 @@ import FirebaseFirestoreSwift
                             return
                         }
                         
-                        switch (action) {
+                        switch (arrayAction) {
                             case .append:
                                 try await docRef!.updateData([
                                     "\(key)": FieldValue.arrayUnion(value as! [String])
@@ -413,7 +413,7 @@ import FirebaseFirestoreSwift
                             return
                         }
                         
-                        switch (action) {
+                        switch (arrayAction) {
                             case .append:
                                 try await docRef!.updateData([
                                     "\(key)": FieldValue.arrayUnion(value as! [Int])
@@ -481,7 +481,7 @@ import FirebaseFirestoreSwift
         }
     }
     
-    func updateTeam(newState: [String: Any]) async {
+    func updateTeam(_ newState: [String: Any]) async {
         guard docRef != nil else {
             print("docRef was nil before updating team information")
             return
@@ -713,20 +713,20 @@ import FirebaseFirestoreSwift
         do {
             // check if there are any players still on the team
             if (players.filter { $0.team_num == playerState!.team_num }.count <= 1) {
-                await updateGame(newState: ["colors_available": [teamState!.color]], action: .append)
+                await updateGame(["colors_available": [teamState!.color]], arrayAction: .append)
                 try await docRef!.collection("teams").document("\(playerState!.team_num)").delete()
             }
             
-            await updatePlayer(newState: ["team_num": newTeamNum])
+            await updatePlayer(["team_num": newTeamNum])
             
             // if new team already exists, just copy data
             if let newTeam = teams.first(where: { $0.team_num == newTeamNum }) {
-                teamState! = newTeam
+                teamState = newTeam
             // if new team doesn't exist, create a new team and add it to the main collection
             } else {
                 let color = gameState!.colors_available.randomElement()!
-                teamState! = TeamState(team_num: newTeamNum, color: color)
-                await updateGame(newState: ["colors_available": [color]], action: .remove)
+                teamState = TeamState(team_num: newTeamNum, color: color)
+                await updateGame(["colors_available": [color]], arrayAction: .remove)
                 try docRef!.collection("teams").document("\(newTeamNum)").setData(from: teamState)
             }
             
@@ -791,7 +791,7 @@ import FirebaseFirestoreSwift
             //      if number of players are equal to 5, they can only play in a 3 team game
             let numTeams = (numPlayers % 3 == 0 || numPlayers == 5) ? 3 : 2
 
-            await updateGame(newState: [
+            await updateGame([
                 "num_teams": numTeams,
                 "num_players": numPlayers
             ])
@@ -816,7 +816,7 @@ import FirebaseFirestoreSwift
             playerState = PlayerState(name: fullName, uid: UUID().uuidString, team_num: teamNum, player_num: numPlayers - 1)
             try docRef!.collection("players").document(playerState!.uid).setData(from: playerState!)
 
-            if !checkTeamExists(teamNum: teamNum) {
+            if await !checkTeamExists(teamNum: teamNum) {
                 var color = ""
 
                 // busy waiting for if a lot of people are trying to change team at once and colors are temporarily unavailble
@@ -826,7 +826,7 @@ import FirebaseFirestoreSwift
                     }
                 }
                 
-                await updateGame(newState: ["colors_available": [color]], action: .remove)
+                await updateGame(["colors_available": [color]], arrayAction: .remove)
                 teamState = TeamState(team_num: teamNum, color: color)
                 try docRef!.collection("teams").document("\(teamNum)").setData(from: teamState)
             }
@@ -849,11 +849,11 @@ import FirebaseFirestoreSwift
         
         // ensure cards_in_hand is cleared for all players
         for player in players {
-            await updatePlayer(newState: ["cards_in_hand": [Int]()], uid: player.uid, cardAction: .replace)
+            await updatePlayer(["cards_in_hand": [Int]()], uid: player.uid, arrayAction: .replace)
         }
         
         // ensure crib is cleared
-        await updateGame(newState: ["crib": [Int](), "cards": GameState().cards.shuffled()], action: .replace)
+        await updateGame(["crib": [Int](), "cards": GameState().cards.shuffled()], arrayAction: .replace)
         
         let numberOfPlayers = gameState!.num_players
         var numberOfCards: Int {
@@ -866,7 +866,7 @@ import FirebaseFirestoreSwift
         
         // check for 3 player edge case
         if numberOfPlayers == 3 {
-            await updateGame(newState: ["crib": [gameState!.cards.removeFirst()]], action: .append)
+            await updateGame(["crib": [gameState!.cards.removeFirst()]], arrayAction: .append)
         }
         
         for i in 0..<numberOfCards {
@@ -878,11 +878,11 @@ import FirebaseFirestoreSwift
                      ((player.player_num + 1) % gameState!.num_players) == gameState!.dealer) {
                     continue
                 }
-                await updatePlayer(newState: ["cards_in_hand": [gameState!.cards.removeFirst()]], uid: player.uid, cardAction: .append)
+                await updatePlayer(["cards_in_hand": [gameState!.cards.removeFirst()]], uid: player.uid, arrayAction: .append)
             }
         }
         
-        await updateGame(newState: ["starter_card": gameState!.cards.removeFirst(), "cards": gameState!.cards], action: .replace)
+        await updateGame(["starter_card": gameState!.cards.removeFirst(), "cards": gameState!.cards], arrayAction: .replace)
     }
     
     func managePlayTurn(cardInPlay: Int? = nil, pointsCallOut: inout [String]) async -> Int {     
@@ -892,11 +892,11 @@ import FirebaseFirestoreSwift
         guard let cardNumber = cardInPlay else {
             if gameState!.num_go == (gameState!.num_players - 1) {
                 pointsCallOut.append("GO for 1!")
-                await updateGame(newState: ["num_go": 0, "running_sum": 0, "play_cards": [] as! [Int]], action: .replace)
+                await updateGame(["num_go": 0, "running_sum": 0, "play_cards": [] as! [Int]], arrayAction: .replace)
                 return 1
             } else {
                 pointsCallOut.append("GO!")
-                await updateGame(newState: ["num_go": gameState!.num_go + 1])
+                await updateGame(["num_go": gameState!.num_go + 1])
                 return 0
             }
         }
@@ -909,16 +909,16 @@ import FirebaseFirestoreSwift
         if card.pointValue + gameState!.running_sum == 15 {
             points += 2
             pointsCallOut.append("15 for \(points)!")
-            await updateGame(newState: [
+            await updateGame([
                 "running_sum": (gameState!.running_sum + card.pointValue) % 31,
                 "play_cards": [cardNumber]
-            ], action: .append)
+            ], arrayAction: .append)
         }
         // Check for 31
         else if card.pointValue + gameState!.running_sum == 31 {
             points += 2
             pointsCallOut.append("31 for \(points)!")
-            await updateGame(newState: ["running_sum": 0, "play_cards": [] as! [Int]], action: .replace)
+            await updateGame(["running_sum": 0, "play_cards": [] as! [Int]], arrayAction: .replace)
         }
         else if (card.pointValue + gameState!.running_sum > 31) {
             pointsCallOut.append("You can't go over 31!")
@@ -926,10 +926,10 @@ import FirebaseFirestoreSwift
         }
         // Add card to running_sum
         else {
-            await updateGame(newState: [
+            await updateGame([
                 "running_sum": (gameState!.running_sum + card.pointValue) % 31,
                 "play_cards": [cardNumber]
-            ], action: .append)
+            ], arrayAction: .append)
         }
         
         // Check for pairs, pair royal, and double pair royal
@@ -952,7 +952,7 @@ import FirebaseFirestoreSwift
         }
         
         // Check for run
-        let numberOfCardsInRun = checkForRun()
+        let numberOfCardsInRun = checkForRun(gameState!.play_cards)
         if numberOfCardsInRun != 0 {
             points += numberOfCardsInRun
             pointsCallOut.append("Run of \(numberOfCardsInRun) for \(points)!")
@@ -965,27 +965,22 @@ import FirebaseFirestoreSwift
         }
         
         if (gameState?.num_go ?? 0) > 0 {
-            await updateGame(newState: ["num_go": 0])
+            await updateGame(["num_go": 0])
         }
         
         return points
     }
     
-    func checkForRun() -> Int {
-        guard let playCards = gameState?.play_cards else {
-            print("playcards is nil")
-            return 0
-        }
-        guard playCards.count >= 2 else {
-            print("playcards has less than 2 cards")
+    func checkForRun(_ cards: [Int]) -> Int {
+        guard cards.count > 2 else {
             return 0
         }
         
         var maxNumOfCardsInRun = 0
         
-        for i in 2...playCards.count {
+        for i in 2...cards.count {
             var numOfCardsInRun = 0
-            let runOfCards = Array(playCards.suffix(i)).sorted(by: { CardItem(id: $0) < CardItem(id: $1) })
+            let runOfCards = Array(cards.suffix(i)).sorted(by: { CardItem(id: $0) < CardItem(id: $1) })
 
             for c in 1..<runOfCards.count {
                 if (runOfCards[c] % 13) - (runOfCards[c - 1] % 13) != 1 {
@@ -1000,11 +995,8 @@ import FirebaseFirestoreSwift
         return maxNumOfCardsInRun >= 3 ? maxNumOfCardsInRun : 0
     }
     
-    func checkHandForPoints() -> Bool {
-        guard playerState != nil else {
-            return false
-        }
-        guard gameState != nil else {
+    func checkIfPlayIsPossible() -> Bool {
+        guard playerState != nil, gameState != nil else {
             return false
         }
         
@@ -1019,7 +1011,7 @@ import FirebaseFirestoreSwift
 
     func unreadyAllPlayers() async {
         for player in players {
-            await updatePlayer(newState: ["is_ready": false], uid: player.uid)
+            await updatePlayer(["is_ready": false], uid: player.uid)
         }
     }
     
@@ -1039,7 +1031,7 @@ import FirebaseFirestoreSwift
             let playersOnTeam = players.filter { $0.team_num == i }
             var tempCount = count
             for player in playersOnTeam {
-                await updatePlayer(newState: ["player_num": tempCount] , uid: player.uid)
+                await updatePlayer(["player_num": tempCount] , uid: player.uid)
                 tempCount += gameState!.num_teams
             }
             count += 1
@@ -1068,8 +1060,14 @@ import FirebaseFirestoreSwift
         #endif
     }
     
-    func checkTeamExists(teamNum: Int) -> Bool {
-        return teams.contains(where: { $0.team_num == teamNum })
+    func checkTeamExists(teamNum: Int) async -> Bool {
+        do {
+            return try await docRef.collection("teams").document("\(teamNum)").getDocument().exists
+        } catch {
+            print(error)
+            return false
+        }
+//        return teams.contains(where: { $0.team_num == teamNum })
     }
     
     enum ArrayActionType {

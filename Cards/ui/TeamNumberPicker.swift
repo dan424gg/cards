@@ -31,13 +31,11 @@ struct TeamPicker: View {
             }
             
             if (firebaseHelper.playerState!.team_num != teamNum) {
-                print("in here")
                 teamNum = firebaseHelper.playerState!.team_num
             }
         })
         .onChange(of: teamNum) {
             if (firebaseHelper.playerState!.team_num != teamNum) {
-                print("in here too")
                 Task {
                     await firebaseHelper.changeTeam(newTeamNum: teamNum)
                 }

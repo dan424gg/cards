@@ -12,7 +12,7 @@ struct GameView: View {
     @State var showSnackbar: Bool = true
     @State var cardsDragged: [Int] = []
     @State var cardsInHand: [Int] = []
-    @State var firstTurn = true
+    @State var initial = true
     @State var scale: Double = 0.0
         
     var body: some View {
@@ -48,9 +48,12 @@ struct GameView: View {
                     }
                 }
                 
-                CardInHandArea(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
-                    .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 0.72)
-                    .scaleEffect(x: 2, y: 2)
+                if (firebaseHelper.gameState?.turn ?? 3 < 3) {
+                    CardInHandArea(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
+                        .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 0.72)
+                        .scaleEffect(x: 2, y: 2)
+                        .transition(.move(edge: .bottom))
+                }
                 
                 if firebaseHelper.playerState?.player_num ?? 1 == firebaseHelper.gameState?.dealer ?? 1 {
                     Text("Dealer")
@@ -74,21 +77,25 @@ struct GameView: View {
                 }
             })
             .onChange(of: firebaseHelper.gameState?.turn, initial: true, {
-                if firebaseHelper.gameState?.turn == 0 &&
-                    firstTurn &&
-                        firebaseHelper.playerState?.is_lead ?? true {
-                            // pick first dealer randomly
-                            let randDealer = Int.random(in: 0..<(firebaseHelper.gameState?.num_players ?? 1))
-                            
-                            Task {
-                                await firebaseHelper.updateGame(newState: ["dealer": randDealer])
-                            }
-                            
-                            firstTurn = false
-                } else if firebaseHelper.playerState?.is_lead ?? true {
-                    // rotate dealer
-                    Task {
-                        await firebaseHelper.updateGame(newState: ["dealer": ((firebaseHelper.gameState?.dealer ?? 0) + 1) % (firebaseHelper.gameState?.num_players ?? 2)])
+                guard firebaseHelper.gameState != nil, firebaseHelper.playerState != nil else {
+                    return
+                }
+                
+                if firebaseHelper.playerState!.is_lead && firebaseHelper.gameState!.turn == 1 {
+                    if initial {
+                        // pick first dealer randomly
+                        let randDealer = Int.random(in: 0..<(firebaseHelper.gameState!.num_players))
+                        
+                        Task {
+                            await firebaseHelper.updateGame(["dealer": randDealer])
+                        }
+                        
+                        initial = false
+                    } else {
+                        // rotate dealer
+                        Task {
+                            await firebaseHelper.updateGame(["dealer": ((firebaseHelper.gameState!.dealer + 1) % firebaseHelper.gameState!.num_players)])
+                        }
                     }
                 }
             })

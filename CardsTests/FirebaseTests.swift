@@ -23,8 +23,9 @@ final class FirebaseHelperTests: XCTestCase {
         } while (await playerOne.checkValidId(id: "\(randId)"))
         
         await playerOne.startGameCollection(fullName: "1", gameName: "Cribbage", testGroupId: randId)
-        XCTAssert(playerOne.players.count == 1)
-        XCTAssert(playerOne.teams.count == 1)
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
+        XCTAssertEqual(playerOne.players.count, 1)
+        XCTAssertEqual(playerOne.teams.count, 1)
         
         await playerOne.deleteGameCollection(id: randId)
     }
@@ -91,7 +92,7 @@ final class FirebaseHelperTests: XCTestCase {
         }))
         
         // test .modified
-        await playerOne.updateTeam(newState: ["points": 50])
+        await playerOne.updateTeam(["points": 50])
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         XCTAssertTrue(playerTwo.teams.first(where: { team in team.team_num == 1 })?.points == 50)
                 
@@ -112,7 +113,7 @@ final class FirebaseHelperTests: XCTestCase {
         
         XCTAssertTrue(playerOne.gameState!.turn == playerTwo.gameState!.turn)
         
-        await playerOne.updateGame(newState: ["turn": 1])
+        await playerOne.updateGame(["turn": 1])
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         XCTAssertTrue(playerOne.gameState!.turn == playerTwo.gameState!.turn)
         
@@ -203,14 +204,14 @@ final class FirebaseHelperTests: XCTestCase {
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         
         // single variable tests
-        await playerOne.updateGame(newState: ["turn": 1])
+        await playerOne.updateGame(["turn": 1])
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         XCTAssert(playerOne.gameState!.turn == 1, "TESTUPDATEGAME: gameState wasn't updated locally!")
         XCTAssert(playerTwo.gameState!.turn == 1, "TESTUPDATEGAME: gameState wasn't updated in firebase!")
         
         // array variable tests
         // cardAction '.remove' test
-        await playerOne.updateGame(newState: ["cards": [0, 1, 2, 3]], action: .remove)
+        await playerOne.updateGame(["cards": [0, 1, 2, 3]], arrayAction: .remove)
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         _ = [0, 1, 2, 3].map { card in
             XCTAssertFalse(playerOne.gameState!.cards.contains(card), "TESTUPDATEGAME: card: \(card) wasn't removed locally!")
@@ -220,7 +221,7 @@ final class FirebaseHelperTests: XCTestCase {
         }
         
         // cardAction '.append' test
-        await playerOne.updateGame(newState: ["cards": [0, 1, 2]], action: .append)
+        await playerOne.updateGame(["cards": [0, 1, 2]], arrayAction: .append)
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         _ = [0, 1, 2].map { card in
             XCTAssertTrue(playerOne.gameState!.cards.contains(card), "TESTUPDATEGAME: card: \(card) wasn't removed locally!")
@@ -229,13 +230,13 @@ final class FirebaseHelperTests: XCTestCase {
             XCTAssertTrue(playerTwo.gameState!.cards.contains(card), "TESTUPDATEGAME: card: \(card) wasn't removed in firebase!")
         }
         
-        await playerOne.updateGame(newState: ["cards": [3]], action: .append)
+        await playerOne.updateGame(["cards": [3]], arrayAction: .append)
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         XCTAssertTrue(playerOne.gameState!.cards.contains(3), "TESTUPDATEGAME: single card: 3 wasn't removed locally!")
         XCTAssertTrue(playerTwo.gameState!.cards.contains(3), "TESTUPDATEGAME: single card: 3 wasn't removed in firebase!")
         
         // cardAction '.replace' test
-        await playerOne.updateGame(newState: ["cards": [0, 1, 2, 3]], action: .replace)
+        await playerOne.updateGame(["cards": [0, 1, 2, 3]], arrayAction: .replace)
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         XCTAssertTrue(playerOne.gameState!.cards == [0, 1, 2, 3], "TESTUPDATEGAME: cards weren't replaced locally!")
         XCTAssertTrue(playerTwo.gameState!.cards == [0, 1, 2, 3], "TESTUPDATEGAME: cards weren't replaced in firebase!")
@@ -256,14 +257,14 @@ final class FirebaseHelperTests: XCTestCase {
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         
         // single variable tests
-        await playerOne.updatePlayer(newState: ["is_ready": true])
+        await playerOne.updatePlayer(["is_ready": true])
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         XCTAssertTrue(playerOne.playerState!.is_ready, "TESTUPDATEGAME: playerState wasn't updated locally!")
         XCTAssertTrue(playerTwo.players.first(where: { player in player.name == "1"})!.is_ready, "TESTUPDATEGAME: playerState wasn't updated in firebase!")
         
         // array variable tests
         // cardAction '.append' test
-        await playerOne.updatePlayer(newState: ["cards_in_hand": [0, 1, 2]], cardAction: .append)
+        await playerOne.updatePlayer(["cards_in_hand": [0, 1, 2]], arrayAction: .append)
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         _ = [0, 1, 2].map { card in
             XCTAssertTrue(playerOne.playerState!.cards_in_hand.contains(card), "TESTUPDATEPLAYER: card: \(card) wasn't appended locally!")
@@ -272,13 +273,13 @@ final class FirebaseHelperTests: XCTestCase {
             XCTAssertTrue(playerTwo.players.first(where: { player in player.name == "1"})!.cards_in_hand.contains(card), "TESTUPDATEPLAYER: card: \(card) wasn't appended in firebase!")
         }
         
-        await playerOne.updatePlayer(newState: ["cards_in_hand": [3]], cardAction: .append)
+        await playerOne.updatePlayer(["cards_in_hand": [3]], arrayAction: .append)
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         XCTAssertTrue(playerOne.playerState!.cards_in_hand.contains(3), "TESTUPDATEPLAYER: single card: 3 wasn't removed locally!")
         XCTAssertTrue(playerTwo.players.first(where: { player in player.name == "1"})!.cards_in_hand.contains(3), "TESTUPDATEPLAYER: single card: 3 wasn't removed in firebase!")
 
         // cardAction '.remove' test
-        await playerOne.updatePlayer(newState: ["cards_in_hand": [0, 1, 2, 3]], cardAction: .remove)
+        await playerOne.updatePlayer(["cards_in_hand": [0, 1, 2, 3]], arrayAction: .remove)
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         _ = [0, 1, 2, 3].map { card in
             XCTAssertFalse(playerOne.playerState!.cards_in_hand.contains(card), "TESTUPDATEPLAYER: card: \(card) wasn't removed locally!")
@@ -288,13 +289,13 @@ final class FirebaseHelperTests: XCTestCase {
         }
         
         // cardAction '.replace' test
-        await playerOne.updatePlayer(newState: ["cards_in_hand": [0, 1, 2, 3]], cardAction: .replace)
+        await playerOne.updatePlayer(["cards_in_hand": [0, 1, 2, 3]], arrayAction: .replace)
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         XCTAssertTrue(playerOne.playerState!.cards_in_hand == [0, 1, 2, 3], "TESTUPDATEPLAYER: cards weren't replaced locally!")
         XCTAssertTrue(playerTwo.players.first(where: { player in player.name == "1"})!.cards_in_hand == [0, 1, 2, 3], "TESTUPDATEPLAYER: cards weren't replaced in firebase!")
         
         // modify other player's state (ONLY MEANT TO BE USED BY LEAD)
-        await playerOne.updatePlayer(newState: ["cards_in_hand": [2, 3]], uid: playerTwo.playerState!.uid, cardAction: .replace)
+        await playerOne.updatePlayer(["cards_in_hand": [2, 3]], uid: playerTwo.playerState!.uid, arrayAction: .replace)
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         XCTAssertTrue(playerTwo.playerState!.cards_in_hand == [2, 3], "TESTUPDATEPLAYER: cards weren't replaced locally!")
         XCTAssertTrue(playerOne.players.first(where: { player in player.name == "2"})!.cards_in_hand == [2, 3], "TESTUPDATEPLAYER: cards weren't replaced in firebase!")
@@ -314,7 +315,7 @@ final class FirebaseHelperTests: XCTestCase {
         await playerTwo.joinGameCollection(fullName: "2", id: "\(randId)", gameName: "Cribbage")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         
-        await playerOne.updateTeam(newState: ["points": 50])
+        await playerOne.updateTeam(["points": 50])
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         XCTAssertTrue(playerOne.teamState!.points == 50, "TESTUPDATETEAM: teamState wasn't updated locally!")
         XCTAssertTrue(playerTwo.teams.first(where: { team in team.team_num == 1})!.points == 50, "TESTUPDATETEAM: teamState wasn't updated in firebase!")
@@ -335,7 +336,7 @@ final class FirebaseHelperTests: XCTestCase {
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         
         // test that players have correct number of cards in hands
-        await playerOne.updateGame(newState: ["dealer": 0])
+        await playerOne.updateGame(["dealer": 0])
         await playerOne.shuffleAndDealCards()
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
 
@@ -400,29 +401,14 @@ final class FirebaseHelperTests: XCTestCase {
         } while (await playerOne.checkValidId(id: "\(randId)"))
         await playerOne.startGameCollection(fullName: "1", gameName: "Cribbage", testGroupId: randId)
         
-        await playerOne.updateGame(newState: ["play_cards": [2, 4, 16]], action: .replace)
-        XCTAssertEqual(playerOne.checkForRun(), 3)
-        
-        playerOne.gameState!.play_cards = [0, 1, 51]
-        XCTAssert(playerOne.checkForRun() == 0)
-        
-        playerOne.gameState!.play_cards = [11, 12, 13]
-        XCTAssert(playerOne.checkForRun() == 0)
-        
-        playerOne.gameState!.play_cards = [2, 0, 1, 3]
-        XCTAssert(playerOne.checkForRun() == 4)
-        
-        playerOne.gameState!.play_cards = [13, 11, 12]
-        XCTAssert(playerOne.checkForRun() == 0)
-        
-        playerOne.gameState!.play_cards = [11, 12]
-        XCTAssert(playerOne.checkForRun() == 0)
-        
-        playerOne.gameState!.play_cards = [0, 12]
-        XCTAssert(playerOne.checkForRun() == 0)
-
-        playerOne.gameState!.play_cards = [2, 1, 39]
-        XCTAssertEqual(playerOne.checkForRun(), 3)
+        XCTAssertEqual(playerOne.checkForRun([2, 4, 16]), 3)
+        XCTAssert(playerOne.checkForRun([0, 1, 51]) == 0)
+        XCTAssert(playerOne.checkForRun([11, 12, 13]) == 0)
+        XCTAssert(playerOne.checkForRun([2, 0, 1, 3]) == 4)
+        XCTAssert(playerOne.checkForRun([13, 11, 12]) == 0)
+        XCTAssert(playerOne.checkForRun([11, 12]) == 0)
+        XCTAssert(playerOne.checkForRun([0, 12]) == 0)
+        XCTAssertEqual(playerOne.checkForRun([2, 1, 39]), 3)
         
         await playerOne.deleteGameCollection(id: randId)
     }
@@ -441,68 +427,68 @@ final class FirebaseHelperTests: XCTestCase {
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         
         var dummyCallout: [String] = []
-        await playerOne.updatePlayer(newState: ["cards_in_hand": [0,1,2,3,4,5]], cardAction: .replace)
-        await playerTwo.updatePlayer(newState: ["cards_in_hand": [0,1,2,3,4,5]], cardAction: .replace)
+        await playerOne.updatePlayer(["cards_in_hand": [0,1,2,3,4,5]], arrayAction: .replace)
+        await playerTwo.updatePlayer(["cards_in_hand": [0,1,2,3,4,5]], arrayAction: .replace)
         
         // test for sum of 15
-        await playerOne.updateGame(newState: ["running_sum": 5])
-        await playerOne.updateGame(newState: ["play_cards": [] as! [Int]], action: .replace)
+        await playerOne.updateGame(["running_sum": 5])
+        await playerOne.updateGame(["play_cards": [] as! [Int]], arrayAction: .replace)
         result = await playerOne.managePlayTurn(cardInPlay: 11, pointsCallOut: &dummyCallout)
         XCTAssertEqual(result, 2)
         
         // test for not going over 31
-        await playerOne.updateGame(newState: ["running_sum": 22])
-        await playerOne.updateGame(newState: ["play_cards": [] as! [Int]], action: .replace)
+        await playerOne.updateGame(["running_sum": 22])
+        await playerOne.updateGame(["play_cards": [] as! [Int]], arrayAction: .replace)
         result = await playerOne.managePlayTurn(cardInPlay: 11, pointsCallOut: &dummyCallout)
         XCTAssertEqual(result, -1)
         XCTAssertEqual(playerOne.gameState!.running_sum, 22)
         
         // test for sum of 31
-        await playerOne.updateGame(newState: ["running_sum": 21])
-        await playerOne.updateGame(newState: ["play_cards": [] as! [Int]], action: .replace)
+        await playerOne.updateGame(["running_sum": 21])
+        await playerOne.updateGame(["play_cards": [] as! [Int]], arrayAction: .replace)
         result = await playerOne.managePlayTurn(cardInPlay: 11, pointsCallOut: &dummyCallout)
         XCTAssertEqual(result, 2)
         
         // test for pair
-        await playerOne.updateGame(newState: ["play_cards": [0] as! [Int]], action: .replace)
+        await playerOne.updateGame(["play_cards": [0] as! [Int]], arrayAction: .replace)
         result = await playerOne.managePlayTurn(cardInPlay: 26, pointsCallOut: &dummyCallout)
         XCTAssertEqual(result, 2)
         
         // test for pair royal
-        await playerOne.updateGame(newState: ["play_cards": [0, 13] as! [Int]], action: .replace)
+        await playerOne.updateGame(["play_cards": [0, 13] as! [Int]], arrayAction: .replace)
         result = await playerOne.managePlayTurn(cardInPlay: 26, pointsCallOut: &dummyCallout)
         XCTAssertEqual(result, 6)
         
         // test for double pair royal
-        await playerOne.updateGame(newState: ["play_cards": [0, 13, 39] as! [Int]], action: .replace)
+        await playerOne.updateGame(["play_cards": [0, 13, 39] as! [Int]], arrayAction: .replace)
         result = await playerOne.managePlayTurn(cardInPlay: 26, pointsCallOut: &dummyCallout)
         XCTAssertEqual(result, 12)
         
         // test for sequence of 3
-        await playerOne.updateGame(newState: ["running_sum": 0])
-        await playerOne.updateGame(newState: ["play_cards": [2, 4]], action: .replace)
+        await playerOne.updateGame(["running_sum": 0])
+        await playerOne.updateGame(["play_cards": [2, 4]], arrayAction: .replace)
         result = await playerOne.managePlayTurn(cardInPlay: 16, pointsCallOut: &dummyCallout)
         XCTAssertEqual(result, 3)
         
         // test for sequence of 4
-        await playerOne.updateGame(newState: ["running_sum": 0])
-        await playerOne.updateGame(newState: ["play_cards": [0, 2, 3]], action: .replace)
+        await playerOne.updateGame(["running_sum": 0])
+        await playerOne.updateGame(["play_cards": [0, 2, 3]], arrayAction: .replace)
         result = await playerOne.managePlayTurn(cardInPlay: 1, pointsCallOut: &dummyCallout)
         XCTAssertEqual(result, 4)
         
         // test for sequence of 5
-        await playerOne.updateGame(newState: ["running_sum": 0])
-        await playerOne.updateGame(newState: ["play_cards": [0, 2, 3, 4]], action: .replace)
+        await playerOne.updateGame(["running_sum": 0])
+        await playerOne.updateGame(["play_cards": [0, 2, 3, 4]], arrayAction: .replace)
         result = await playerOne.managePlayTurn(cardInPlay: 1, pointsCallOut: &dummyCallout)
         XCTAssertEqual(result, 5)
         
         // test when last in a go
-        await playerOne.updateGame(newState: ["num_go": 1])
+        await playerOne.updateGame(["num_go": 1])
         result = await playerOne.managePlayTurn(cardInPlay: nil, pointsCallOut: &dummyCallout)
         XCTAssertEqual(result, 1)
         
         // test when first or in the middle of a go
-        await playerOne.updateGame(newState: ["num_go": 0])
+        await playerOne.updateGame(["num_go": 0])
         result = await playerOne.managePlayTurn(cardInPlay: nil, pointsCallOut: &dummyCallout)
         XCTAssertEqual(result, 0)
         
@@ -512,10 +498,10 @@ final class FirebaseHelperTests: XCTestCase {
         XCTAssertEqual(playerOne.gameState!.num_go, 0)
         
         // test for last card point
-        await playerOne.updateGame(newState: ["running_sum": 0])
-        await playerOne.updateGame(newState: ["play_cards": [] as! [Int]], action: .replace)
-        await playerOne.updatePlayer(newState: ["cards_in_hand": [0]], cardAction: .replace)
-        await playerTwo.updatePlayer(newState: ["cards_in_hand": [] as! [Int]], cardAction: .replace)
+        await playerOne.updateGame(["running_sum": 0])
+        await playerOne.updateGame(["play_cards": [] as! [Int]], arrayAction: .replace)
+        await playerOne.updatePlayer(["cards_in_hand": [0]], arrayAction: .replace)
+        await playerTwo.updatePlayer(["cards_in_hand": [] as! [Int]], arrayAction: .replace)
         result = await playerOne.managePlayTurn(cardInPlay: 0, pointsCallOut: &dummyCallout)
         XCTAssertEqual(result, 1)
 
@@ -536,15 +522,15 @@ final class FirebaseHelperTests: XCTestCase {
         
         playerOne.playerState!.cards_in_hand = [9,10,11,12]
         playerOne.gameState!.running_sum = 21
-        XCTAssertTrue(playerOne.checkHandForPoints())
+        XCTAssertTrue(playerOne.checkIfPlayIsPossible())
         
         playerOne.playerState!.cards_in_hand = [9,10,11,12]
         playerOne.gameState!.running_sum = 30
-        XCTAssertFalse(playerOne.checkHandForPoints())
+        XCTAssertFalse(playerOne.checkIfPlayIsPossible())
         
         playerOne.playerState!.cards_in_hand = [10,11,12,0]
         playerOne.gameState!.running_sum = 30
-        XCTAssertTrue(playerOne.checkHandForPoints())
+        XCTAssertTrue(playerOne.checkIfPlayIsPossible())
         
         await playerOne.deleteGameCollection(id: randId)
     }
@@ -562,8 +548,8 @@ final class FirebaseHelperTests: XCTestCase {
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         
         // manual checks
-        await playerOne.updatePlayer(newState: ["player_num": 4])
-        await playerTwo.updatePlayer(newState: ["player_num": 7])
+        await playerOne.updatePlayer(["player_num": 4])
+        await playerTwo.updatePlayer(["player_num": 7])
         
         await playerOne.updatePlayerNums()
 

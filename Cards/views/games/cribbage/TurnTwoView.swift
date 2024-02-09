@@ -105,6 +105,15 @@ struct TurnTwoView: View {
                 })
             }
         }
+        .onAppear {
+            guard firebaseHelper.playerState != nil, firebaseHelper.gameState != nil, firebaseHelper.playerState!.is_lead else {
+                return
+            }
+            
+            Task {
+                await firebaseHelper.updateGame(["player_turn": (firebaseHelper.gameState!.dealer + 1) % firebaseHelper.gameState!.num_players])
+            }
+        }
         .if(!otherPlayer) { view in
             view
                 .onChange(of: firebaseHelper.playerState?.cards_in_hand, {
@@ -124,7 +133,7 @@ struct TurnTwoView: View {
         
         if playerState.cards_in_hand.isEmpty {
             Task {
-                await firebaseHelper.updatePlayer(newState:["is_ready": true])
+                await firebaseHelper.updatePlayer(["is_ready": true])
             }
         }
     }
@@ -135,16 +144,16 @@ struct TurnTwoView: View {
         }
         
         Task {
-            await firebaseHelper.updatePlayer(newState: ["cards_in_hand": cardsDragged], cardAction: .remove)
-            await firebaseHelper.updatePlayer(newState: ["cards_dragged": cardsDragged], cardAction: .replace)
+            await firebaseHelper.updatePlayer(["cards_in_hand": cardsDragged], arrayAction: .remove)
+            await firebaseHelper.updatePlayer(["cards_dragged": cardsDragged], arrayAction: .replace)
         }
     }
     
     private func handleOnDisappear() {
         Task {
-            await firebaseHelper.updatePlayer(newState: ["cards_in_hand": cardsDragged], cardAction: .replace)
+            await firebaseHelper.updatePlayer(["cards_in_hand": cardsDragged], arrayAction: .replace)
             cardsDragged = []
-            await firebaseHelper.updatePlayer(newState: ["cards_dragged": cardsDragged], cardAction: .replace)
+            await firebaseHelper.updatePlayer(["cards_dragged": cardsDragged], arrayAction: .replace)
         }
     }
     
@@ -160,8 +169,8 @@ struct TurnTwoView: View {
                 pointsCallOut = callouts
                 
                 if (points != -1) {                    
-                    await firebaseHelper.updateTeam(newState: ["points": firebaseHelper.teamState!.points + points])
-                    await firebaseHelper.updateGame(newState: ["player_turn": (gameState.player_turn + 1) % gameState.num_players])
+                    await firebaseHelper.updateTeam(["points": firebaseHelper.teamState!.points + points])
+                    await firebaseHelper.updateGame(["player_turn": (gameState.player_turn + 1) % gameState.num_players])
      
                     cardsInHand.removeAll { card in
                         card == items.first!.id
@@ -189,14 +198,14 @@ struct TurnTwoView: View {
     }
     
     private func handleGoButton() {
-        if !firebaseHelper.checkHandForPoints() {
+        if !firebaseHelper.checkIfPlayIsPossible() {
             Task {
                 var callouts: [String] = []
                 let points = await firebaseHelper.managePlayTurn(cardInPlay: nil, pointsCallOut: &callouts)
                 pointsCallOut = callouts
                 
-                await firebaseHelper.updateTeam(newState: ["points": firebaseHelper.teamState!.points + points])
-                await firebaseHelper.updateGame(newState: ["player_turn": (firebaseHelper.gameState!.player_turn + 1) % firebaseHelper.gameState!.num_players])
+                await firebaseHelper.updateTeam(["points": firebaseHelper.teamState!.points + points])
+                await firebaseHelper.updateGame(["player_turn": (firebaseHelper.gameState!.player_turn + 1) % firebaseHelper.gameState!.num_players])
             }
         } else {
             pointsCallOut.append("You have a card you can play!")

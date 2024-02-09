@@ -19,9 +19,9 @@ struct TeamColorPicker: View {
                     let oldColor = teamColor
                     
                     Task {
-                        await firebaseHelper.updateTeam(newState: ["color": colorString])
-                        await firebaseHelper.updateGame(newState: ["colors_available": [colorString]], action: .remove)
-                        await firebaseHelper.updateGame(newState: ["colors_available": [oldColor]], action: .append)
+                        await firebaseHelper.updateTeam(["color": colorString])
+                        await firebaseHelper.updateGame(["colors_available": [colorString]], arrayAction: .remove)
+                        await firebaseHelper.updateGame(["colors_available": [oldColor]], arrayAction: .append)
                     }
                     
                     teamColor = colorString

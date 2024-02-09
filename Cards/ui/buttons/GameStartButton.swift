@@ -15,7 +15,7 @@ struct GameStartButton: View {
             Button("Play!") {
                 Task {
                     await firebaseHelper.updatePlayerNums()
-                    await firebaseHelper.updateGame(newState: ["is_playing": true, "turn": 1])
+                    await firebaseHelper.updateGame(["is_playing": true, "turn": 1])
                 }
             }
             .buttonStyle(.borderedProminent)
