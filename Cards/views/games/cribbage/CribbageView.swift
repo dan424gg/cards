@@ -33,7 +33,7 @@ struct Cribbage: View {
                             // used for testing preview
                             Button("increment player turn") {
                                 Task {
-                                    await firebaseHelper.updateGame(newState: ["player_turn": (firebaseHelper.gameState!.player_turn + 1) % firebaseHelper.gameState!.num_players])
+                                    await firebaseHelper.updateGame(["player_turn": (firebaseHelper.gameState!.player_turn + 1) % firebaseHelper.gameState!.num_players])
                                 }
                             }
                         }
@@ -56,10 +56,10 @@ struct Cribbage: View {
                 print("triggered")
                 Task {
                     if (firebaseHelper.gameState!.turn == 2) {
-                        await firebaseHelper.updateGame(newState: ["play_cards": [] as! [Int]], action: .replace)
+                        await firebaseHelper.updateGame(["play_cards": [] as! [Int]], arrayAction: .replace)
                     }
                     await firebaseHelper.unreadyAllPlayers()
-                    await firebaseHelper.updateGame(newState: ["turn": ((firebaseHelper.gameState!.turn % 4) + 1)])
+                    await firebaseHelper.updateGame(["turn": ((firebaseHelper.gameState!.turn % 4) + 1)])
                     insideTurnChange.toggle()
                 }
             }

@@ -87,14 +87,14 @@ struct GameView: View {
                         let randDealer = Int.random(in: 0..<(firebaseHelper.gameState!.num_players))
                         
                         Task {
-                            await firebaseHelper.updateGame(newState: ["dealer": randDealer])
+                            await firebaseHelper.updateGame(["dealer": randDealer])
                         }
                         
                         initial = false
                     } else {
                         // rotate dealer
                         Task {
-                            await firebaseHelper.updateGame(newState: ["dealer": ((firebaseHelper.gameState!.dealer + 1) % firebaseHelper.gameState!.num_players)])
+                            await firebaseHelper.updateGame(["dealer": ((firebaseHelper.gameState!.dealer + 1) % firebaseHelper.gameState!.num_players)])
                         }
                     }
                 }

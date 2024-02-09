@@ -18,7 +18,7 @@ struct PickerItems: View {
             Button(colorString) {
                 teamColor = colorString
                 Task {
-                    await firebaseHelper.updateTeam(newState: ["color": colorString])
+                    await firebaseHelper.updateTeam(["color": colorString])
                 }
             }
             .disabled(
