@@ -23,8 +23,9 @@ final class FirebaseHelperTests: XCTestCase {
         } while (await playerOne.checkValidId(id: "\(randId)"))
         
         await playerOne.startGameCollection(fullName: "1", gameName: "Cribbage", testGroupId: randId)
-        XCTAssert(playerOne.players.count == 1)
-        XCTAssert(playerOne.teams.count == 1)
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
+        XCTAssertEqual(playerOne.players.count, 1)
+        XCTAssertEqual(playerOne.teams.count, 1)
         
         await playerOne.deleteGameCollection(id: randId)
     }

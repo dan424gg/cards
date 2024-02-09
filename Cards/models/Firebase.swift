@@ -721,11 +721,11 @@ import FirebaseFirestoreSwift
             
             // if new team already exists, just copy data
             if let newTeam = teams.first(where: { $0.team_num == newTeamNum }) {
-                teamState! = newTeam
+                teamState = newTeam
             // if new team doesn't exist, create a new team and add it to the main collection
             } else {
                 let color = gameState!.colors_available.randomElement()!
-                teamState! = TeamState(team_num: newTeamNum, color: color)
+                teamState = TeamState(team_num: newTeamNum, color: color)
                 await updateGame(["colors_available": [color]], arrayAction: .remove)
                 try docRef!.collection("teams").document("\(newTeamNum)").setData(from: teamState)
             }
@@ -816,7 +816,7 @@ import FirebaseFirestoreSwift
             playerState = PlayerState(name: fullName, uid: UUID().uuidString, team_num: teamNum, player_num: numPlayers - 1)
             try docRef!.collection("players").document(playerState!.uid).setData(from: playerState!)
 
-            if !checkTeamExists(teamNum: teamNum) {
+            if await !checkTeamExists(teamNum: teamNum) {
                 var color = ""
 
                 // busy waiting for if a lot of people are trying to change team at once and colors are temporarily unavailble
@@ -1060,8 +1060,14 @@ import FirebaseFirestoreSwift
         #endif
     }
     
-    func checkTeamExists(teamNum: Int) -> Bool {
-        return teams.contains(where: { $0.team_num == teamNum })
+    func checkTeamExists(teamNum: Int) async -> Bool {
+        do {
+            return try await docRef.collection("teams").document("\(teamNum)").getDocument().exists
+        } catch {
+            print(error)
+            return false
+        }
+//        return teams.contains(where: { $0.team_num == teamNum })
     }
     
     enum ArrayActionType {
