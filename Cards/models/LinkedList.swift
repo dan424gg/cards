@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 import FirebaseFirestore
 
-class ListenerList {
+class LinkedList {
     class Listener {
         var uid: String?
         var listenerObject: ListenerRegistration?

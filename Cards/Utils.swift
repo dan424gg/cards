@@ -15,6 +15,21 @@ enum FocusField: Hashable {
     case groupId
 }
 
+enum ScoringType: Hashable {
+    case flush
+    case nobs
+    case run
+    case set
+    case sum
+}
+
+struct ScoringHand: Hashable {
+    var scoreType: ScoringType
+    var cumlativePoints: Int
+    var cardsInScoredHand: [Int]
+    var pointsCallOut: String
+}
+
 struct RandomNumberGeneratorWithSeed: RandomNumberGenerator {
     private var seed: UInt64
 
@@ -52,7 +67,6 @@ struct TimedTextContainer: View {
                                     textArray.removeAll()
                                 }
                             } else {
-                                print("utils: \(textArray)\n")
                                 withAnimation {
                                     string = textArray[i]
                                 }
@@ -61,6 +75,43 @@ struct TimedTextContainer: View {
                     }
                 }
             })
+    }
+}
+
+struct DisplayPlayersHandContainer: View {
+    @State var player: PlayerState
+    @State var scoringPlays: [ScoringHand]
+    @State var play: ScoringHand? = nil
+    
+    var visibilityFor: TimeInterval
+    
+    var body: some View {
+        VStack {
+            Text(play?.pointsCallOut ?? "nothing")
+                .font(.title2)
+            HStack {
+                ForEach(player.cards_in_hand, id: \.self) { card in
+                    CardView(cardItem: CardItem(id: card), cardIsDisabled: .constant(true))
+                        .offset(y: play != nil && play!.cardsInScoredHand.contains(card) ? -25 : 0)
+                }
+                .onAppear {
+                    for idx in 0...scoringPlays.count {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + (visibilityFor * Double(idx + 1))) {
+                            if (idx < scoringPlays.count) {
+                                withAnimation {
+                                    play = scoringPlays[idx]
+                                }
+                            } else {
+                                withAnimation {
+                                    play = nil
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            .frame(width: 225, height: 150)
+        }
     }
 }
 
@@ -195,5 +246,11 @@ extension View {
             elseTransform(self)
         }
     }
+}
 
+func getTime() -> String {
+    let formatter = DateFormatter()
+    formatter.timeStyle = .long
+    let dateString = formatter.string(from: Date())
+    return dateString
 }

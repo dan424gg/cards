@@ -16,7 +16,7 @@
 		1E25B4A02AD7CF8B008DFACE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1E25B49F2AD7CF8B008DFACE /* GoogleService-Info.plist */; };
 		1E25B4A42ADC528F008DFACE /* NewGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E25B4A32ADC528F008DFACE /* NewGame.swift */; };
 		1E265EEF2B1EB47D0040E8A9 /* GameHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E265EEE2B1EB47D0040E8A9 /* GameHeader.swift */; };
-		1E4338E72B0D460900E212CD /* ListenerList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4338E62B0D460900E212CD /* ListenerList.swift */; };
+		1E4338E72B0D460900E212CD /* LinkedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4338E62B0D460900E212CD /* LinkedList.swift */; };
 		1E4CC8F82AFB4A3500ECC77B /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4CC8F72AFB4A3500ECC77B /* GameView.swift */; };
 		1E87BC092B65A6170084BEAB /* PlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E87BC082B65A6170084BEAB /* PlayerView.swift */; };
 		1E8D31A82B05644300FC9C68 /* DeckOfCardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8D31A72B05644300FC9C68 /* DeckOfCardsView.swift */; };
@@ -57,7 +57,7 @@
 		1ED85E722B718B3000807548 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8D45ED2B585EE5007543BC /* Utils.swift */; };
 		1ED85E732B718B3000807548 /* TurnTwoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFA9F5A2AF584CC00FA092C /* TurnTwoView.swift */; };
 		1ED85E742B718B3000807548 /* CardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE5F12A2AE8A5EF0089162D /* CardItem.swift */; };
-		1ED85E752B718B3000807548 /* ListenerList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4338E62B0D460900E212CD /* ListenerList.swift */; };
+		1ED85E752B718B3000807548 /* LinkedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4338E62B0D460900E212CD /* LinkedList.swift */; };
 		1ED85E762B718B3000807548 /* DiagonalLines.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E20F1742AF33EA300F2B368 /* DiagonalLines.swift */; };
 		1ED85E772B718B3000807548 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED90F2AD7BBFF008B85EE /* ContentView.swift */; };
 		1ED85E782B718B3000807548 /* PlayerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECBB9FB2ADE3B9B0046D4CA /* PlayerState.swift */; };
@@ -97,7 +97,7 @@
 		1ED85EAB2B71904300807548 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8D45ED2B585EE5007543BC /* Utils.swift */; };
 		1ED85EAC2B71904300807548 /* TurnTwoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFA9F5A2AF584CC00FA092C /* TurnTwoView.swift */; };
 		1ED85EAD2B71904300807548 /* CardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE5F12A2AE8A5EF0089162D /* CardItem.swift */; };
-		1ED85EAE2B71904300807548 /* ListenerList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4338E62B0D460900E212CD /* ListenerList.swift */; };
+		1ED85EAE2B71904300807548 /* LinkedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4338E62B0D460900E212CD /* LinkedList.swift */; };
 		1ED85EAF2B71904300807548 /* DiagonalLines.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E20F1742AF33EA300F2B368 /* DiagonalLines.swift */; };
 		1ED85EB02B71904300807548 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED90F2AD7BBFF008B85EE /* ContentView.swift */; };
 		1ED85EB12B71904300807548 /* PlayerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECBB9FB2ADE3B9B0046D4CA /* PlayerState.swift */; };
@@ -137,7 +137,7 @@
 		1ED85F502B71904D00807548 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8D45ED2B585EE5007543BC /* Utils.swift */; };
 		1ED85F512B71904D00807548 /* TurnTwoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFA9F5A2AF584CC00FA092C /* TurnTwoView.swift */; };
 		1ED85F522B71904D00807548 /* CardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE5F12A2AE8A5EF0089162D /* CardItem.swift */; };
-		1ED85F532B71904D00807548 /* ListenerList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4338E62B0D460900E212CD /* ListenerList.swift */; };
+		1ED85F532B71904D00807548 /* LinkedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4338E62B0D460900E212CD /* LinkedList.swift */; };
 		1ED85F542B71904D00807548 /* DiagonalLines.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E20F1742AF33EA300F2B368 /* DiagonalLines.swift */; };
 		1ED85F552B71904D00807548 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED90F2AD7BBFF008B85EE /* ContentView.swift */; };
 		1ED85F562B71904D00807548 /* PlayerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECBB9FB2ADE3B9B0046D4CA /* PlayerState.swift */; };
@@ -177,7 +177,7 @@
 		1ED85F872B71904E00807548 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8D45ED2B585EE5007543BC /* Utils.swift */; };
 		1ED85F882B71904E00807548 /* TurnTwoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFA9F5A2AF584CC00FA092C /* TurnTwoView.swift */; };
 		1ED85F892B71904E00807548 /* CardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE5F12A2AE8A5EF0089162D /* CardItem.swift */; };
-		1ED85F8A2B71904E00807548 /* ListenerList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4338E62B0D460900E212CD /* ListenerList.swift */; };
+		1ED85F8A2B71904E00807548 /* LinkedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4338E62B0D460900E212CD /* LinkedList.swift */; };
 		1ED85F8B2B71904E00807548 /* DiagonalLines.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E20F1742AF33EA300F2B368 /* DiagonalLines.swift */; };
 		1ED85F8C2B71904E00807548 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED90F2AD7BBFF008B85EE /* ContentView.swift */; };
 		1ED85F8D2B71904E00807548 /* PlayerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECBB9FB2ADE3B9B0046D4CA /* PlayerState.swift */; };
@@ -217,7 +217,7 @@
 		1ED85FBE2B71904F00807548 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8D45ED2B585EE5007543BC /* Utils.swift */; };
 		1ED85FBF2B71904F00807548 /* TurnTwoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFA9F5A2AF584CC00FA092C /* TurnTwoView.swift */; };
 		1ED85FC02B71904F00807548 /* CardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE5F12A2AE8A5EF0089162D /* CardItem.swift */; };
-		1ED85FC12B71904F00807548 /* ListenerList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4338E62B0D460900E212CD /* ListenerList.swift */; };
+		1ED85FC12B71904F00807548 /* LinkedList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4338E62B0D460900E212CD /* LinkedList.swift */; };
 		1ED85FC22B71904F00807548 /* DiagonalLines.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E20F1742AF33EA300F2B368 /* DiagonalLines.swift */; };
 		1ED85FC32B71904F00807548 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED90F2AD7BBFF008B85EE /* ContentView.swift */; };
 		1ED85FC42B71904F00807548 /* PlayerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECBB9FB2ADE3B9B0046D4CA /* PlayerState.swift */; };
@@ -337,7 +337,7 @@
 		1E25B49F2AD7CF8B008DFACE /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Cards/GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
 		1E25B4A32ADC528F008DFACE /* NewGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewGame.swift; sourceTree = "<group>"; };
 		1E265EEE2B1EB47D0040E8A9 /* GameHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameHeader.swift; sourceTree = "<group>"; };
-		1E4338E62B0D460900E212CD /* ListenerList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListenerList.swift; sourceTree = "<group>"; };
+		1E4338E62B0D460900E212CD /* LinkedList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedList.swift; sourceTree = "<group>"; };
 		1E4CC8F72AFB4A3500ECC77B /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		1E87BC082B65A6170084BEAB /* PlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerView.swift; sourceTree = "<group>"; };
 		1E8D31A72B05644300FC9C68 /* DeckOfCardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckOfCardsView.swift; sourceTree = "<group>"; };
@@ -640,7 +640,7 @@
 				1ECBB9FB2ADE3B9B0046D4CA /* PlayerState.swift */,
 				1E939CFC2AE3606D00D64551 /* GameState.swift */,
 				1EBEF2C12AE4F579008A093B /* TeamState.swift */,
-				1E4338E62B0D460900E212CD /* ListenerList.swift */,
+				1E4338E62B0D460900E212CD /* LinkedList.swift */,
 			);
 			path = models;
 			sourceTree = "<group>";
@@ -1032,7 +1032,7 @@
 				1E8D45EE2B585EE5007543BC /* Utils.swift in Sources */,
 				1EFA9F5B2AF584CC00FA092C /* TurnTwoView.swift in Sources */,
 				1EE5F12B2AE8A5EF0089162D /* CardItem.swift in Sources */,
-				1E4338E72B0D460900E212CD /* ListenerList.swift in Sources */,
+				1E4338E72B0D460900E212CD /* LinkedList.swift in Sources */,
 				1E20F1752AF33EA300F2B368 /* DiagonalLines.swift in Sources */,
 				1EBED9102AD7BBFF008B85EE /* ContentView.swift in Sources */,
 				1ECBB9FC2ADE3B9B0046D4CA /* PlayerState.swift in Sources */,
@@ -1089,7 +1089,7 @@
 				1ED85E722B718B3000807548 /* Utils.swift in Sources */,
 				1ED85E732B718B3000807548 /* TurnTwoView.swift in Sources */,
 				1ED85E742B718B3000807548 /* CardItem.swift in Sources */,
-				1ED85E752B718B3000807548 /* ListenerList.swift in Sources */,
+				1ED85E752B718B3000807548 /* LinkedList.swift in Sources */,
 				1ED85E762B718B3000807548 /* DiagonalLines.swift in Sources */,
 				1ED85E772B718B3000807548 /* ContentView.swift in Sources */,
 				1ED85E782B718B3000807548 /* PlayerState.swift in Sources */,
@@ -1129,7 +1129,7 @@
 				1ED85EAB2B71904300807548 /* Utils.swift in Sources */,
 				1ED85EAC2B71904300807548 /* TurnTwoView.swift in Sources */,
 				1ED85EAD2B71904300807548 /* CardItem.swift in Sources */,
-				1ED85EAE2B71904300807548 /* ListenerList.swift in Sources */,
+				1ED85EAE2B71904300807548 /* LinkedList.swift in Sources */,
 				1ED85EAF2B71904300807548 /* DiagonalLines.swift in Sources */,
 				1ED85EB02B71904300807548 /* ContentView.swift in Sources */,
 				1ED85EB12B71904300807548 /* PlayerState.swift in Sources */,
@@ -1169,7 +1169,7 @@
 				1ED85F502B71904D00807548 /* Utils.swift in Sources */,
 				1ED85F512B71904D00807548 /* TurnTwoView.swift in Sources */,
 				1ED85F522B71904D00807548 /* CardItem.swift in Sources */,
-				1ED85F532B71904D00807548 /* ListenerList.swift in Sources */,
+				1ED85F532B71904D00807548 /* LinkedList.swift in Sources */,
 				1ED85F542B71904D00807548 /* DiagonalLines.swift in Sources */,
 				1ED85F552B71904D00807548 /* ContentView.swift in Sources */,
 				1ED85F562B71904D00807548 /* PlayerState.swift in Sources */,
@@ -1209,7 +1209,7 @@
 				1ED85F872B71904E00807548 /* Utils.swift in Sources */,
 				1ED85F882B71904E00807548 /* TurnTwoView.swift in Sources */,
 				1ED85F892B71904E00807548 /* CardItem.swift in Sources */,
-				1ED85F8A2B71904E00807548 /* ListenerList.swift in Sources */,
+				1ED85F8A2B71904E00807548 /* LinkedList.swift in Sources */,
 				1ED85F8B2B71904E00807548 /* DiagonalLines.swift in Sources */,
 				1ED85F8C2B71904E00807548 /* ContentView.swift in Sources */,
 				1ED85F8D2B71904E00807548 /* PlayerState.swift in Sources */,
@@ -1249,7 +1249,7 @@
 				1ED85FBE2B71904F00807548 /* Utils.swift in Sources */,
 				1ED85FBF2B71904F00807548 /* TurnTwoView.swift in Sources */,
 				1ED85FC02B71904F00807548 /* CardItem.swift in Sources */,
-				1ED85FC12B71904F00807548 /* ListenerList.swift in Sources */,
+				1ED85FC12B71904F00807548 /* LinkedList.swift in Sources */,
 				1ED85FC22B71904F00807548 /* DiagonalLines.swift in Sources */,
 				1ED85FC32B71904F00807548 /* ContentView.swift in Sources */,
 				1ED85FC42B71904F00807548 /* PlayerState.swift in Sources */,

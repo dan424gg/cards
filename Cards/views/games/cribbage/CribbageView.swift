@@ -27,9 +27,6 @@ struct Cribbage: View {
                         TurnTwoView(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand, otherPlayer: false)
                     case 3:
                         VStack {
-                            Text("The Show")
-                                .font(.title3)
-                                .foregroundStyle(.gray.opacity(0.7))
                             // used for testing preview
                             Button("increment player turn") {
                                 Task {

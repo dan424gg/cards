@@ -64,9 +64,9 @@ struct Card: Codable {
     
     var pointValue: Int {
         switch value {
-        case "A": return 1
-        case "J", "Q", "K": return 10
-        default: return Int(value) ?? 0
+            case "A": return 1
+            case "J", "Q", "K": return 10
+            default: return Int(value) ?? 0
         }
     }
 }

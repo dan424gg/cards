@@ -17,8 +17,8 @@ import FirebaseFirestoreSwift
     private var teamsListener: ListenerRegistration!
     private var playersListener: ListenerRegistration!
     
-    private var teamListeners = ListenerList()
-    private var playerListeners = ListenerList()
+    private var teamListeners = LinkedList()
+    private var playerListeners = LinkedList()
     
     @Published private var db = Firestore.firestore()
     @Published var gameState: GameState?
@@ -829,6 +829,8 @@ import FirebaseFirestoreSwift
                 await updateGame(["colors_available": [color]], arrayAction: .remove)
                 teamState = TeamState(team_num: teamNum, color: color)
                 try docRef!.collection("teams").document("\(teamNum)").setData(from: teamState)
+            } else {
+                teamState = try await docRef!.collection("teams").document("\(teamNum)").getDocument().data(as: TeamState.self)
             }
 
             addTeamsListener()
@@ -885,7 +887,24 @@ import FirebaseFirestoreSwift
         await updateGame(["starter_card": gameState!.cards.removeFirst(), "cards": gameState!.cards], arrayAction: .replace)
     }
     
-    func managePlayTurn(cardInPlay: Int? = nil, pointsCallOut: inout [String]) async -> Int {     
+    func checkPlayerHandForPoints(_ cards: [Int], _ starterCard: Int) -> [ScoringHand] {
+        guard cards != [] else {
+            return []
+        }
+        
+        var points = 0
+        var scoringPlays: [ScoringHand] = []
+        
+        checkForSum(cards + [starterCard], 15, &scoringPlays, &points)
+        checkForRun(cards + [starterCard], &scoringPlays, &points)
+        checkForSets(cards + [starterCard], &scoringPlays, &points)
+        checkForFlush(cards, starterCard, &scoringPlays, &points)
+        checkForNobs(cards, starterCard, &scoringPlays, &points)
+        
+        return scoringPlays
+    }
+    
+    func managePlayTurn(cardInPlay: Int? = nil, pointsCallOut: inout [String]) async -> Int {
         guard gameState != nil else {
             return 0
         }
@@ -971,6 +990,55 @@ import FirebaseFirestoreSwift
         return points
     }
     
+    func checkForNobs(_ cards: [Int], _ starterCard: Int, _ scoringHands: inout [ScoringHand], _ points: inout Int) {
+        let suit = CardItem(id: starterCard).card.suit
+        
+        for card in cards {
+            if (CardItem(id: card).card.suit == suit) {
+                points = points + 1
+                scoringHands.append(ScoringHand(scoreType: .nobs, cumlativePoints: points, cardsInScoredHand: [card], pointsCallOut: "Nobs for \(points)!"))
+                return
+            }
+        }
+    }
+    
+    func checkForFlush(_ cards: [Int], _ starterCard: Int, _ scoringHands: inout [ScoringHand], _ points: inout Int) {
+        let suit = CardItem(id: cards[0]).card.suit
+        
+        if (cards.allSatisfy { CardItem(id: $0).card.suit == suit }) {
+            if (CardItem(id: starterCard).card.suit == suit) {
+                points = points + 5
+                scoringHands.append(ScoringHand(scoreType: .flush, cumlativePoints: points, cardsInScoredHand: cards + [starterCard], pointsCallOut: "Four card flush for \(points)!"))
+            } else {
+                points = points + 4
+                scoringHands.append(ScoringHand(scoreType: .flush, cumlativePoints: points, cardsInScoredHand: cards, pointsCallOut: "Five card flush for \(points)!"))
+            }
+        }
+    }
+    
+    func checkForSets(_ cards: [Int], _ scoringHands: inout [ScoringHand], _ points: inout Int) {
+        var points = 0
+        let sortedCards = cards.sorted(by: { $0 < $1 })
+        var counts: [Int : [Int]] = [:]
+        
+        sortedCards.forEach { card in
+            counts[card % 13, default: []] += [card]
+        }
+        
+        for (_, value) in counts {
+            if value.count == 2 {
+                points = points + 2
+                scoringHands.append(ScoringHand(scoreType: .set, cumlativePoints: points, cardsInScoredHand: value, pointsCallOut: "Pair for \(points)!"))
+            } else if value.count == 3 {
+                points = points + 6
+                scoringHands.append(ScoringHand(scoreType: .set, cumlativePoints: points, cardsInScoredHand: value, pointsCallOut: "Pair royal for \(points)!"))
+            } else if value.count == 4 {
+                points = points + 12
+                scoringHands.append(ScoringHand(scoreType: .set, cumlativePoints: points, cardsInScoredHand: value, pointsCallOut: "Double pair royal for \(points)!"))
+            }
+        }
+    }
+    
     func checkForRun(_ cards: [Int]) -> Int {
         guard cards.count > 2 else {
             return 0
@@ -978,21 +1046,88 @@ import FirebaseFirestoreSwift
         
         var maxNumOfCardsInRun = 0
         
-        for i in 2...cards.count {
+        for i in 3...cards.count {
             var numOfCardsInRun = 0
             let runOfCards = Array(cards.suffix(i)).sorted(by: { CardItem(id: $0) < CardItem(id: $1) })
 
             for c in 1..<runOfCards.count {
-                if (runOfCards[c] % 13) - (runOfCards[c - 1] % 13) != 1 {
+                let firstCard = runOfCards[c - 1] % 13
+                let secondCard = runOfCards[c] % 13
+                
+                if (secondCard - firstCard != 1) {
                     numOfCardsInRun = 0
                     break
+                } else {
+                    numOfCardsInRun += 1
                 }
-                numOfCardsInRun += 1
             }
             
             maxNumOfCardsInRun = max(numOfCardsInRun + 1, maxNumOfCardsInRun)
         }
-        return maxNumOfCardsInRun >= 3 ? maxNumOfCardsInRun : 0
+        return maxNumOfCardsInRun > 2 ? maxNumOfCardsInRun : 0
+    }
+    
+    func checkForRun(_ cards: [Int], _ scoringHands: inout [ScoringHand], _ points: inout Int) {
+        guard cards.count > 2 else {
+            return
+        }
+        
+        var runOfCardsInMaxRun: [Int] = []
+        var maxNumOfCardsInRun = 0
+        
+        for i in 3...cards.count {
+            var numOfCardsInRun = 0
+            var multiplier = 1
+            let runOfCards = Array(cards.suffix(i)).sorted(by: { CardItem(id: $0) < CardItem(id: $1) })
+
+            // check if runOfCards is valid
+            for c in 1..<runOfCards.count {
+                let firstCard = runOfCards[c - 1] % 13
+                let secondCard = runOfCards[c] % 13
+                
+                if (firstCard == secondCard) {
+                    multiplier *= 2
+                } else if (secondCard - firstCard != 1) {
+                    multiplier = 1
+                    numOfCardsInRun = 0
+                    break
+                } else {
+                    numOfCardsInRun += 1
+                }
+            }
+            
+            if (((numOfCardsInRun + 1) * multiplier) > maxNumOfCardsInRun) {
+                maxNumOfCardsInRun = ((numOfCardsInRun + 1) * multiplier)
+                runOfCardsInMaxRun = runOfCards
+            }
+        }
+        
+        if (maxNumOfCardsInRun > 2) {
+            points = points + maxNumOfCardsInRun
+            scoringHands.append(ScoringHand(scoreType: .run, cumlativePoints: points, cardsInScoredHand: runOfCardsInMaxRun, pointsCallOut: "Run of \(maxNumOfCardsInRun) for \(points)!"))
+        }
+    }
+    
+    func checkForSum(_ array: [Int], _ targetValue: Int, _ scoringHands: inout [ScoringHand], _ points: inout Int) {
+        var points = 0
+        
+        func findCombinations(_ startIndex: Int, _ currentSum: Int, _ cardsInCombination: [Int]) {
+            if currentSum == targetValue {
+                points = points + 2
+                scoringHands.append(ScoringHand(scoreType: .sum, cumlativePoints: points, cardsInScoredHand: cardsInCombination, pointsCallOut: "15 for \(points)!"))
+                return
+            }
+            
+            if currentSum > targetValue || startIndex >= array.count {
+                return
+            }
+            
+            for i in startIndex..<array.count {
+                findCombinations(i + 1, currentSum + CardItem(id: array[i]).card.pointValue, cardsInCombination + [array[i]])
+            }
+        }
+        
+        findCombinations(0, 0, [] as! [Int])
     }
     
     func checkIfPlayIsPossible() -> Bool {

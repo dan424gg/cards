@@ -401,6 +401,7 @@ final class FirebaseHelperTests: XCTestCase {
         } while (await playerOne.checkValidId(id: "\(randId)"))
         await playerOne.startGameCollection(fullName: "1", gameName: "Cribbage", testGroupId: randId)
         
+        // test normal runs
         XCTAssertEqual(playerOne.checkForRun([2, 4, 16]), 3)
         XCTAssert(playerOne.checkForRun([0, 1, 51]) == 0)
         XCTAssert(playerOne.checkForRun([11, 12, 13]) == 0)
@@ -409,7 +410,185 @@ final class FirebaseHelperTests: XCTestCase {
         XCTAssert(playerOne.checkForRun([11, 12]) == 0)
         XCTAssert(playerOne.checkForRun([0, 12]) == 0)
         XCTAssertEqual(playerOne.checkForRun([2, 1, 39]), 3)
+        XCTAssertEqual(playerOne.checkForRun([2,4,5,0,1,6,3]), 7)
         
+        // test runs with pairs inside (in show)
+        var scoringCards: [ScoringHand] = []
+        var points = 0
+
+        // Modify the XCTAssert line and keep the playerOne.checkForRun command
+        playerOne.checkForRun([0,1,1,2], &scoringCards, &points)
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .run && $0.cardsInScoredHand == [0,1,1,2] && $0.cumlativePoints == 6 }))
+        
+        points = 0
+        scoringCards = []
+        playerOne.checkForRun([13,41,27,15], &scoringCards, &points)
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .run && $0.cardsInScoredHand == [13,27,41,15] && $0.cumlativePoints == 6 }))
+        
+        points = 0
+        scoringCards = []
+        playerOne.checkForRun([0,1,1,2,2], &scoringCards, &points)
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .run && $0.cardsInScoredHand == [0,1,1,2,2] && $0.cumlativePoints == 12 }))
+        
+        points = 0
+        scoringCards = []
+        playerOne.checkForRun([4,4,5,6,6], &scoringCards, &points)
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .run && $0.cardsInScoredHand == [4,4,5,6,6] && $0.cumlativePoints == 12 }))
+        
+        points = 0
+        scoringCards = []
+        playerOne.checkForRun([17,30,18,45,6], &scoringCards, &points)
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .run && $0.cardsInScoredHand == [17,30,18,45,6] && $0.cumlativePoints == 12 }))
+        
+        await playerOne.deleteGameCollection(id: randId)
+    }
+
+    @MainActor func testCheckForFifteens() async {
+        let playerOne = FirebaseHelper()
+        var randId = 0
+        repeat {
+            randId = Int.random(in: 10000..<99999)
+        } while (await playerOne.checkValidId(id: "\(randId)"))
+        await playerOne.startGameCollection(fullName: "1", gameName: "Cribbage", testGroupId: randId)
+
+        var scoringCards: [ScoringHand] = []
+        var points = 0
+        
+        playerOne.checkForSum([9,4], 15, &scoringCards, &points)
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .sum && $0.cardsInScoredHand == [9,4] && $0.cumlativePoints == 2 }))
+
+        points = 0
+        scoringCards = []
+        playerOne.checkForSum([2,3,15,16,7], 15, &scoringCards, &points)
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .sum && $0.cardsInScoredHand == [2, 3, 7] && $0.cumlativePoints == 2 }))
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .sum && $0.cardsInScoredHand == [2, 16, 7] && $0.cumlativePoints == 4 }))
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .sum && $0.cardsInScoredHand == [3, 15, 7] && $0.cumlativePoints == 6 }))
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .sum && $0.cardsInScoredHand == [15, 16, 7] && $0.cumlativePoints == 8 }))
+
+        points = 0
+        scoringCards = []
+        playerOne.checkForSum([3,4,6,8,5], 15, &scoringCards, &points)
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .sum && $0.cardsInScoredHand == [3, 4, 5] && $0.cumlativePoints == 2 }))
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .sum && $0.cardsInScoredHand == [8, 5] && $0.cumlativePoints == 4 }))
+
+        points = 0
+        scoringCards = []
+        playerOne.checkForSum([9,12,11,10,4], 15, &scoringCards, &points)
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .sum && $0.cardsInScoredHand == [9, 4] && $0.cumlativePoints == 2 }))
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .sum && $0.cardsInScoredHand == [12, 4] && $0.cumlativePoints == 4 }))
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .sum && $0.cardsInScoredHand == [11, 4] && $0.cumlativePoints == 6 }))
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .sum && $0.cardsInScoredHand == [10, 4] && $0.cumlativePoints == 8 }))
+
+        points = 0
+        scoringCards = []
+        playerOne.checkForSum([25,38,11,49,4], 15, &scoringCards, &points)
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .sum && $0.cardsInScoredHand == [25, 4] && $0.cumlativePoints == 2 }))
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .sum && $0.cardsInScoredHand == [38, 4] && $0.cumlativePoints == 4 }))
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .sum && $0.cardsInScoredHand == [11, 4] && $0.cumlativePoints == 6 }))
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .sum && $0.cardsInScoredHand == [49, 4] && $0.cumlativePoints == 8 }))
+
+        await playerOne.deleteGameCollection(id: randId)
+    }
+
+    @MainActor func testCheckForSets() async {
+        let playerOne = FirebaseHelper()
+        var randId = 0
+        repeat {
+            randId = Int.random(in: 10000..<99999)
+        } while (await playerOne.checkValidId(id: "\(randId)"))
+        await playerOne.startGameCollection(fullName: "1", gameName: "Cribbage", testGroupId: randId)
+        
+        var scoringCards: [ScoringHand] = []
+        var points = 0
+        
+        // test for basic sets
+        playerOne.checkForSets([0,13], &scoringCards, &points)
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .set && $0.cardsInScoredHand == [0, 13] && $0.cumlativePoints == 2 }))
+
+        points = 0
+        scoringCards = []
+        playerOne.checkForSets([0,13,1,14], &scoringCards, &points)
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .set && $0.cardsInScoredHand == [0, 13] && $0.cumlativePoints == 2 }))
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .set && $0.cardsInScoredHand == [1, 14] && $0.cumlativePoints == 4 }))
+
+        points = 0
+        scoringCards = []
+        playerOne.checkForSets([0,13,26], &scoringCards, &points)
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .set && $0.cardsInScoredHand == [0, 13, 26] && $0.cumlativePoints == 6 }))
+
+        points = 0
+        scoringCards = []
+        playerOne.checkForSets([0,13,26,39], &scoringCards, &points)
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .set && $0.cardsInScoredHand == [0, 13, 26, 39] && $0.cumlativePoints == 12 }))
+
+        // test for sets mixed in with other cards
+        points = 0
+        scoringCards = []
+        playerOne.checkForSets([0,1,2,13,4], &scoringCards, &points)
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .set && $0.cardsInScoredHand == [0, 13] && $0.cumlativePoints == 2 }))
+        
+        points = 0
+        scoringCards = []
+        playerOne.checkForSets([0,14,5,1,13], &scoringCards, &points)
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .set && $0.cardsInScoredHand == [0, 13] && $0.cumlativePoints == 2 }))
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .set && $0.cardsInScoredHand == [1, 14] && $0.cumlativePoints == 4 }))
+
+        await playerOne.deleteGameCollection(id: randId)
+    }
+    
+    @MainActor func testCheckForFlush() async {
+        let playerOne = FirebaseHelper()
+        var randId = 0
+        repeat {
+            randId = Int.random(in: 10000..<99999)
+        } while (await playerOne.checkValidId(id: "\(randId)"))
+        await playerOne.startGameCollection(fullName: "1", gameName: "Cribbage", testGroupId: randId)
+        
+        var scoringCards: [ScoringHand] = []
+        var points = 0
+        
+        // test for basic flushes
+        playerOne.checkForFlush([0,1,2,3], 51, &scoringCards, &points)
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .flush && $0.cardsInScoredHand == [0, 1, 2, 3] && $0.cumlativePoints == 4 }))
+        
+        points = 0
+        scoringCards = []
+        playerOne.checkForFlush([0,1,2,3], 4, &scoringCards, &points)
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .flush && $0.cardsInScoredHand == [0, 1, 2, 3, 4] && $0.cumlativePoints == 5 }))
+        
+        points = 0
+        scoringCards = []
+        playerOne.checkForFlush([0,1,15,3], 51, &scoringCards, &points)
+        XCTAssertEqual(scoringCards.count, 0)
+
+        await playerOne.deleteGameCollection(id: randId)
+    }
+
+    @MainActor func testCheckForNobs() async {
+        let playerOne = FirebaseHelper()
+        var randId = 0
+        repeat {
+            randId = Int.random(in: 10000..<99999)
+        } while (await playerOne.checkValidId(id: "\(randId)"))
+        await playerOne.startGameCollection(fullName: "1", gameName: "Cribbage", testGroupId: randId)
+        
+        var scoringCards: [ScoringHand] = []
+        var points = 0
+        
+        // test for basic flushes
+        playerOne.checkForNobs([0,1,2,3], 4, &scoringCards, &points)
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .nobs && $0.cardsInScoredHand == [0] && $0.cumlativePoints == 1 }))
+        
+        points = 0
+        scoringCards = []
+        playerOne.checkForNobs([26,14,2,18], 4, &scoringCards, &points)
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .nobs && $0.cardsInScoredHand == [2] && $0.cumlativePoints == 1 }))
+        
+        points = 0
+        scoringCards = []
+        playerOne.checkForNobs([0,1,2,3], 51, &scoringCards, &points)
+        XCTAssertEqual(scoringCards.count, 0)
+
         await playerOne.deleteGameCollection(id: randId)
     }
     
