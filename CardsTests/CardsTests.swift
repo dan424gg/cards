@@ -33,10 +33,9 @@ final class LoadingScreenTests: XCTestCase {
 
         let playerFour = FirebaseHelper()
         await playerFour.joinGameCollection(fullName: "4", id: "\(randId)", gameName: "Cribbage")
-        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.5)
         
         XCTAssertTrue(playerThree.teamState!.team_num == 1)
-        
         XCTAssertTrue(playerFour.teamState!.team_num == 2)
         XCTAssertFalse(playerFour.teams.contains(where: { $0.team_num == 3 }))
         
@@ -69,7 +68,7 @@ final class LoadingScreenTests: XCTestCase {
         var arr = [1, 3, 5, 2, 4]
         XCTAssertEqual(arr.sorted(by: { CardItem(id: $0) < CardItem(id: $1) }), [1,2,3,4,5])
         
-    // values: A,  2,  A,  2,  A, 4
+//     values: A,  2,  A,  2,  A, 4
         arr = [0, 14, 13, 27, 26, 4]
         XCTAssertEqual(arr.sorted(by: { CardItem(id: $0) < CardItem(id: $1) }), [0,13,26,14,27,4]) // asc
         
@@ -96,7 +95,7 @@ final class ListenerListTests: XCTestCase {
     
     func testAddPlayer() {
         let listener = Firestore.firestore().collection("games").addSnapshotListener{_,_ in }
-        let list = ListenerList()
+        let list = LinkedList()
         
         list.addListener(uid: "0", listenerObject: listener)
         list.addListener(uid: "1", listenerObject: listener)
@@ -111,7 +110,7 @@ final class ListenerListTests: XCTestCase {
     
     func testRemovePlayer() {
         let listener = Firestore.firestore().collection("games").addSnapshotListener{_,_ in }
-        let list = ListenerList()
+        let list = LinkedList()
         
         for i in 0...3 {
             list.addListener(uid: "\(i)", listenerObject: listener)
@@ -131,7 +130,7 @@ final class ListenerListTests: XCTestCase {
     
     func testPop() {
         let listener = Firestore.firestore().collection("games").addSnapshotListener{_,_ in }
-        let list = ListenerList()
+        let list = LinkedList()
         
         for i in 0...4 {
             list.addListener(uid: "\(i)", listenerObject: listener)
@@ -144,7 +143,7 @@ final class ListenerListTests: XCTestCase {
     
     func testIsEmpty() {
         let listener = Firestore.firestore().collection("games").addSnapshotListener{_,_ in }
-        let list = ListenerList()
+        let list = LinkedList()
         
         XCTAssertTrue(list.isEmpty())
         
@@ -157,7 +156,7 @@ final class ListenerListTests: XCTestCase {
     
     func testRemoveAllPlayerListeners() {
         let listener = Firestore.firestore().collection("games").addSnapshotListener{_,_ in }
-        let list = ListenerList()
+        let list = LinkedList()
         
         for i in 0...4 {
             list.addListener(uid: "\(i)", listenerObject: listener)

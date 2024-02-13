@@ -7,28 +7,15 @@
 
 import SwiftUI
 
-struct SwiftUIView: View {
-    @State var scale: Double = 0.0
-    
+struct SwiftUIView: View {    
     var body: some View {
-        VStack{
-            temp1(scale: $scale)
-            temp1(scale: .constant(15))
-            Button("hit me") {
-                scale += 1.0
-            }
+        VStack {
+            Text("hi")
         }
-    }
-}
-
-struct temp1: View {
-    @Binding var scale: Double
-    
-    var body: some View {
-        Text("\(scale)")
     }
 }
 
 #Preview {
     SwiftUIView()
+        .environmentObject(FirebaseHelper())
 }

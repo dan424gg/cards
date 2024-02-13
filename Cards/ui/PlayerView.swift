@@ -16,18 +16,18 @@ struct PlayerView: View {
     
     @State var startingRotation = 0
     @State var multiplier = 0
+    @State var scoringPlays: [ScoringHand] = []
     
     var body: some View {
         if (firebaseHelper.gameState?.turn ?? 3 == 3 && firebaseHelper.gameState?.player_turn ?? 0 == player.player_num) {
             VStack {
+                DisplayPlayersHandContainer(player: player, scoringPlays: firebaseHelper.checkPlayerHandForPoints(player.cards_in_hand, firebaseHelper.gameState?.starter_card ?? gameObservable.game.starter_card), visibilityFor: 2.0)
                 Text(player.name)
                     .font(.title3)
                     .foregroundStyle(((firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn) == player.player_num && firebaseHelper.gameState?.turn == 2) ? Color("greenForPlayerPlaying") : .black)
-                HStack {
-                    ForEach(player.cards_in_hand, id: \.self) { card in
-                        CardView(cardItem: CardItem(id: card), cardIsDisabled: .constant(false))
-                    }
-                }
+            }
+            .onAppear {
+                scoringPlays = firebaseHelper.checkPlayerHandForPoints(player.cards_in_hand, firebaseHelper.gameState?.starter_card ?? gameObservable.game.starter_card)
             }
             .rotationEffect(.degrees(Double(startingRotation + (multiplier * index))))
             .scaleEffect(x: 0.75, y: 0.75)
