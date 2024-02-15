@@ -79,7 +79,9 @@ struct TimedTextContainer: View {
 }
 
 struct DisplayPlayersHandContainer: View {
-    var player: PlayerState
+    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    var player: PlayerState? = nil
+    var crib: [Int] = []
     var scoringPlays: [ScoringHand]
     @State var play: ScoringHand? = nil
     
@@ -87,10 +89,10 @@ struct DisplayPlayersHandContainer: View {
     
     var body: some View {
         VStack {
-            Text(play?.pointsCallOut ?? "nothing")
+            Text(play?.pointsCallOut ?? "")
                 .font(.title2)
             HStack {
-                ForEach(player.cards_in_hand, id: \.self) { card in
+                ForEach(player?.cards_in_hand ?? crib, id: \.self) { card in
                     CardView(cardItem: CardItem(id: card), cardIsDisabled: .constant(true))
                         .offset(y: play != nil && play!.cardsInScoredHand.contains(card) ? -25 : 0)
                 }
@@ -104,6 +106,15 @@ struct DisplayPlayersHandContainer: View {
                             } else {
                                 withAnimation {
                                     play = nil
+                                } completion: {
+                                    Task {
+                                        guard firebaseHelper.gameState != nil, firebaseHelper.playerState != nil, firebaseHelper.playerState!.player_num == player?.player_num else {
+                                            return
+                                        }
+                                        
+                                        await firebaseHelper.updateGame(["player_turn": (firebaseHelper.gameState!.player_turn + 1) % firebaseHelper.gameState!.num_players])
+                                        await firebaseHelper.updatePlayer(["is_ready": true])
+                                    }
                                 }
                             }
                         }
@@ -112,9 +123,6 @@ struct DisplayPlayersHandContainer: View {
             }
             .frame(width: 225, height: 150)
         }
-        .onChange(of: player, initial: true, {
-            print("\nplayer hand(\(player.name): \(player.cards_in_hand))")
-        })
     }
 }
 
