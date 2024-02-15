@@ -1161,13 +1161,16 @@ import FirebaseFirestoreSwift
     
     func updatePlayerNums() async {
         var count = 0
+        
         for i in 1...gameState!.num_teams {
             let playersOnTeam = players.filter { $0.team_num == i }
             var tempCount = count
+            
             for player in playersOnTeam {
                 await updatePlayer(["player_num": tempCount] , uid: player.uid)
                 tempCount += gameState!.num_teams
             }
+            
             count += 1
         }
     }
