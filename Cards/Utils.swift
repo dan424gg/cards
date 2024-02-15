@@ -79,8 +79,8 @@ struct TimedTextContainer: View {
 }
 
 struct DisplayPlayersHandContainer: View {
-    @State var player: PlayerState
-    @State var scoringPlays: [ScoringHand]
+    var player: PlayerState
+    var scoringPlays: [ScoringHand]
     @State var play: ScoringHand? = nil
     
     var visibilityFor: TimeInterval
@@ -112,6 +112,9 @@ struct DisplayPlayersHandContainer: View {
             }
             .frame(width: 225, height: 150)
         }
+        .onChange(of: player, initial: true, {
+            print("\nplayer hand(\(player.name): \(player.cards_in_hand))")
+        })
     }
 }
 

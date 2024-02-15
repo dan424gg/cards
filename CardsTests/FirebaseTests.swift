@@ -687,7 +687,7 @@ final class FirebaseHelperTests: XCTestCase {
         await playerOne.deleteGameCollection(id: randId)
     }
     
-    @MainActor func testCheckForPoints() async {
+    @MainActor func testCheckIfPlayIsPossible() async {
         let playerOne = FirebaseHelper()
         var randId = 0
         repeat {
@@ -710,6 +710,23 @@ final class FirebaseHelperTests: XCTestCase {
         playerOne.playerState!.cards_in_hand = [10,11,12,0]
         playerOne.gameState!.running_sum = 30
         XCTAssertTrue(playerOne.checkIfPlayIsPossible())
+        
+        await playerOne.deleteGameCollection(id: randId)
+    }
+    
+    @MainActor func testCheckPlayerHandForPoints() async {
+        let playerOne = FirebaseHelper()
+        var randId = 0
+        repeat {
+            randId = Int.random(in: 10000..<99999)
+        } while (await playerOne.checkValidId(id: "\(randId)"))
+        await playerOne.startGameCollection(fullName: "1", gameName: "Cribbage", testGroupId: randId)
+        
+        let scoringPlays = playerOne.checkPlayerHandForPoints([0,1,2,4,9], 11)
+        print(scoringPlays)
+        XCTAssertTrue(scoringPlays.filter { $0.scoreType == .sum }.count == 4)
+        XCTAssertTrue(scoringPlays.filter { $0.scoreType == .flush }.count == 1)
+        XCTAssertEqual(scoringPlays.last!.cumlativePoints, 14)
         
         await playerOne.deleteGameCollection(id: randId)
     }

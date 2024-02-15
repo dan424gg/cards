@@ -25,6 +25,8 @@ public struct PlayerState: Hashable, Codable {
     static var player_two = PlayerState(name: "Katie", uid: "2", cards_in_hand: Array(35...38), is_lead: false, team_num: 2, player_num: 1, cards_dragged: Array(0...3))
     static var player_three = PlayerState(name: "Ben", uid: "3", cards_in_hand: Array(31...34), is_lead: false, team_num: 3, player_num: 2, cards_dragged: Array(0...3))
     static var player_four = PlayerState(name: "Alex", uid: "4", cards_in_hand: Array(27...30), is_lead: false, team_num: 2, player_num: 3, cards_dragged: Array(0...3))
+    static var player_five = PlayerState(name: "Ryan", uid: "5", cards_in_hand: Array(31...34), is_lead: false, team_num: 3, player_num: 4, cards_dragged: Array(0...3))
+    static var player_six = PlayerState(name: "Nitant", uid: "6", cards_in_hand: Array(27...30), is_lead: false, team_num: 2, player_num: 5, cards_dragged: Array(0...3))
     
     enum CodingKeys: CodingKey {
         case name

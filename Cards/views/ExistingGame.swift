@@ -56,7 +56,10 @@ struct ExistingGame: View {
         }
         .onChange(of: groupId, {
             Task {
-                if (await !firebaseHelper.checkValidId(id: groupId) || groupId.count != 5 || groupId == "") {
+                if groupId.isEmpty || groupId == "" {
+                    notValidGroupId = true
+                    firebaseHelper.sendWarning(w: "Group ID is not valid!")
+                } else if (await !firebaseHelper.checkValidId(id: groupId)) {
                     notValidGroupId = true
                     firebaseHelper.sendWarning(w: "Group ID is not valid!")
                 } else {
