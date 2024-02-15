@@ -29,7 +29,7 @@ struct GameView: View {
                     .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 1.5 )
                 
                 CribbageBoard()
-                    .scaleEffect(x: 0.9, y: 0.9)
+                    .scaleEffect(x: 0.8, y: 0.8)
                     .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY / 1.65 )
                 
                 DeckOfCardsView()

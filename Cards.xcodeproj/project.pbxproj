@@ -28,7 +28,6 @@
 		1EA245802AED6F71003B0943 /* TurnOneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA2457F2AED6F71003B0943 /* TurnOneView.swift */; };
 		1EA245822AED70B3003B0943 /* CardInHandArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA245812AED70B3003B0943 /* CardInHandArea.swift */; };
 		1EA759132AE2272A00537BB5 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 1EA759122AE2272A00537BB5 /* FirebaseFirestoreSwift */; };
-		1EBC68BA2B740DEB006B8238 /* TurnThreeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBC68B92B740DEB006B8238 /* TurnThreeView.swift */; };
 		1EBED90E2AD7BBFF008B85EE /* CardsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED90D2AD7BBFF008B85EE /* CardsApp.swift */; };
 		1EBED9102AD7BBFF008B85EE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED90F2AD7BBFF008B85EE /* ContentView.swift */; };
 		1EBED9122AD7BC00008B85EE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1EBED9112AD7BC00008B85EE /* Assets.xcassets */; };
@@ -347,7 +346,6 @@
 		1E9C48F52AE7B3F3008C518D /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		1EA2457F2AED6F71003B0943 /* TurnOneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnOneView.swift; sourceTree = "<group>"; };
 		1EA245812AED70B3003B0943 /* CardInHandArea.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardInHandArea.swift; sourceTree = "<group>"; };
-		1EBC68B92B740DEB006B8238 /* TurnThreeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnThreeView.swift; sourceTree = "<group>"; };
 		1EBED90A2AD7BBFF008B85EE /* Cards.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cards.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EBED90D2AD7BBFF008B85EE /* CardsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsApp.swift; sourceTree = "<group>"; };
 		1EBED90F2AD7BBFF008B85EE /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -659,7 +657,6 @@
 				1EBED9482AD7BD88008B85EE /* CribbageView.swift */,
 				1EA2457F2AED6F71003B0943 /* TurnOneView.swift */,
 				1EFA9F5A2AF584CC00FA092C /* TurnTwoView.swift */,
-				1EBC68B92B740DEB006B8238 /* TurnThreeView.swift */,
 			);
 			path = cribbage;
 			sourceTree = "<group>";
@@ -1026,7 +1023,6 @@
 				1ECE76492B714BCF004F2072 /* UITestingHelper.swift in Sources */,
 				1E25B4A42ADC528F008DFACE /* NewGame.swift in Sources */,
 				1E265EEF2B1EB47D0040E8A9 /* GameHeader.swift in Sources */,
-				1EBC68BA2B740DEB006B8238 /* TurnThreeView.swift in Sources */,
 				1E939CFD2AE3606D00D64551 /* GameState.swift in Sources */,
 				1E20F1792AF3524100F2B368 /* CardPlaceHolder.swift in Sources */,
 				1E8D45EE2B585EE5007543BC /* Utils.swift in Sources */,

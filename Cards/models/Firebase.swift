@@ -892,7 +892,7 @@ import FirebaseFirestoreSwift
             return []
         }
         
-        var points = 0
+        var points: Int = 0
         var scoringPlays: [ScoringHand] = []
         
         checkForSum(cards + [starterCard], 15, &scoringPlays, &points)
@@ -1017,7 +1017,7 @@ import FirebaseFirestoreSwift
     }
     
     func checkForSets(_ cards: [Int], _ scoringHands: inout [ScoringHand], _ points: inout Int) {
-        var points = 0
+//        var points = 0
         let sortedCards = cards.sorted(by: { $0 < $1 })
         var counts: [Int : [Int]] = [:]
         
@@ -1109,7 +1109,6 @@ import FirebaseFirestoreSwift
     }
     
     func checkForSum(_ array: [Int], _ targetValue: Int, _ scoringHands: inout [ScoringHand], _ points: inout Int) {
-        var points = 0
         
         func findCombinations(_ startIndex: Int, _ currentSum: Int, _ cardsInCombination: [Int]) {
             if currentSum == targetValue {

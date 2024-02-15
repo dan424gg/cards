@@ -26,6 +26,7 @@ struct Cribbage: View {
                     case 2:
                         TurnTwoView(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand, otherPlayer: false)
                     case 3:
+//                        Text("Turn Three!")
                         VStack {
                             // used for testing preview
                             Button("increment player turn") {
@@ -53,10 +54,12 @@ struct Cribbage: View {
                 print("triggered")
                 Task {
                     if (firebaseHelper.gameState!.turn == 2) {
-                        await firebaseHelper.updateGame(["play_cards": [] as! [Int]], arrayAction: .replace)
+                        await firebaseHelper.updateGame(["play_cards": [] as! [Int], "running_sum": 0, "num_go": 0, "player_turn": 0], arrayAction: .replace)
                     }
+                    
                     await firebaseHelper.unreadyAllPlayers()
                     await firebaseHelper.updateGame(["turn": ((firebaseHelper.gameState!.turn % 4) + 1)])
+
                     insideTurnChange.toggle()
                 }
             }
