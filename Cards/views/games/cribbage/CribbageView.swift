@@ -37,10 +37,7 @@ struct Cribbage: View {
                         }
                         .offset(y: -70)
                     case 4:
-                        Text("The Crib")
-                            .font(.title3)
-                            .foregroundStyle(.gray.opacity(0.7))
-                        
+                        Text("")
                     default:
                         Text("Won't get here")
                             .font(.title3)

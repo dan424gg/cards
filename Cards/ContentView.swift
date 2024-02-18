@@ -12,7 +12,7 @@ struct ContentView: View {
     @State var universalClicked = "A game"
     
     var body: some View {
-//        SwiftUIView()
+//        GameOutcomeView()
         NavigationStack {
             VStack {
                 Text("What game do you want to play??")

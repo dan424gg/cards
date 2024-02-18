@@ -13,7 +13,7 @@ import FirebaseFirestore
 public struct GameState: Hashable, Codable {
     var group_id: Int = 0
     var is_playing: Bool = false
-    var is_won: Bool = false
+    var who_won: Int = -1
     var num_teams: Int = 0
     var turn: Int = -1
     var game_name: String = ""
@@ -36,7 +36,7 @@ public struct GameState: Hashable, Codable {
     enum CodingKeys: CodingKey {
         case group_id
         case is_playing
-        case is_won
+        case who_won
         case num_teams
         case turn
         case game_name

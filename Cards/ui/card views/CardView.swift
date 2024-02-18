@@ -83,7 +83,7 @@ struct CardView: View {
                 }
                 .frame(width: 50, height: 100)
                 .draggable(cardItem)
-                .disabled(backside)
+                .disabled(backside || cardIsDisabled)
                 .rotation3DEffect(
                     .degrees(backDegree), axis: (x: 0.0, y: 1.0, z: 0.0)
                 )

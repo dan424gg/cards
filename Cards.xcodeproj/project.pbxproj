@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		1E002C142B54A3A800948BE5 /* TeamColorPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E002C132B54A3A800948BE5 /* TeamColorPicker.swift */; };
-		1E002C162B54AAD100948BE5 /* ColorSquare.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E002C152B54AAD100948BE5 /* ColorSquare.swift */; };
-		1E002C182B54B89E00948BE5 /* PickerItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E002C172B54B89E00948BE5 /* PickerItems.swift */; };
 		1E06C9292B003CB300195F6D /* CribbageBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E06C9282B003CB300195F6D /* CribbageBoard.swift */; };
 		1E20F1752AF33EA300F2B368 /* DiagonalLines.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E20F1742AF33EA300F2B368 /* DiagonalLines.swift */; };
 		1E20F1792AF3524100F2B368 /* CardPlaceHolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E20F1782AF3524100F2B368 /* CardPlaceHolder.swift */; };
@@ -28,6 +26,12 @@
 		1EA245802AED6F71003B0943 /* TurnOneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA2457F2AED6F71003B0943 /* TurnOneView.swift */; };
 		1EA245822AED70B3003B0943 /* CardInHandArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA245812AED70B3003B0943 /* CardInHandArea.swift */; };
 		1EA759132AE2272A00537BB5 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 1EA759122AE2272A00537BB5 /* FirebaseFirestoreSwift */; };
+		1EAE46882B828C0800F7519B /* GameOutcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EAE46872B828C0800F7519B /* GameOutcomeView.swift */; };
+		1EAE46892B828C9100F7519B /* GameOutcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EAE46872B828C0800F7519B /* GameOutcomeView.swift */; };
+		1EAE468A2B828C9400F7519B /* GameOutcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EAE46872B828C0800F7519B /* GameOutcomeView.swift */; };
+		1EAE468B2B828C9400F7519B /* GameOutcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EAE46872B828C0800F7519B /* GameOutcomeView.swift */; };
+		1EAE468C2B828C9500F7519B /* GameOutcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EAE46872B828C0800F7519B /* GameOutcomeView.swift */; };
+		1EAE468D2B828C9600F7519B /* GameOutcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EAE46872B828C0800F7519B /* GameOutcomeView.swift */; };
 		1EBED90E2AD7BBFF008B85EE /* CardsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED90D2AD7BBFF008B85EE /* CardsApp.swift */; };
 		1EBED9102AD7BBFF008B85EE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED90F2AD7BBFF008B85EE /* ContentView.swift */; };
 		1EBED9122AD7BC00008B85EE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1EBED9112AD7BC00008B85EE /* Assets.xcassets */; };
@@ -65,7 +69,6 @@
 		1ED85E7B2B718B3000807548 /* GameStartButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECCDABC2AE600DA00EFF167 /* GameStartButton.swift */; };
 		1ED85E7C2B718B3000807548 /* CribbageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED9482AD7BD88008B85EE /* CribbageView.swift */; };
 		1ED85E7D2B718B3000807548 /* Firebase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED94B2AD7BF2C008B85EE /* Firebase.swift */; };
-		1ED85E7E2B718B3000807548 /* ColorSquare.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E002C152B54AAD100948BE5 /* ColorSquare.swift */; };
 		1ED85E7F2B718B3000807548 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4CC8F72AFB4A3500ECC77B /* GameView.swift */; };
 		1ED85E802B718B3000807548 /* PlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E87BC082B65A6170084BEAB /* PlayerView.swift */; };
 		1ED85E812B718B3000807548 /* GameButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED93D2AD7BC9A008B85EE /* GameButton.swift */; };
@@ -78,7 +81,6 @@
 		1ED85E882B718B3000807548 /* SwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFB1F8E2B59C56E001C0ADA /* SwiftUIView.swift */; };
 		1ED85E892B718B3000807548 /* CardsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED90D2AD7BBFF008B85EE /* CardsApp.swift */; };
 		1ED85E8A2B718B3000807548 /* NamesAroundTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ED272512B02A49C00B21600 /* NamesAroundTable.swift */; };
-		1ED85E8B2B718B3000807548 /* PickerItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E002C172B54B89E00948BE5 /* PickerItems.swift */; };
 		1ED85E8C2B718B3000807548 /* DeckOfCardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8D31A72B05644300FC9C68 /* DeckOfCardsView.swift */; };
 		1ED85E8E2B718B3000807548 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 1ED85E652B718B3000807548 /* FirebaseAnalytics */; };
 		1ED85E8F2B718B3000807548 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 1ED85E672B718B3000807548 /* FirebaseFirestore */; };
@@ -105,7 +107,6 @@
 		1ED85EB42B71904300807548 /* GameStartButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECCDABC2AE600DA00EFF167 /* GameStartButton.swift */; };
 		1ED85EB52B71904300807548 /* CribbageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED9482AD7BD88008B85EE /* CribbageView.swift */; };
 		1ED85EB62B71904300807548 /* Firebase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED94B2AD7BF2C008B85EE /* Firebase.swift */; };
-		1ED85EB72B71904300807548 /* ColorSquare.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E002C152B54AAD100948BE5 /* ColorSquare.swift */; };
 		1ED85EB82B71904300807548 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4CC8F72AFB4A3500ECC77B /* GameView.swift */; };
 		1ED85EB92B71904300807548 /* PlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E87BC082B65A6170084BEAB /* PlayerView.swift */; };
 		1ED85EBA2B71904300807548 /* GameButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED93D2AD7BC9A008B85EE /* GameButton.swift */; };
@@ -118,7 +119,6 @@
 		1ED85EC12B71904300807548 /* SwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFB1F8E2B59C56E001C0ADA /* SwiftUIView.swift */; };
 		1ED85EC22B71904300807548 /* CardsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED90D2AD7BBFF008B85EE /* CardsApp.swift */; };
 		1ED85EC32B71904300807548 /* NamesAroundTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ED272512B02A49C00B21600 /* NamesAroundTable.swift */; };
-		1ED85EC42B71904300807548 /* PickerItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E002C172B54B89E00948BE5 /* PickerItems.swift */; };
 		1ED85EC52B71904300807548 /* DeckOfCardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8D31A72B05644300FC9C68 /* DeckOfCardsView.swift */; };
 		1ED85EC72B71904300807548 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 1ED85E9E2B71904300807548 /* FirebaseAnalytics */; };
 		1ED85EC82B71904300807548 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 1ED85EA02B71904300807548 /* FirebaseFirestore */; };
@@ -145,7 +145,6 @@
 		1ED85F592B71904D00807548 /* GameStartButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECCDABC2AE600DA00EFF167 /* GameStartButton.swift */; };
 		1ED85F5A2B71904D00807548 /* CribbageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED9482AD7BD88008B85EE /* CribbageView.swift */; };
 		1ED85F5B2B71904D00807548 /* Firebase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED94B2AD7BF2C008B85EE /* Firebase.swift */; };
-		1ED85F5C2B71904D00807548 /* ColorSquare.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E002C152B54AAD100948BE5 /* ColorSquare.swift */; };
 		1ED85F5D2B71904D00807548 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4CC8F72AFB4A3500ECC77B /* GameView.swift */; };
 		1ED85F5E2B71904D00807548 /* PlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E87BC082B65A6170084BEAB /* PlayerView.swift */; };
 		1ED85F5F2B71904D00807548 /* GameButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED93D2AD7BC9A008B85EE /* GameButton.swift */; };
@@ -158,7 +157,6 @@
 		1ED85F662B71904D00807548 /* SwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFB1F8E2B59C56E001C0ADA /* SwiftUIView.swift */; };
 		1ED85F672B71904D00807548 /* CardsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED90D2AD7BBFF008B85EE /* CardsApp.swift */; };
 		1ED85F682B71904D00807548 /* NamesAroundTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ED272512B02A49C00B21600 /* NamesAroundTable.swift */; };
-		1ED85F692B71904D00807548 /* PickerItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E002C172B54B89E00948BE5 /* PickerItems.swift */; };
 		1ED85F6A2B71904D00807548 /* DeckOfCardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8D31A72B05644300FC9C68 /* DeckOfCardsView.swift */; };
 		1ED85F6C2B71904D00807548 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 1ED85F432B71904D00807548 /* FirebaseAnalytics */; };
 		1ED85F6D2B71904D00807548 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 1ED85F452B71904D00807548 /* FirebaseFirestore */; };
@@ -185,7 +183,6 @@
 		1ED85F902B71904E00807548 /* GameStartButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECCDABC2AE600DA00EFF167 /* GameStartButton.swift */; };
 		1ED85F912B71904E00807548 /* CribbageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED9482AD7BD88008B85EE /* CribbageView.swift */; };
 		1ED85F922B71904E00807548 /* Firebase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED94B2AD7BF2C008B85EE /* Firebase.swift */; };
-		1ED85F932B71904E00807548 /* ColorSquare.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E002C152B54AAD100948BE5 /* ColorSquare.swift */; };
 		1ED85F942B71904E00807548 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4CC8F72AFB4A3500ECC77B /* GameView.swift */; };
 		1ED85F952B71904E00807548 /* PlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E87BC082B65A6170084BEAB /* PlayerView.swift */; };
 		1ED85F962B71904E00807548 /* GameButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED93D2AD7BC9A008B85EE /* GameButton.swift */; };
@@ -198,7 +195,6 @@
 		1ED85F9D2B71904E00807548 /* SwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFB1F8E2B59C56E001C0ADA /* SwiftUIView.swift */; };
 		1ED85F9E2B71904E00807548 /* CardsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED90D2AD7BBFF008B85EE /* CardsApp.swift */; };
 		1ED85F9F2B71904E00807548 /* NamesAroundTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ED272512B02A49C00B21600 /* NamesAroundTable.swift */; };
-		1ED85FA02B71904E00807548 /* PickerItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E002C172B54B89E00948BE5 /* PickerItems.swift */; };
 		1ED85FA12B71904E00807548 /* DeckOfCardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8D31A72B05644300FC9C68 /* DeckOfCardsView.swift */; };
 		1ED85FA32B71904E00807548 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 1ED85F7A2B71904E00807548 /* FirebaseAnalytics */; };
 		1ED85FA42B71904E00807548 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 1ED85F7C2B71904E00807548 /* FirebaseFirestore */; };
@@ -225,7 +221,6 @@
 		1ED85FC72B71904F00807548 /* GameStartButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECCDABC2AE600DA00EFF167 /* GameStartButton.swift */; };
 		1ED85FC82B71904F00807548 /* CribbageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED9482AD7BD88008B85EE /* CribbageView.swift */; };
 		1ED85FC92B71904F00807548 /* Firebase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED94B2AD7BF2C008B85EE /* Firebase.swift */; };
-		1ED85FCA2B71904F00807548 /* ColorSquare.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E002C152B54AAD100948BE5 /* ColorSquare.swift */; };
 		1ED85FCB2B71904F00807548 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4CC8F72AFB4A3500ECC77B /* GameView.swift */; };
 		1ED85FCC2B71904F00807548 /* PlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E87BC082B65A6170084BEAB /* PlayerView.swift */; };
 		1ED85FCD2B71904F00807548 /* GameButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED93D2AD7BC9A008B85EE /* GameButton.swift */; };
@@ -238,7 +233,6 @@
 		1ED85FD42B71904F00807548 /* SwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFB1F8E2B59C56E001C0ADA /* SwiftUIView.swift */; };
 		1ED85FD52B71904F00807548 /* CardsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED90D2AD7BBFF008B85EE /* CardsApp.swift */; };
 		1ED85FD62B71904F00807548 /* NamesAroundTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ED272512B02A49C00B21600 /* NamesAroundTable.swift */; };
-		1ED85FD72B71904F00807548 /* PickerItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E002C172B54B89E00948BE5 /* PickerItems.swift */; };
 		1ED85FD82B71904F00807548 /* DeckOfCardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8D31A72B05644300FC9C68 /* DeckOfCardsView.swift */; };
 		1ED85FDA2B71904F00807548 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 1ED85FB12B71904F00807548 /* FirebaseAnalytics */; };
 		1ED85FDB2B71904F00807548 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 1ED85FB32B71904F00807548 /* FirebaseFirestore */; };
@@ -327,8 +321,6 @@
 
 /* Begin PBXFileReference section */
 		1E002C132B54A3A800948BE5 /* TeamColorPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamColorPicker.swift; sourceTree = "<group>"; };
-		1E002C152B54AAD100948BE5 /* ColorSquare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorSquare.swift; sourceTree = "<group>"; };
-		1E002C172B54B89E00948BE5 /* PickerItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerItems.swift; sourceTree = "<group>"; };
 		1E06C9282B003CB300195F6D /* CribbageBoard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CribbageBoard.swift; sourceTree = "<group>"; };
 		1E114CC52B151B8B00503368 /* EarlGreyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EarlGreyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E20F1742AF33EA300F2B368 /* DiagonalLines.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagonalLines.swift; sourceTree = "<group>"; };
@@ -346,6 +338,7 @@
 		1E9C48F52AE7B3F3008C518D /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		1EA2457F2AED6F71003B0943 /* TurnOneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnOneView.swift; sourceTree = "<group>"; };
 		1EA245812AED70B3003B0943 /* CardInHandArea.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardInHandArea.swift; sourceTree = "<group>"; };
+		1EAE46872B828C0800F7519B /* GameOutcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOutcomeView.swift; sourceTree = "<group>"; };
 		1EBED90A2AD7BBFF008B85EE /* Cards.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cards.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EBED90D2AD7BBFF008B85EE /* CardsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsApp.swift; sourceTree = "<group>"; };
 		1EBED90F2AD7BBFF008B85EE /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -604,9 +597,8 @@
 				1ED272512B02A49C00B21600 /* NamesAroundTable.swift */,
 				1E265EEE2B1EB47D0040E8A9 /* GameHeader.swift */,
 				1E002C132B54A3A800948BE5 /* TeamColorPicker.swift */,
-				1E002C152B54AAD100948BE5 /* ColorSquare.swift */,
-				1E002C172B54B89E00948BE5 /* PickerItems.swift */,
 				1E87BC082B65A6170084BEAB /* PlayerView.swift */,
+				1EAE46872B828C0800F7519B /* GameOutcomeView.swift */,
 			);
 			path = ui;
 			sourceTree = "<group>";
@@ -1020,6 +1012,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1E06C9292B003CB300195F6D /* CribbageBoard.swift in Sources */,
+				1EAE46882B828C0800F7519B /* GameOutcomeView.swift in Sources */,
 				1ECE76492B714BCF004F2072 /* UITestingHelper.swift in Sources */,
 				1E25B4A42ADC528F008DFACE /* NewGame.swift in Sources */,
 				1E265EEF2B1EB47D0040E8A9 /* GameHeader.swift in Sources */,
@@ -1037,7 +1030,6 @@
 				1ECCDABD2AE600DA00EFF167 /* GameStartButton.swift in Sources */,
 				1EBED9492AD7BD88008B85EE /* CribbageView.swift in Sources */,
 				1EBED94C2AD7BF2C008B85EE /* Firebase.swift in Sources */,
-				1E002C162B54AAD100948BE5 /* ColorSquare.swift in Sources */,
 				1E4CC8F82AFB4A3500ECC77B /* GameView.swift in Sources */,
 				1E87BC092B65A6170084BEAB /* PlayerView.swift in Sources */,
 				1EBED93E2AD7BC9A008B85EE /* GameButton.swift in Sources */,
@@ -1050,7 +1042,6 @@
 				1EFB1F8F2B59C56E001C0ADA /* SwiftUIView.swift in Sources */,
 				1EBED90E2AD7BBFF008B85EE /* CardsApp.swift in Sources */,
 				1ED272522B02A49C00B21600 /* NamesAroundTable.swift in Sources */,
-				1E002C182B54B89E00948BE5 /* PickerItems.swift in Sources */,
 				1E8D31A82B05644300FC9C68 /* DeckOfCardsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1077,6 +1068,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1ED85E6C2B718B3000807548 /* CribbageBoard.swift in Sources */,
+				1EAE46892B828C9100F7519B /* GameOutcomeView.swift in Sources */,
 				1ED85E6D2B718B3000807548 /* UITestingHelper.swift in Sources */,
 				1ED85E6E2B718B3000807548 /* NewGame.swift in Sources */,
 				1ED85E6F2B718B3000807548 /* GameHeader.swift in Sources */,
@@ -1094,7 +1086,6 @@
 				1ED85E7B2B718B3000807548 /* GameStartButton.swift in Sources */,
 				1ED85E7C2B718B3000807548 /* CribbageView.swift in Sources */,
 				1ED85E7D2B718B3000807548 /* Firebase.swift in Sources */,
-				1ED85E7E2B718B3000807548 /* ColorSquare.swift in Sources */,
 				1ED85E7F2B718B3000807548 /* GameView.swift in Sources */,
 				1ED85E802B718B3000807548 /* PlayerView.swift in Sources */,
 				1ED85E812B718B3000807548 /* GameButton.swift in Sources */,
@@ -1107,7 +1098,6 @@
 				1ED85E882B718B3000807548 /* SwiftUIView.swift in Sources */,
 				1ED85E892B718B3000807548 /* CardsApp.swift in Sources */,
 				1ED85E8A2B718B3000807548 /* NamesAroundTable.swift in Sources */,
-				1ED85E8B2B718B3000807548 /* PickerItems.swift in Sources */,
 				1ED85E8C2B718B3000807548 /* DeckOfCardsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1117,6 +1107,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1ED85EA52B71904300807548 /* CribbageBoard.swift in Sources */,
+				1EAE468C2B828C9500F7519B /* GameOutcomeView.swift in Sources */,
 				1ED85EA62B71904300807548 /* UITestingHelper.swift in Sources */,
 				1ED85EA72B71904300807548 /* NewGame.swift in Sources */,
 				1ED85EA82B71904300807548 /* GameHeader.swift in Sources */,
@@ -1134,7 +1125,6 @@
 				1ED85EB42B71904300807548 /* GameStartButton.swift in Sources */,
 				1ED85EB52B71904300807548 /* CribbageView.swift in Sources */,
 				1ED85EB62B71904300807548 /* Firebase.swift in Sources */,
-				1ED85EB72B71904300807548 /* ColorSquare.swift in Sources */,
 				1ED85EB82B71904300807548 /* GameView.swift in Sources */,
 				1ED85EB92B71904300807548 /* PlayerView.swift in Sources */,
 				1ED85EBA2B71904300807548 /* GameButton.swift in Sources */,
@@ -1147,7 +1137,6 @@
 				1ED85EC12B71904300807548 /* SwiftUIView.swift in Sources */,
 				1ED85EC22B71904300807548 /* CardsApp.swift in Sources */,
 				1ED85EC32B71904300807548 /* NamesAroundTable.swift in Sources */,
-				1ED85EC42B71904300807548 /* PickerItems.swift in Sources */,
 				1ED85EC52B71904300807548 /* DeckOfCardsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1157,6 +1146,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1ED85F4A2B71904D00807548 /* CribbageBoard.swift in Sources */,
+				1EAE468B2B828C9400F7519B /* GameOutcomeView.swift in Sources */,
 				1ED85F4B2B71904D00807548 /* UITestingHelper.swift in Sources */,
 				1ED85F4C2B71904D00807548 /* NewGame.swift in Sources */,
 				1ED85F4D2B71904D00807548 /* GameHeader.swift in Sources */,
@@ -1174,7 +1164,6 @@
 				1ED85F592B71904D00807548 /* GameStartButton.swift in Sources */,
 				1ED85F5A2B71904D00807548 /* CribbageView.swift in Sources */,
 				1ED85F5B2B71904D00807548 /* Firebase.swift in Sources */,
-				1ED85F5C2B71904D00807548 /* ColorSquare.swift in Sources */,
 				1ED85F5D2B71904D00807548 /* GameView.swift in Sources */,
 				1ED85F5E2B71904D00807548 /* PlayerView.swift in Sources */,
 				1ED85F5F2B71904D00807548 /* GameButton.swift in Sources */,
@@ -1187,7 +1176,6 @@
 				1ED85F662B71904D00807548 /* SwiftUIView.swift in Sources */,
 				1ED85F672B71904D00807548 /* CardsApp.swift in Sources */,
 				1ED85F682B71904D00807548 /* NamesAroundTable.swift in Sources */,
-				1ED85F692B71904D00807548 /* PickerItems.swift in Sources */,
 				1ED85F6A2B71904D00807548 /* DeckOfCardsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1197,6 +1185,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1ED85F812B71904E00807548 /* CribbageBoard.swift in Sources */,
+				1EAE468A2B828C9400F7519B /* GameOutcomeView.swift in Sources */,
 				1ED85F822B71904E00807548 /* UITestingHelper.swift in Sources */,
 				1ED85F832B71904E00807548 /* NewGame.swift in Sources */,
 				1ED85F842B71904E00807548 /* GameHeader.swift in Sources */,
@@ -1214,7 +1203,6 @@
 				1ED85F902B71904E00807548 /* GameStartButton.swift in Sources */,
 				1ED85F912B71904E00807548 /* CribbageView.swift in Sources */,
 				1ED85F922B71904E00807548 /* Firebase.swift in Sources */,
-				1ED85F932B71904E00807548 /* ColorSquare.swift in Sources */,
 				1ED85F942B71904E00807548 /* GameView.swift in Sources */,
 				1ED85F952B71904E00807548 /* PlayerView.swift in Sources */,
 				1ED85F962B71904E00807548 /* GameButton.swift in Sources */,
@@ -1227,7 +1215,6 @@
 				1ED85F9D2B71904E00807548 /* SwiftUIView.swift in Sources */,
 				1ED85F9E2B71904E00807548 /* CardsApp.swift in Sources */,
 				1ED85F9F2B71904E00807548 /* NamesAroundTable.swift in Sources */,
-				1ED85FA02B71904E00807548 /* PickerItems.swift in Sources */,
 				1ED85FA12B71904E00807548 /* DeckOfCardsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1237,6 +1224,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1ED85FB82B71904F00807548 /* CribbageBoard.swift in Sources */,
+				1EAE468D2B828C9600F7519B /* GameOutcomeView.swift in Sources */,
 				1ED85FB92B71904F00807548 /* UITestingHelper.swift in Sources */,
 				1ED85FBA2B71904F00807548 /* NewGame.swift in Sources */,
 				1ED85FBB2B71904F00807548 /* GameHeader.swift in Sources */,
@@ -1254,7 +1242,6 @@
 				1ED85FC72B71904F00807548 /* GameStartButton.swift in Sources */,
 				1ED85FC82B71904F00807548 /* CribbageView.swift in Sources */,
 				1ED85FC92B71904F00807548 /* Firebase.swift in Sources */,
-				1ED85FCA2B71904F00807548 /* ColorSquare.swift in Sources */,
 				1ED85FCB2B71904F00807548 /* GameView.swift in Sources */,
 				1ED85FCC2B71904F00807548 /* PlayerView.swift in Sources */,
 				1ED85FCD2B71904F00807548 /* GameButton.swift in Sources */,
@@ -1267,7 +1254,6 @@
 				1ED85FD42B71904F00807548 /* SwiftUIView.swift in Sources */,
 				1ED85FD52B71904F00807548 /* CardsApp.swift in Sources */,
 				1ED85FD62B71904F00807548 /* NamesAroundTable.swift in Sources */,
-				1ED85FD72B71904F00807548 /* PickerItems.swift in Sources */,
 				1ED85FD82B71904F00807548 /* DeckOfCardsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

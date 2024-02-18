@@ -14,7 +14,7 @@ struct GameStartButton: View {
         VStack {
             Button("Play!") {
                 Task {
-                    await firebaseHelper.updatePlayerNums()
+                    await firebaseHelper.reorderPlayerNumbers()
                     await firebaseHelper.updateGame(["is_playing": true, "turn": 1])
                 }
             }
