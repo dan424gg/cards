@@ -33,13 +33,10 @@ struct PlayerView: View {
         } else if (firebaseHelper.gameState?.turn ?? 3 == 3) {
             if (firebaseHelper.gameState?.player_turn ?? playerTurn == player.player_num) {
                 VStack {
-                    DisplayPlayersHandContainer(player: player, scoringPlays: firebaseHelper.checkPlayerHandForPoints(player.cards_in_hand, firebaseHelper.gameState?.starter_card ?? gameObservable.game.starter_card), visibilityFor: 3.0)
+                    DisplayPlayersHandContainer(player: player, visibilityFor: 3.0, scoringPlays: scoringPlays)
                     Text(player.name)
                         .font(.title3)
                         .foregroundStyle(((firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn) == player.player_num && firebaseHelper.gameState?.turn == 2) ? Color("greenForPlayerPlaying") : .black)
-                }
-                .onAppear {
-                    scoringPlays = firebaseHelper.checkPlayerHandForPoints(player.cards_in_hand, firebaseHelper.gameState?.starter_card ?? gameObservable.game.starter_card)
                 }
                 .rotationEffect(.degrees(180))
                 .scaleEffect(x: 0.75, y: 0.75)

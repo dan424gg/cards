@@ -158,7 +158,7 @@ struct TurnTwoView: View {
     }
     
     private func handleDropAction(_ items: [CardItem], _ location: CGPoint) -> Bool {
-        guard let gameState = firebaseHelper.gameState, let playerState = firebaseHelper.playerState else {
+        guard let gameState = firebaseHelper.gameState, let playerState = firebaseHelper.playerState, let teamState = firebaseHelper.teamState else {
             return false
         }
         
@@ -169,7 +169,7 @@ struct TurnTwoView: View {
                 pointsCallOut = callouts
                 
                 if (points != -1) {                    
-                    await firebaseHelper.updateTeam(["points": firebaseHelper.teamState!.points + points])
+                    await firebaseHelper.updateTeam(["points": points + teamState.points])
                     await firebaseHelper.updateGame(["player_turn": (gameState.player_turn + 1) % gameState.num_players])
      
                     cardsInHand.removeAll { card in
@@ -200,12 +200,14 @@ struct TurnTwoView: View {
     private func handleGoButton() {
         if !firebaseHelper.checkIfPlayIsPossible() {
             Task {
-                var callouts: [String] = []
-                let points = await firebaseHelper.managePlayTurn(cardInPlay: nil, pointsCallOut: &callouts)
-                pointsCallOut = callouts
-                
-                await firebaseHelper.updateTeam(["points": firebaseHelper.teamState!.points + points])
-                await firebaseHelper.updateGame(["player_turn": (firebaseHelper.gameState!.player_turn + 1) % firebaseHelper.gameState!.num_players])
+                if let teamState = firebaseHelper.teamState {
+                    var callouts: [String] = []
+                    let points = await firebaseHelper.managePlayTurn(cardInPlay: nil, pointsCallOut: &callouts)
+                    pointsCallOut = callouts
+                    
+                    await firebaseHelper.updateTeam(["points": points + teamState.points])
+                    await firebaseHelper.updateGame(["player_turn": (firebaseHelper.gameState!.player_turn + 1) % firebaseHelper.gameState!.num_players])
+                }
             }
         } else {
             pointsCallOut.append("You have a card you can play!")

@@ -59,21 +59,53 @@ struct GameView: View {
                     Text("Dealer")
                         .position(x: geo.size.width - 50, y: geo.size.height - 10)
                 }
+                
+                GameOutcomeView(outcome: $firebaseHelper.gameOutcome)
             }
+            .disabled(firebaseHelper.gameOutcome != .undetermined)
             .overlay(content: {
-                if firebaseHelper.gameState?.player_turn ?? 0 == firebaseHelper.playerState?.player_num ?? 1 && firebaseHelper.gameState?.turn == 2 {
-                    RoundedRectangle(cornerRadius: 57.0, style: .continuous)
-                        .stroke(Color("greenForPlayerPlaying"), lineWidth: 25.0)
-                        .opacity(scale)
-                        .ignoresSafeArea()
-                        .onAppear {
-                            let baseAnimation = Animation.easeInOut(duration: 2.0)
-                            let repeated = baseAnimation.repeatForever(autoreverses: true)
-                            
-                            withAnimation(repeated) {
-                                scale = 0.8
+                if (firebaseHelper.gameState == nil || firebaseHelper.playerState == nil) {
+                    EmptyView()
+                } else {
+                    if firebaseHelper.gameState!.player_turn == firebaseHelper.playerState!.player_num && firebaseHelper.gameState!.turn == 2 && firebaseHelper.gameState!.is_playing {
+                        RoundedRectangle(cornerRadius: 57.0, style: .continuous)
+                            .stroke(Color("greenForPlayerPlaying"), lineWidth: 25.0)
+                            .opacity(scale)
+                            .ignoresSafeArea()
+                            .onAppear {
+                                let baseAnimation = Animation.easeInOut(duration: 2.0)
+                                let repeated = baseAnimation.repeatForever(autoreverses: true)
+                                
+                                withAnimation(repeated) {
+                                    scale = 0.8
+                                }
                             }
-                        }
+                    }
+                }
+            })
+            .onChange(of: firebaseHelper.teamState?.points, {
+                guard firebaseHelper.teamState != nil else {
+                    return
+                }
+                
+                if firebaseHelper.teamState!.points >= 121 {
+                    Task {
+                        await firebaseHelper.updateGame(["who_won": firebaseHelper.teamState!.team_num, "is_playing": false])
+                    }
+                    firebaseHelper.gameOutcome = .win
+                } else {
+                    firebaseHelper.gameOutcome = .lose
+                }
+            })
+            .onChange(of: firebaseHelper.gameState?.who_won, {
+                guard firebaseHelper.gameState != nil, firebaseHelper.teamState != nil else {
+                    return
+                }
+                
+                if firebaseHelper.teamState!.team_num == firebaseHelper.gameState!.who_won {
+                    firebaseHelper.gameOutcome = .win
+                } else {
+                    firebaseHelper.gameOutcome = .lose
                 }
             })
             .onChange(of: firebaseHelper.gameState?.turn, initial: true, {

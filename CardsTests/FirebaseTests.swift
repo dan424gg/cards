@@ -747,7 +747,7 @@ final class FirebaseHelperTests: XCTestCase {
         await playerOne.updatePlayer(["player_num": 4])
         await playerTwo.updatePlayer(["player_num": 7])
         
-        await playerOne.updatePlayerNums()
+        await playerOne.reorderPlayerNumbers()
 
         XCTAssertTrue(playerOne.playerState!.player_num == 0)
         XCTAssertTrue(playerTwo.playerState!.player_num == 1)
@@ -760,7 +760,7 @@ final class FirebaseHelperTests: XCTestCase {
         await playerTwo.changeTeam(newTeamNum: 3)
         await playerThree.changeTeam(newTeamNum: 2)
         
-        await playerOne.updatePlayerNums()
+        await playerOne.reorderPlayerNumbers()
         
         XCTAssertTrue(playerTwo.playerState!.player_num == 2)
         XCTAssertTrue(playerThree.playerState!.player_num == 1)
@@ -785,7 +785,7 @@ final class FirebaseHelperTests: XCTestCase {
         await playerFive.changeTeam(newTeamNum: 2)
         await playerSix.changeTeam(newTeamNum: 1)
         
-        await playerOne.updatePlayerNums()
+        await playerOne.reorderPlayerNumbers()
         
         XCTAssertTrue(playerOne.playerState!.player_num == 2)
         XCTAssertTrue(playerTwo.playerState!.player_num == 5)

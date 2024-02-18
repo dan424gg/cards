@@ -16,9 +16,10 @@ import FirebaseFirestoreSwift
     private var gameStateListener: ListenerRegistration!
     private var teamsListener: ListenerRegistration!
     private var playersListener: ListenerRegistration!
+//    private var teamListeners = LinkedList()
+//    private var playerListeners = LinkedList()
     
-    private var teamListeners = LinkedList()
-    private var playerListeners = LinkedList()
+    @Published var gameOutcome: GameOutcome = .undetermined
     
     @Published private var db = Firestore.firestore()
     @Published var gameState: GameState?
@@ -37,13 +38,14 @@ import FirebaseFirestoreSwift
     
     init() {
         if self.gameState != nil {
-            teamListeners.removeAllListeners()
-            playerListeners.removeAllListeners()
+//            teamListeners.removeAllListeners()
+//            playerListeners.removeAllListeners()
             
             removeGameInfoListener()
             removeTeamPlayerNameListener()
         }
         
+        self.gameOutcome = .undetermined
         self.gameState = nil
         self.playerState = nil
         self.teamState = nil
@@ -239,9 +241,9 @@ import FirebaseFirestoreSwift
                         
                         break
                         
-                    case "is_won":
-                        guard type(of: value) is Bool.Type else {
-                            print("\(key): \(value) needs to be Bool in updateGame()!")
+                    case "who_won":
+                        guard type(of: value) is Int.Type else {
+                            print("\(key): \(value) needs to be Int in updateGame()!")
                             return
                         }
                         
@@ -481,7 +483,7 @@ import FirebaseFirestoreSwift
         }
     }
     
-    func updateTeam(_ newState: [String: Any]) async {
+    func updateTeam(_ newState: [String: Any], _ teamNum: Int? = nil) async {
         guard docRef != nil else {
             print("docRef was nil before updating team information")
             return
@@ -501,7 +503,7 @@ import FirebaseFirestoreSwift
                             return
                         }
                         
-                        try await docRef!.collection("teams").document("\(teamState!.team_num)").updateData([
+                        try await docRef!.collection("teams").document("\(teamNum ?? teamState!.team_num)").updateData([
                             "\(key)": value
                         ])
                         
@@ -513,7 +515,7 @@ import FirebaseFirestoreSwift
                             return
                         }
                         
-                        try await docRef!.collection("teams").document("\(teamState!.team_num)").updateData([
+                        try await docRef!.collection("teams").document("\(teamNum ?? teamState!.team_num)").updateData([
                             "\(key)": value
                         ])
                         
@@ -525,7 +527,7 @@ import FirebaseFirestoreSwift
                             return
                         }
 
-                        try await docRef!.collection("teams").document("\(teamState!.team_num)").updateData([
+                        try await docRef!.collection("teams").document("\(teamNum ?? teamState!.team_num)").updateData([
                             "\(key)": value
                         ])
                         
@@ -887,14 +889,29 @@ import FirebaseFirestoreSwift
         await updateGame(["starter_card": gameState!.cards.removeFirst(), "cards": gameState!.cards], arrayAction: .replace)
     }
     
-    func checkPlayerHandForPoints(_ cards: [Int], _ starterCard: Int) -> [ScoringHand] {
-        guard cards != [] else {
+    func checkCardsForPoints(player: PlayerState? = nil, crib: [Int]? = nil, _ starterCard: Int) -> [ScoringHand] {
+        guard (player != nil) ^ (crib != nil) else {
             return []
+        }
+        guard playerState != nil, gameState != nil, teamState != nil else {
+            return []
+        }
+        
+        if player?.cards_in_hand == [] {
+            return []
+        }
+        
+        var cards: [Int] {
+            if (player != nil) {
+                player!.cards_in_hand
+            } else {
+                crib!
+            }
         }
         
         var points: Int = 0
         var scoringPlays: [ScoringHand] = []
-        
+
         checkForSum(cards + [starterCard], 15, &scoringPlays, &points)
         checkForRun(cards + [starterCard], &scoringPlays, &points)
         checkForSets(cards + [starterCard], &scoringPlays, &points)
@@ -994,7 +1011,7 @@ import FirebaseFirestoreSwift
         let suit = CardItem(id: starterCard).card.suit
         
         for card in cards {
-            if (CardItem(id: card).card.suit == suit) {
+            if (CardItem(id: card).card.suit == suit && CardItem(id: card).card.value == "J") {
                 points = points + 1
                 scoringHands.append(ScoringHand(scoreType: .nobs, cumlativePoints: points, cardsInScoredHand: [card], pointsCallOut: "Nobs for \(points)!"))
                 return
@@ -1008,10 +1025,10 @@ import FirebaseFirestoreSwift
         if (cards.allSatisfy { CardItem(id: $0).card.suit == suit }) {
             if (CardItem(id: starterCard).card.suit == suit) {
                 points = points + 5
-                scoringHands.append(ScoringHand(scoreType: .flush, cumlativePoints: points, cardsInScoredHand: cards + [starterCard], pointsCallOut: "Four card flush for \(points)!"))
+                scoringHands.append(ScoringHand(scoreType: .flush, cumlativePoints: points, cardsInScoredHand: cards + [starterCard], pointsCallOut: "Five card flush for \(points)!"))
             } else {
                 points = points + 4
-                scoringHands.append(ScoringHand(scoreType: .flush, cumlativePoints: points, cardsInScoredHand: cards, pointsCallOut: "Five card flush for \(points)!"))
+                scoringHands.append(ScoringHand(scoreType: .flush, cumlativePoints: points, cardsInScoredHand: cards, pointsCallOut: "Four card flush for \(points)!"))
             }
         }
     }
@@ -1159,7 +1176,7 @@ import FirebaseFirestoreSwift
         return true
     }
     
-    func updatePlayerNums() async {
+    func reorderPlayerNumbers() async {
         var count = 0
         
         for i in 1...gameState!.num_teams {

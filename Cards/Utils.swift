@@ -10,6 +10,12 @@ import UniformTypeIdentifiers
 import CoreGraphics
 import SwiftUI
 
+enum GameOutcome: Hashable {
+    case win
+    case lose
+    case undetermined
+}
+
 enum FocusField: Hashable {
     case name
     case groupId
@@ -21,128 +27,6 @@ enum ScoringType: Hashable {
     case run
     case set
     case sum
-}
-
-struct ScoringHand: Hashable {
-    var scoreType: ScoringType
-    var cumlativePoints: Int
-    var cardsInScoredHand: [Int]
-    var pointsCallOut: String
-}
-
-struct RandomNumberGeneratorWithSeed: RandomNumberGenerator {
-    private var seed: UInt64
-
-    init(seed: Int) {
-        self.seed = UInt64(seed)
-    }
-
-    mutating func next() -> UInt64 {
-        // Update the seed based on a linear congruential generator algorithm
-        // This is a simple and fast method to generate pseudo-random numbers
-        seed = (seed &* 0x5DEECE66D &+ 0xB) & (1 << 48 - 1)
-        return seed
-    }
-}
-
-struct TimedTextContainer: View {
-    @State private var string: String = ""
-    @State private var idx: Int = 0
-    @Binding var textArray: [String]
-    
-    var visibilityFor: TimeInterval
-    
-    var body: some View {
-        Text(string)
-            .font(.title2)
-            .id(string)
-            .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .opacity))
-            .onChange(of: textArray, initial: true, {
-                if !textArray.isEmpty {
-                    for i in 0...textArray.count {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + (visibilityFor * Double(i))) {
-                            if i >= textArray.count {
-                                withAnimation {
-                                    string = ""
-                                    textArray.removeAll()
-                                }
-                            } else {
-                                withAnimation {
-                                    string = textArray[i]
-                                }
-                            }
-                        }
-                    }
-                }
-            })
-    }
-}
-
-struct DisplayPlayersHandContainer: View {
-    @EnvironmentObject var firebaseHelper: FirebaseHelper
-    var player: PlayerState? = nil
-    var crib: [Int] = []
-    var scoringPlays: [ScoringHand]
-    @State var play: ScoringHand? = nil
-    
-    var visibilityFor: TimeInterval
-    
-    var body: some View {
-        VStack {
-            Text(play?.pointsCallOut ?? "")
-                .font(.title2)
-            HStack {
-                ForEach(player?.cards_in_hand ?? crib, id: \.self) { card in
-                    CardView(cardItem: CardItem(id: card), cardIsDisabled: .constant(true))
-                        .offset(y: play != nil && play!.cardsInScoredHand.contains(card) ? -25 : 0)
-                }
-                .onAppear {
-                    for idx in 0...scoringPlays.count {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + (visibilityFor * Double(idx + 1))) {
-                            if (idx < scoringPlays.count) {
-                                withAnimation {
-                                    play = scoringPlays[idx]
-                                }
-                            } else {
-                                withAnimation {
-                                    play = nil
-                                } completion: {
-                                    Task {
-                                        guard firebaseHelper.gameState != nil, firebaseHelper.playerState != nil, firebaseHelper.playerState!.player_num == player?.player_num else {
-                                            return
-                                        }
-                                        
-                                        await firebaseHelper.updateGame(["player_turn": (firebaseHelper.gameState!.player_turn + 1) % firebaseHelper.gameState!.num_players])
-                                        await firebaseHelper.updatePlayer(["is_ready": true])
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            .frame(width: 225, height: 150)
-        }
-    }
-}
-
-struct StrokeText: View {
-    let text: String
-    let width: CGFloat
-    let color: Color
-
-    var body: some View {
-        ZStack{
-            ZStack{
-                Text(text).offset(x:  width, y:  width)
-                Text(text).offset(x: -width, y: -width)
-                Text(text).offset(x: -width, y:  width)
-                Text(text).offset(x:  width, y: -width)
-            }
-            .foregroundColor(color)
-            Text(text)
-        }
-    }
 }
 
 extension Array {
@@ -162,6 +46,12 @@ extension Array {
             transform(&result)
         }
         return result
+    }
+}
+
+extension Bool {
+    static func ^ (left: Bool, right: Bool) -> Bool {
+        return left != right
     }
 }
 
@@ -225,6 +115,7 @@ extension String {
     func trim() -> String {
         return self.trimmingCharacters(in: NSCharacterSet.whitespaces)
     }
+    
     func width(usingFont font: UIFont) -> CGFloat {
         let fontAttributes = [NSAttributedString.Key.font: font]
         let size = self.size(withAttributes: fontAttributes)
@@ -264,4 +155,170 @@ func getTime() -> String {
     formatter.timeStyle = .long
     let dateString = formatter.string(from: Date())
     return dateString
+}
+
+struct DisplayPlayersHandContainer: View {
+    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    var player: PlayerState? = nil
+    var crib: [Int] = []
+    var visibilityFor: TimeInterval
+
+    @State var scoringPlays: [ScoringHand] = []
+    @State var play: ScoringHand? = nil
+    
+    var body: some View {
+        VStack {
+            Text(play?.pointsCallOut ?? "")
+                .font(.title2)
+            HStack {
+                ForEach(player?.cards_in_hand ?? crib, id: \.self) { card in
+                    CardView(cardItem: CardItem(id: card), cardIsDisabled: .constant(true))
+                        .offset(y: play != nil && play!.cardsInScoredHand.contains(card) ? -25 : 0)
+                }
+                .onChange(of: player, initial: true, {
+                    guard (player != nil) ^ (crib != []) else {
+                        return
+                    }
+                    
+                    guard firebaseHelper.gameState != nil else {
+                        return
+                    }
+
+                    if scoringPlays == [] {
+                        if player != nil {
+                            guard player != nil, player!.cards_in_hand != [] else {
+                                return
+                            }
+                            
+                            scoringPlays = firebaseHelper.checkCardsForPoints(player: player, firebaseHelper.gameState!.starter_card)
+                        } else {
+                            scoringPlays = firebaseHelper.checkCardsForPoints(crib: crib, firebaseHelper.gameState!.starter_card)
+                        }
+                    }
+                })
+                .onChange(of: scoringPlays, {
+                    for idx in 0...scoringPlays.count {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + (visibilityFor * Double(idx + 1))) {
+                            if (idx < scoringPlays.count) {
+                                withAnimation {
+                                    play = scoringPlays[idx]
+                                }
+                            } else {
+                                withAnimation {
+                                    play = nil
+                                } completion: {
+                                    
+                                    if (crib != []) {
+                                        Task {
+                                            if (firebaseHelper.playerState!.is_lead) {
+                                                guard scoringPlays != [] else {
+                                                    return
+                                                }
+                                                
+                                                Task {
+                                                    await firebaseHelper.updateTeam(["points": scoringPlays.last!.cumlativePoints + firebaseHelper.teamState!.points], firebaseHelper.gameState!.team_with_crib)
+                                                }
+                                            }
+                                            await firebaseHelper.updatePlayer(["is_ready": true])
+                                        }
+                                    } else {
+                                        Task {
+                                            guard firebaseHelper.gameState != nil, firebaseHelper.playerState != nil, firebaseHelper.playerState != nil, firebaseHelper.playerState!.player_num == player?.player_num, scoringPlays != [] else {
+                                                return
+                                            }
+                                            
+                                            await firebaseHelper.updateTeam(["points": scoringPlays.last!.cumlativePoints + firebaseHelper.teamState!.points])
+                                            await firebaseHelper.updateGame(["player_turn": (firebaseHelper.gameState!.player_turn + 1) % firebaseHelper.gameState!.num_players])
+                                            await firebaseHelper.updatePlayer(["is_ready": true])
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                })
+            }
+            .frame(width: 225, height: 150)
+        }
+    }
+}
+
+struct RandomNumberGeneratorWithSeed: RandomNumberGenerator {
+    private var seed: UInt64
+
+    init(seed: Int) {
+        self.seed = UInt64(seed)
+    }
+
+    mutating func next() -> UInt64 {
+        // Update the seed based on a linear congruential generator algorithm
+        // This is a simple and fast method to generate pseudo-random numbers
+        seed = (seed &* 0x5DEECE66D &+ 0xB) & (1 << 48 - 1)
+        return seed
+    }
+}
+
+struct ScoringHand: Hashable {
+    var scoreType: ScoringType
+    var cumlativePoints: Int
+    var cardsInScoredHand: [Int]
+    var pointsCallOut: String
+}
+
+struct StrokeText: View {
+    let text: String
+    let width: CGFloat
+    let color: Color
+
+    var body: some View {
+        ZStack{
+            ZStack{
+                Text(text).offset(x:  width, y:  width)
+                Text(text).offset(x: -width, y: -width)
+                Text(text).offset(x: -width, y:  width)
+                Text(text).offset(x:  width, y: -width)
+            }
+            .foregroundColor(color)
+            Text(text)
+        }
+    }
+}
+
+struct TimedTextContainer: View {
+    @State private var string: String = ""
+    @State private var idx: Int = 0
+    @Binding var textArray: [String]
+    
+    var visibilityFor: TimeInterval
+    
+    var body: some View {
+        Text(string)
+            .font(.title2)
+            .id(string)
+            .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .opacity))
+            .onChange(of: textArray, initial: true, {
+                if !textArray.isEmpty {
+                    for i in 0...textArray.count {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + (visibilityFor * Double(i))) {
+                            if i >= textArray.count {
+                                withAnimation {
+                                    string = ""
+                                    textArray.removeAll()
+                                }
+                            } else {
+                                withAnimation {
+                                    string = textArray[i]
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+    }
+}
+
+struct VisualEffectView: UIViewRepresentable {
+    var effect: UIVisualEffect?
+    func makeUIView(context: UIViewRepresentableContext<Self>) -> UIVisualEffectView { UIVisualEffectView() }
+    func updateUIView(_ uiView: UIVisualEffectView, context: UIViewRepresentableContext<Self>) { uiView.effect = effect }
 }
