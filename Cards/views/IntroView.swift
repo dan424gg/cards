@@ -8,14 +8,9 @@
 import SwiftUI
 
 struct IntroView: View {
-    var heartImage: Image = Image(systemName: "suit.heart")
-    var spadeImage: Image = Image(systemName: "suit.spade")
-    var diamondImage: Image = Image(systemName: "suit.diamond")
-    var clubImage: Image = Image(systemName: "suit.club")
-    
-    @State var offset: CGFloat = -50.0
-    @State var heartPos: CGPoint = CGPoint(x: 0, y: 0)
-    
+    var detents: Set<PresentationDetent> = [.medium, .fraction(0.02)]
+    @State var detentSelection: PresentationDetent = .medium
+    @State var newGame: Bool = false
     var array: [Int] = Array(0...19)
     
     var body: some View {
@@ -76,6 +71,7 @@ struct IntroView: View {
                         .offset(y: CGFloat(85 * y))
                     }
                 }
+                
                 Text("Cards")
                     .font(.largeTitle)
                     .shadow(color: .white, radius: 5)
@@ -85,21 +81,34 @@ struct IntroView: View {
                     .shadow(color: .white, radius: 5)
                     .position(x: geo.frame(in: .local).width / 2, y: geo.frame(in: .local).height / 3)
                 
-//                HStack {
-//                    NavigationLink {
-//                        NewGame()
-//                    } label: {
-//                        Text("New Game")
-//                    }
-//                    
-//                    NavigationLink {
-//                        ExistingGame()
-//                    } label: {
-//                        Text("Join Game")
-//                    }
+                Button("New Game") {
+                    newGame.toggle()
+                }
+                .buttonStyle(BorderedProminentButtonStyle())
+                
+//                Button("Join Game") {
+//                    ExistingGame()
 //                }
-//                .buttonStyle(.borderedProminent)
+//                .buttonStyle(BorderedProminentButtonStyle())
+
             }
+            .sheet(isPresented: $newGame, content: {
+                VStack {
+                    if detentSelection == .medium {
+                        Text("got here!!")
+                            .transition(.opacity)
+                    } else {
+                        EmptyView()
+                            .transition(.opacity)
+                    }
+                }               
+                .animation(.smooth, value: detentSelection)
+                .presentationCornerRadius(57.0)
+                .presentationBackgroundInteraction(.enabled(upThrough: .fraction(0.02)))
+                .presentationDetents(detents, selection: $detentSelection)
+                .presentationDragIndicator(.visible)
+                .interactiveDismissDisabled()
+            })
         }
         .ignoresSafeArea()
     }
@@ -138,4 +147,5 @@ struct SuitImage: View {
 
 #Preview {
     IntroView()
+        .environmentObject(FirebaseHelper())
 }

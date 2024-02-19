@@ -16,7 +16,7 @@ struct ExistingGame: View {
     @State private var groupId: String = ""
     @State private var fullName: String = ""
     
-    var gameName: String
+    @State var gameName: String = ""
 
     
     private let groupIdFormatter: NumberFormatter = {

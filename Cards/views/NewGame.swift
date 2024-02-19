@@ -12,7 +12,7 @@ struct NewGame: View {
     @State private var fullName: String = ""
     @FocusState private var focusedField: FocusField?
     
-    var gameName: String = "test"
+    @State var gameName: String = "test"
     
     var body: some View {
         VStack {
