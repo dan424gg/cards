@@ -12,15 +12,15 @@ struct ContentView: View {
     @State var universalClicked = "A game"
     
     var body: some View {
-//        GameOutcomeView()
-        NavigationStack {
-            VStack {
-                Text("What game do you want to play??")
-                GameButton(universalClicked: $universalClicked, gameName: "cribbage")
-                GameButton(universalClicked: $universalClicked, gameName: "uno")
-                GameButton(universalClicked: $universalClicked, gameName: "rummy")
-            }
-        }
+        IntroView()
+//        NavigationStack {
+//            VStack {
+//                Text("What game do you want to play??")
+//                GameButton(universalClicked: $universalClicked, gameName: "cribbage")
+//                GameButton(universalClicked: $universalClicked, gameName: "uno")
+//                GameButton(universalClicked: $universalClicked, gameName: "rummy")
+//            }
+//        }
     }
 }
 

@@ -32,6 +32,12 @@
 		1EAE468B2B828C9400F7519B /* GameOutcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EAE46872B828C0800F7519B /* GameOutcomeView.swift */; };
 		1EAE468C2B828C9500F7519B /* GameOutcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EAE46872B828C0800F7519B /* GameOutcomeView.swift */; };
 		1EAE468D2B828C9600F7519B /* GameOutcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EAE46872B828C0800F7519B /* GameOutcomeView.swift */; };
+		1EAE468F2B8296D700F7519B /* IntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EAE468E2B8296D700F7519B /* IntroView.swift */; };
+		1EAE46902B833B2F00F7519B /* IntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EAE468E2B8296D700F7519B /* IntroView.swift */; };
+		1EAE46912B833B3000F7519B /* IntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EAE468E2B8296D700F7519B /* IntroView.swift */; };
+		1EAE46922B833B3000F7519B /* IntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EAE468E2B8296D700F7519B /* IntroView.swift */; };
+		1EAE46932B833B3100F7519B /* IntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EAE468E2B8296D700F7519B /* IntroView.swift */; };
+		1EAE46942B833B3200F7519B /* IntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EAE468E2B8296D700F7519B /* IntroView.swift */; };
 		1EBED90E2AD7BBFF008B85EE /* CardsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED90D2AD7BBFF008B85EE /* CardsApp.swift */; };
 		1EBED9102AD7BBFF008B85EE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED90F2AD7BBFF008B85EE /* ContentView.swift */; };
 		1EBED9122AD7BC00008B85EE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1EBED9112AD7BC00008B85EE /* Assets.xcassets */; };
@@ -339,6 +345,7 @@
 		1EA2457F2AED6F71003B0943 /* TurnOneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnOneView.swift; sourceTree = "<group>"; };
 		1EA245812AED70B3003B0943 /* CardInHandArea.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardInHandArea.swift; sourceTree = "<group>"; };
 		1EAE46872B828C0800F7519B /* GameOutcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOutcomeView.swift; sourceTree = "<group>"; };
+		1EAE468E2B8296D700F7519B /* IntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroView.swift; sourceTree = "<group>"; };
 		1EBED90A2AD7BBFF008B85EE /* Cards.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cards.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EBED90D2AD7BBFF008B85EE /* CardsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsApp.swift; sourceTree = "<group>"; };
 		1EBED90F2AD7BBFF008B85EE /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -611,6 +618,7 @@
 				1EBED9412AD7BCE7008B85EE /* ExistingGame.swift */,
 				1EBED9442AD7BCFE008B85EE /* LoadingScreen.swift */,
 				1E4CC8F72AFB4A3500ECC77B /* GameView.swift */,
+				1EAE468E2B8296D700F7519B /* IntroView.swift */,
 			);
 			path = views;
 			sourceTree = "<group>";
@@ -1031,6 +1039,7 @@
 				1EBED9492AD7BD88008B85EE /* CribbageView.swift in Sources */,
 				1EBED94C2AD7BF2C008B85EE /* Firebase.swift in Sources */,
 				1E4CC8F82AFB4A3500ECC77B /* GameView.swift in Sources */,
+				1EAE468F2B8296D700F7519B /* IntroView.swift in Sources */,
 				1E87BC092B65A6170084BEAB /* PlayerView.swift in Sources */,
 				1EBED93E2AD7BC9A008B85EE /* GameButton.swift in Sources */,
 				1E9C48F62AE7B3F3008C518D /* CardView.swift in Sources */,
@@ -1087,6 +1096,7 @@
 				1ED85E7C2B718B3000807548 /* CribbageView.swift in Sources */,
 				1ED85E7D2B718B3000807548 /* Firebase.swift in Sources */,
 				1ED85E7F2B718B3000807548 /* GameView.swift in Sources */,
+				1EAE46902B833B2F00F7519B /* IntroView.swift in Sources */,
 				1ED85E802B718B3000807548 /* PlayerView.swift in Sources */,
 				1ED85E812B718B3000807548 /* GameButton.swift in Sources */,
 				1ED85E822B718B3000807548 /* CardView.swift in Sources */,
@@ -1126,6 +1136,7 @@
 				1ED85EB52B71904300807548 /* CribbageView.swift in Sources */,
 				1ED85EB62B71904300807548 /* Firebase.swift in Sources */,
 				1ED85EB82B71904300807548 /* GameView.swift in Sources */,
+				1EAE46922B833B3000F7519B /* IntroView.swift in Sources */,
 				1ED85EB92B71904300807548 /* PlayerView.swift in Sources */,
 				1ED85EBA2B71904300807548 /* GameButton.swift in Sources */,
 				1ED85EBB2B71904300807548 /* CardView.swift in Sources */,
@@ -1165,6 +1176,7 @@
 				1ED85F5A2B71904D00807548 /* CribbageView.swift in Sources */,
 				1ED85F5B2B71904D00807548 /* Firebase.swift in Sources */,
 				1ED85F5D2B71904D00807548 /* GameView.swift in Sources */,
+				1EAE46912B833B3000F7519B /* IntroView.swift in Sources */,
 				1ED85F5E2B71904D00807548 /* PlayerView.swift in Sources */,
 				1ED85F5F2B71904D00807548 /* GameButton.swift in Sources */,
 				1ED85F602B71904D00807548 /* CardView.swift in Sources */,
@@ -1204,6 +1216,7 @@
 				1ED85F912B71904E00807548 /* CribbageView.swift in Sources */,
 				1ED85F922B71904E00807548 /* Firebase.swift in Sources */,
 				1ED85F942B71904E00807548 /* GameView.swift in Sources */,
+				1EAE46932B833B3100F7519B /* IntroView.swift in Sources */,
 				1ED85F952B71904E00807548 /* PlayerView.swift in Sources */,
 				1ED85F962B71904E00807548 /* GameButton.swift in Sources */,
 				1ED85F972B71904E00807548 /* CardView.swift in Sources */,
@@ -1243,6 +1256,7 @@
 				1ED85FC82B71904F00807548 /* CribbageView.swift in Sources */,
 				1ED85FC92B71904F00807548 /* Firebase.swift in Sources */,
 				1ED85FCB2B71904F00807548 /* GameView.swift in Sources */,
+				1EAE46942B833B3200F7519B /* IntroView.swift in Sources */,
 				1ED85FCC2B71904F00807548 /* PlayerView.swift in Sources */,
 				1ED85FCD2B71904F00807548 /* GameButton.swift in Sources */,
 				1ED85FCE2B71904F00807548 /* CardView.swift in Sources */,
