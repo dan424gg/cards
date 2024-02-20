@@ -8,9 +8,7 @@
 import SwiftUI
 
 struct IntroView: View {
-    var detents: Set<PresentationDetent> = [.medium, .fraction(0.02)]
-    @State var detentSelection: PresentationDetent = .medium
-    @State var newGame: Bool = false
+    @StateObject var sheetCoordinator = SheetCoordinator<SheetType>()
     var array: [Int] = Array(0...19)
     
     var body: some View {
@@ -81,10 +79,24 @@ struct IntroView: View {
                     .shadow(color: .white, radius: 5)
                     .position(x: geo.frame(in: .local).width / 2, y: geo.frame(in: .local).height / 3)
                 
-                Button("New Game") {
-                    newGame.toggle()
+                HStack {
+                    Button("New Game") {
+                        sheetCoordinator.addSheet(.newGame)
+                    }
+                    .buttonStyle(BorderedProminentButtonStyle())
+                    Button("Join Game") {
+                        sheetCoordinator.addSheet(.existingGame)
+                    }
+                    .buttonStyle(BorderedProminentButtonStyle())
+                    Button("Load Screen") {
+                        sheetCoordinator.addSheet(.loadingScreen)
+                    }
+                    .buttonStyle(BorderedProminentButtonStyle())
+                    Button("Game Stats") {
+                        sheetCoordinator.addSheet(.gameStats)
+                    }
+                    .buttonStyle(BorderedProminentButtonStyle())
                 }
-                .buttonStyle(BorderedProminentButtonStyle())
                 
 //                Button("Join Game") {
 //                    ExistingGame()
@@ -92,23 +104,7 @@ struct IntroView: View {
 //                .buttonStyle(BorderedProminentButtonStyle())
 
             }
-            .sheet(isPresented: $newGame, content: {
-                VStack {
-                    if detentSelection == .medium {
-                        Text("got here!!")
-                            .transition(.opacity)
-                    } else {
-                        EmptyView()
-                            .transition(.opacity)
-                    }
-                }               
-                .animation(.smooth, value: detentSelection)
-                .presentationCornerRadius(57.0)
-                .presentationBackgroundInteraction(.enabled(upThrough: .fraction(0.02)))
-                .presentationDetents(detents, selection: $detentSelection)
-                .presentationDragIndicator(.visible)
-                .interactiveDismissDisabled()
-            })
+            .sheetDisplayer(coordinator: sheetCoordinator)
         }
         .ignoresSafeArea()
     }
