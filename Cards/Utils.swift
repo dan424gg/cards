@@ -148,6 +148,10 @@ extension View {
             elseTransform(self)
         }
     }
+    
+    func sheetCoordinating<Sheet: SheetEnum>(coordinator: SheetCoordinator<Sheet>) -> some View {
+        modifier(SheetCoordinating(coordinator: coordinator))
+    }
 }
 
 func getTime() -> String {
