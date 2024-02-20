@@ -43,6 +43,7 @@ enum SheetType: String, Identifiable, SheetEnum {
                 ExistingGame()
             case .loadingScreen:
                 LoadingScreen()
+                    .padding()
                     .presentationDragIndicator(.visible)
                     .presentationBackgroundInteraction(.enabled)
             case .gameStats:
