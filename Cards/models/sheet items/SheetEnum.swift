@@ -11,14 +11,28 @@ import SwiftUI
 protocol SheetEnum: Identifiable {
     associatedtype Body: View
     
+    var detents: Array<PresentationDetent> { get }
+    
     @ViewBuilder
     func view(coordinator: SheetCoordinator<Self>) -> Body
 }
 
 enum SheetType: String, Identifiable, SheetEnum {
-    case newGame, existingGame, loadingScreen, gamePlay
+    case newGame, existingGame, loadingScreen, gameStats
 
     var id: String { rawValue }
+    var detents: Array<PresentationDetent> {
+        switch self {
+            case .newGame:
+                [.large]
+            case .existingGame:
+                [.large]
+            case .loadingScreen:
+                [.medium, .fraction(0.02)]
+            case .gameStats:
+                [.medium, .fraction(0.02)]
+        }
+    }
 
     @ViewBuilder
     func view(coordinator: SheetCoordinator<SheetType>) -> some View {
@@ -29,8 +43,12 @@ enum SheetType: String, Identifiable, SheetEnum {
                 ExistingGame()
             case .loadingScreen:
                 LoadingScreen()
-            case .gamePlay:
-                Text("this is the game play!")
+                    .presentationDragIndicator(.visible)
+                    .presentationBackgroundInteraction(.enabled)
+            case .gameStats:
+                Text("this is the game stats!")
+                    .presentationDragIndicator(.visible)
+                    .presentationBackgroundInteraction(.enabled)
         }
     }
 }

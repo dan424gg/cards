@@ -6,22 +6,24 @@
 //
 
 import Foundation
+import SwiftUI
 
 final class SheetCoordinator<Sheet: SheetEnum>: ObservableObject {
     @Published var currentSheet: Sheet?
+    @Published var detents: [PresentationDetent] = []
     private var sheetStack: [Sheet] = []
 
     @MainActor
-    func presentSheet(_ sheet: Sheet) {
+    func addSheet(_ sheet: Sheet) {
         sheetStack.append(sheet)
-
+        
         if sheetStack.count == 1 {
             currentSheet = sheet
         }
     }
 
     @MainActor
-    func sheetDismissed() {
+    func removeSheet() {
         sheetStack.removeFirst()
 
         if let nextSheet = sheetStack.first {

@@ -149,8 +149,8 @@ extension View {
         }
     }
     
-    func sheetCoordinating<Sheet: SheetEnum>(coordinator: SheetCoordinator<Sheet>) -> some View {
-        modifier(SheetCoordinating(coordinator: coordinator))
+    func sheetDisplayer<Sheet: SheetEnum>(coordinator: SheetCoordinator<Sheet>) -> some View {
+        modifier(SheetDisplayer(coordinator: coordinator))
     }
 }
 
