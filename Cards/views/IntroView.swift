@@ -8,67 +8,68 @@
 import SwiftUI
 
 struct IntroView: View {
+    @EnvironmentObject var firebaseHelper: FirebaseHelper
     @StateObject var sheetCoordinator = SheetCoordinator<SheetType>()
     var array: [Int] = Array(0...19)
     
     var body: some View {
         GeometryReader { geo in
             ZStack {
-                ZStack {
-                    ForEach(array, id: \.self) { i in
-                        switch (i % 4) {
-                            case 0:
-                                SuitImage(suit: "diamond", index: CGFloat(i), geo: geo)
-                            case 1:
-                                SuitImage(suit: "club", index: CGFloat(i), geo: geo)
-                            case 2:
-                                SuitImage(suit: "heart", index: CGFloat(i), geo: geo)
-                            case 3:
-                                SuitImage(suit: "spade", index: CGFloat(i), geo: geo)
-                            default:
-                                EmptyView()
-                        }
-                    }
-                }
-                ZStack {
-                    ForEach (Array(1...9), id: \.self) { y in
-                        ZStack {
-                            ForEach(array, id: \.self) { i in
-                                switch ((i + y) % 4) {
-                                    case 0:
-                                        SuitImage(suit: "diamond", index: CGFloat(i), geo: geo)
-                                    case 1:
-                                        SuitImage(suit: "club", index: CGFloat(i), geo: geo)
-                                    case 2:
-                                        SuitImage(suit: "heart", index: CGFloat(i), geo: geo)
-                                    case 3:
-                                        SuitImage(suit: "spade", index: CGFloat(i), geo: geo)
-                                    default:
-                                        EmptyView()
-                                }
-                            }
-                        }
-                        .offset(y: CGFloat(-85 * y))
-                        
-                        ZStack {
-                            ForEach(array, id: \.self) { i in
-                                switch ((i + y) % 4) {
-                                    case 0:
-                                        SuitImage(suit: "diamond", index: CGFloat(i), geo: geo)
-                                    case 1:
-                                        SuitImage(suit: "club", index: CGFloat(i), geo: geo)
-                                    case 2:
-                                        SuitImage(suit: "heart", index: CGFloat(i), geo: geo)
-                                    case 3:
-                                        SuitImage(suit: "spade", index: CGFloat(i), geo: geo)
-                                    default:
-                                        EmptyView()
-                                }
-                            }
-                        }
-                        .offset(y: CGFloat(85 * y))
-                    }
-                }
+//                ZStack {
+//                    ForEach(array, id: \.self) { i in
+//                        switch (i % 4) {
+//                            case 0:
+//                                SuitImage(suit: "diamond", index: CGFloat(i), geo: geo)
+//                            case 1:
+//                                SuitImage(suit: "club", index: CGFloat(i), geo: geo)
+//                            case 2:
+//                                SuitImage(suit: "heart", index: CGFloat(i), geo: geo)
+//                            case 3:
+//                                SuitImage(suit: "spade", index: CGFloat(i), geo: geo)
+//                            default:
+//                                EmptyView()
+//                        }
+//                    }
+//                }
+//                ZStack {
+//                    ForEach (Array(1...9), id: \.self) { y in
+//                        ZStack {
+//                            ForEach(array, id: \.self) { i in
+//                                switch ((i + y) % 4) {
+//                                    case 0:
+//                                        SuitImage(suit: "diamond", index: CGFloat(i), geo: geo)
+//                                    case 1:
+//                                        SuitImage(suit: "club", index: CGFloat(i), geo: geo)
+//                                    case 2:
+//                                        SuitImage(suit: "heart", index: CGFloat(i), geo: geo)
+//                                    case 3:
+//                                        SuitImage(suit: "spade", index: CGFloat(i), geo: geo)
+//                                    default:
+//                                        EmptyView()
+//                                }
+//                            }
+//                        }
+//                        .offset(y: CGFloat(-85 * y))
+//                        
+//                        ZStack {
+//                            ForEach(array, id: \.self) { i in
+//                                switch ((i + y) % 4) {
+//                                    case 0:
+//                                        SuitImage(suit: "diamond", index: CGFloat(i), geo: geo)
+//                                    case 1:
+//                                        SuitImage(suit: "club", index: CGFloat(i), geo: geo)
+//                                    case 2:
+//                                        SuitImage(suit: "heart", index: CGFloat(i), geo: geo)
+//                                    case 3:
+//                                        SuitImage(suit: "spade", index: CGFloat(i), geo: geo)
+//                                    default:
+//                                        EmptyView()
+//                                }
+//                            }
+//                        }
+//                        .offset(y: CGFloat(85 * y))
+//                    }
+//                }
                 
                 Text("Cards")
                     .font(.largeTitle)
@@ -77,32 +78,19 @@ struct IntroView: View {
                     .shadow(color: .white, radius: 5)
                     .shadow(color: .white, radius: 5)
                     .shadow(color: .white, radius: 5)
-                    .position(x: geo.frame(in: .local).width / 2, y: geo.frame(in: .local).height / 3)
+                    .position(x: geo.frame(in: .local).midX, y: geo.frame(in: .local).height * 0.33)
                 
-                HStack {
+                VStack {
                     Button("New Game") {
-                        sheetCoordinator.addSheet(.newGame)
+                        sheetCoordinator.showSheet(.newGame)
                     }
                     .buttonStyle(BorderedProminentButtonStyle())
+                    
                     Button("Join Game") {
-                        sheetCoordinator.addSheet(.existingGame)
-                    }
-                    .buttonStyle(BorderedProminentButtonStyle())
-                    Button("Load Screen") {
-                        sheetCoordinator.addSheet(.loadingScreen)
-                    }
-                    .buttonStyle(BorderedProminentButtonStyle())
-                    Button("Game Stats") {
-                        sheetCoordinator.addSheet(.gameStats)
+                        sheetCoordinator.showSheet(.existingGame)
                     }
                     .buttonStyle(BorderedProminentButtonStyle())
                 }
-                
-//                Button("Join Game") {
-//                    ExistingGame()
-//                }
-//                .buttonStyle(BorderedProminentButtonStyle())
-
             }
             .sheetDisplayer(coordinator: sheetCoordinator)
         }

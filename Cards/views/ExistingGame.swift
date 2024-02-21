@@ -10,6 +10,7 @@ import SwiftUISnackbar
 
 struct ExistingGame: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @StateObject var sheetCoordinator = SheetCoordinator<SheetType>()
     @FocusState private var isFocused: Bool
     @State private var notValidGroupId: Bool = true
     @State private var notValidFullName: Bool = true
@@ -43,14 +44,13 @@ struct ExistingGame: View {
             .textFieldStyle(RoundedBorderTextFieldStyle())
             .border(.blue)
             
-            NavigationLink {
-                LoadingScreen()
-                    .task {
-                        await firebaseHelper.joinGameCollection(fullName: fullName, id: groupId, gameName: gameName)
-                    }
-            } label: {
-                Text("Submit")
-                    .buttonStyle(.borderedProminent)
+            Button("Submit") {
+                sheetCoordinator.showSheet(.loadingScreen)
+            }
+            .onTapGesture {
+                Task {
+                    await firebaseHelper.startGameCollection(fullName: fullName, gameName: gameName)
+                }
             }
             .disabled(notValidGroupId || fullName == "")
         }
@@ -69,25 +69,6 @@ struct ExistingGame: View {
             }
         })
         .multilineTextAlignment(.center)
-        .padding([.leading, .trailing], 48)
-        .snackbar(isShowing: $firebaseHelper.showError, 
-                  title: "Not Ready",
-                  text: firebaseHelper.error,
-                  style: .error,
-                  actionText: "dismiss",
-                  dismissOnTap: false,
-                  dismissAfter: nil,
-                  action: { firebaseHelper.showError = false; firebaseHelper.error = "" }
-        )
-        .snackbar(isShowing: $firebaseHelper.showWarning,
-                  title: "Not Ready",
-                  text: firebaseHelper.warning,
-                  style: .warning,
-                  actionText: "dismiss",
-                  dismissOnTap: false,
-                  dismissAfter: nil,
-                  action: { firebaseHelper.showWarning = false; firebaseHelper.warning = "" }
-        )
     }
 }
 

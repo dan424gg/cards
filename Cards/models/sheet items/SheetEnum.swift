@@ -24,13 +24,13 @@ enum SheetType: String, Identifiable, SheetEnum {
     var detents: Array<PresentationDetent> {
         switch self {
             case .newGame:
-                [.large]
+                [.fraction(0.30)]
             case .existingGame:
-                [.large]
+                [.fraction(0.36)]
             case .loadingScreen:
-                [.medium, .fraction(0.02)]
+                [.fraction(0.35), .fraction(0.045)]
             case .gameStats:
-                [.medium, .fraction(0.02)]
+                [.fraction(0.35), .fraction(0.045)]
         }
     }
 
@@ -38,17 +38,16 @@ enum SheetType: String, Identifiable, SheetEnum {
     func view(coordinator: SheetCoordinator<SheetType>) -> some View {
         switch self {
             case .newGame:
-                NewGame()
+                NewGame(sheetCoordinator: coordinator)
             case .existingGame:
-                ExistingGame()
+                ExistingGame(sheetCoordinator: coordinator)
             case .loadingScreen:
                 LoadingScreen()
-                    .padding()
-                    .presentationDragIndicator(.visible)
+                    .interactiveDismissDisabled()
                     .presentationBackgroundInteraction(.enabled)
             case .gameStats:
                 Text("this is the game stats!")
-                    .presentationDragIndicator(.visible)
+                    .interactiveDismissDisabled()
                     .presentationBackgroundInteraction(.enabled)
         }
     }
