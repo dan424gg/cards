@@ -10,31 +10,28 @@ import SwiftUI
 
 struct SheetDisplayer<Sheet: SheetEnum>: ViewModifier {
     @StateObject var coordinator: SheetCoordinator<Sheet>
-    @State var detentSelected: PresentationDetent = .height(0.0)
+    @State var detentSelected: PresentationDetent = .large
     @State var opacity: Double = 1.0
+    @State var offset: Double = 0.0
 
     func body(content: Content) -> some View {
         content
-            .sheet(item: $coordinator.currentSheet, onDismiss: {
-                print("dismissed")
-                detentSelected = .fraction(0.02)
-            }, content: { sheet in
+            .sheet(item: $coordinator.currentSheet, content: { sheet in
                 GeometryReader { geo in
                     sheet
                         .view(coordinator: coordinator)
-                        .padding()
                         .opacity(opacity)
                         .onAppear {
                             detentSelected = sheet.detents.first!
                         }
+                        .padding(geo.frame(in: .global).maxY * 0.0587)
                         .presentationCornerRadius(45.0)
+                        .presentationDragIndicator(.visible)
                         .presentationDetents(Set(sheet.detents), selection: $detentSelected)
-                        .interactiveDismissDisabled()
-                        .onChange(of: geo.frame(in: .local).height, { 
+                        .onChange(of: geo.frame(in: .local).height, { (old, new) in
                             if (geo.frame(in: .global).height / geo.frame(in: .global).maxY <= 0.1) {
                                 withAnimation(.easeInOut(duration: 0.2)) {
-                                    opacity = ((((geo.frame(in: .global).height / geo.frame(in: .global).maxY) - 0.02) / 0.8) * 10)
-                                    print(opacity)
+                                    opacity = ((((new / geo.frame(in: .global).maxY) - 0.045) / 0.8) * 10)
                                 }
                             } else {
                                 withAnimation(.easeInOut(duration: 0.2)) {

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct NewGame: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @StateObject var sheetCoordinator = SheetCoordinator<SheetType>()
     @State private var fullName: String = ""
     @FocusState private var focusedField: FocusField?
     
@@ -22,23 +23,21 @@ struct NewGame: View {
                 "Full Name",
                 text: $fullName
             )
-            .multilineTextAlignment(.center)
             .textFieldStyle(RoundedBorderTextFieldStyle())
             .border(.blue)
-            .padding([.leading, .trailing], 48)
             
-            NavigationStack {
-                NavigationLink {
-                    LoadingScreen()
-                        .task {
-                            await firebaseHelper.startGameCollection(fullName: fullName, gameName: gameName)
-                        }
-                } label: {
-                    Text("Submit")
-                }
-                .disabled(fullName == "")
+            Button("Submit") {
+                sheetCoordinator.showSheet(.loadingScreen)
             }
+            .onTapGesture {
+                Task {
+                    await firebaseHelper.startGameCollection(fullName: fullName, gameName: gameName)
+                }
+            }
+            .disabled(fullName == "")
         }
+        .multilineTextAlignment(.center)
+//        .padding([.leading, .trailing], 48)
     }
 }
 
