@@ -12,6 +12,7 @@ struct LoadingScreen: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @StateObject private var teamOne = TeamObservable(team: TeamState.team_one)
     @StateObject private var teamTwo = TeamObservable(team: TeamState.team_two)
+    @State var size: CGSize = .zero
     
     
     var body: some View {
@@ -77,12 +78,18 @@ struct LoadingScreen: View {
                 Text("Waiting to start game...")
             }
         }
-        .fullScreenCover(isPresented: Binding(
-            get: { firebaseHelper.gameState?.is_playing ?? false },
-            set: {_ in }
-        )) {
-            GameView()
-        }
+        .position(x: size.width / 2, y: size.height / 2)
+        .getSize(onChange: {
+            if size == .zero {
+                size = $0
+            }
+        })
+//        .fullScreenCover(isPresented: Binding(
+//            get: { firebaseHelper.gameState?.is_playing ?? false },
+//            set: {_ in }
+//        )) {
+//            GameView()
+//        }
     }
 }
 

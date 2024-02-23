@@ -24,9 +24,9 @@ enum SheetType: String, Identifiable, SheetEnum {
     var detents: Array<PresentationDetent> {
         switch self {
             case .newGame:
-                [.fraction(0.30)]
+                [.fraction(0.3)]
             case .existingGame:
-                [.fraction(0.36)]
+                [.fraction(0.29)]
             case .loadingScreen:
                 [.fraction(0.35), .fraction(0.045)]
             case .gameStats:
@@ -48,7 +48,7 @@ enum SheetType: String, Identifiable, SheetEnum {
             case .gameStats:
                 Text("this is the game stats!")
                     .interactiveDismissDisabled()
-                    .presentationBackgroundInteraction(.enabled)
+                    .presentationBackgroundInteraction(.enabled(upThrough: .fraction(0.045)))
         }
     }
 }
