@@ -9,6 +9,7 @@ import SwiftUI
 import SwiftUISnackbar
 
 struct ExistingGame: View {
+    @EnvironmentObject var specs: DeviceSpecs
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @StateObject var sheetCoordinator = SheetCoordinator<SheetType>()
     @FocusState private var isFocused: Bool
@@ -16,38 +17,21 @@ struct ExistingGame: View {
     @State private var notValidFullName: Bool = true
     @State private var groupId: String = ""
     @State private var fullName: String = ""
-    
-    @State var gameName: String = ""
 
-    
-    private let groupIdFormatter: NumberFormatter = {
-        let formatter = NumberFormatter()
-        formatter.zeroSymbol = ""
-        return formatter
-        }()
+    @State var gameName: String = ""
+    @State var size: CGSize = .zero
     
     var body: some View {
         VStack {
-            Text("Please enter a Group ID and your name!")
+            Text("Join Game")
+                .foregroundStyle(.black)
                 .font(.title2)
-            TextField(
-                "Group ID",
-                text: $groupId
-            )
-            .textFieldStyle(RoundedBorderTextFieldStyle())
-            .border(.blue)
-            
-            TextField(
-                "Full Name",
-                text: $fullName
-            )
-            .textFieldStyle(RoundedBorderTextFieldStyle())
-            .border(.blue)
+
+            CustomTextField(textFieldHint: "Group ID")
+            CustomTextField(textFieldHint: "Name")
             
             Button("Submit") {
                 sheetCoordinator.showSheet(.loadingScreen)
-            }
-            .onTapGesture {
                 Task {
                     await firebaseHelper.startGameCollection(fullName: fullName, gameName: gameName)
                 }
@@ -68,13 +52,29 @@ struct ExistingGame: View {
                 }
             }
         })
-        .multilineTextAlignment(.center)
+        .position(x: size.width / 2, y: size.height / 2)
+        .getSize(onChange: {
+            if size == .zero {
+                size = $0
+            }
+        })
+        .onTapGesture {
+            endTextEditing()
+        }
     }
 }
 
-struct ExistingGame_Previews: PreviewProvider {
-    static var previews: some View {
+
+#Preview {
+    return GeometryReader { geo in
         ExistingGame(gameName: "Cribbage")
+            .environmentObject({ () -> DeviceSpecs in
+                let envObj = DeviceSpecs()
+                envObj.setProperties(geo)
+                return envObj
+            }() )
             .environmentObject(FirebaseHelper())
+            .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
     }
+    .ignoresSafeArea()
 }

@@ -116,6 +116,14 @@ extension String {
         return self.trimmingCharacters(in: NSCharacterSet.whitespaces)
     }
     
+    func width() -> CGFloat {
+        var size = 0.0
+        
+        size = self.size().width
+        
+        return size
+    }
+    
     func width(usingFont font: UIFont) -> CGFloat {
         let fontAttributes = [NSAttributedString.Key.font: font]
         let size = self.size(withAttributes: fontAttributes)
@@ -128,6 +136,9 @@ extension UTType {
 }
 
 extension View {
+    func endTextEditing() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
     /// Applies the given transform if the given condition evaluates to `true`.
     /// - Parameters:
     ///   - condition: The condition to evaluate.
@@ -147,6 +158,27 @@ extension View {
         } else {
             elseTransform(self)
         }
+    }
+    
+    func getSize(onChange: @escaping (CGSize) -> Void) -> some View {
+        background(
+            GeometryReader { geometryProxy in
+                Color.clear
+                    .preference(key: SizePreferenceKey.self, value: geometryProxy.frame(in: .local).size)
+            }
+        )
+        .onPreferenceChange(SizePreferenceKey.self, perform: onChange)
+    }
+    
+    func getMaxX(onChange: @escaping (_ maxX: Double) -> Void) -> some View {
+        background(
+            GeometryReader { geometryProxy in
+                Color.clear
+                    .onAppear {
+                        onChange(geometryProxy.frame(in: .named("namespace")).maxX)
+                    }
+            }
+        )
     }
     
     func sheetDisplayer<Sheet: SheetEnum>(coordinator: SheetCoordinator<Sheet>) -> some View {
@@ -267,6 +299,16 @@ struct ScoringHand: Hashable {
     var cumlativePoints: Int
     var cardsInScoredHand: [Int]
     var pointsCallOut: String
+}
+
+struct SizePreferenceKey: PreferenceKey {
+    static var defaultValue: CGSize = .zero
+    static func reduce(value: inout CGSize, nextValue: () -> CGSize) {}
+}
+
+struct MaxXPreferenceKey: PreferenceKey {
+    static var defaultValue: Double = 0.0
+    static func reduce(value: inout Double, nextValue: () -> Double) {}
 }
 
 struct StrokeText: View {

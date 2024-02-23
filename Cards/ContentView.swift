@@ -9,24 +9,29 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var specs: DeviceSpecs
     @State var universalClicked = "A game"
     
     var body: some View {
-        IntroView()
-//        NavigationStack {
-//            VStack {
-//                Text("What game do you want to play??")
-//                GameButton(universalClicked: $universalClicked, gameName: "cribbage")
-//                GameButton(universalClicked: $universalClicked, gameName: "uno")
-//                GameButton(universalClicked: $universalClicked, gameName: "rummy")
-//            }
-//        }
+        GeometryReader { geo in
+            IntroView()
+                .onAppear {
+                    specs.setProperties(geo)
+                }
+        }
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
+#Preview {
+    return GeometryReader { geo in
         ContentView()
+            .environmentObject({ () -> DeviceSpecs in
+                let envObj = DeviceSpecs()
+                envObj.setProperties(geo)
+                return envObj
+            }() )
             .environmentObject(FirebaseHelper())
+            .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
     }
+    .ignoresSafeArea()
 }
