@@ -1,25 +1,30 @@
 //
-//  SwiftUIView.swift
+//  CustomTextField.swift
 //  Cards
 //
-//  Created by Daniel Wells on 1/18/24.
+//  Created by Daniel Wells on 2/23/24.
 //
 
+import Foundation
 import SwiftUI
 
-struct SwiftUIView: View {
-    @EnvironmentObject private var specs: DeviceSpecs
-    @State var name: String = ""
+
+struct CustomTextField: View {
+    @EnvironmentObject var specs: DeviceSpecs
+    
+    var textFieldHint: String
+    
+    @FocusState private var hasFocus: Bool
+    @State private var value: String = ""
     @State private var maxX: Double = 0.0
     @State private var size: Double = 0.0
     @State private var nextView: Bool = false
-    @FocusState private var hasFocus: Bool
     
     var body: some View {
         VStack {
             TextField(
-                "Name",
-                text: $name
+                "\(textFieldHint)",
+                text: $value
             )
             .focused($hasFocus)
             .frame(width: size)
@@ -37,22 +42,10 @@ struct SwiftUIView: View {
                 if hasFocus {
                     size = max(specs.maxX * 0.66, size + 50 > specs.maxX ? specs.maxX - 50 : size + 50)
                 } else {
-                    size = name == "" ? specs.maxX * 0.33 : name.width(usingFont: UIFont.systemFont(ofSize: 15)) + 50
+                    size = value == "" ? specs.maxX * 0.33 : value.width(usingFont: UIFont.systemFont(ofSize: 15)) + 50
                 }
             }
         })
-    }
-}
-
-struct TextFieldBorder: TextFieldStyle {
-    func _body(configuration: TextField<Self._Label>) -> some View {
-        configuration
-            .font(.system(size: 15))
-            .padding(10)
-            .overlay(
-                RoundedRectangle(cornerRadius: 30)
-                    .stroke(Color.blue, lineWidth: 0.5)
-            )
     }
 }
 
@@ -60,7 +53,7 @@ struct TextFieldBorder: TextFieldStyle {
     let deviceSpecs = DeviceSpecs()
     
     return GeometryReader { geo in
-        SwiftUIView()
+        CustomTextField(textFieldHint: "Name")
             .environmentObject({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)

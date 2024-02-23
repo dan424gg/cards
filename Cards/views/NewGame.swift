@@ -37,7 +37,6 @@ struct NewGame: View {
             .disabled(fullName == "")
         }
         .multilineTextAlignment(.center)
-//        .padding([.leading, .trailing], 48)
     }
 }
 

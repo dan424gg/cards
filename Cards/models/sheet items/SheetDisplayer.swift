@@ -39,6 +39,7 @@ struct SheetDisplayer<Sheet: SheetEnum>: ViewModifier {
                                 }
                             }
                         })
+                        .frame(alignment: .center)
                 }
             })
     }
