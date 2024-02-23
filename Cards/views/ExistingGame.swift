@@ -15,8 +15,8 @@ struct ExistingGame: View {
     @FocusState private var isFocused: Bool
     @State private var notValidGroupId: Bool = true
     @State private var notValidFullName: Bool = true
-    @State private var groupId: String = ""
-    @State private var fullName: String = ""
+    @State var groupId: String = ""
+    @State var fullName: String = ""
 
     @State var gameName: String = ""
     @State var size: CGSize = .zero
@@ -25,15 +25,15 @@ struct ExistingGame: View {
         VStack {
             Text("Join Game")
                 .foregroundStyle(.black)
-                .font(.title2)
+                .font(.title)
 
-            CustomTextField(textFieldHint: "Group ID")
-            CustomTextField(textFieldHint: "Name")
+            CustomTextField(textFieldHint: "Group ID", value: $groupId)
+            CustomTextField(textFieldHint: "Name", value: $fullName)
             
             Button("Submit") {
                 sheetCoordinator.showSheet(.loadingScreen)
                 Task {
-                    await firebaseHelper.startGameCollection(fullName: fullName, gameName: gameName)
+                    await firebaseHelper.joinGameCollection(fullName: fullName, id: groupId, gameName: gameName)
                 }
             }
             .disabled(notValidGroupId || fullName == "")

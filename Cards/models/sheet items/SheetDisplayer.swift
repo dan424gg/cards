@@ -24,11 +24,13 @@ struct SheetDisplayer<Sheet: SheetEnum>: ViewModifier {
                         .onAppear {
                             detentSelected = sheet.detents.first!
                         }
-                        .padding(geo.frame(in: .global).maxY * 0.0587)
                         .presentationCornerRadius(45.0)
                         .presentationDragIndicator(.visible)
                         .presentationDetents(Set(sheet.detents), selection: $detentSelected)
-                        .onChange(of: geo.frame(in: .local).height, { (old, new) in
+                        .presentationBackground(content: {
+                            Color.white.blur(radius: 70.0)
+                        })
+                        .onChange(of: geo.frame(in: .global).height, { (old, new) in
                             if (geo.frame(in: .global).height / geo.frame(in: .global).maxY <= 0.1) {
                                 withAnimation(.easeInOut(duration: 0.2)) {
                                     opacity = ((((new / geo.frame(in: .global).maxY) - 0.045) / 0.8) * 10)
@@ -39,8 +41,24 @@ struct SheetDisplayer<Sheet: SheetEnum>: ViewModifier {
                                 }
                             }
                         })
-                        .frame(alignment: .center)
                 }
+                .ignoresSafeArea()
+//                .ignoresSafeArea(.keyboard, edges: .bottom)
             })
+
     }
+}
+
+#Preview {
+    return GeometryReader { geo in
+        ContentView()
+            .environmentObject({ () -> DeviceSpecs in
+                let envObj = DeviceSpecs()
+                envObj.setProperties(geo)
+                return envObj
+            }() )
+            .environmentObject(FirebaseHelper())
+            .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
+    }
+    .ignoresSafeArea()
 }

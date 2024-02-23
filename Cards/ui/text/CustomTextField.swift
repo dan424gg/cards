@@ -15,7 +15,7 @@ struct CustomTextField: View {
     var textFieldHint: String
     
     @FocusState private var hasFocus: Bool
-    @State private var value: String = ""
+    @Binding var value: String
     @State private var maxX: Double = 0.0
     @State private var size: Double = 0.0
     @State private var nextView: Bool = false
@@ -42,10 +42,23 @@ struct CustomTextField: View {
                 if hasFocus {
                     size = max(specs.maxX * 0.66, size + 50 > specs.maxX ? specs.maxX - 50 : size + 50)
                 } else {
-                    size = value == "" ? specs.maxX * 0.33 : value.width(usingFont: UIFont.systemFont(ofSize: 15)) + 50
+                    size = value == "" ? specs.maxX * 0.33 : value.width(usingFont: UIFont.systemFont(ofSize: 20)) + 50
                 }
             }
         })
+    }
+}
+
+struct TextFieldBorder: TextFieldStyle {
+    func _body(configuration: TextField<Self._Label>) -> some View {
+        configuration
+            .font(.system(size: 20))
+            .padding(10)
+            .background(
+                RoundedRectangle(cornerRadius: 30)
+                    .fill(.white)
+                    .stroke(Color.gray, lineWidth: 0.5)
+            )
     }
 }
 
@@ -53,7 +66,7 @@ struct CustomTextField: View {
     let deviceSpecs = DeviceSpecs()
     
     return GeometryReader { geo in
-        CustomTextField(textFieldHint: "Name")
+        CustomTextField(textFieldHint: "Name", value: .constant(""))
             .environmentObject({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)

@@ -15,70 +15,70 @@ struct IntroView: View {
     var body: some View {
         GeometryReader { geo in
             ZStack {
-//                ZStack {
-//                    ForEach(array, id: \.self) { i in
-//                        switch (i % 4) {
-//                            case 0:
-//                                SuitImage(suit: "diamond", index: CGFloat(i), geo: geo)
-//                            case 1:
-//                                SuitImage(suit: "club", index: CGFloat(i), geo: geo)
-//                            case 2:
-//                                SuitImage(suit: "heart", index: CGFloat(i), geo: geo)
-//                            case 3:
-//                                SuitImage(suit: "spade", index: CGFloat(i), geo: geo)
-//                            default:
-//                                EmptyView()
-//                        }
-//                    }
-//                }
-//                ZStack {
-//                    ForEach (Array(1...9), id: \.self) { y in
-//                        ZStack {
-//                            ForEach(array, id: \.self) { i in
-//                                switch ((i + y) % 4) {
-//                                    case 0:
-//                                        SuitImage(suit: "diamond", index: CGFloat(i), geo: geo)
-//                                    case 1:
-//                                        SuitImage(suit: "club", index: CGFloat(i), geo: geo)
-//                                    case 2:
-//                                        SuitImage(suit: "heart", index: CGFloat(i), geo: geo)
-//                                    case 3:
-//                                        SuitImage(suit: "spade", index: CGFloat(i), geo: geo)
-//                                    default:
-//                                        EmptyView()
-//                                }
-//                            }
-//                        }
-//                        .offset(y: CGFloat(-85 * y))
-//                        
-//                        ZStack {
-//                            ForEach(array, id: \.self) { i in
-//                                switch ((i + y) % 4) {
-//                                    case 0:
-//                                        SuitImage(suit: "diamond", index: CGFloat(i), geo: geo)
-//                                    case 1:
-//                                        SuitImage(suit: "club", index: CGFloat(i), geo: geo)
-//                                    case 2:
-//                                        SuitImage(suit: "heart", index: CGFloat(i), geo: geo)
-//                                    case 3:
-//                                        SuitImage(suit: "spade", index: CGFloat(i), geo: geo)
-//                                    default:
-//                                        EmptyView()
-//                                }
-//                            }
-//                        }
-//                        .offset(y: CGFloat(85 * y))
-//                    }
-//                }
+                ZStack {
+                    ForEach(array, id: \.self) { i in
+                        switch (i % 4) {
+                            case 0:
+                                SuitImage(suit: "diamond", index: CGFloat(i), geo: geo)
+                            case 1:
+                                SuitImage(suit: "club", index: CGFloat(i), geo: geo)
+                            case 2:
+                                SuitImage(suit: "heart", index: CGFloat(i), geo: geo)
+                            case 3:
+                                SuitImage(suit: "spade", index: CGFloat(i), geo: geo)
+                            default:
+                                EmptyView()
+                        }
+                    }
+                }
+                ZStack {
+                    ForEach (Array(1...9), id: \.self) { y in
+                        ZStack {
+                            ForEach(array, id: \.self) { i in
+                                switch ((i + y) % 4) {
+                                    case 0:
+                                        SuitImage(suit: "diamond", index: CGFloat(i), geo: geo)
+                                    case 1:
+                                        SuitImage(suit: "club", index: CGFloat(i), geo: geo)
+                                    case 2:
+                                        SuitImage(suit: "heart", index: CGFloat(i), geo: geo)
+                                    case 3:
+                                        SuitImage(suit: "spade", index: CGFloat(i), geo: geo)
+                                    default:
+                                        EmptyView()
+                                }
+                            }
+                        }
+                        .offset(y: CGFloat(-85 * y))
+                        
+                        ZStack {
+                            ForEach(array, id: \.self) { i in
+                                switch ((i + y) % 4) {
+                                    case 0:
+                                        SuitImage(suit: "diamond", index: CGFloat(i), geo: geo)
+                                    case 1:
+                                        SuitImage(suit: "club", index: CGFloat(i), geo: geo)
+                                    case 2:
+                                        SuitImage(suit: "heart", index: CGFloat(i), geo: geo)
+                                    case 3:
+                                        SuitImage(suit: "spade", index: CGFloat(i), geo: geo)
+                                    default:
+                                        EmptyView()
+                                }
+                            }
+                        }
+                        .offset(y: CGFloat(85 * y))
+                    }
+                }
                 
-                Text("Cards")
-                    .font(.largeTitle)
+                Text("CARDS")
+                    .font(.system(size: 75))
                     .shadow(color: .white, radius: 5)
                     .shadow(color: .white, radius: 5)
                     .shadow(color: .white, radius: 5)
                     .shadow(color: .white, radius: 5)
                     .shadow(color: .white, radius: 5)
-                    .position(x: geo.frame(in: .local).midX, y: geo.frame(in: .local).height * 0.33)
+                    .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).height * 0.25)
                 
                 VStack {
                     Button("New Game") {
