@@ -130,6 +130,15 @@ struct SuitImage: View {
 }
 
 #Preview {
-    IntroView()
-        .environmentObject(FirebaseHelper())
+    return GeometryReader { geo in
+        IntroView()
+            .environmentObject({ () -> DeviceSpecs in
+                let envObj = DeviceSpecs()
+                envObj.setProperties(geo)
+                return envObj
+            }() )
+            .environmentObject(FirebaseHelper())
+            .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
+    }
+    .ignoresSafeArea()
 }

@@ -14,6 +14,7 @@ struct NewGame: View {
     @FocusState private var focusedField: FocusField?
     @State private var size: CGSize = .zero
     @State var gameName: String = "test"
+    @State var notValid: Bool = true
     
     var body: some View {
         VStack {
@@ -22,14 +23,26 @@ struct NewGame: View {
             
             CustomTextField(textFieldHint: "Name", value: $fullName)
             
-            Button("Submit") {
+            Button("Submit", systemImage: notValid ? "x.circle" : "checkmark.circle", action: {
                 sheetCoordinator.showSheet(.loadingScreen)
                 Task {
                     await firebaseHelper.startGameCollection(fullName: fullName, gameName: gameName)
                 }
-            }
-            .disabled(fullName == "")
+            })
+            .labelStyle(.iconOnly)
+            .symbolRenderingMode(.palette)
+            .foregroundStyle(notValid ? .red : .green)
+            .font(.system(size: 35))
         }
+        .onChange(of: fullName, {
+            withAnimation {
+                if fullName.isEmpty {
+                    notValid = true
+                } else {
+                    notValid = false
+                }
+            }
+        })
         .position(x: size.width / 2, y: size.height / 2)
         .getSize(onChange: {
             if size == .zero {
@@ -38,7 +51,8 @@ struct NewGame: View {
         })
         .onTapGesture {
             endTextEditing()
-        }    }
+        }
+    }
 }
 
 #Preview {
