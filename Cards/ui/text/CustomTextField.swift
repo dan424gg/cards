@@ -40,9 +40,9 @@ struct CustomTextField: View {
         .onChange(of: hasFocus, { (old, new) in
             withAnimation(.snappy(duration: 0.5)) {
                 if hasFocus {
-                    size = max(specs.maxX * 0.66, size + 50 > specs.maxX ? specs.maxX - 50 : size + 50)
+                    size = max(specs.maxX * 0.66, size > specs.maxX ? specs.maxX - 35 : size)
                 } else {
-                    size = value == "" ? specs.maxX * 0.33 : value.width(usingFont: UIFont.systemFont(ofSize: 20)) + 50
+                    size = value == "" ? specs.maxX * 0.33 : value.width(usingFont: UIFont.systemFont(ofSize: 15)) + 35
                 }
             }
         })
@@ -52,12 +52,12 @@ struct CustomTextField: View {
 struct TextFieldBorder: TextFieldStyle {
     func _body(configuration: TextField<Self._Label>) -> some View {
         configuration
-            .font(.system(size: 20))
+            .font(.system(size: 15))
             .padding(10)
             .background(
                 RoundedRectangle(cornerRadius: 30)
                     .fill(.white)
-                    .stroke(Color.gray, lineWidth: 0.5)
+                    .stroke(.black, lineWidth: 0.5)
             )
     }
 }

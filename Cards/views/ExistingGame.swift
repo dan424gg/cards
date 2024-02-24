@@ -13,7 +13,7 @@ struct ExistingGame: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @StateObject var sheetCoordinator = SheetCoordinator<SheetType>()
     @FocusState private var isFocused: Bool
-    @State private var notValidGroupId: Bool = true
+    @State private var notValid: Bool = true
     @State private var notValidFullName: Bool = true
     @State var groupId: String = ""
     @State var fullName: String = ""
@@ -24,34 +24,49 @@ struct ExistingGame: View {
     var body: some View {
         VStack {
             Text("Join Game")
-                .foregroundStyle(.black)
                 .font(.title)
 
             CustomTextField(textFieldHint: "Group ID", value: $groupId)
             CustomTextField(textFieldHint: "Name", value: $fullName)
             
-            Button("Submit") {
+            Button("Submit", systemImage: notValid ? "x.circle" : "checkmark.circle", action: {
                 sheetCoordinator.showSheet(.loadingScreen)
                 Task {
                     await firebaseHelper.joinGameCollection(fullName: fullName, id: groupId, gameName: gameName)
                 }
-            }
-            .disabled(notValidGroupId || fullName == "")
+            })
+            .labelStyle(.iconOnly)
+            .symbolRenderingMode(.palette)
+            .foregroundStyle(notValid ? .red : .green)
+            .font(.system(size: 35))
         }
-        .onChange(of: groupId, {
+        .onChange(of: [groupId, fullName], {
             Task {
-                if groupId.isEmpty || groupId == "" {
-                    notValidGroupId = true
+                if groupId.isEmpty || groupId == "" || fullName.isEmpty || fullName == "" {
+                    withAnimation {
+                        notValid = true
+                    }
                     firebaseHelper.sendWarning(w: "Group ID is not valid!")
                 } else if (await !firebaseHelper.checkValidId(id: groupId)) {
-                    notValidGroupId = true
+                    withAnimation {
+                        notValid = true
+                    }
                     firebaseHelper.sendWarning(w: "Group ID is not valid!")
                 } else {
-                    notValidGroupId = false
+                    withAnimation {
+                        notValid = false
+                    }
                     firebaseHelper.resetWarning()
                 }
             }
         })
+//        .onChange(of: , {
+//            if fullName == "" {
+//                notValid = true
+//            } else {
+//                notValid = false
+//            }
+//        })
         .position(x: size.width / 2, y: size.height / 2)
         .getSize(onChange: {
             if size == .zero {
