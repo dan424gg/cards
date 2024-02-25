@@ -9,123 +9,145 @@ import SwiftUI
 
 struct IntroView: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var specs: DeviceSpecs
     @StateObject var sheetCoordinator = SheetCoordinator<SheetType>()
-    var array: [Int] = Array(0...19)
     
     var body: some View {
-        GeometryReader { geo in
+        ZStack {
+//            SuitLine(index: 0, specs: specs)
+            ForEach(Array(0...25), id: \.self) { i in
+                SuitLine(index: i, specs: specs)
+                    .offset(y: CGFloat(-85 * i))
+            }
+            .position(x: specs.maxX / 2, y: specs.maxY * 1.5)
+            
+//                Text("CARDS")
+//                    .font(.system(size: 75))
+//                    .shadow(color: .white, radius: 5)
+//                    .shadow(color: .white, radius: 5)
+//                    .shadow(color: .white, radius: 5)
+//                    .shadow(color: .white, radius: 5)
+//                    .shadow(color: .white, radius: 5)
+//                    .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).height * 0.25)
+//
+//                VStack {
+//                    Button("New Game") {
+//                        sheetCoordinator.showSheet(.newGame)
+//                    }
+//                    .buttonStyle(BorderedProminentButtonStyle())
+//
+//                    Button("Join Game") {
+//                        sheetCoordinator.showSheet(.existingGame)
+//                    }
+//                    .buttonStyle(BorderedProminentButtonStyle())
+//                }
+        }
+        .sheetDisplayer(coordinator: sheetCoordinator)
+    }
+    
+    struct SuitLine: View {
+        var index: Int
+        var specs: DeviceSpecs
+        var array: [Int] = Array(0...19)
+
+        @State var pos = CGPoint(x: 0.0, y: 0.0)
+        @State var pos2 = CGPoint(x: 0.0, y: 0.0)
+        @State var size: CGSize = .zero
+        @State var duration: Double = 20.0
+        
+        var body: some View {
             ZStack {
-                ZStack {
+                VStack(spacing: 25) {
                     ForEach(array, id: \.self) { i in
-                        switch (i % 4) {
+                        switch ((i + index) % 4) {
                             case 0:
-                                SuitImage(suit: "diamond", index: CGFloat(i), geo: geo)
+                                SuitImage(suit: "diamond", index: CGFloat(0))
+                                    .offset(x: Double(i) * (specs.maxX / -20))
                             case 1:
-                                SuitImage(suit: "club", index: CGFloat(i), geo: geo)
+                                SuitImage(suit: "club", index: CGFloat(i))
+                                    .offset(x: Double(i) * (specs.maxX / -20))
                             case 2:
-                                SuitImage(suit: "heart", index: CGFloat(i), geo: geo)
+                                SuitImage(suit: "heart", index: CGFloat(i))
+                                    .offset(x: Double(i) * (specs.maxX / -20))
                             case 3:
-                                SuitImage(suit: "spade", index: CGFloat(i), geo: geo)
+                                SuitImage(suit: "spade", index: CGFloat(i))
+                                    .offset(x: Double(i) * (specs.maxX / -20))
                             default:
                                 EmptyView()
                         }
                     }
                 }
-                ZStack {
-                    ForEach (Array(1...9), id: \.self) { y in
-                        ZStack {
-                            ForEach(array, id: \.self) { i in
-                                switch ((i + y) % 4) {
-                                    case 0:
-                                        SuitImage(suit: "diamond", index: CGFloat(i), geo: geo)
-                                    case 1:
-                                        SuitImage(suit: "club", index: CGFloat(i), geo: geo)
-                                    case 2:
-                                        SuitImage(suit: "heart", index: CGFloat(i), geo: geo)
-                                    case 3:
-                                        SuitImage(suit: "spade", index: CGFloat(i), geo: geo)
-                                    default:
-                                        EmptyView()
-                                }
-                            }
+                .zIndex(0)
+                .position(pos)
+                .offset(y: size.height / 2)
+                .getSize(onChange: {
+                    if size == .zero {
+                        size = $0
+                    }
+                })
+                .onAppear {
+                    pos = CGPoint(x: specs.maxX, y: 0.0)
+                    withAnimation(.linear(duration: duration / 2)) {
+                        pos = CGPoint(x: 0.0, y: specs.maxY)
+                    } completion: {
+                        pos = CGPoint(x: 2 * specs.maxX, y: -specs.maxY)
+                        withAnimation(.linear(duration: duration).repeatForever(autoreverses: false)) {
+                            pos = CGPoint(x: 0.0, y: specs.maxY)
                         }
-                        .offset(y: CGFloat(-85 * y))
-                        
-                        ZStack {
-                            ForEach(array, id: \.self) { i in
-                                switch ((i + y) % 4) {
-                                    case 0:
-                                        SuitImage(suit: "diamond", index: CGFloat(i), geo: geo)
-                                    case 1:
-                                        SuitImage(suit: "club", index: CGFloat(i), geo: geo)
-                                    case 2:
-                                        SuitImage(suit: "heart", index: CGFloat(i), geo: geo)
-                                    case 3:
-                                        SuitImage(suit: "spade", index: CGFloat(i), geo: geo)
-                                    default:
-                                        EmptyView()
-                                }
-                            }
-                        }
-                        .offset(y: CGFloat(85 * y))
                     }
                 }
                 
-                Text("CARDS")
-                    .font(.system(size: 75))
-                    .shadow(color: .white, radius: 5)
-                    .shadow(color: .white, radius: 5)
-                    .shadow(color: .white, radius: 5)
-                    .shadow(color: .white, radius: 5)
-                    .shadow(color: .white, radius: 5)
-                    .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).height * 0.25)
-                
-                VStack {
-                    Button("New Game") {
-                        sheetCoordinator.showSheet(.newGame)
+                VStack(spacing: 25) {
+                    ForEach(array, id: \.self) { i in
+                        switch ((i + index) % 4) {
+                            case 0:
+                                SuitImage(suit: "diamond", index: CGFloat(0))
+                                    .offset(x: Double(i) * (specs.maxX / -20))
+                            case 1:
+                                SuitImage(suit: "club", index: CGFloat(i))
+                                    .offset(x: Double(i) * (specs.maxX / -20))
+                            case 2:
+                                SuitImage(suit: "heart", index: CGFloat(i))
+                                    .offset(x: Double(i) * (specs.maxX / -20))
+                            case 3:
+                                SuitImage(suit: "spade", index: CGFloat(i))
+                                    .offset(x: Double(i) * (specs.maxX / -20))
+                            default:
+                                EmptyView()
+                        }
                     }
-                    .buttonStyle(BorderedProminentButtonStyle())
-                    
-                    Button("Join Game") {
-                        sheetCoordinator.showSheet(.existingGame)
+                }
+                .zIndex(0)
+                .position(pos2)
+                .offset(y: size.height / 2)
+                .getSize(onChange: {
+                    if size == .zero {
+                        size = $0
                     }
-                    .buttonStyle(BorderedProminentButtonStyle())
+                })
+                .onAppear {
+                    pos2 = CGPoint(x: 2 * specs.maxX, y: -specs.maxY)
+                    withAnimation(.linear(duration: duration)) {
+                        pos2 = CGPoint(x: 0.0, y: specs.maxY)
+                    } completion: {
+                        pos2 = CGPoint(x: 2 * specs.maxX, y: -specs.maxY)
+                        withAnimation(.linear(duration: duration).repeatForever(autoreverses: false)) {
+                            pos2 = CGPoint(x: 0.0, y: specs.maxY)
+                        }
+                    }
                 }
             }
-            .sheetDisplayer(coordinator: sheetCoordinator)
         }
-        .ignoresSafeArea()
     }
-}
-
-struct SuitImage: View {
-    var suit: String
-    var index: CGFloat
-    var geo: GeometryProxy
     
-    @State var pos = CGPoint(x: 0.0, y: 0.0)
-    
-    var body: some View {
-        GeometryReader { geoProxy in
+    struct SuitImage: View {
+        var suit: String
+        var index: CGFloat        
+        
+        var body: some View {
             Image(systemName: "suit.\(suit)")
                 .foregroundColor(suit == "spade" || suit == "club" ? .black.opacity(0.2) : .red.opacity(0.2))
-                .position(pos)
-                .onAppear {
-                    let a = geo.frame(in: .local).maxX + 20.0
-                    let b = geo.frame(in: .local).maxY + 20.0
-                    
-                    pos = CGPoint(x: a - (index * (a / CGFloat(20))), y: (index * (b / CGFloat(20))) - 20.0)
-                    withAnimation(.linear(duration: 100.0 * (1 - (index / 20)))) {
-                        pos = CGPoint(x: -20.0, y: b)
-                    } completion: {
-                        pos = CGPoint(x: a, y: -20.0)
-                        withAnimation(.linear(duration: 100.0).repeatForever(autoreverses: false)) {
-                            pos = CGPoint(x: -20.0, y: b)
-                        }
-                    }
-                }
         }
-        .ignoresSafeArea()
     }
 }
 

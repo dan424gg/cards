@@ -29,10 +29,16 @@ struct CardsApp: App {
         
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environmentObject(firebaseHelper)
-                .environmentObject(deviceSpecs)
-            
+            GeometryReader { geo in
+                ContentView()
+                    .environmentObject(firebaseHelper)
+                    .environmentObject({ () -> DeviceSpecs in
+                        let envObj = DeviceSpecs()
+                        envObj.setProperties(geo)
+                        return envObj
+                    }() )
+            }
+            .ignoresSafeArea()
         }
     }
 }
