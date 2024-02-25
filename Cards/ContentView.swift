@@ -13,12 +13,7 @@ struct ContentView: View {
     @State var universalClicked = "A game"
     
     var body: some View {
-        GeometryReader { geo in
-            IntroView()
-                .onAppear {
-                    specs.setProperties(geo)
-                }
-        }
+        IntroView()
     }
 }
 
