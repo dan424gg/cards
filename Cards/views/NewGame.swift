@@ -31,12 +31,13 @@ struct NewGame: View {
             })
             .labelStyle(.iconOnly)
             .symbolRenderingMode(.palette)
-            .foregroundStyle(notValid ? .red : .green)
+            .foregroundStyle(notValid ? .gray.opacity(0.5) : .green)
+            .disabled(notValid)
             .font(.system(size: 35))
         }
         .onChange(of: fullName, {
             withAnimation {
-                if fullName.isEmpty {
+                if fullName.isEmpty || fullName == "" {
                     notValid = true
                 } else {
                     notValid = false

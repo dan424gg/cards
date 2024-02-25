@@ -14,33 +14,33 @@ struct IntroView: View {
     
     var body: some View {
         ZStack {
-//            SuitLine(index: 0, specs: specs)
-            ForEach(Array(0...25), id: \.self) { i in
+            Text("CARDS")
+                .font(.system(size: 75))
+                .shadow(color: .white, radius: 5)
+                .shadow(color: .white, radius: 5)
+                .shadow(color: .white, radius: 5)
+                .shadow(color: .white, radius: 5)
+                .shadow(color: .white, radius: 5)
+                .position(x: specs.maxX / 2, y: specs.maxY * 0.25)
+
+            VStack {
+                Button("New Game") {
+                    sheetCoordinator.showSheet(.newGame)
+                }
+                .buttonStyle(BorderedProminentButtonStyle())
+
+                Button("Join Game") {
+                    sheetCoordinator.showSheet(.existingGame)
+                }
+                .buttonStyle(BorderedProminentButtonStyle())
+            }
+        }
+        .background {
+            ForEach(Array(0...20), id: \.self) { i in
                 SuitLine(index: i, specs: specs)
                     .offset(y: CGFloat(-85 * i))
             }
             .position(x: specs.maxX / 2, y: specs.maxY * 1.5)
-            
-//                Text("CARDS")
-//                    .font(.system(size: 75))
-//                    .shadow(color: .white, radius: 5)
-//                    .shadow(color: .white, radius: 5)
-//                    .shadow(color: .white, radius: 5)
-//                    .shadow(color: .white, radius: 5)
-//                    .shadow(color: .white, radius: 5)
-//                    .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).height * 0.25)
-//
-//                VStack {
-//                    Button("New Game") {
-//                        sheetCoordinator.showSheet(.newGame)
-//                    }
-//                    .buttonStyle(BorderedProminentButtonStyle())
-//
-//                    Button("Join Game") {
-//                        sheetCoordinator.showSheet(.existingGame)
-//                    }
-//                    .buttonStyle(BorderedProminentButtonStyle())
-//                }
         }
         .sheetDisplayer(coordinator: sheetCoordinator)
     }
@@ -53,7 +53,7 @@ struct IntroView: View {
         @State var pos = CGPoint(x: 0.0, y: 0.0)
         @State var pos2 = CGPoint(x: 0.0, y: 0.0)
         @State var size: CGSize = .zero
-        @State var duration: Double = 20.0
+        @State var duration: Double = 80.0
         
         var body: some View {
             ZStack {
@@ -61,16 +61,16 @@ struct IntroView: View {
                     ForEach(array, id: \.self) { i in
                         switch ((i + index) % 4) {
                             case 0:
-                                SuitImage(suit: "diamond", index: CGFloat(0))
+                                SuitImage(suit: "diamond")
                                     .offset(x: Double(i) * (specs.maxX / -20))
                             case 1:
-                                SuitImage(suit: "club", index: CGFloat(i))
+                                SuitImage(suit: "club")
                                     .offset(x: Double(i) * (specs.maxX / -20))
                             case 2:
-                                SuitImage(suit: "heart", index: CGFloat(i))
+                                SuitImage(suit: "heart")
                                     .offset(x: Double(i) * (specs.maxX / -20))
                             case 3:
-                                SuitImage(suit: "spade", index: CGFloat(i))
+                                SuitImage(suit: "spade")
                                     .offset(x: Double(i) * (specs.maxX / -20))
                             default:
                                 EmptyView()
@@ -99,18 +99,18 @@ struct IntroView: View {
                 
                 VStack(spacing: 25) {
                     ForEach(array, id: \.self) { i in
-                        switch ((i + index) % 4) {
+                        switch ((i + index + 1) % 4) {
                             case 0:
-                                SuitImage(suit: "diamond", index: CGFloat(0))
+                                SuitImage(suit: "diamond")
                                     .offset(x: Double(i) * (specs.maxX / -20))
                             case 1:
-                                SuitImage(suit: "club", index: CGFloat(i))
+                                SuitImage(suit: "club")
                                     .offset(x: Double(i) * (specs.maxX / -20))
                             case 2:
-                                SuitImage(suit: "heart", index: CGFloat(i))
+                                SuitImage(suit: "heart")
                                     .offset(x: Double(i) * (specs.maxX / -20))
                             case 3:
-                                SuitImage(suit: "spade", index: CGFloat(i))
+                                SuitImage(suit: "spade")
                                     .offset(x: Double(i) * (specs.maxX / -20))
                             default:
                                 EmptyView()
@@ -142,11 +142,10 @@ struct IntroView: View {
     
     struct SuitImage: View {
         var suit: String
-        var index: CGFloat        
         
         var body: some View {
             Image(systemName: "suit.\(suit)")
-                .foregroundColor(suit == "spade" || suit == "club" ? .black.opacity(0.2) : .red.opacity(0.2))
+                .foregroundColor(suit == "spade" || suit == "club" ? .black.opacity(0.3) : .red.opacity(0.3))
         }
     }
 }
