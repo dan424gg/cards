@@ -37,7 +37,8 @@ struct ExistingGame: View {
             })
             .labelStyle(.iconOnly)
             .symbolRenderingMode(.palette)
-            .foregroundStyle(notValid ? .red : .green)
+            .foregroundStyle(notValid ? .gray.opacity(0.5) : .green)
+            .disabled(notValid)
             .font(.system(size: 35))
         }
         .onChange(of: [groupId, fullName], {

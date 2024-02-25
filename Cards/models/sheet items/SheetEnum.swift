@@ -44,7 +44,7 @@ enum SheetType: String, Identifiable, SheetEnum {
             case .loadingScreen:
                 LoadingScreen()
                     .interactiveDismissDisabled()
-                    .presentationBackgroundInteraction(.enabled)
+                    .presentationBackgroundInteraction(.enabled(upThrough: .fraction(0.045)))
             case .gameStats:
                 Text("this is the game stats!")
                     .interactiveDismissDisabled()
