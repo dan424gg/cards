@@ -14,7 +14,6 @@ struct ExistingGame: View {
     @StateObject var sheetCoordinator = SheetCoordinator<SheetType>()
     @FocusState private var isFocused: Bool
     @State private var notValid: Bool = true
-    @State private var notValidFullName: Bool = true
     @State var groupId: String = ""
     @State var fullName: String = ""
 
@@ -32,7 +31,7 @@ struct ExistingGame: View {
             Button("Submit", systemImage: notValid ? "x.circle" : "checkmark.circle", action: {
                 sheetCoordinator.showSheet(.loadingScreen)
                 Task {
-                    await firebaseHelper.joinGameCollection(fullName: fullName, id: groupId, gameName: gameName)
+                    await firebaseHelper.joinGameCollection(fullName: fullName, id: groupId)
                 }
             })
             .labelStyle(.iconOnly)

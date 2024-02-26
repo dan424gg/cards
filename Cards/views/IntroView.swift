@@ -11,31 +11,40 @@ struct IntroView: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @EnvironmentObject var specs: DeviceSpecs
     @StateObject var sheetCoordinator = SheetCoordinator<SheetType>()
-    
+        
     var body: some View {
         ZStack {
             Text("CARDS")
                 .font(.system(size: 75))
-                .shadow(color: .white, radius: 5)
-                .shadow(color: .white, radius: 5)
-                .shadow(color: .white, radius: 5)
-                .shadow(color: .white, radius: 5)
-                .shadow(color: .white, radius: 5)
-                .position(x: specs.maxX / 2, y: specs.maxY * 0.25)
+                .foregroundStyle(.black)
+                .primaryShadow()
+                .position(x: specs.maxX / 2, y: specs.maxY * 0.33)
 
-            VStack {
-                Button("New Game") {
-                    sheetCoordinator.showSheet(.newGame)
+            VStack(spacing: 10) {
+                Button {
+                    sheetCoordinator.showSheet(.gameSetUp(type: .newGame))
+                } label: {
+                    Text("New Game")
+                        .frame(width: specs.maxX * 0.66, height: 33)
                 }
-                .buttonStyle(BorderedProminentButtonStyle())
-
-                Button("Join Game") {
-                    sheetCoordinator.showSheet(.existingGame)
+                .tint(.green)
+                .buttonStyle(.bordered)
+                .primaryShadow()
+                
+                Button {
+                    sheetCoordinator.showSheet(.gameSetUp(type: .existingGame))
+                } label: {
+                    Text("Join Game")
+                        .frame(width: specs.maxX * 0.66, height: 33)
                 }
-                .buttonStyle(BorderedProminentButtonStyle())
+                .tint(.green)
+                .buttonStyle(.bordered)
+                .primaryShadow()
             }
+            .position(x: specs.maxX / 2, y: specs.maxY * 0.75)
         }
         .background {
+            Color("Primary")
             ForEach(Array(0...20), id: \.self) { i in
                 SuitLine(index: i, specs: specs)
                     .offset(y: CGFloat(-85 * i))
@@ -99,7 +108,7 @@ struct IntroView: View {
                 
                 VStack(spacing: 25) {
                     ForEach(array, id: \.self) { i in
-                        switch ((i + index + 1) % 4) {
+                        switch ((i + index) % 4) {
                             case 0:
                                 SuitImage(suit: "diamond")
                                     .offset(x: Double(i) * (specs.maxX / -20))
@@ -145,8 +154,26 @@ struct IntroView: View {
         
         var body: some View {
             Image(systemName: "suit.\(suit)")
-                .foregroundColor(suit == "spade" || suit == "club" ? .black.opacity(0.3) : .red.opacity(0.3))
+                .foregroundColor(suit == "spade" || suit == "club" ? .black.opacity(0.4) : .red.opacity(0.4))
         }
+    }
+}
+
+struct GameButton: View {
+    @EnvironmentObject var specs: DeviceSpecs
+    
+    var body: some View {
+        
+        Button {
+//            sheetCoordinator.showSheet(.gameSetUp(type: .existingGame))
+        } label: {
+            Text("Join Game")
+                .frame(width: specs.maxX * 0.66, height: 33)
+        }
+        .tint(.green)
+        .buttonStyle(.bordered)
+        .primaryShadow()
+//        .scaleEffect(1.25)
     }
 }
 

@@ -17,16 +17,24 @@ protocol SheetEnum: Identifiable {
     func view(coordinator: SheetCoordinator<Self>) -> Body
 }
 
-enum SheetType: String, Identifiable, SheetEnum {
-    case newGame, existingGame, loadingScreen, gameStats
+enum SheetType: Identifiable, SheetEnum {
+    case gameSetUp(type: GameSetUpType), loadingScreen, gameStats
 
-    var id: String { rawValue }
+    var id: String {
+        switch self {
+            case .loadingScreen:
+                return "loadingScreen"
+            case .gameStats:
+                return "gameStats"
+            case .gameSetUp:
+                return "gameSetUp"
+        }
+    }
+    
     var detents: Array<PresentationDetent> {
         switch self {
-            case .newGame:
+            case .gameSetUp:
                 [.fraction(0.3)]
-            case .existingGame:
-                [.fraction(0.29)]
             case .loadingScreen:
                 [.fraction(0.35), .fraction(0.045)]
             case .gameStats:
@@ -37,10 +45,8 @@ enum SheetType: String, Identifiable, SheetEnum {
     @ViewBuilder
     func view(coordinator: SheetCoordinator<SheetType>) -> some View {
         switch self {
-            case .newGame:
-                NewGame(sheetCoordinator: coordinator)
-            case .existingGame:
-                ExistingGame(sheetCoordinator: coordinator)
+            case .gameSetUp(let type):
+                GameSetUpView(sheetCoordinator: coordinator, setUpType: type)
             case .loadingScreen:
                 LoadingScreen()
                     .interactiveDismissDisabled()

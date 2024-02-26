@@ -136,9 +136,6 @@ extension UTType {
 }
 
 extension View {
-    func endTextEditing() {
-        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-    }
     /// Applies the given transform if the given condition evaluates to `true`.
     /// - Parameters:
     ///   - condition: The condition to evaluate.
@@ -181,6 +178,15 @@ extension View {
         )
     }
     
+    @ViewBuilder func `primaryShadow`() -> some View {
+        self
+            .shadow(color: Color("Primary"), radius: 5)
+            .shadow(color: Color("Primary"), radius: 5)
+            .shadow(color: Color("Primary"), radius: 5)
+            .shadow(color: Color("Primary"), radius: 5)
+//            .shadow(color: Color("Primary"), radius: 5)
+    }
+    
     func sheetDisplayer<Sheet: SheetEnum>(coordinator: SheetCoordinator<Sheet>) -> some View {
         modifier(SheetDisplayer(coordinator: coordinator))
     }
@@ -191,6 +197,10 @@ func getTime() -> String {
     formatter.timeStyle = .long
     let dateString = formatter.string(from: Date())
     return dateString
+}
+
+func endTextEditing() {
+    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
 }
 
 struct DisplayPlayersHandContainer: View {
