@@ -47,6 +47,12 @@
 		1E8A2E682B89067100A40148 /* CustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8A2E642B89056E00A40148 /* CustomTextField.swift */; };
 		1E8A2E692B89067100A40148 /* CustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8A2E642B89056E00A40148 /* CustomTextField.swift */; };
 		1E8A2E6A2B89067200A40148 /* CustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8A2E642B89056E00A40148 /* CustomTextField.swift */; };
+		1E8A2E6C2B8BADEF00A40148 /* GameSetUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8A2E6B2B8BADEF00A40148 /* GameSetUpView.swift */; };
+		1E8A2E6D2B8D1E4E00A40148 /* GameSetUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8A2E6B2B8BADEF00A40148 /* GameSetUpView.swift */; };
+		1E8A2E6E2B8D1E4F00A40148 /* GameSetUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8A2E6B2B8BADEF00A40148 /* GameSetUpView.swift */; };
+		1E8A2E6F2B8D1E4F00A40148 /* GameSetUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8A2E6B2B8BADEF00A40148 /* GameSetUpView.swift */; };
+		1E8A2E702B8D1E5000A40148 /* GameSetUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8A2E6B2B8BADEF00A40148 /* GameSetUpView.swift */; };
+		1E8A2E712B8D1E5000A40148 /* GameSetUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8A2E6B2B8BADEF00A40148 /* GameSetUpView.swift */; };
 		1E8D31A82B05644300FC9C68 /* DeckOfCardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8D31A72B05644300FC9C68 /* DeckOfCardsView.swift */; };
 		1E8D45EE2B585EE5007543BC /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8D45ED2B585EE5007543BC /* Utils.swift */; };
 		1E939CFD2AE3606D00D64551 /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E939CFC2AE3606D00D64551 /* GameState.swift */; };
@@ -76,7 +82,6 @@
 		1EBED9292AD7BC01008B85EE /* CardsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED9282AD7BC01008B85EE /* CardsUITests.swift */; };
 		1EBED9392AD7BC4E008B85EE /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 1EBED9382AD7BC4E008B85EE /* FirebaseAnalytics */; };
 		1EBED93B2AD7BC4E008B85EE /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 1EBED93A2AD7BC4E008B85EE /* FirebaseFirestore */; };
-		1EBED93E2AD7BC9A008B85EE /* GameButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED93D2AD7BC9A008B85EE /* GameButton.swift */; };
 		1EBED9422AD7BCE7008B85EE /* ExistingGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED9412AD7BCE7008B85EE /* ExistingGame.swift */; };
 		1EBED9452AD7BCFE008B85EE /* LoadingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED9442AD7BCFE008B85EE /* LoadingScreen.swift */; };
 		1EBED9492AD7BD88008B85EE /* CribbageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED9482AD7BD88008B85EE /* CribbageView.swift */; };
@@ -107,7 +112,6 @@
 		1ED85E7D2B718B3000807548 /* Firebase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED94B2AD7BF2C008B85EE /* Firebase.swift */; };
 		1ED85E7F2B718B3000807548 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4CC8F72AFB4A3500ECC77B /* GameView.swift */; };
 		1ED85E802B718B3000807548 /* PlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E87BC082B65A6170084BEAB /* PlayerView.swift */; };
-		1ED85E812B718B3000807548 /* GameButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED93D2AD7BC9A008B85EE /* GameButton.swift */; };
 		1ED85E822B718B3000807548 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9C48F52AE7B3F3008C518D /* CardView.swift */; };
 		1ED85E832B718B3000807548 /* CardInHandArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA245812AED70B3003B0943 /* CardInHandArea.swift */; };
 		1ED85E842B718B3000807548 /* TeamColorPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E002C132B54A3A800948BE5 /* TeamColorPicker.swift */; };
@@ -145,7 +149,6 @@
 		1ED85EB62B71904300807548 /* Firebase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED94B2AD7BF2C008B85EE /* Firebase.swift */; };
 		1ED85EB82B71904300807548 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4CC8F72AFB4A3500ECC77B /* GameView.swift */; };
 		1ED85EB92B71904300807548 /* PlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E87BC082B65A6170084BEAB /* PlayerView.swift */; };
-		1ED85EBA2B71904300807548 /* GameButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED93D2AD7BC9A008B85EE /* GameButton.swift */; };
 		1ED85EBB2B71904300807548 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9C48F52AE7B3F3008C518D /* CardView.swift */; };
 		1ED85EBC2B71904300807548 /* CardInHandArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA245812AED70B3003B0943 /* CardInHandArea.swift */; };
 		1ED85EBD2B71904300807548 /* TeamColorPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E002C132B54A3A800948BE5 /* TeamColorPicker.swift */; };
@@ -183,7 +186,6 @@
 		1ED85F5B2B71904D00807548 /* Firebase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED94B2AD7BF2C008B85EE /* Firebase.swift */; };
 		1ED85F5D2B71904D00807548 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4CC8F72AFB4A3500ECC77B /* GameView.swift */; };
 		1ED85F5E2B71904D00807548 /* PlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E87BC082B65A6170084BEAB /* PlayerView.swift */; };
-		1ED85F5F2B71904D00807548 /* GameButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED93D2AD7BC9A008B85EE /* GameButton.swift */; };
 		1ED85F602B71904D00807548 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9C48F52AE7B3F3008C518D /* CardView.swift */; };
 		1ED85F612B71904D00807548 /* CardInHandArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA245812AED70B3003B0943 /* CardInHandArea.swift */; };
 		1ED85F622B71904D00807548 /* TeamColorPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E002C132B54A3A800948BE5 /* TeamColorPicker.swift */; };
@@ -221,7 +223,6 @@
 		1ED85F922B71904E00807548 /* Firebase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED94B2AD7BF2C008B85EE /* Firebase.swift */; };
 		1ED85F942B71904E00807548 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4CC8F72AFB4A3500ECC77B /* GameView.swift */; };
 		1ED85F952B71904E00807548 /* PlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E87BC082B65A6170084BEAB /* PlayerView.swift */; };
-		1ED85F962B71904E00807548 /* GameButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED93D2AD7BC9A008B85EE /* GameButton.swift */; };
 		1ED85F972B71904E00807548 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9C48F52AE7B3F3008C518D /* CardView.swift */; };
 		1ED85F982B71904E00807548 /* CardInHandArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA245812AED70B3003B0943 /* CardInHandArea.swift */; };
 		1ED85F992B71904E00807548 /* TeamColorPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E002C132B54A3A800948BE5 /* TeamColorPicker.swift */; };
@@ -259,7 +260,6 @@
 		1ED85FC92B71904F00807548 /* Firebase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED94B2AD7BF2C008B85EE /* Firebase.swift */; };
 		1ED85FCB2B71904F00807548 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4CC8F72AFB4A3500ECC77B /* GameView.swift */; };
 		1ED85FCC2B71904F00807548 /* PlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E87BC082B65A6170084BEAB /* PlayerView.swift */; };
-		1ED85FCD2B71904F00807548 /* GameButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED93D2AD7BC9A008B85EE /* GameButton.swift */; };
 		1ED85FCE2B71904F00807548 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9C48F52AE7B3F3008C518D /* CardView.swift */; };
 		1ED85FCF2B71904F00807548 /* CardInHandArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA245812AED70B3003B0943 /* CardInHandArea.swift */; };
 		1ED85FD02B71904F00807548 /* TeamColorPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E002C132B54A3A800948BE5 /* TeamColorPicker.swift */; };
@@ -372,6 +372,7 @@
 		1E87BC082B65A6170084BEAB /* PlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerView.swift; sourceTree = "<group>"; };
 		1E8A2E5A2B87CF3200A40148 /* DeviceSpecs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceSpecs.swift; sourceTree = "<group>"; };
 		1E8A2E642B89056E00A40148 /* CustomTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextField.swift; sourceTree = "<group>"; };
+		1E8A2E6B2B8BADEF00A40148 /* GameSetUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSetUpView.swift; sourceTree = "<group>"; };
 		1E8D31A72B05644300FC9C68 /* DeckOfCardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckOfCardsView.swift; sourceTree = "<group>"; };
 		1E8D45ED2B585EE5007543BC /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		1E939CFC2AE3606D00D64551 /* GameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
@@ -390,7 +391,6 @@
 		1EBED91E2AD7BC01008B85EE /* CardsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsTests.swift; sourceTree = "<group>"; };
 		1EBED9242AD7BC01008B85EE /* CardsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CardsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EBED9282AD7BC01008B85EE /* CardsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsUITests.swift; sourceTree = "<group>"; };
-		1EBED93D2AD7BC9A008B85EE /* GameButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameButton.swift; sourceTree = "<group>"; };
 		1EBED9412AD7BCE7008B85EE /* ExistingGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExistingGame.swift; sourceTree = "<group>"; };
 		1EBED9442AD7BCFE008B85EE /* LoadingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingScreen.swift; sourceTree = "<group>"; };
 		1EBED9482AD7BD88008B85EE /* CribbageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CribbageView.swift; sourceTree = "<group>"; };
@@ -568,7 +568,6 @@
 		1EA2457B2AED6ED4003B0943 /* buttons */ = {
 			isa = PBXGroup;
 			children = (
-				1EBED93D2AD7BC9A008B85EE /* GameButton.swift */,
 				1ECCDABC2AE600DA00EFF167 /* GameStartButton.swift */,
 			);
 			path = buttons;
@@ -691,6 +690,7 @@
 				1EBED9442AD7BCFE008B85EE /* LoadingScreen.swift */,
 				1E4CC8F72AFB4A3500ECC77B /* GameView.swift */,
 				1EAE468E2B8296D700F7519B /* IntroView.swift */,
+				1E8A2E6B2B8BADEF00A40148 /* GameSetUpView.swift */,
 			);
 			path = views;
 			sourceTree = "<group>";
@@ -1114,7 +1114,6 @@
 				1E4CC8F82AFB4A3500ECC77B /* GameView.swift in Sources */,
 				1EAE468F2B8296D700F7519B /* IntroView.swift in Sources */,
 				1E87BC092B65A6170084BEAB /* PlayerView.swift in Sources */,
-				1EBED93E2AD7BC9A008B85EE /* GameButton.swift in Sources */,
 				1E8A2E652B89056E00A40148 /* CustomTextField.swift in Sources */,
 				1E9C48F62AE7B3F3008C518D /* CardView.swift in Sources */,
 				1EA245822AED70B3003B0943 /* CardInHandArea.swift in Sources */,
@@ -1129,6 +1128,7 @@
 				1ED272522B02A49C00B21600 /* NamesAroundTable.swift in Sources */,
 				1E8D31A82B05644300FC9C68 /* DeckOfCardsView.swift in Sources */,
 				1E8A2E5B2B87CF3200A40148 /* DeviceSpecs.swift in Sources */,
+				1E8A2E6C2B8BADEF00A40148 /* GameSetUpView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1176,12 +1176,12 @@
 				1ED85E7F2B718B3000807548 /* GameView.swift in Sources */,
 				1EAE46902B833B2F00F7519B /* IntroView.swift in Sources */,
 				1ED85E802B718B3000807548 /* PlayerView.swift in Sources */,
-				1ED85E812B718B3000807548 /* GameButton.swift in Sources */,
 				1E8A2E662B89067000A40148 /* CustomTextField.swift in Sources */,
 				1ED85E822B718B3000807548 /* CardView.swift in Sources */,
 				1ED85E832B718B3000807548 /* CardInHandArea.swift in Sources */,
 				1ED85E842B718B3000807548 /* TeamColorPicker.swift in Sources */,
 				1ED85E852B718B3000807548 /* LoadingScreen.swift in Sources */,
+				1E8A2E6D2B8D1E4E00A40148 /* GameSetUpView.swift in Sources */,
 				1ED85E862B718B3000807548 /* ExistingGame.swift in Sources */,
 				1ED85E872B718B3000807548 /* TeamState.swift in Sources */,
 				1ED85E882B718B3000807548 /* SwiftUIView.swift in Sources */,
@@ -1221,12 +1221,12 @@
 				1ED85EB82B71904300807548 /* GameView.swift in Sources */,
 				1EAE46922B833B3000F7519B /* IntroView.swift in Sources */,
 				1ED85EB92B71904300807548 /* PlayerView.swift in Sources */,
-				1ED85EBA2B71904300807548 /* GameButton.swift in Sources */,
 				1E8A2E672B89067000A40148 /* CustomTextField.swift in Sources */,
 				1ED85EBB2B71904300807548 /* CardView.swift in Sources */,
 				1ED85EBC2B71904300807548 /* CardInHandArea.swift in Sources */,
 				1ED85EBD2B71904300807548 /* TeamColorPicker.swift in Sources */,
 				1ED85EBE2B71904300807548 /* LoadingScreen.swift in Sources */,
+				1E8A2E6E2B8D1E4F00A40148 /* GameSetUpView.swift in Sources */,
 				1ED85EBF2B71904300807548 /* ExistingGame.swift in Sources */,
 				1ED85EC02B71904300807548 /* TeamState.swift in Sources */,
 				1ED85EC12B71904300807548 /* SwiftUIView.swift in Sources */,
@@ -1266,12 +1266,12 @@
 				1ED85F5D2B71904D00807548 /* GameView.swift in Sources */,
 				1EAE46912B833B3000F7519B /* IntroView.swift in Sources */,
 				1ED85F5E2B71904D00807548 /* PlayerView.swift in Sources */,
-				1ED85F5F2B71904D00807548 /* GameButton.swift in Sources */,
 				1E8A2E682B89067100A40148 /* CustomTextField.swift in Sources */,
 				1ED85F602B71904D00807548 /* CardView.swift in Sources */,
 				1ED85F612B71904D00807548 /* CardInHandArea.swift in Sources */,
 				1ED85F622B71904D00807548 /* TeamColorPicker.swift in Sources */,
 				1ED85F632B71904D00807548 /* LoadingScreen.swift in Sources */,
+				1E8A2E6F2B8D1E4F00A40148 /* GameSetUpView.swift in Sources */,
 				1ED85F642B71904D00807548 /* ExistingGame.swift in Sources */,
 				1ED85F652B71904D00807548 /* TeamState.swift in Sources */,
 				1ED85F662B71904D00807548 /* SwiftUIView.swift in Sources */,
@@ -1311,12 +1311,12 @@
 				1ED85F942B71904E00807548 /* GameView.swift in Sources */,
 				1EAE46932B833B3100F7519B /* IntroView.swift in Sources */,
 				1ED85F952B71904E00807548 /* PlayerView.swift in Sources */,
-				1ED85F962B71904E00807548 /* GameButton.swift in Sources */,
 				1E8A2E692B89067100A40148 /* CustomTextField.swift in Sources */,
 				1ED85F972B71904E00807548 /* CardView.swift in Sources */,
 				1ED85F982B71904E00807548 /* CardInHandArea.swift in Sources */,
 				1ED85F992B71904E00807548 /* TeamColorPicker.swift in Sources */,
 				1ED85F9A2B71904E00807548 /* LoadingScreen.swift in Sources */,
+				1E8A2E702B8D1E5000A40148 /* GameSetUpView.swift in Sources */,
 				1ED85F9B2B71904E00807548 /* ExistingGame.swift in Sources */,
 				1ED85F9C2B71904E00807548 /* TeamState.swift in Sources */,
 				1ED85F9D2B71904E00807548 /* SwiftUIView.swift in Sources */,
@@ -1356,12 +1356,12 @@
 				1ED85FCB2B71904F00807548 /* GameView.swift in Sources */,
 				1EAE46942B833B3200F7519B /* IntroView.swift in Sources */,
 				1ED85FCC2B71904F00807548 /* PlayerView.swift in Sources */,
-				1ED85FCD2B71904F00807548 /* GameButton.swift in Sources */,
 				1E8A2E6A2B89067200A40148 /* CustomTextField.swift in Sources */,
 				1ED85FCE2B71904F00807548 /* CardView.swift in Sources */,
 				1ED85FCF2B71904F00807548 /* CardInHandArea.swift in Sources */,
 				1ED85FD02B71904F00807548 /* TeamColorPicker.swift in Sources */,
 				1ED85FD12B71904F00807548 /* LoadingScreen.swift in Sources */,
+				1E8A2E712B8D1E5000A40148 /* GameSetUpView.swift in Sources */,
 				1ED85FD22B71904F00807548 /* ExistingGame.swift in Sources */,
 				1ED85FD32B71904F00807548 /* TeamState.swift in Sources */,
 				1ED85FD42B71904F00807548 /* SwiftUIView.swift in Sources */,

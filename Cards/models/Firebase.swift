@@ -782,7 +782,7 @@ import FirebaseFirestoreSwift
         await addGameInfoListener()
     }
     
-    func joinGameCollection(fullName: String, id: String, gameName: String) async {
+    func joinGameCollection(fullName: String, id: String) async {
         docRef = db.collection("games").document(id)
 
         do {

@@ -27,9 +27,7 @@ struct SheetDisplayer<Sheet: SheetEnum>: ViewModifier {
                         .presentationCornerRadius(45.0)
                         .presentationDragIndicator(.visible)
                         .presentationDetents(Set(sheet.detents), selection: $detentSelected)
-                        .presentationBackground(content: {
-                            Color.white.blur(radius: 70.0)
-                        })
+                        .presentationBackground(.thinMaterial)
                         .onChange(of: geo.frame(in: .global).height, { (old, new) in
                             if (geo.frame(in: .global).height / geo.frame(in: .global).maxY <= 0.1) {
                                 withAnimation(.easeInOut(duration: 0.2)) {
@@ -46,6 +44,32 @@ struct SheetDisplayer<Sheet: SheetEnum>: ViewModifier {
 //                .ignoresSafeArea(.keyboard, edges: .bottom)
             })
 
+    }
+}
+
+struct ClearBackgroundView: UIViewRepresentable {
+    func makeUIView(context: Context) -> some UIView {
+        let view = UIView()
+        DispatchQueue.main.async {
+            view.superview?.superview?.backgroundColor = .clear
+        }
+        return view
+    }
+    func updateUIView(_ uiView: UIViewType, context: Context) {
+    }
+}
+
+struct ClearBackgroundViewModifier: ViewModifier {
+    
+    func body(content: Content) -> some View {
+        content
+            .background(ClearBackgroundView())
+    }
+}
+
+extension View {
+    func clearModalBackground()->some View {
+        self.modifier(ClearBackgroundViewModifier())
     }
 }
 
