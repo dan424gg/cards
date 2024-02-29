@@ -11,17 +11,14 @@ struct GameStartButton: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     
     var body: some View {
-        VStack {
-            Button("Play!") {
-                Task {
-                    await firebaseHelper.reorderPlayerNumbers()
-                    await firebaseHelper.updateGame(["is_playing": true, "turn": 1])
-                }
+        Button("Play!") {
+            Task {
+                await firebaseHelper.reorderPlayerNumbers()
+                await firebaseHelper.updateGame(["is_playing": true, "turn": 1])
             }
-            .buttonStyle(.borderedProminent)
-            .padding()
-            .disabled((firebaseHelper.gameState?.group_id ?? 0) == 0 || !equalNumOfPlayersOnTeam(players: firebaseHelper.players))
         }
+        .buttonStyle(.borderedProminent)
+        .disabled((firebaseHelper.gameState?.group_id ?? 0) == 0 || !equalNumOfPlayersOnTeam(players: firebaseHelper.players))
     }
 }
 
