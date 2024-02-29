@@ -472,9 +472,21 @@ import FirebaseFirestoreSwift
                         ])
                         
                         break
+                    
+                    case "game_name":
+                        guard type(of: value) is String.Type else {
+                            print("\(key): \(value) needs to be String in updateGame()!")
+                            return
+                        }
+                        
+                        try await docRef!.updateData([
+                            "\(key)": value
+                        ])
+                        
+                        break
                         
                     default:
-                        print("UPDATEGAME: key:\(key) doesn't exist when trying to update game!")
+                        print("UPDATEGAME: key: \(key) doesn't exist when trying to update game!")
                         return
                 }
             }
@@ -737,7 +749,7 @@ import FirebaseFirestoreSwift
         }
     }
     
-    func startGameCollection(fullName: String, gameName: String, testGroupId: Int? = nil) async {
+    func startGameCollection(fullName: String, testGroupId: Int? = nil) async {
         var groupId = 0
         
         #if DEBUG
@@ -762,7 +774,7 @@ import FirebaseFirestoreSwift
         docRef = db.collection("games").document("\(groupId)")
         
         do {
-            gameState = GameState(group_id: groupId, num_teams: 1, turn: 0, game_name: gameName, num_players: 1)
+            gameState = GameState(group_id: groupId, num_teams: 1, turn: 0, num_players: 1)
             let color = gameState!.colors_available.randomElement()!
             gameState!.colors_available = gameState!.colors_available.filter { $0 != color }
             try docRef!.setData(from: gameState)

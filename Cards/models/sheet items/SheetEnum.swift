@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-protocol SheetEnum: Identifiable {
+protocol SheetEnum: Equatable, Identifiable {
     associatedtype Body: View
     
     var detents: Array<PresentationDetent> { get }
@@ -34,11 +34,11 @@ enum SheetType: Identifiable, SheetEnum {
     var detents: Array<PresentationDetent> {
         switch self {
             case .gameSetUp:
-                [.fraction(0.3)]
+                [.fraction(0.25)]
             case .loadingScreen:
-                [.fraction(0.35), .fraction(0.045)]
+                [.fraction(0.4), .fraction(0.045), .large]
             case .gameStats:
-                [.fraction(0.35), .fraction(0.045)]
+                [.fraction(0.25), .fraction(0.045), .large]
         }
     }
 

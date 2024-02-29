@@ -11,46 +11,64 @@ struct IntroView: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @EnvironmentObject var specs: DeviceSpecs
     @StateObject var sheetCoordinator = SheetCoordinator<SheetType>()
-        
+    
+    @State var scale: Double = 1.0
+            
     var body: some View {
         ZStack {
-            Text("CARDS")
-                .font(.system(size: 75))
-                .foregroundStyle(.black)
-                .primaryShadow()
+//            Text("CARDS")
+//                .font(.system(size: 100))
+//                .foregroundStyle(.black)
+//                .primaryShadow()
+//                .position(x: specs.maxX / 2, y: specs.maxY * 0.25)
+            
+            Image("Cards")
+                .scaleEffect(0.5)
                 .position(x: specs.maxX / 2, y: specs.maxY * 0.33)
 
             VStack(spacing: 10) {
-                Button {
-                    sheetCoordinator.showSheet(.gameSetUp(type: .newGame))
-                } label: {
-                    Text("New Game")
-                        .frame(width: specs.maxX * 0.66, height: 33)
-                }
-                .tint(.green)
-                .buttonStyle(.bordered)
-                .primaryShadow()
-                
                 Button {
                     sheetCoordinator.showSheet(.gameSetUp(type: .existingGame))
                 } label: {
                     Text("Join Game")
                         .frame(width: specs.maxX * 0.66, height: 33)
                 }
-                .tint(.green)
+                .background(.thinMaterial)
+                .tint(Color("OffWhite"))
                 .buttonStyle(.bordered)
-                .primaryShadow()
+                
+                Button {
+                    sheetCoordinator.showSheet(.gameSetUp(type: .newGame))
+                } label: {
+                    Text("New Game")
+                        .frame(width: specs.maxX * 0.66, height: 33)
+                }
+                .background(.thinMaterial)
+                .tint(Color("OffWhite"))
+                .buttonStyle(.bordered)
             }
             .position(x: specs.maxX / 2, y: specs.maxY * 0.75)
         }
         .background {
-            Color("Primary")
+            Color("OffWhite")
+                .opacity(0.05)
             ForEach(Array(0...20), id: \.self) { i in
                 SuitLine(index: i, specs: specs)
                     .offset(y: CGFloat(-85 * i))
             }
             .position(x: specs.maxX / 2, y: specs.maxY * 1.5)
         }
+//        .overlay(
+//            RoundedRectangle(cornerRadius: 45.0, style: .circular)
+//                .stroke(.red, lineWidth: 10.0)
+//                .position(x: specs.maxX / 2, y: specs.maxY * 1.42)
+//                .scaleEffect(scale)
+//        )
+//        .onAppear {
+//            withAnimation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true)) {
+//                scale = 1.2
+//            }
+//        }
         .sheetDisplayer(coordinator: sheetCoordinator)
     }
     

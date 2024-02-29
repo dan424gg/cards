@@ -9,8 +9,9 @@ import SwiftUI
 
 struct TeamColorPicker: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
-    @State var teamColor: String = "White"
-    @State var listOfColorsAvailable: [String] = []
+    @State var teamColor: String = ""
+    @State var listOfColorsAvailable: [String] = ["Red", "Blue", "Teal", "Green", "Yellow", "Orange"]
+    @State var size: CGSize = .zero
         
     var body: some View {
         Menu {
@@ -28,13 +29,17 @@ struct TeamColorPicker: View {
                 }
             }
         } label: {
-            Rectangle()
-                .fill(teamColor == "" ? .white : Color(teamColor))
-                .aspectRatio(1.0, contentMode: .fill)
+            HStack {
+//                Text(teamColor)
+//                    .font(.system(size: 12))
+                Rectangle()
+                    .fill(teamColor == "" ? .white : Color(teamColor))
+                    .font(.system(size: 15))
+                    .frame(width: 15, height: 15)
+            }
         }
-        .frame(width: 15, height: 15)
         .onChange(of: firebaseHelper.teamState, initial: true, {
-            teamColor = firebaseHelper.teamState?.color ?? "White" 
+            teamColor = firebaseHelper.teamState?.color ?? "Orange"
         })
         .onChange(of: firebaseHelper.gameState?.colors_available, initial: true, {
             listOfColorsAvailable = firebaseHelper.gameState?.colors_available ?? ["Red", "Blue", "Teal", "Green", "Yellow", "Orange"]

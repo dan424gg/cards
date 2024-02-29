@@ -13,15 +13,24 @@ struct TeamPicker: View {
     
     var body: some View {
         VStack {
-            Picker("Team", selection: $teamNum) {
-                if (firebaseHelper.gameState?.num_teams ?? 2) == 3 {
-                    ForEach(1...3, id:\.self) { num in
-                        Text("\(num)")
+            Menu {
+                Picker("Team", selection: $teamNum) {
+                    if (firebaseHelper.gameState?.num_teams ?? 2) == 3 {
+                        ForEach(1...3, id:\.self) { num in
+                            Text("\(num)")
+                        }
+                    } else {
+                        ForEach(1...2, id:\.self) { num in
+                            Text("\(num)")
+                        }
                     }
-                } else {
-                    ForEach(1...2, id:\.self) { num in
-                        Text("\(num)")
-                    }
+                }
+            } label: {
+                HStack(spacing: 2) {
+                    Text("\(teamNum)")
+                        .font(.system(size: 15))
+//                    Image(systemName: "arrow.up.and.down")
+//                        .font(.system(size: 15, weight: .regular))
                 }
             }
         }

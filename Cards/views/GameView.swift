@@ -139,24 +139,24 @@ struct GameView: View {
                     }
                 }
             })
-            .snackbar(isShowing: $firebaseHelper.showError,
-                      title: "Not Ready",
-                      text: firebaseHelper.error,
-                      style: .error,
-                      actionText: "dismiss",
-                      dismissOnTap: false,
-                      dismissAfter: nil,
-                      action: { firebaseHelper.showError = false; firebaseHelper.error = "" }
-            )
-            .snackbar(isShowing: $firebaseHelper.showWarning,
-                      title: "Not Ready",
-                      text: firebaseHelper.warning,
-                      style: .warning,
-                      actionText: "dismiss",
-                      dismissOnTap: false,
-                      dismissAfter: nil,
-                      action: { firebaseHelper.showWarning = false; firebaseHelper.warning = "" }
-            )
+//            .snackbar(isShowing: $firebaseHelper.showError,
+//                      title: "Not Ready",
+//                      text: firebaseHelper.error,
+//                      style: .error,
+//                      actionText: "dismiss",
+//                      dismissOnTap: false,
+//                      dismissAfter: nil,
+//                      action: { firebaseHelper.showError = false; firebaseHelper.error = "" }
+//            )
+//            .snackbar(isShowing: $firebaseHelper.showWarning,
+//                      title: "Not Ready",
+//                      text: firebaseHelper.warning,
+//                      style: .warning,
+//                      actionText: "dismiss",
+//                      dismissOnTap: false,
+//                      dismissAfter: nil,
+//                      action: { firebaseHelper.showWarning = false; firebaseHelper.warning = "" }
+//            )
         }
     }
 }

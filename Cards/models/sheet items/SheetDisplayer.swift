@@ -10,7 +10,8 @@ import SwiftUI
 
 struct SheetDisplayer<Sheet: SheetEnum>: ViewModifier {
     @StateObject var coordinator: SheetCoordinator<Sheet>
-    @State var detentSelected: PresentationDetent = .large
+    @State var detentSelected: PresentationDetent = .fraction(0.25)
+    @State var detents: [PresentationDetent] = [.fraction(0.25)]
     @State var opacity: Double = 1.0
     @State var offset: Double = 0.0
 
@@ -21,17 +22,15 @@ struct SheetDisplayer<Sheet: SheetEnum>: ViewModifier {
                     sheet
                         .view(coordinator: coordinator)
                         .opacity(opacity)
-                        .onAppear {
-                            detentSelected = sheet.detents.first!
-                        }
                         .presentationCornerRadius(45.0)
                         .presentationDragIndicator(.visible)
-                        .presentationDetents(Set(sheet.detents), selection: $detentSelected)
+                        .presentationDetents(Set(detents), selection: $detentSelected)
                         .presentationBackground(.thinMaterial)
-                        .onChange(of: geo.frame(in: .global).height, { (old, new) in
-                            if (geo.frame(in: .global).height / geo.frame(in: .global).maxY <= 0.1) {
+                        .onChange(of: geo.frame(in: .local).height, { (old, new) in
+                            print(geo.frame(in: .local).height, geo.frame(in: .global).maxY)
+                            if ((geo.frame(in: .local).height / geo.frame(in: .global).maxY) <= 0.2) {
                                 withAnimation(.easeInOut(duration: 0.2)) {
-                                    opacity = ((((new / geo.frame(in: .global).maxY) - 0.045) / 0.8) * 10)
+                                    opacity = ((((new / geo.frame(in: .global).maxY) - 0.08) / 0.8) * 10)
                                 }
                             } else {
                                 withAnimation(.easeInOut(duration: 0.2)) {
@@ -41,9 +40,15 @@ struct SheetDisplayer<Sheet: SheetEnum>: ViewModifier {
                         })
                 }
                 .ignoresSafeArea()
-//                .ignoresSafeArea(.keyboard, edges: .bottom)
             })
-
+            .onChange(of: coordinator.currentSheet, initial: true, { (old, new) in
+                guard coordinator.currentSheet != nil else {
+                    return
+                }
+                
+                detents = new!.detents.filter({ $0 != .large })
+                detentSelected = detents.first!
+            })
     }
 }
 
