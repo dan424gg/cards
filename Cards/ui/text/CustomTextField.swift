@@ -18,31 +18,32 @@ struct CustomTextField: View {
     @Binding var value: String
     @State private var maxX: Double = 0.0
     @State private var size: Double = 0.0
-    @State private var nextView: Bool = false
     
     var body: some View {
-        VStack {
-            TextField(
-                "\(textFieldHint)",
-                text: $value
-            )
-            .focused($hasFocus)
-            .frame(width: size)
-            .textFieldStyle(TextFieldBorder())
-            .multilineTextAlignment(.center)
-            .disabled(nextView)
-        }
-        .onChange(of: specs.maxX, initial: true, {
-            if specs.maxX != 0.0 {
-                size = specs.maxX * 0.33
+//        GeometryReader { geo in
+            VStack {
+                TextField(
+                    "\(textFieldHint)",
+                    text: $value
+                )
+                .focused($hasFocus)
+                .frame(width: size)
+                .textFieldStyle(TextFieldBorder())
+                .multilineTextAlignment(.center)
             }
-        })
+//            .position(x: specs.maxX / 2, y: specs.maxY / 2)
+//        }
+//        .background(Color("OffWhite").opacity(0.1))
+        .onAppear {
+            maxX = specs.maxX
+            size = maxX * 0.33
+        }
         .onChange(of: hasFocus, { (old, new) in
             withAnimation(.snappy(duration: 0.5)) {
                 if hasFocus {
-                    size = max(specs.maxX * 0.66, size > specs.maxX ? specs.maxX - 35 : size)
+                    size = max(specs.maxX * 0.66, size > maxX ? maxX - 35 : size)
                 } else {
-                    size = value == "" ? specs.maxX * 0.33 : value.width(usingFont: UIFont.systemFont(ofSize: 15)) + 35
+                    size = value == "" ? maxX * 0.33 : value.width(usingFont: UIFont.systemFont(ofSize: 15)) + 35
                 }
             }
         })
@@ -57,7 +58,7 @@ struct TextFieldBorder: TextFieldStyle {
             .background(
                 RoundedRectangle(cornerRadius: 30)
                     .fill(.white)
-                    .stroke(.black, lineWidth: 0.5)
+                    .stroke(.green, lineWidth: 1.0)
             )
     }
 }

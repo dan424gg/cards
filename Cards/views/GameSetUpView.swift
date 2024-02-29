@@ -25,11 +25,11 @@ struct GameSetUpView: View {
             switch setUpType {
                 case .newGame:
                     Text("New Game")
-                        .font(.title)
+                        .font(.title2)
                     CustomTextField(textFieldHint: "Name", value: $fullName)
                 case .existingGame:
                     Text("Join Game")
-                        .font(.title)
+                        .font(.title2)
                     CustomTextField(textFieldHint: "Group ID", value: $groupId)
                     CustomTextField(textFieldHint: "Name", value: $fullName)
             }
@@ -39,7 +39,7 @@ struct GameSetUpView: View {
                 Task {
                     switch setUpType {
                         case .newGame:
-                            await firebaseHelper.startGameCollection(fullName: fullName, gameName: gameName)
+                            await firebaseHelper.startGameCollection(fullName: fullName)
                         case .existingGame:
                             await firebaseHelper.joinGameCollection(fullName: fullName, id: groupId)
                     }
@@ -76,12 +76,11 @@ struct GameSetUpView: View {
                 }
             }
         })
-        .position(x: size.width / 2, y: size.height / 2)
-        .getSize(onChange: {
-            if size == .zero {
-                size = $0
-            }
-        })
+        .onAppear {
+            size = CGSize(width: specs.maxX * 0.66, height: specs.maxY * 0.25)
+        }
+        .frame(width: specs.maxX * 0.66, height: specs.maxY * 0.25)
+        .position(x: specs.maxX / 2, y: size.height / 2)
         .onTapGesture {
             endTextEditing()
         }

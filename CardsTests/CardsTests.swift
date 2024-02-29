@@ -21,18 +21,18 @@ final class LoadingScreenTests: XCTestCase {
         repeat {
             randId = Int.random(in: 10000..<99999)
         } while (await playerOne.checkValidId(id: "\(randId)"))
-        await playerOne.startGameCollection(fullName: "1", gameName: "Cribbage", testGroupId: randId)
+        await playerOne.startGameCollection(fullName: "1",  testGroupId: randId)
         
         let playerTwo = FirebaseHelper()
-        await playerTwo.joinGameCollection(fullName: "2", id: "\(randId)", gameName: "Cribbage")
+        await playerTwo.joinGameCollection(fullName: "2", id: "\(randId)")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         
         let playerThree = FirebaseHelper()
-        await playerThree.joinGameCollection(fullName: "3", id: "\(randId)", gameName: "Cribbage")
+        await playerThree.joinGameCollection(fullName: "3", id: "\(randId)")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
 
         let playerFour = FirebaseHelper()
-        await playerFour.joinGameCollection(fullName: "4", id: "\(randId)", gameName: "Cribbage")
+        await playerFour.joinGameCollection(fullName: "4", id: "\(randId)")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.5)
         
         XCTAssertTrue(playerThree.teamState!.team_num == 1)

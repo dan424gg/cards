@@ -48,7 +48,6 @@ struct Cribbage: View {
         .onChange(of: firebaseHelper.players) {
             if firebaseHelper.playerState!.is_lead && firebaseHelper.playersAreReady() && !insideTurnChange {
                 insideTurnChange.toggle()
-                print("triggered")
                 Task {
                     if (firebaseHelper.gameState!.turn == 2) {
                         await firebaseHelper.updateGame(["play_cards": [] as! [Int], "running_sum": 0, "num_go": 0, "player_turn": 0], arrayAction: .replace)
