@@ -31,44 +31,33 @@ struct IntroView: View {
                     sheetCoordinator.showSheet(.gameSetUp(type: .existingGame))
                 } label: {
                     Text("Join Game")
-                        .frame(width: specs.maxX * 0.66, height: 33)
+                        .frame(width: specs.maxX * 0.75, height: 33)
                 }
                 .background(.thinMaterial)
-                .tint(Color("OffWhite"))
+                .tint(Color("OffWhite").opacity(0.7))
                 .buttonStyle(.bordered)
                 
                 Button {
                     sheetCoordinator.showSheet(.gameSetUp(type: .newGame))
                 } label: {
                     Text("New Game")
-                        .frame(width: specs.maxX * 0.66, height: 33)
+                        .frame(width: specs.maxX * 0.75, height: 33)
                 }
                 .background(.thinMaterial)
-                .tint(Color("OffWhite"))
+                .tint(Color("OffWhite").opacity(0.7))
                 .buttonStyle(.bordered)
             }
             .position(x: specs.maxX / 2, y: specs.maxY * 0.75)
         }
         .background {
             Color("OffWhite")
-                .opacity(0.05)
+                .opacity(0.07)
             ForEach(Array(0...20), id: \.self) { i in
                 SuitLine(index: i, specs: specs)
                     .offset(y: CGFloat(-85 * i))
             }
             .position(x: specs.maxX / 2, y: specs.maxY * 1.5)
         }
-//        .overlay(
-//            RoundedRectangle(cornerRadius: 45.0, style: .circular)
-//                .stroke(.red, lineWidth: 10.0)
-//                .position(x: specs.maxX / 2, y: specs.maxY * 1.42)
-//                .scaleEffect(scale)
-//        )
-//        .onAppear {
-//            withAnimation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true)) {
-//                scale = 1.2
-//            }
-//        }
         .sheetDisplayer(coordinator: sheetCoordinator)
     }
     

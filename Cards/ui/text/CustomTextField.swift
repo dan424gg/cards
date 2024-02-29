@@ -31,9 +31,6 @@ struct CustomTextField: View {
                 .textFieldStyle(TextFieldBorder())
                 .multilineTextAlignment(.center)
             }
-//            .position(x: specs.maxX / 2, y: specs.maxY / 2)
-//        }
-//        .background(Color("OffWhite").opacity(0.1))
         .onAppear {
             maxX = specs.maxX
             size = maxX * 0.33
@@ -58,7 +55,7 @@ struct TextFieldBorder: TextFieldStyle {
             .background(
                 RoundedRectangle(cornerRadius: 30)
                     .fill(.white)
-                    .stroke(.green, lineWidth: 1.0)
+                    .stroke(Color("OffWhite"), lineWidth: 1.0)
             )
     }
 }
