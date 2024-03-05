@@ -13,7 +13,7 @@ import FirebaseFirestore
 
 public struct TeamState: Hashable, Codable {
     var team_num: Int = 0
-    var points: Int = 120
+    var points: Int = 0
     var color: String = "White"
     
     static let team_one = TeamState(team_num: 1, points: 50, color: "Red")

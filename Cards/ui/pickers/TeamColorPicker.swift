@@ -34,7 +34,7 @@ struct TeamColorPicker: View {
 //                    .font(.system(size: 12))
                 Rectangle()
                     .fill(teamColor == "" ? .white : Color(teamColor))
-                    .font(.system(size: 15))
+                    .font(.system(size: 15, weight: .thin))
                     .frame(width: 15, height: 15)
             }
         }
