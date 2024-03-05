@@ -39,6 +39,12 @@
 		1E4722B22B8E4D630067A890 /* GamePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4722AD2B8E4BBE0067A890 /* GamePicker.swift */; };
 		1E4722B32B8E4D630067A890 /* GamePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4722AD2B8E4BBE0067A890 /* GamePicker.swift */; };
 		1E4CC8F82AFB4A3500ECC77B /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4CC8F72AFB4A3500ECC77B /* GameView.swift */; };
+		1E7E89232B9107F100E3626E /* LineOfSuits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7E89222B9107F100E3626E /* LineOfSuits.swift */; };
+		1E7E89242B91089000E3626E /* LineOfSuits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7E89222B9107F100E3626E /* LineOfSuits.swift */; };
+		1E7E89252B91089000E3626E /* LineOfSuits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7E89222B9107F100E3626E /* LineOfSuits.swift */; };
+		1E7E89262B91089100E3626E /* LineOfSuits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7E89222B9107F100E3626E /* LineOfSuits.swift */; };
+		1E7E89272B91089100E3626E /* LineOfSuits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7E89222B9107F100E3626E /* LineOfSuits.swift */; };
+		1E7E89282B91089200E3626E /* LineOfSuits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7E89222B9107F100E3626E /* LineOfSuits.swift */; };
 		1E87BC092B65A6170084BEAB /* PlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E87BC082B65A6170084BEAB /* PlayerView.swift */; };
 		1E8A2E5B2B87CF3200A40148 /* DeviceSpecs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8A2E5A2B87CF3200A40148 /* DeviceSpecs.swift */; };
 		1E8A2E5C2B87CF3600A40148 /* DeviceSpecs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8A2E5A2B87CF3200A40148 /* DeviceSpecs.swift */; };
@@ -363,6 +369,7 @@
 		1E4338E62B0D460900E212CD /* LinkedList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedList.swift; sourceTree = "<group>"; };
 		1E4722AD2B8E4BBE0067A890 /* GamePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamePicker.swift; sourceTree = "<group>"; };
 		1E4CC8F72AFB4A3500ECC77B /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
+		1E7E89222B9107F100E3626E /* LineOfSuits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineOfSuits.swift; sourceTree = "<group>"; };
 		1E87BC082B65A6170084BEAB /* PlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerView.swift; sourceTree = "<group>"; };
 		1E8A2E5A2B87CF3200A40148 /* DeviceSpecs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceSpecs.swift; sourceTree = "<group>"; };
 		1E8A2E642B89056E00A40148 /* CustomTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextField.swift; sourceTree = "<group>"; };
@@ -541,6 +548,14 @@
 			path = "Copy Targets Info";
 			sourceTree = "<group>";
 		};
+		1E7E89212B9107DF00E3626E /* background */ = {
+			isa = PBXGroup;
+			children = (
+				1E7E89222B9107F100E3626E /* LineOfSuits.swift */,
+			);
+			path = background;
+			sourceTree = "<group>";
+		};
 		1E8A2E612B89050A00A40148 /* pickers */ = {
 			isa = PBXGroup;
 			children = (
@@ -661,6 +676,7 @@
 		1EBED93C2AD7BC8F008B85EE /* ui */ = {
 			isa = PBXGroup;
 			children = (
+				1E7E89212B9107DF00E3626E /* background */,
 				1E8A2E622B89055600A40148 /* text */,
 				1E8A2E612B89050A00A40148 /* pickers */,
 				1EA2457C2AED6F1F003B0943 /* card views */,
@@ -1114,6 +1130,7 @@
 				1EBEF2C22AE4F579008A093B /* TeamState.swift in Sources */,
 				1EFB1F8F2B59C56E001C0ADA /* SwiftUIView.swift in Sources */,
 				1EBED90E2AD7BBFF008B85EE /* CardsApp.swift in Sources */,
+				1E7E89232B9107F100E3626E /* LineOfSuits.swift in Sources */,
 				1E4722AE2B8E4BBE0067A890 /* GamePicker.swift in Sources */,
 				1E3C3EB22B8547B4000FCAE6 /* SheetCordinator.swift in Sources */,
 				1ED272522B02A49C00B21600 /* NamesAroundTable.swift in Sources */,
@@ -1175,6 +1192,7 @@
 				1ED85E872B718B3000807548 /* TeamState.swift in Sources */,
 				1ED85E882B718B3000807548 /* SwiftUIView.swift in Sources */,
 				1ED85E892B718B3000807548 /* CardsApp.swift in Sources */,
+				1E7E89242B91089000E3626E /* LineOfSuits.swift in Sources */,
 				1E4722AF2B8E4D610067A890 /* GamePicker.swift in Sources */,
 				1E3C3EBA2B866A87000FCAE6 /* SheetCordinator.swift in Sources */,
 				1E3C3EBF2B866A8C000FCAE6 /* SheetDisplayer.swift in Sources */,
@@ -1219,6 +1237,7 @@
 				1ED85EC02B71904300807548 /* TeamState.swift in Sources */,
 				1ED85EC12B71904300807548 /* SwiftUIView.swift in Sources */,
 				1ED85EC22B71904300807548 /* CardsApp.swift in Sources */,
+				1E7E89252B91089000E3626E /* LineOfSuits.swift in Sources */,
 				1E4722B02B8E4D620067A890 /* GamePicker.swift in Sources */,
 				1E3C3EBB2B866A87000FCAE6 /* SheetCordinator.swift in Sources */,
 				1E3C3EC02B866A8D000FCAE6 /* SheetDisplayer.swift in Sources */,
@@ -1263,6 +1282,7 @@
 				1ED85F652B71904D00807548 /* TeamState.swift in Sources */,
 				1ED85F662B71904D00807548 /* SwiftUIView.swift in Sources */,
 				1ED85F672B71904D00807548 /* CardsApp.swift in Sources */,
+				1E7E89262B91089100E3626E /* LineOfSuits.swift in Sources */,
 				1E4722B12B8E4D620067A890 /* GamePicker.swift in Sources */,
 				1E3C3EBC2B866A88000FCAE6 /* SheetCordinator.swift in Sources */,
 				1E3C3EC12B866A8D000FCAE6 /* SheetDisplayer.swift in Sources */,
@@ -1307,6 +1327,7 @@
 				1ED85F9C2B71904E00807548 /* TeamState.swift in Sources */,
 				1ED85F9D2B71904E00807548 /* SwiftUIView.swift in Sources */,
 				1ED85F9E2B71904E00807548 /* CardsApp.swift in Sources */,
+				1E7E89272B91089100E3626E /* LineOfSuits.swift in Sources */,
 				1E4722B22B8E4D630067A890 /* GamePicker.swift in Sources */,
 				1E3C3EBD2B866A89000FCAE6 /* SheetCordinator.swift in Sources */,
 				1E3C3EC22B866A8E000FCAE6 /* SheetDisplayer.swift in Sources */,
@@ -1351,6 +1372,7 @@
 				1ED85FD32B71904F00807548 /* TeamState.swift in Sources */,
 				1ED85FD42B71904F00807548 /* SwiftUIView.swift in Sources */,
 				1ED85FD52B71904F00807548 /* CardsApp.swift in Sources */,
+				1E7E89282B91089200E3626E /* LineOfSuits.swift in Sources */,
 				1E4722B32B8E4D630067A890 /* GamePicker.swift in Sources */,
 				1E3C3EBE2B866A89000FCAE6 /* SheetCordinator.swift in Sources */,
 				1E3C3EC32B866A8E000FCAE6 /* SheetDisplayer.swift in Sources */,

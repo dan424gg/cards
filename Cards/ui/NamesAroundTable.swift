@@ -46,7 +46,6 @@ struct NamesAroundTable: View {
                     } else {
                         gameObservable.game.turn = 4
                     }
-//                    playerTurn = (playerTurn + 1) % 7
                 }
             }
         }
@@ -69,7 +68,7 @@ struct NamesAroundTable: View {
             guard firebaseHelper.playerState != nil, firebaseHelper.gameState != nil else {
                 sortedPlayerList = [PlayerState.player_one, PlayerState.player_two, PlayerState.player_three, PlayerState.player_four, PlayerState.player_five, PlayerState.player_six]
                     .sorted(by: { $0.player_num < $1.player_num })
-//                    .filter { $0.player_num != 0 }
+                    .filter { $0.player_num != 0 }
                 return
             }
             
@@ -118,7 +117,7 @@ struct NamesAroundTable: View {
                     multiplier = 0
             }
         } else {
-            startingRotation = 180
+            startingRotation = 240
             multiplier = 60
         }
     }

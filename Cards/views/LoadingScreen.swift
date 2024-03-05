@@ -22,7 +22,7 @@ struct LoadingScreen: View {
         VStack(spacing: 20) {
             HStack {
                 Text(String(firebaseHelper.gameState?.group_id ?? 12345))
-                    .font(.system(size: 15))
+                    .font(.system(size: 15, weight: .thin))
                     .padding(10)
                     .background(
                         RoundedRectangle(cornerRadius: 30)
@@ -31,7 +31,7 @@ struct LoadingScreen: View {
                     )
                 
                 GamePicker()
-                    .font(.system(size: 15))
+                    .font(.system(size: 15, weight: .thin))
                     .padding(10)
                     .background(
                         RoundedRectangle(cornerRadius: 30)
@@ -41,7 +41,7 @@ struct LoadingScreen: View {
             }
             HStack {
                 TextField("Name", text: $name)
-                    .font(.system(size: 15))
+                    .font(.system(size: 15, weight: .thin))
                     .multilineTextAlignment(.center)
                     .focused($isFocused)
                     .onAppear {
@@ -83,7 +83,7 @@ struct LoadingScreen: View {
             HStack(spacing: 20) {
                 VStack {
                     Text("Team \(TeamState.team_one.team_num)")
-                        .font(.system(size: 15))
+                        .font(.system(size: 15, weight: .thin))
                         .padding(6)
                         .foregroundStyle(Color(TeamState.team_one.color))
                         .background {
@@ -100,7 +100,7 @@ struct LoadingScreen: View {
                 
                 VStack {
                     Text("Team \(TeamState.team_two.team_num)")
-                        .font(.system(size: 15))
+                        .font(.system(size: 15, weight: .thin))
                         .padding(6)
                         .foregroundStyle(Color(TeamState.team_two.color))
                         .background {
@@ -116,11 +116,11 @@ struct LoadingScreen: View {
                 .frame(height: 100, alignment: .top)
             }
         } else {
-            ForEach(firebaseHelper.teams.sorted(by: { $0.team_num < $1.team_num }), id:\.self) { team in
-                HStack(spacing: 20) {
+            HStack(spacing: 20) {
+                ForEach(firebaseHelper.teams.sorted(by: { $0.team_num < $1.team_num }), id:\.self) { team in
                     VStack {
                         Text("Team \(team.team_num)")
-                            .font(.system(size: 15))
+                            .font(.system(size: 15, weight: .thin))
                             .padding(6)
                             .foregroundStyle(Color(team.color))
                             .background {
@@ -132,7 +132,7 @@ struct LoadingScreen: View {
                             }
                         ForEach(firebaseHelper.players.filter { $0.team_num == team.team_num }, id: \.self) { player in
                             Text(player.name)
-                                .font(.system(size: 15))
+                                .font(.system(size: 15, weight: .thin))
                         }
                     }
                     .frame(height: 100, alignment: .top)
@@ -140,8 +140,15 @@ struct LoadingScreen: View {
             }
         }
         
-        if firebaseHelper.playerState?.is_lead ?? false {
-            GameStartButton()
+        if firebaseHelper.playerState?.is_lead ?? true {
+            Button("Play!") {
+                Task {
+                    await firebaseHelper.reorderPlayerNumbers()
+                    await firebaseHelper.updateGame(["is_playing": true, "turn": 1])
+                }
+            }
+            .buttonStyle(.borderedProminent)
+            .disabled(!equalNumOfPlayersOnTeam(players: firebaseHelper.players))
         } else {
             Text("Waiting to start game...")
         }

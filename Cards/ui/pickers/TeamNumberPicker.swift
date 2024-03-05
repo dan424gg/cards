@@ -28,9 +28,9 @@ struct TeamPicker: View {
             } label: {
                 HStack(spacing: 2) {
                     Text("\(teamNum)")
-                        .font(.system(size: 15))
+                        .font(.system(size: 15, weight: .thin))
 //                    Image(systemName: "arrow.up.and.down")
-//                        .font(.system(size: 15, weight: .regular))
+//                        .font(.system(size: 15, weight: .thin, weight: .regular))
                 }
             }
         }

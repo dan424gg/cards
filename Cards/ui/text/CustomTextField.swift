@@ -10,6 +10,10 @@ import SwiftUI
 
 
 struct CustomTextField: View {
+    enum Field: Hashable {
+        case value
+    }
+    
     @EnvironmentObject var specs: DeviceSpecs
     
     var textFieldHint: String
@@ -20,18 +24,19 @@ struct CustomTextField: View {
     @State private var size: Double = 0.0
     
     var body: some View {
-//        GeometryReader { geo in
-            VStack {
-                TextField(
-                    "\(textFieldHint)",
-                    text: $value
-                )
-                .focused($hasFocus)
-                .frame(width: size)
-                .textFieldStyle(TextFieldBorder())
-                .multilineTextAlignment(.center)
-            }
+        VStack {
+            TextField(
+                "\(textFieldHint)",
+                text: $value
+            )
+            .focused($hasFocus)
+            .frame(width: size)
+            .textFieldStyle(TextFieldBorder())
+            .multilineTextAlignment(.center)
+        }
+//        .defaultFocus($hasFocus, .value)
         .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1){ hasFocus = true }
             maxX = specs.maxX
             size = maxX * 0.33
         }
@@ -50,7 +55,7 @@ struct CustomTextField: View {
 struct TextFieldBorder: TextFieldStyle {
     func _body(configuration: TextField<Self._Label>) -> some View {
         configuration
-            .font(.system(size: 15))
+            .font(.system(size: 15, weight: .thin))
             .padding(10)
             .background(
                 RoundedRectangle(cornerRadius: 30)

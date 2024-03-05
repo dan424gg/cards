@@ -30,7 +30,7 @@ struct PlayerView: View {
                     .frame(width: 50, height: 125)
             }
             .offset(y: -145)
-        } else if (firebaseHelper.gameState?.turn ?? 3 == 3) {
+        } else if (firebaseHelper.gameState?.turn ?? 2 == 3) {
             if (firebaseHelper.gameState?.player_turn ?? playerTurn == player.player_num) {
                 VStack {
                     DisplayPlayersHandContainer(player: player, visibilityFor: 3.0, scoringPlays: scoringPlays)

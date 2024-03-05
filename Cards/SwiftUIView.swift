@@ -8,43 +8,26 @@
 import SwiftUI
 
 struct SwiftUIView: View {
-    @EnvironmentObject private var specs: DeviceSpecs
-    @State var name: String = ""
-    @State private var maxX: Double = 0.0
-    @State private var size: Double = 0.0
-    @State private var nextView: Bool = false
-    @FocusState private var hasFocus: Bool
+    @State var isRunning: Bool = true
+    @State var isReversing: Bool = false
     
     var body: some View {
-        VStack {
-            TextField(
-                "Name",
-                text: $name
-            )
-            .focused($hasFocus)
-            .frame(width: size)
-            .textFieldStyle(TextFieldBorder())
-            .multilineTextAlignment(.center)
-            .disabled(nextView)
-        }
-        .onChange(of: specs.maxX, initial: true, {
-            if specs.maxX != 0.0 {
-                size = specs.maxX * 0.33
-            }
-        })
-        .onChange(of: hasFocus, { (old, new) in
-            withAnimation(.snappy(duration: 0.5)) {
-                if hasFocus {
-                    size = max(specs.maxX * 0.66, size + 50 > specs.maxX ? specs.maxX - 50 : size + 50)
-                } else {
-                    size = name == "" ? specs.maxX * 0.33 : name.width(usingFont: UIFont.systemFont(ofSize: 15)) + 50
+        ZStack {
+            LineOfSuits(index: 0)
+            HStack {
+                Button(isRunning ? "Pause" : "Play"){
+                    isRunning.toggle()
+                }
+                
+                Button("Reverse") {
+                    isReversing.toggle()
                 }
             }
-        })
+            .offset(x: -25, y: -200)
+            .buttonStyle(.bordered)
+        }
     }
 }
-
-
 
 #Preview {
     let deviceSpecs = DeviceSpecs()
@@ -59,4 +42,5 @@ struct SwiftUIView: View {
             .environmentObject(FirebaseHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
     }
+    .ignoresSafeArea()
 }
