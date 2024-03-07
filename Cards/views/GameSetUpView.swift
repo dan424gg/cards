@@ -76,11 +76,11 @@ struct GameSetUpView: View {
                 }
             }
         })
-        .onAppear {
-            size = CGSize(width: specs.maxX * 0.66, height: specs.maxY * 0.25)
-        }
-        .frame(width: specs.maxX * 0.66, height: specs.maxY * 0.25)
-        .position(x: specs.maxX / 2, y: size.height / 2)
+//        .onAppear {
+//            size = CGSize(width: specs.maxX * 0.66, height: specs.maxY * 0.25)
+//        }
+//        .frame(width: specs.maxX * 0.66, height: specs.maxY * 0.25)
+//        .position(x: specs.maxX / 2, y: size.height / 2)
         .onTapGesture {
             endTextEditing()
         }

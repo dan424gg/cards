@@ -39,6 +39,14 @@
 		1E4722B22B8E4D630067A890 /* GamePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4722AD2B8E4BBE0067A890 /* GamePicker.swift */; };
 		1E4722B32B8E4D630067A890 /* GamePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4722AD2B8E4BBE0067A890 /* GamePicker.swift */; };
 		1E4CC8F82AFB4A3500ECC77B /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4CC8F72AFB4A3500ECC77B /* GameView.swift */; };
+		1E5F3FB52B9A481E00711A7B /* FirebaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9B66EB2B16ACEB00CA1D22 /* FirebaseTests.swift */; };
+		1E5F3FB62B9A484700711A7B /* FirebaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9B66EB2B16ACEB00CA1D22 /* FirebaseTests.swift */; };
+		1E5F3FB72B9A484800711A7B /* FirebaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9B66EB2B16ACEB00CA1D22 /* FirebaseTests.swift */; };
+		1E5F3FB82B9A484900711A7B /* FirebaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9B66EB2B16ACEB00CA1D22 /* FirebaseTests.swift */; };
+		1E5F3FB92B9A484A00711A7B /* FirebaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9B66EB2B16ACEB00CA1D22 /* FirebaseTests.swift */; };
+		1E5F3FBA2B9A484B00711A7B /* FirebaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9B66EB2B16ACEB00CA1D22 /* FirebaseTests.swift */; };
+		1E5F3FBB2B9A484B00711A7B /* FirebaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9B66EB2B16ACEB00CA1D22 /* FirebaseTests.swift */; };
+		1E5F3FBC2B9A489B00711A7B /* FirebaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9B66EB2B16ACEB00CA1D22 /* FirebaseTests.swift */; };
 		1E7E89232B9107F100E3626E /* LineOfSuits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7E89222B9107F100E3626E /* LineOfSuits.swift */; };
 		1E7E89242B91089000E3626E /* LineOfSuits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7E89222B9107F100E3626E /* LineOfSuits.swift */; };
 		1E7E89252B91089000E3626E /* LineOfSuits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7E89222B9107F100E3626E /* LineOfSuits.swift */; };
@@ -1092,6 +1100,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E5F3FBC2B9A489B00711A7B /* FirebaseTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1111,6 +1120,7 @@
 				1E3C3EB02B85476E000FCAE6 /* SheetEnum.swift in Sources */,
 				1E4338E72B0D460900E212CD /* LinkedList.swift in Sources */,
 				1E20F1752AF33EA300F2B368 /* DiagonalLines.swift in Sources */,
+				1E5F3FB82B9A484900711A7B /* FirebaseTests.swift in Sources */,
 				1EBED9102AD7BBFF008B85EE /* ContentView.swift in Sources */,
 				1ECBB9FC2ADE3B9B0046D4CA /* PlayerState.swift in Sources */,
 				1EA245802AED6F71003B0943 /* TurnOneView.swift in Sources */,
@@ -1153,6 +1163,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E5F3FB72B9A484800711A7B /* FirebaseTests.swift in Sources */,
 				1EBED9292AD7BC01008B85EE /* CardsUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1173,6 +1184,7 @@
 				1E3C3EB52B866A7D000FCAE6 /* SheetEnum.swift in Sources */,
 				1ED85E752B718B3000807548 /* LinkedList.swift in Sources */,
 				1ED85E762B718B3000807548 /* DiagonalLines.swift in Sources */,
+				1E5F3FB52B9A481E00711A7B /* FirebaseTests.swift in Sources */,
 				1ED85E772B718B3000807548 /* ContentView.swift in Sources */,
 				1ED85E782B718B3000807548 /* PlayerState.swift in Sources */,
 				1ED85E792B718B3000807548 /* TurnOneView.swift in Sources */,
@@ -1218,6 +1230,7 @@
 				1E3C3EB72B866A83000FCAE6 /* SheetEnum.swift in Sources */,
 				1ED85EAE2B71904300807548 /* LinkedList.swift in Sources */,
 				1ED85EAF2B71904300807548 /* DiagonalLines.swift in Sources */,
+				1E5F3FB62B9A484700711A7B /* FirebaseTests.swift in Sources */,
 				1ED85EB02B71904300807548 /* ContentView.swift in Sources */,
 				1ED85EB12B71904300807548 /* PlayerState.swift in Sources */,
 				1ED85EB22B71904300807548 /* TurnOneView.swift in Sources */,
@@ -1263,6 +1276,7 @@
 				1E3C3EB82B866A83000FCAE6 /* SheetEnum.swift in Sources */,
 				1ED85F532B71904D00807548 /* LinkedList.swift in Sources */,
 				1ED85F542B71904D00807548 /* DiagonalLines.swift in Sources */,
+				1E5F3FB92B9A484A00711A7B /* FirebaseTests.swift in Sources */,
 				1ED85F552B71904D00807548 /* ContentView.swift in Sources */,
 				1ED85F562B71904D00807548 /* PlayerState.swift in Sources */,
 				1ED85F572B71904D00807548 /* TurnOneView.swift in Sources */,
@@ -1308,6 +1322,7 @@
 				1E3C3EB92B866A84000FCAE6 /* SheetEnum.swift in Sources */,
 				1ED85F8A2B71904E00807548 /* LinkedList.swift in Sources */,
 				1ED85F8B2B71904E00807548 /* DiagonalLines.swift in Sources */,
+				1E5F3FBA2B9A484B00711A7B /* FirebaseTests.swift in Sources */,
 				1ED85F8C2B71904E00807548 /* ContentView.swift in Sources */,
 				1ED85F8D2B71904E00807548 /* PlayerState.swift in Sources */,
 				1ED85F8E2B71904E00807548 /* TurnOneView.swift in Sources */,
@@ -1353,6 +1368,7 @@
 				1E3C3EB62B866A80000FCAE6 /* SheetEnum.swift in Sources */,
 				1ED85FC12B71904F00807548 /* LinkedList.swift in Sources */,
 				1ED85FC22B71904F00807548 /* DiagonalLines.swift in Sources */,
+				1E5F3FBB2B9A484B00711A7B /* FirebaseTests.swift in Sources */,
 				1ED85FC32B71904F00807548 /* ContentView.swift in Sources */,
 				1ED85FC42B71904F00807548 /* PlayerState.swift in Sources */,
 				1ED85FC52B71904F00807548 /* TurnOneView.swift in Sources */,

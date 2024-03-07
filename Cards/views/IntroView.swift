@@ -12,19 +12,22 @@ struct IntroView: View {
     @EnvironmentObject var specs: DeviceSpecs
     @StateObject var sheetCoordinator: SheetCoordinator<SheetType>
     @State var scale: Double = 1.0
+    
+    @State var visible: Bool = false
             
     var body: some View {
         ZStack {
             Text("CARDS")
-                .font(.system(size: 100, weight: .thin))
+                .font(.system(size: 100, weight: .light))
                 .foregroundStyle(.black)
                 .position(x: specs.maxX / 2, y: specs.maxY * 0.25)
+//                .opacity(0.5)
             
 //            Image("Cards")
 //                .scaleEffect(0.5)
 //                .position(x: specs.maxX / 2, y: specs.maxY * 0.33)
 
-            VStack(spacing: 10) {
+            VStack(spacing: 15) {
                 Button {
                     sheetCoordinator.showSheet(.gameSetUp(type: .existingGame))
                 } label: {
@@ -38,7 +41,10 @@ struct IntroView: View {
                 .buttonStyle(.bordered)
                 
                 Button {
-                    sheetCoordinator.showSheet(.gameSetUp(type: .newGame))
+                    withAnimation {
+                        visible.toggle()
+                    }
+//                    sheetCoordinator.showSheet(.gameSetUp(type: .newGame))
                 } label: {
                     Text("New Game")
                         .foregroundStyle(.black)
@@ -51,16 +57,30 @@ struct IntroView: View {
             }
             .position(x: specs.maxX / 2, y: specs.maxY * 0.75)
         }
-//        .background {
-//            Color("OffWhite")
-//                .opacity(0.07)
-//            ForEach(Array(0...20), id: \.self) { i in
-//                LineOfSuits(index: i)
-//                    .offset(y: CGFloat(-85 * i))
+        .overlay {
+            ZStack {
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Material.ultraThinMaterial)
+//            if visible {
+//                ZStack {
+//                    RoundedRectangle(cornerRadius: 20.0)
+//                        .fill(Color("OffWhite").opacity(0.2))
+//                        .frame(width: 300, height: 300)
+//                        .overlay {
+//                            GameSetUpView(setUpType: .newGame)
+//                        }
+//                }
+//                .frame(maxWidth: .infinity, maxHeight: .infinity)
+//                .background(.ultraThinMaterial)
+//                .onTapGesture {
+//                    withAnimation {
+//                        visible.toggle()
+//                    }
+//                }
+//                .blur(radius: 0.3, opaque: false)
 //            }
-//            .position(x: specs.maxX / 2, y: specs.maxY * 1.5)
-//        }
-//        .sheetDisplayer(coordinator: sheetCoordinator)
+        }
     }
 }
 

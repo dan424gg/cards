@@ -55,7 +55,7 @@ struct LineOfSuits: View {
                 .foregroundColor(suit == "spade" || suit == "club" ? .black.opacity(0.3) : .red.opacity(0.3))
                 .position(pos)
                 .onAppear {
-                    pos = CGPoint(x: (specs.maxX - (index * (specs.maxX / 20.0))) + 20.0, y: (index * (specs.maxY / 20.0)) - 20.0)
+                    pos = CGPoint(x: (specs.maxX - (index * (specs.maxX / 20.0))) + 20.0, y: (index * (specs.maxY / 20.0)))
                     withAnimation(.linear(duration: 50.0 * (1.0 - (index / 20.0)))) {
                         pos = CGPoint(x: -20.0, y: specs.maxY + 20.0)
                     } completion: {
