@@ -12,74 +12,28 @@ struct ContentView: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @EnvironmentObject var specs: DeviceSpecs
     @StateObject var sheetCoordinator = SheetCoordinator<SheetType>()
-    @State var universalClicked = "A game"
-    
-    @State var size: CGSize = CGSize(width: 1.0, height: 1.0)
-    @State var opacity: Double = 0.5
-    @State var timer: Timer?
-    
+    @State var blur: Bool = false
+        
     var body: some View {
-        ZStack {
-            if firebaseHelper.gameState?.is_playing ?? false {
-                GameView()
-                    .onAppear {
-                        sheetCoordinator.currentSheet = nil
+        MainView(visible: $blur)
+            .background {
+                ZStack {
+                    Color("OffWhite")
+                        .opacity(0.07)
+                    ForEach(Array(0...20), id: \.self) { i in
+                        LineOfSuits(index: i)
+                            .offset(y: CGFloat(-90 * i))
                     }
-                    .transition(.opacity.animation(.easeInOut(duration: 1.0).delay(1.0)))
-            } else {
-                IntroView(sheetCoordinator: sheetCoordinator)
-                    .transition(.opacity.animation(.easeInOut(duration: 1.0)))
-            }
-        }
-//        .overlay {
-//            RoundedRectangle(cornerRadius: 20.0)
-//                .fill(.white)
-//                .opacity(opacity)
-//                .shadow(radius: 5)
-//                .scaleEffect(size)
-//                .onLongPressGesture(minimumDuration: 1.0, perform: {
-//                    timer?.invalidate()
-//                    timer = nil
-//                    withAnimation(.bouncy(duration: 0.3, extraBounce: 0.4)) {
-//                        size = CGSize(width: 1.0, height: 1.0)
-//                        opacity = 0.5
-//                    }
-//                }, onPressingChanged: { change in
-//                    if change {
-//                        timer?.invalidate()
-//                        timer = nil
-//                        withAnimation(.bouncy(duration: 0.3)) {
-//                            size = CGSize(width: 0.85, height: 0.85)
-//                            opacity = 0.9
-//                        }
-//                    } else {
-//                        withAnimation(.bouncy(duration: 0.3, extraBounce: 0.4)) {
-//                            size = CGSize(width: 1.0, height: 1.0)
-//                        }
-//                        
-//                        timer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false, block: { _ in
-//                            withAnimation(.smooth(duration: 0.3)) {
-//                                opacity = 0.5
-//                            }
-//                        })
-//                    }
-//                })
-//                .frame(width: 7, height: 200)
-//                .position(x: specs.maxX - 20.0, y: specs.maxY / 2)
-//        }
-        .background {
-            ZStack {
-                Color("OffWhite")
-                    .opacity(0.07)
-                ForEach(Array(0...20), id: \.self) { i in
-                    LineOfSuits(index: i)
-                        .offset(y: CGFloat(-90 * i))
-                        .zIndex(0.0)
+                    .position(x: specs.maxX / 2, y: specs.maxY * 1.5)
                 }
-                .position(x: specs.maxX / 2, y: specs.maxY * 1.5)
+                .blur(radius: blur ? 3 : 0)
             }
-        }
-        .sheetDisplayer(coordinator: sheetCoordinator)
+            .onTapGesture {
+                withAnimation {
+                    blur.toggle()
+                }
+            }
+            .sheetDisplayer(coordinator: sheetCoordinator)
     }
 }
 

@@ -8,78 +8,96 @@
 import SwiftUI
 
 struct IntroView: View {
+    @Binding var blur: Bool
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @EnvironmentObject var specs: DeviceSpecs
-    @StateObject var sheetCoordinator: SheetCoordinator<SheetType>
+    @State var showNewGameView: Bool = false
+    @State var showExistingGameView: Bool = false
     @State var scale: Double = 1.0
-    
-    @State var visible: Bool = false
+    @StateObject var sheetCoordinator: SheetCoordinator<SheetType>
             
     var body: some View {
         ZStack {
-            Text("CARDS")
-                .font(.system(size: 100, weight: .light))
-                .foregroundStyle(.black)
-                .position(x: specs.maxX / 2, y: specs.maxY * 0.25)
-//                .opacity(0.5)
-            
-//            Image("Cards")
-//                .scaleEffect(0.5)
-//                .position(x: specs.maxX / 2, y: specs.maxY * 0.33)
+            if showNewGameView || showExistingGameView {
+                ZStack {
+                    Color.blue
+                        .opacity(0.000001)
+                        .frame(width: specs.maxX, height: specs.maxY)
+                        .onTapGesture {
+                            if showNewGameView {
+                                withAnimation(.spring(duration: 0.3)) {
+                                    blur = false
+                                    showNewGameView = false
+                                }
+                            } else if showExistingGameView {
+                                withAnimation(.spring(duration: 0.3)) {
+                                    blur = false
+                                    showExistingGameView = false
+                                }
+                            }
+                        }
+                        .zIndex(0.0)
 
-            VStack(spacing: 15) {
-                Button {
-                    sheetCoordinator.showSheet(.gameSetUp(type: .existingGame))
-                } label: {
-                    Text("Join Game")
-                        .foregroundStyle(.black)
-                        .font(.system(size: 15, weight: .thin))
-                        .frame(width: specs.maxX * 0.66, height: 33)
-                }
-                .background(.thinMaterial)
-                .tint(Color("OffWhite").opacity(0.7))
-                .buttonStyle(.bordered)
-                
-                Button {
-                    withAnimation {
-                        visible.toggle()
+                    RoundedRectangle(cornerRadius: 20.0)
+                        .fill(.white)
+                        .fill(Color("OffWhite").opacity(0.2))
+                        .frame(width: 300, height: 300)
+                        .position(x: specs.maxX / 2, y: specs.maxY / 2)
+                        .zIndex(1.0)
+                    
+                    if showNewGameView {
+                        NewGameView()
+                            .zIndex(1.0)
+                    } else if showExistingGameView {
+                        ExistingGameView()
+                            .zIndex(1.0)
                     }
-//                    sheetCoordinator.showSheet(.gameSetUp(type: .newGame))
-                } label: {
-                    Text("New Game")
-                        .foregroundStyle(.black)
-                        .font(.system(size: 15, weight: .thin))
-                        .frame(width: specs.maxX * 0.66, height: 33)
                 }
-                .background(.thinMaterial)
-                .tint(Color("OffWhite").opacity(0.7))
-                .buttonStyle(.bordered)
+//                .transition(blurReplace)
+            } else {
+                ZStack {
+                    Text("CARDS")
+                        .font(.system(size: 100, weight: .light))
+                        .foregroundStyle(.black)
+                        .position(x: specs.maxX / 2, y: specs.maxY * 0.25)
+                        .zIndex(1.0)
+                    
+                    VStack(spacing: 15) {
+                        Button {
+                            withAnimation(.spring(duration: 0.3)) {
+                                showExistingGameView = true
+                                blur.toggle()
+                            }
+                        } label: {
+                            Text("Join Game")
+                                .foregroundStyle(.black)
+                                .font(.system(size: 15, weight: .thin))
+                                .frame(width: specs.maxX * 0.66, height: 33)
+                        }
+                        .background(.thinMaterial)
+                        .tint(Color("OffWhite").opacity(0.7))
+                        .buttonStyle(.bordered)
+                        
+                        Button {
+                            withAnimation(.spring(duration: 0.3)) {
+                                showNewGameView = true
+                                blur.toggle()
+                            }
+                        } label: {
+                            Text("New Game")
+                                .foregroundStyle(.black)
+                                .font(.system(size: 15, weight: .thin))
+                                .frame(width: specs.maxX * 0.66, height: 33)
+                        }
+                        .background(.thinMaterial)
+                        .tint(Color("OffWhite").opacity(0.7))
+                        .buttonStyle(.bordered)
+                    }
+                    .zIndex(1.0)
+                    .position(x: specs.maxX / 2, y: specs.maxY * 0.75)
+                }
+                .transition(.blurReplace)
             }
-            .position(x: specs.maxX / 2, y: specs.maxY * 0.75)
-        }
-        .overlay {
-            ZStack {
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Material.ultraThinMaterial)
-//            if visible {
-//                ZStack {
-//                    RoundedRectangle(cornerRadius: 20.0)
-//                        .fill(Color("OffWhite").opacity(0.2))
-//                        .frame(width: 300, height: 300)
-//                        .overlay {
-//                            GameSetUpView(setUpType: .newGame)
-//                        }
-//                }
-//                .frame(maxWidth: .infinity, maxHeight: .infinity)
-//                .background(.ultraThinMaterial)
-//                .onTapGesture {
-//                    withAnimation {
-//                        visible.toggle()
-//                    }
-//                }
-//                .blur(radius: 0.3, opaque: false)
-//            }
         }
     }
 }
@@ -88,7 +106,7 @@ struct IntroView: View {
     @StateObject var sheetCoordinator = SheetCoordinator<SheetType>()
 
     return GeometryReader { geo in
-        IntroView(sheetCoordinator: sheetCoordinator)
+        IntroView(blur: .constant(false), sheetCoordinator: sheetCoordinator)
             .environmentObject({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)

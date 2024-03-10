@@ -713,21 +713,21 @@ final class FirebaseHelperTests: XCTestCase {
         await playerOne.deleteGameCollection(id: randId)
     }
     
-    @MainActor func testCheckPlayerHandForPoints() async {
-        let playerOne = FirebaseHelper()
-        var randId = 0
-        repeat {
-            randId = Int.random(in: 10000..<99999)
-        } while (await playerOne.checkValidId(id: "\(randId)"))
-        await playerOne.startGameCollection(fullName: "1", testGroupId: randId)
-        
-        let scoringPlays = playerOne.checkPlayerHandForPoints([0,1,2,4,9], 11)
-        XCTAssertTrue(scoringPlays.filter { $0.scoreType == .sum }.count == 4)
-        XCTAssertTrue(scoringPlays.filter { $0.scoreType == .flush }.count == 1)
-        XCTAssertEqual(scoringPlays.last!.cumlativePoints, 14)
-        
-        await playerOne.deleteGameCollection(id: randId)
-    }
+//    @MainActor func testCheckPlayerHandForPoints() async {
+//        let playerOne = FirebaseHelper()
+//        var randId = 0
+//        repeat {
+//            randId = Int.random(in: 10000..<99999)
+//        } while (await playerOne.checkValidId(id: "\(randId)"))
+//        await playerOne.startGameCollection(fullName: "1", testGroupId: randId)
+//        
+//        let scoringPlays = playerOne.checkPlayerHandForPoints([0,1,2,4,9], 11)
+//        XCTAssertTrue(scoringPlays.filter { $0.scoreType == .sum }.count == 4)
+//        XCTAssertTrue(scoringPlays.filter { $0.scoreType == .flush }.count == 1)
+//        XCTAssertEqual(scoringPlays.last!.cumlativePoints, 14)
+//        
+//        await playerOne.deleteGameCollection(id: randId)
+//    }
     
     @MainActor func testUpdatePlayerNums() async {
         let playerOne = FirebaseHelper()

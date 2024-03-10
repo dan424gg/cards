@@ -10,6 +10,12 @@ import UniformTypeIdentifiers
 import CoreGraphics
 import SwiftUI
 
+enum GameSetUpType: Hashable {
+    case newGame
+    case existingGame
+    case none
+}
+
 enum GameOutcome: Hashable {
     case win
     case lose
