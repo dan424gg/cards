@@ -99,6 +99,7 @@ struct IntroView: View {
                 .transition(.blurReplace)
             }
         }
+
     }
 }
 
