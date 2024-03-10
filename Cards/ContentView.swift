@@ -6,36 +6,34 @@
 //
 
 import SwiftUI
+import Combine
 
 struct ContentView: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @EnvironmentObject var specs: DeviceSpecs
     @StateObject var sheetCoordinator = SheetCoordinator<SheetType>()
-    @State var universalClicked = "A game"
-    
+    @State var blur: Bool = false
+        
     var body: some View {
-        ZStack {
-            if firebaseHelper.gameState?.is_playing ?? false {
-                GameView()
-                    .onAppear {
-                        sheetCoordinator.currentSheet = nil
+        MainView(visible: $blur)
+            .background {
+                ZStack {
+                    Color("OffWhite")
+                        .opacity(0.07)
+                    ForEach(Array(0...20), id: \.self) { i in
+                        LineOfSuits(index: i)
+                            .offset(y: CGFloat(-90 * i))
                     }
-                    .transition(.opacity.animation(.easeInOut(duration: 1.0).delay(1.0)))
-            } else {
-                IntroView(sheetCoordinator: sheetCoordinator)
-                    .transition(.opacity.animation(.easeInOut(duration: 1.0)))
+                    .position(x: specs.maxX / 2, y: specs.maxY * 1.5)
+                }
+                .blur(radius: blur ? 3 : 0)
             }
-        }
-        .background {
-            Color("OffWhite")
-                .opacity(0.07)
-            ForEach(Array(0...20), id: \.self) { i in
-                LineOfSuits(index: i)
-                    .offset(y: CGFloat(-90 * i))
+            .onTapGesture {
+                withAnimation {
+                    blur.toggle()
+                }
             }
-            .position(x: specs.maxX / 2, y: specs.maxY * 1.5)
-        }
-        .sheetDisplayer(coordinator: sheetCoordinator)
+            .sheetDisplayer(coordinator: sheetCoordinator)
     }
 }
 

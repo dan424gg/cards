@@ -34,14 +34,13 @@ struct CustomTextField: View {
             .textFieldStyle(TextFieldBorder())
             .multilineTextAlignment(.center)
         }
-//        .defaultFocus($hasFocus, .value)
         .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1){ hasFocus = true }
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1){ hasFocus = true }
             maxX = specs.maxX
             size = maxX * 0.33
         }
         .onChange(of: hasFocus, { (old, new) in
-            withAnimation(.snappy(duration: 0.5)) {
+            withAnimation(.smooth(duration: 0.3)) {
                 if hasFocus {
                     size = max(specs.maxX * 0.66, size > maxX ? maxX - 35 : size)
                 } else {

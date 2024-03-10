@@ -1,54 +1,31 @@
 //
-//  GameSetUpView.swift
+//  ExistingGameView.swift
 //  Cards
 //
-//  Created by Daniel Wells on 2/25/24.
+//  Created by Daniel Wells on 3/10/24.
 //
 
 import SwiftUI
 
-struct GameSetUpView: View {
+struct ExistingGameView: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @EnvironmentObject var specs: DeviceSpecs
-    @StateObject var sheetCoordinator = SheetCoordinator<SheetType>()
     @State private var notValid: Bool = true
     @State var groupId: String = ""
     @State var fullName: String = ""
     @State var size: CGSize = .zero
     
-    var setUpType: GameSetUpType
-    
     var body: some View {
+        
         VStack {
-            switch setUpType {
-                case .newGame:
-                    Text("New Game")
-                        .font(.title2)
-                    CustomTextField(textFieldHint: "Name", value: $fullName)
-                case .existingGame:
-                    Text("Join Game")
-                        .font(.title2)
-                    CustomTextField(textFieldHint: "Group ID", value: $groupId)
-                    CustomTextField(textFieldHint: "Name", value: $fullName)
-                case .none:
-                    #if DEBUG
-                    Text("Shouldn't have got here")
-                    #else
-                    EmptyView()
-                    #endif
-            }
+            Text("Join Game")
+                .font(.title2)
+            CustomTextField(textFieldHint: "Group ID", value: $groupId)
+            CustomTextField(textFieldHint: "Name", value: $fullName)
             
             Button("Submit", systemImage: notValid ? "x.circle" : "checkmark.circle", action: {
-                sheetCoordinator.showSheet(.loadingScreen)
                 Task {
-                    switch setUpType {
-                        case .newGame:
-                            await firebaseHelper.startGameCollection(fullName: fullName)
-                        case .existingGame:
-                            await firebaseHelper.joinGameCollection(fullName: fullName, id: groupId)
-                        case .none:
-                            print("tried to submit with a 'none' gameSetUpType")
-                    }
+                    await firebaseHelper.joinGameCollection(fullName: fullName, id: groupId)
                 }
             })
             .labelStyle(.iconOnly)
@@ -58,7 +35,7 @@ struct GameSetUpView: View {
             .font(.system(size: 35))
         }
         .onChange(of: [fullName, groupId], {
-            if fullName.isEmpty || (groupId.isEmpty && setUpType == .existingGame) {
+            if fullName.isEmpty || (groupId.isEmpty) {
                 withAnimation {
                     notValid = true
                 }
@@ -82,11 +59,6 @@ struct GameSetUpView: View {
                 }
             }
         })
-//        .onAppear {
-//            size = CGSize(width: specs.maxX * 0.66, height: specs.maxY * 0.25)
-//        }
-//        .frame(width: specs.maxX * 0.66, height: specs.maxY * 0.25)
-//        .position(x: specs.maxX / 2, y: size.height / 2)
         .onTapGesture {
             endTextEditing()
         }
@@ -95,7 +67,7 @@ struct GameSetUpView: View {
 
 #Preview {
     return GeometryReader { geo in
-        GameSetUpView(setUpType: .existingGame)
+        ExistingGameView()
             .environmentObject({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)

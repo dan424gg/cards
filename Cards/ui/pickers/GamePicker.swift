@@ -9,10 +9,10 @@ import SwiftUI
 
 struct GamePicker: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
-    @State var gameSelected: games = .cribbage
+    @State var gameSelected: Games = .cribbage
     @State var preventCyclicalUpdate: Bool = false
     
-    enum games: String, CaseIterable, Identifiable {
+    enum Games: String, CaseIterable, Identifiable {
         case cribbage, goFish, rummy
         
         var id: String { rawValue }
@@ -30,7 +30,7 @@ struct GamePicker: View {
     var body: some View {
         Menu {
             Picker("Game", selection: $gameSelected) {
-                ForEach(games.allCases, id: \.self) { game in
+                ForEach(Games.allCases, id: \.self) { game in
                     Text(game.name.capitalized)
                         .font(.system(size: 15, weight: .thin))
                 }
@@ -47,7 +47,7 @@ struct GamePicker: View {
             }
         }
         .onChange(of: firebaseHelper.gameState?.game_name, {
-            if let gameExists = games.allCases.first(where: { $0.id == firebaseHelper.gameState!.game_name }) {
+            if let gameExists = Games.allCases.first(where: { $0.id == firebaseHelper.gameState!.game_name }) {
                 gameSelected = gameExists
                 preventCyclicalUpdate = true
             }
