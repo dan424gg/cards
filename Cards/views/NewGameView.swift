@@ -15,33 +15,39 @@ struct NewGameView: View {
     @State var size: CGSize = .zero
 
     var body: some View {
-        
-        VStack {
-            Text("New Game")
-                .font(.title2)
+        ZStack {
+            RoundedRectangle(cornerRadius: 20.0)
+                .fill(.white)
+                .fill(Color("OffWhite").opacity(0.2))
+                .frame(width: 300, height: 300)
             
-            CustomTextField(textFieldHint: "Name", value: $fullName)
-            
-            Button("Submit", systemImage: notValid ? "x.circle" : "checkmark.circle", action: {
-                Task {
-                    await firebaseHelper.startGameCollection(fullName: fullName)
+            VStack {
+                Text("New Game")
+                    .font(.title2)
+                
+                CustomTextField(textFieldHint: "Name", value: $fullName)
+                
+                Button("Submit", systemImage: notValid ? "x.circle" : "checkmark.circle", action: {
+                    Task {
+                        await firebaseHelper.startGameCollection(fullName: fullName)
+                    }
+                })
+                .labelStyle(.iconOnly)
+                .symbolRenderingMode(.palette)
+                .foregroundStyle(notValid ? .gray.opacity(0.5) : .green)
+                .disabled(notValid)
+                .font(.system(size: 35))
+            }
+            .onChange(of: fullName, {
+                withAnimation {
+                    if fullName.isEmpty {
+                        notValid = true
+                    } else {
+                        notValid = false
+                    }
                 }
             })
-            .labelStyle(.iconOnly)
-            .symbolRenderingMode(.palette)
-            .foregroundStyle(notValid ? .gray.opacity(0.5) : .green)
-            .disabled(notValid)
-            .font(.system(size: 35))
         }
-        .onChange(of: fullName, {
-            withAnimation {
-                if fullName.isEmpty {
-                    notValid = true
-                } else {
-                    notValid = false
-                }
-            }
-        })
         .onTapGesture {
             endTextEditing()
         }
