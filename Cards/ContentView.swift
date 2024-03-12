@@ -24,12 +24,11 @@ struct ContentView: View {
                             .opacity(0.07)
                         ForEach(Array(0...20), id: \.self) { i in
                             LineOfSuits(index: i)
-                                .offset(y: CGFloat(-85 * i))
+                                .offset(y: CGFloat(-120 * Double(i)))
                         }
                         .position(x: specs.maxX / 2, y: specs.maxY * 1.5)
                     }
                     .zIndex(0.0)
-                    .blur(radius: blur ? 3 : 0)
 //                }
                 .sheetDisplayer(coordinator: sheetCoordinator)
         }
