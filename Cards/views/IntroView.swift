@@ -7,6 +7,15 @@
 
 import SwiftUI
 
+extension AnyTransition {
+    static var moveAndMoveQuicker: AnyTransition {
+        .asymmetric(
+            insertion: .move(edge: .bottom).animation(.snappy(duration: 0.01, extraBounce: 0.3)),
+            removal: .move(edge: .bottom).animation(.snappy(duration: 0.01, extraBounce: 0.3))
+        )
+    }
+}
+
 struct IntroView: View {
     @Binding var blur: Bool
     @EnvironmentObject var firebaseHelper: FirebaseHelper
@@ -18,55 +27,51 @@ struct IntroView: View {
             
     var body: some View {
         ZStack {
-            if showNewGameView || showExistingGameView {
-                ZStack {
-                    Color.blue
-                        .opacity(0.000001)
-                        .frame(width: specs.maxX, height: specs.maxY)
-                        .onTapGesture {
-                            if showNewGameView {
-                                withAnimation(.spring(duration: 0.3)) {
-                                    blur = false
-                                    showNewGameView = false
-                                }
-                            } else if showExistingGameView {
-                                withAnimation(.spring(duration: 0.3)) {
-                                    blur = false
-                                    showExistingGameView = false
-                                }
+            if showNewGameView {
+                NewGameView()
+                    .transition(.move(edge: .trailing).combined(with: .opacity))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        endTextEditing()
+                        if showNewGameView {
+                            withAnimation(.snappy(duration: 0.3)) {
+                                showNewGameView = false
+                            }
+                        } else if showExistingGameView {
+                            withAnimation(.snappy(duration: 0.3)) {
+                                showExistingGameView = false
                             }
                         }
-                        .zIndex(0.0)
-
-                    RoundedRectangle(cornerRadius: 20.0)
-                        .fill(.white)
-                        .fill(Color("OffWhite").opacity(0.2))
-                        .frame(width: 300, height: 300)
-                        .position(x: specs.maxX / 2, y: specs.maxY / 2)
-                        .zIndex(1.0)
-                    
-                    if showNewGameView {
-                        NewGameView()
-                            .zIndex(1.0)
-                    } else if showExistingGameView {
-                        ExistingGameView()
-                            .zIndex(1.0)
                     }
-                }
-//                .transition(blurReplace)
+            } else if showExistingGameView {
+                ExistingGameView()
+                    .transition(.move(edge: .leading).combined(with: .opacity))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        endTextEditing()
+                        if showNewGameView {
+                            withAnimation(.snappy(duration: 0.3)) {
+                                showNewGameView = false
+                            }
+                        } else if showExistingGameView {
+                            withAnimation(.snappy(duration: 0.3)) {
+                                showExistingGameView = false
+                            }
+                        }
+                    }
             } else {
                 ZStack {
                     Text("CARDS")
                         .font(.system(size: 100, weight: .light))
                         .foregroundStyle(.black)
                         .position(x: specs.maxX / 2, y: specs.maxY * 0.25)
-                        .zIndex(1.0)
                     
                     VStack(spacing: 15) {
                         Button {
-                            withAnimation(.spring(duration: 0.3)) {
+                            withAnimation(.smooth(duration: 0.3)) {
                                 showExistingGameView = true
-                                blur.toggle()
                             }
                         } label: {
                             Text("Join Game")
@@ -79,9 +84,8 @@ struct IntroView: View {
                         .buttonStyle(.bordered)
                         
                         Button {
-                            withAnimation(.spring(duration: 0.3)) {
+                            withAnimation(.smooth(duration: 0.3)) {
                                 showNewGameView = true
-                                blur.toggle()
                             }
                         } label: {
                             Text("New Game")
@@ -93,10 +97,9 @@ struct IntroView: View {
                         .tint(Color("OffWhite").opacity(0.7))
                         .buttonStyle(.bordered)
                     }
-                    .zIndex(1.0)
                     .position(x: specs.maxX / 2, y: specs.maxY * 0.75)
                 }
-                .transition(.blurReplace)
+                .transition(.opacity)
             }
         }
 

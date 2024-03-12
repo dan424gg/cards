@@ -16,49 +16,55 @@ struct ExistingGameView: View {
     @State var size: CGSize = .zero
     
     var body: some View {
-        
-        VStack {
-            Text("Join Game")
-                .font(.title2)
-            CustomTextField(textFieldHint: "Group ID", value: $groupId)
-            CustomTextField(textFieldHint: "Name", value: $fullName)
+        ZStack {
+            RoundedRectangle(cornerRadius: 20.0)
+                .fill(.white)
+                .fill(Color("OffWhite").opacity(0.2))
+                .frame(width: 300, height: 300)
             
-            Button("Submit", systemImage: notValid ? "x.circle" : "checkmark.circle", action: {
-                Task {
-                    await firebaseHelper.joinGameCollection(fullName: fullName, id: groupId)
-                }
-            })
-            .labelStyle(.iconOnly)
-            .symbolRenderingMode(.palette)
-            .foregroundStyle(notValid ? .gray.opacity(0.5) : .green)
-            .disabled(notValid)
-            .font(.system(size: 35))
-        }
-        .onChange(of: [fullName, groupId], {
-            if fullName.isEmpty || (groupId.isEmpty) {
-                withAnimation {
-                    notValid = true
-                }
-            } else {
-                if !groupId.isEmpty {
+            VStack {
+                Text("Join Game")
+                    .font(.title2)
+                CustomTextField(textFieldHint: "Group ID", value: $groupId)
+                CustomTextField(textFieldHint: "Name", value: $fullName)
+                
+                Button("Submit", systemImage: notValid ? "x.circle" : "checkmark.circle", action: {
                     Task {
-                        if await firebaseHelper.checkValidId(id: groupId) {
-                            withAnimation {
-                                notValid = false
-                            }
-                        } else {
-                            withAnimation {
-                                notValid = true
-                            }
-                        }
+                        await firebaseHelper.joinGameCollection(fullName: fullName, id: groupId)
+                    }
+                })
+                .labelStyle(.iconOnly)
+                .symbolRenderingMode(.palette)
+                .foregroundStyle(notValid ? .gray.opacity(0.5) : .green)
+                .disabled(notValid)
+                .font(.system(size: 35))
+            }
+            .onChange(of: [fullName, groupId], {
+                if fullName.isEmpty || (groupId.isEmpty) {
+                    withAnimation {
+                        notValid = true
                     }
                 } else {
-                    withAnimation {
-                        notValid = false
+                    if !groupId.isEmpty {
+                        Task {
+                            if await firebaseHelper.checkValidId(id: groupId) {
+                                withAnimation {
+                                    notValid = false
+                                }
+                            } else {
+                                withAnimation {
+                                    notValid = true
+                                }
+                            }
+                        }
+                    } else {
+                        withAnimation {
+                            notValid = false
+                        }
                     }
                 }
-            }
-        })
+            })
+        }
         .onTapGesture {
             endTextEditing()
         }
