@@ -10,6 +10,12 @@ import UniformTypeIdentifiers
 import CoreGraphics
 import SwiftUI
 
+enum GameSetUpType: Hashable {
+    case newGame
+    case existingGame
+    case none
+}
+
 enum GameOutcome: Hashable {
     case win
     case lose
@@ -116,6 +122,14 @@ extension String {
         return self.trimmingCharacters(in: NSCharacterSet.whitespaces)
     }
     
+    func width() -> CGFloat {
+        var size = 0.0
+        
+        size = self.size().width
+        
+        return size
+    }
+    
     func width(usingFont font: UIFont) -> CGFloat {
         let fontAttributes = [NSAttributedString.Key.font: font]
         let size = self.size(withAttributes: fontAttributes)
@@ -141,12 +155,47 @@ extension View {
         }
     }
 
-    @ViewBuilder func `if`<Content: View>(_ condition: Bool, _ transform: (Self) -> Content, else elseTransform: (Self) -> Content) -> some View {
+    @ViewBuilder 
+    func `if`<Content: View>(_ condition: Bool, _ transform: (Self) -> Content, else elseTransform: (Self) -> Content) -> some View {
         if condition {
             transform(self)
         } else {
             elseTransform(self)
         }
+    }
+    
+    func getSize(onChange: @escaping (CGSize) -> Void) -> some View {
+        background(
+            GeometryReader { geometryProxy in
+                Color.clear
+                    .preference(key: SizePreferenceKey.self, value: geometryProxy.frame(in: .local).size)
+            }
+        )
+        .onPreferenceChange(SizePreferenceKey.self, perform: onChange)
+    }
+    
+    func getMaxX(onChange: @escaping (_ maxX: Double) -> Void) -> some View {
+        background(
+            GeometryReader { geometryProxy in
+                Color.clear
+                    .onAppear {
+                        onChange(geometryProxy.frame(in: .named("namespace")).maxX)
+                    }
+            }
+        )
+    }
+    
+    @ViewBuilder func `primaryShadow`() -> some View {
+        self
+            .shadow(color: Color("Primary"), radius: 5)
+            .shadow(color: Color("Primary"), radius: 5)
+            .shadow(color: Color("Primary"), radius: 5)
+            .shadow(color: Color("Primary"), radius: 5)
+//            .shadow(color: Color("Primary"), radius: 5)
+    }
+    
+    func sheetDisplayer<Sheet: SheetEnum>(coordinator: SheetCoordinator<Sheet>) -> some View {
+        modifier(SheetDisplayer(coordinator: coordinator))
     }
 }
 
@@ -155,6 +204,10 @@ func getTime() -> String {
     formatter.timeStyle = .long
     let dateString = formatter.string(from: Date())
     return dateString
+}
+
+func endTextEditing() {
+    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
 }
 
 struct DisplayPlayersHandContainer: View {
@@ -263,6 +316,16 @@ struct ScoringHand: Hashable {
     var cumlativePoints: Int
     var cardsInScoredHand: [Int]
     var pointsCallOut: String
+}
+
+struct SizePreferenceKey: PreferenceKey {
+    static var defaultValue: CGSize = .zero
+    static func reduce(value: inout CGSize, nextValue: () -> CGSize) {}
+}
+
+struct MaxXPreferenceKey: PreferenceKey {
+    static var defaultValue: Double = 0.0
+    static func reduce(value: inout Double, nextValue: () -> Double) {}
 }
 
 struct StrokeText: View {

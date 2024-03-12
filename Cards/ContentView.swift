@@ -6,27 +6,47 @@
 //
 
 import SwiftUI
+import Combine
 
 struct ContentView: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
-    @State var universalClicked = "A game"
-    
+    @EnvironmentObject var specs: DeviceSpecs
+    @StateObject var sheetCoordinator = SheetCoordinator<SheetType>()
+    @State var blur: Bool = false
+        
     var body: some View {
-//        GameOutcomeView()
-        NavigationStack {
-            VStack {
-                Text("What game do you want to play??")
-                GameButton(universalClicked: $universalClicked, gameName: "cribbage")
-                GameButton(universalClicked: $universalClicked, gameName: "uno")
-                GameButton(universalClicked: $universalClicked, gameName: "rummy")
+        MainView(visible: $blur)
+            .background {
+                ZStack {
+                    Color("OffWhite")
+                        .opacity(0.07)
+                    ForEach(Array(0...20), id: \.self) { i in
+                        LineOfSuits(index: i)
+                            .offset(y: CGFloat(-90 * i))
+                    }
+                    .position(x: specs.maxX / 2, y: specs.maxY * 1.5)
+                }
+                .blur(radius: blur ? 3 : 0)
             }
-        }
+            .onTapGesture {
+                withAnimation {
+                    blur.toggle()
+                }
+            }
+            .sheetDisplayer(coordinator: sheetCoordinator)
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
+#Preview {
+    return GeometryReader { geo in
         ContentView()
+            .environmentObject({ () -> DeviceSpecs in
+                let envObj = DeviceSpecs()
+                envObj.setProperties(geo)
+                return envObj
+            }() )
             .environmentObject(FirebaseHelper())
+            .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
     }
+    .ignoresSafeArea()
 }

@@ -25,12 +25,20 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 struct CardsApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject private var firebaseHelper = FirebaseHelper()
+    @StateObject private var deviceSpecs = DeviceSpecs()
         
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environmentObject(firebaseHelper)
-            
+            GeometryReader { geo in
+                ContentView()
+                    .environmentObject(firebaseHelper)
+                    .environmentObject({ () -> DeviceSpecs in
+                        let envObj = DeviceSpecs()
+                        envObj.setProperties(geo)
+                        return envObj
+                    }() )
+            }
+            .ignoresSafeArea()
         }
     }
 }

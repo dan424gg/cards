@@ -31,7 +31,7 @@ public struct GameState: Hashable, Codable {
     var running_sum: Int = 0
     var num_go: Int = 0
     
-    static var game: GameState = GameState(group_id: 1234, is_playing: true, num_teams: 3, turn: 3, game_name: "cribbage", num_players: 3, dealer: 0, team_with_crib: 1, crib: Array(0...3), cards: GameState().cards.shuffled(), starter_card: 19, player_turn: 0)
+    static var game: GameState = GameState(group_id: 1234, is_playing: true, num_teams: 3, turn: 1, game_name: "cribbage", num_players: 3, dealer: 0, team_with_crib: 1, crib: Array(0...3), cards: GameState().cards.shuffled(), starter_card: 19, player_turn: 0)
     
     enum CodingKeys: CodingKey {
         case group_id
