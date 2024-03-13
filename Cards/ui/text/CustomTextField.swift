@@ -58,8 +58,8 @@ struct TextFieldBorder: TextFieldStyle {
             .padding(10)
             .background(
                 RoundedRectangle(cornerRadius: 30)
-                    .fill(.white)
-                    .stroke(Color("OffWhite"), lineWidth: 1.0)
+                    .fill(Color.theme.white)
+                    .stroke(Color.theme.secondary, lineWidth: 1.0)
             )
     }
 }

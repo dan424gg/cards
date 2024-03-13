@@ -18,13 +18,15 @@ struct ExistingGameView: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 20.0)
-                .fill(.white)
-                .fill(Color("OffWhite").opacity(0.2))
+//                .fill(.white)
+                .fill(Color.theme.secondary)
                 .frame(width: 300, height: 300)
             
             VStack {
                 Text("Join Game")
                     .font(.title2)
+                    .foregroundStyle(Color.theme.primary)
+                
                 CustomTextField(textFieldHint: "Group ID", value: $groupId)
                 CustomTextField(textFieldHint: "Name", value: $fullName)
                 

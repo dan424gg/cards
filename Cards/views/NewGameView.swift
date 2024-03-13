@@ -17,13 +17,14 @@ struct NewGameView: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 20.0)
-                .fill(.white)
-                .fill(Color("OffWhite").opacity(0.2))
+                .fill(.thinMaterial)
+                .fill(Color.theme.background)
                 .frame(width: 300, height: 300)
             
             VStack {
                 Text("New Game")
-                    .font(.title2)
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundStyle(Color.theme.white)
                 
                 CustomTextField(textFieldHint: "Name", value: $fullName)
                 

@@ -7,14 +7,6 @@
 
 import SwiftUI
 
-extension AnyTransition {
-    static var moveAndMoveQuicker: AnyTransition {
-        .asymmetric(
-            insertion: .move(edge: .bottom).animation(.snappy(duration: 0.01, extraBounce: 0.3)),
-            removal: .move(edge: .bottom).animation(.snappy(duration: 0.01, extraBounce: 0.3))
-        )
-    }
-}
 
 struct IntroView: View {
     @Binding var blur: Bool
@@ -23,13 +15,12 @@ struct IntroView: View {
     @State var showNewGameView: Bool = false
     @State var showExistingGameView: Bool = false
     @State var scale: Double = 1.0
-    @StateObject var sheetCoordinator: SheetCoordinator<SheetType>
             
     var body: some View {
         ZStack {
             if showNewGameView {
                 NewGameView()
-                    .transition(.move(edge: .trailing).combined(with: .opacity))
+                    .transition(.move(edge: .leading).combined(with: .opacity))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .contentShape(Rectangle())
                     .onTapGesture {
@@ -65,7 +56,6 @@ struct IntroView: View {
                 ZStack {
                     Text("CARDS")
                         .font(.system(size: 100, weight: .light))
-                        .foregroundStyle(.black)
                         .position(x: specs.maxX / 2, y: specs.maxY * 0.25)
                     
                     VStack(spacing: 15) {
@@ -75,42 +65,41 @@ struct IntroView: View {
                             }
                         } label: {
                             Text("Join Game")
-                                .foregroundStyle(.black)
-                                .font(.system(size: 15, weight: .thin))
-                                .frame(width: specs.maxX * 0.66, height: 33)
+                                .padding(13)
+                                .foregroundStyle(Color.theme.primary)
+                                .font(.system(size: 17, weight: .bold))
+                                .frame(width: specs.maxX * 0.66)
                         }
-                        .background(.thinMaterial)
-                        .tint(Color("OffWhite").opacity(0.7))
-                        .buttonStyle(.bordered)
-                        
+                        .background(Color.theme.white)
+                        .clipShape(Capsule())
+                        .shadow(color: Color.theme.secondary, radius: 2)
+
                         Button {
                             withAnimation(.smooth(duration: 0.3)) {
                                 showNewGameView = true
                             }
                         } label: {
                             Text("New Game")
-                                .foregroundStyle(.black)
-                                .font(.system(size: 15, weight: .thin))
-                                .frame(width: specs.maxX * 0.66, height: 33)
+                                .padding(13)
+                                .foregroundStyle(Color.theme.white)
+                                .font(.system(size: 17, weight: .bold))
+                                .frame(width: specs.maxX * 0.66)
                         }
-                        .background(.thinMaterial)
-                        .tint(Color("OffWhite").opacity(0.7))
-                        .buttonStyle(.bordered)
+                        .background(Color.theme.primary)
+                        .clipShape(Capsule())
+                        .shadow(color: Color.theme.secondary, radius: 2)
                     }
                     .position(x: specs.maxX / 2, y: specs.maxY * 0.75)
                 }
                 .transition(.opacity)
             }
         }
-
     }
 }
 
 #Preview {
-    @StateObject var sheetCoordinator = SheetCoordinator<SheetType>()
-
     return GeometryReader { geo in
-        IntroView(blur: .constant(false), sheetCoordinator: sheetCoordinator)
+        IntroView(blur: .constant(false))
             .environmentObject({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)

@@ -61,6 +61,39 @@ extension Bool {
     }
 }
 
+extension Color {
+    static var theme: any ColorTheme = CardGameColorTheme()
+}
+
+protocol ColorTheme: Identifiable {
+    var id: String { get }
+    var background: Color { get }
+    var primary: Color { get }
+    var secondary: Color { get }
+    var tertriary: Color { get }
+    var white: Color { get }
+}
+
+struct DefaultColorTheme: ColorTheme {
+    var id: String = "DefaultColorTheme"
+    
+    var background: Color = Color("Default_Background")
+    var primary: Color = Color("Default_Primary")
+    var secondary: Color = Color("Default_Secondary")
+    var tertriary: Color = Color("Default_Tertriary")
+    var white: Color = Color("Default_White")
+}
+
+struct CardGameColorTheme: ColorTheme {
+    var id: String = "CardGameColorTheme"
+    
+    var background: Color = Color("CardGame_Background")
+    var primary: Color = Color("CardGame_Primary")
+    var secondary: Color = Color("CardGame_Secondary")
+    var tertriary: Color = Color("CardGame_Tertriary")
+    var white: Color = Color("CardGame_White")
+}
+
 extension CGPoint {
     func distance(to point: CGPoint) -> CGFloat {
         return hypot(point.x - x, point.y - y)
