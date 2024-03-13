@@ -35,7 +35,6 @@ struct CustomTextField: View {
             .multilineTextAlignment(.center)
         }
         .onAppear {
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1){ hasFocus = true }
             maxX = specs.maxX
             size = maxX * 0.33
         }
@@ -44,7 +43,7 @@ struct CustomTextField: View {
                 if hasFocus {
                     size = max(specs.maxX * 0.66, size > maxX ? maxX - 35 : size)
                 } else {
-                    size = value == "" ? maxX * 0.33 : value.width(usingFont: UIFont.systemFont(ofSize: 15)) + 35
+                    size = value == "" ? maxX * 0.33 : value.width(usingFont: UIFont.init(name: "LuckiestGuy-Regular", size: 25)!) + 35
                 }
             }
         })
@@ -54,13 +53,16 @@ struct CustomTextField: View {
 struct TextFieldBorder: TextFieldStyle {
     func _body(configuration: TextField<Self._Label>) -> some View {
         configuration
-            .font(.system(size: 15, weight: .thin))
-            .padding(10)
-            .background(
-                RoundedRectangle(cornerRadius: 30)
-                    .fill(Color.theme.white)
-                    .stroke(Color.theme.secondary, lineWidth: 1.0)
-            )
+            .padding()
+            .font(.custom("LuckiestGuy-Regular", size: 20))
+            .offset(y: 2)
+            .background(Color.theme.white)
+            .clipShape(Capsule())
+//            .background(
+//                RoundedRectangle(cornerRadius: 30)
+//                    .fill(Color.theme.white)
+//                    .stroke(Color.theme.secondary, lineWidth: 1.0)
+//            )
     }
 }
 

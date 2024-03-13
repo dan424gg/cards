@@ -55,9 +55,14 @@ struct IntroView: View {
             } else {
                 ZStack {
                     Text("CARDS")
-                        .font(.system(size: 100, weight: .light))
-                        .position(x: specs.maxX / 2, y: specs.maxY * 0.25)
-                    
+                        .font(.custom("LuckiestGuy-Regular", size: 120))
+                        .tracking(10)
+                        .foregroundStyle(Color.theme.title)
+                        .position(x: specs.maxX / 2, y: specs.maxY * 0.3)
+                        .offset(x: 5)
+                        .shadow(radius: 5)
+                        .shadow(radius: 5)
+
                     VStack(spacing: 15) {
                         Button {
                             withAnimation(.smooth(duration: 0.3)) {
@@ -65,10 +70,11 @@ struct IntroView: View {
                             }
                         } label: {
                             Text("Join Game")
-                                .padding(13)
+                                .padding()
                                 .foregroundStyle(Color.theme.primary)
-                                .font(.system(size: 17, weight: .bold))
-                                .frame(width: specs.maxX * 0.66)
+                                .font(.custom("LuckiestGuy-Regular", size: 20))
+                                .offset(y: 2)
+                                .frame(width: specs.maxX * 0.75)
                         }
                         .background(Color.theme.white)
                         .clipShape(Capsule())
@@ -80,10 +86,11 @@ struct IntroView: View {
                             }
                         } label: {
                             Text("New Game")
-                                .padding(13)
+                                .padding()
                                 .foregroundStyle(Color.theme.white)
-                                .font(.system(size: 17, weight: .bold))
-                                .frame(width: specs.maxX * 0.66)
+                                .font(.custom("LuckiestGuy-Regular", size: 20))
+                                .offset(y: 2)
+                                .frame(width: specs.maxX * 0.75)
                         }
                         .background(Color.theme.primary)
                         .clipShape(Capsule())

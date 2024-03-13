@@ -107,7 +107,7 @@ struct LineOfSuits: View {
         var body: some View {
             Image(systemName: "suit.\(suit).fill")
                 .if(Color.theme.id == "CardGameColorTheme", {
-                    $0.foregroundStyle(suit == "spade" || suit == "club" ? .black.opacity(0.4) : .red.opacity(0.4))
+                    $0.foregroundStyle(suit == "spade" || suit == "club" ? .black.opacity(0.7) : Color.theme.primary.opacity(0.7))
                 }, else: {
                     $0.foregroundStyle(Color.theme.primary.opacity(0.4))
                 })

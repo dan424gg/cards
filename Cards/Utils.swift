@@ -63,35 +63,46 @@ extension Bool {
 
 extension Color {
     static var theme: any ColorTheme = CardGameColorTheme()
+    static var launch = LaunchTheme()
 }
 
 protocol ColorTheme: Identifiable {
     var id: String { get }
+    
     var background: Color { get }
+    var title: Color { get }
+    
     var primary: Color { get }
     var secondary: Color { get }
     var tertriary: Color { get }
     var white: Color { get }
 }
 
-struct DefaultColorTheme: ColorTheme {
-    var id: String = "DefaultColorTheme"
+struct BananaColorTheme: ColorTheme {
+    var id: String = "BananaColorTheme"
     
-    var background: Color = Color("Default_Background")
-    var primary: Color = Color("Default_Primary")
-    var secondary: Color = Color("Default_Secondary")
-    var tertriary: Color = Color("Default_Tertriary")
-    var white: Color = Color("Default_White")
+    var background: Color = Color("Banana_Background")
+    var title: Color = Color("Banana_Title")
+    var primary: Color = Color("Banana_Primary")
+    var secondary: Color = Color("Banana_Secondary")
+    var tertriary: Color = Color("Banana_Tertriary")
+    var white: Color = Color("Banana_White")
 }
 
 struct CardGameColorTheme: ColorTheme {
     var id: String = "CardGameColorTheme"
     
     var background: Color = Color("CardGame_Background")
+    var title: Color = Color("CardGame_Title")
     var primary: Color = Color("CardGame_Primary")
     var secondary: Color = Color("CardGame_Secondary")
     var tertriary: Color = Color("CardGame_Tertriary")
     var white: Color = Color("CardGame_White")
+}
+
+struct LaunchTheme {
+    let accent: Color = Color("LaunchAccent")
+    let background: Color = Color("LaunchBackground")
 }
 
 extension CGPoint {

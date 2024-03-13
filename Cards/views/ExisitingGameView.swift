@@ -19,13 +19,13 @@ struct ExistingGameView: View {
         ZStack {
             RoundedRectangle(cornerRadius: 20.0)
 //                .fill(.white)
-                .fill(Color.theme.secondary)
+                .fill(Color.theme.primary)
                 .frame(width: 300, height: 300)
             
             VStack {
                 Text("Join Game")
-                    .font(.title2)
-                    .foregroundStyle(Color.theme.primary)
+                    .font(.custom("LuckiestGuy-Regular", size: 40))
+                    .foregroundStyle(Color.theme.white)
                 
                 CustomTextField(textFieldHint: "Group ID", value: $groupId)
                 CustomTextField(textFieldHint: "Name", value: $fullName)
