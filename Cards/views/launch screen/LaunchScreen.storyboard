@@ -16,25 +16,19 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="sH4-z7-QUd">
-                                <rect key="frame" x="186.66666666666666" y="516" width="20" height="20"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <rect key="contentStretch" x="1" y="1" width="1" height="1"/>
-                            </activityIndicatorView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="This is a placeholder and a test" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7e4-gW-sQt">
-                                <rect key="frame" x="38" y="411.66666666666669" width="317" height="28.666666666666686"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="24"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Cards" translatesAutoresizingMaskIntoConstraints="NO" id="Ula-30-DbU">
+                                <rect key="frame" x="96.666666666666686" y="400.33333333333331" width="199.99999999999994" height="51.333333333333314"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="200" id="Gxn-LB-uay"/>
+                                    <constraint firstAttribute="width" secondItem="Ula-30-DbU" secondAttribute="height" multiplier="332:85" id="mb1-6L-yV0"/>
+                                </constraints>
+                            </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Bcu-3y-fUS"/>
-                        <color key="backgroundColor" name="LaunchBackground"/>
+                        <color key="backgroundColor" name="White"/>
                         <constraints>
-                            <constraint firstItem="7e4-gW-sQt" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="Eh4-b4-0r8"/>
-                            <constraint firstItem="sH4-z7-QUd" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="Sg5-zE-rz1"/>
-                            <constraint firstItem="7e4-gW-sQt" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="uiM-Vs-U9g"/>
-                            <constraint firstItem="sH4-z7-QUd" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" constant="100" id="vRg-uZ-tFe"/>
+                            <constraint firstItem="Ula-30-DbU" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="LWZ-p4-u3t"/>
+                            <constraint firstItem="Ula-30-DbU" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="cO3-xO-p53"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -44,8 +38,9 @@
         </scene>
     </scenes>
     <resources>
-        <namedColor name="LaunchBackground">
-            <color red="0.23600000143051147" green="0.70599997043609619" blue="0.23600000143051147" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        <image name="Cards" width="332" height="85"/>
+        <namedColor name="White">
+            <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

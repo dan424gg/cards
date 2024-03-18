@@ -14,15 +14,15 @@ struct LaunchView: View {
     
     var body: some View {
         ZStack {
-            Color.launch.background
-                .ignoresSafeArea()
-            Text("This is a placeholder and a test")
-                .font(.system(size: 24))
-            ProgressView()
-                .offset(y: 100)
+            Color.white
+            Image("Cards")
+                .resizable()
+                .aspectRatio(332/85, contentMode: .fit)
+                .frame(width: 200)
         }
+        .ignoresSafeArea()
         .onAppear {
-            timer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false, block: { _ in
+            timer = Timer.scheduledTimer(withTimeInterval: 2.5, repeats: false, block: { _ in
                 withAnimation(.snappy(duration: 0.3)) {
                     showLaunch = false
                 }

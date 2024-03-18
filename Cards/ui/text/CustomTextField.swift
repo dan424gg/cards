@@ -26,8 +26,9 @@ struct CustomTextField: View {
     var body: some View {
         VStack {
             TextField(
-                "\(textFieldHint)",
-                text: $value
+                "",
+                text: $value,
+                prompt: Text("\(textFieldHint)").foregroundStyle(.gray.opacity(0.4))
             )
             .focused($hasFocus)
             .frame(width: size)
@@ -56,13 +57,8 @@ struct TextFieldBorder: TextFieldStyle {
             .padding()
             .font(.custom("LuckiestGuy-Regular", size: 20))
             .offset(y: 2)
-            .background(Color.theme.white)
+            .background(Color.white)
             .clipShape(Capsule())
-//            .background(
-//                RoundedRectangle(cornerRadius: 30)
-//                    .fill(Color.theme.white)
-//                    .stroke(Color.theme.secondary, lineWidth: 1.0)
-//            )
     }
 }
 

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct NewGameView: View {
+    @Binding var introView: IntroViewType
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @EnvironmentObject var specs: DeviceSpecs
     @State private var notValid: Bool = true
@@ -28,16 +29,29 @@ struct NewGameView: View {
                 
                 CustomTextField(textFieldHint: "Name", value: $fullName)
                 
-                Button("Submit", systemImage: notValid ? "x.circle" : "checkmark.circle", action: {
+                Button {
+                    endTextEditing()
+                    
+                    withAnimation(.smooth(duration: 0.3)) {
+                        introView = .loadingScreen
+                    }
+                    
                     Task {
+                        firebaseHelper.reinitialize()
                         await firebaseHelper.startGameCollection(fullName: fullName)
                     }
-                })
-                .labelStyle(.iconOnly)
-                .symbolRenderingMode(.palette)
-                .foregroundStyle(notValid ? .gray.opacity(0.5) : .green)
-                .disabled(notValid)
-                .font(.system(size: 35))
+                } label: {
+                    Text("Submit")
+                        .padding()
+                        .foregroundStyle(Color.theme.primary)
+                        .font(.custom("LuckiestGuy-Regular", size: 25))
+                        .offset(y: 2.2)
+                        .frame(width: 150)
+                }
+                .background(Color.theme.white)
+                .clipShape(Capsule())
+                .shadow(color: Color.theme.secondary, radius: 2)
+                .padding()
             }
             .onChange(of: fullName, {
                 withAnimation {
@@ -57,7 +71,7 @@ struct NewGameView: View {
 
 #Preview {
     return GeometryReader { geo in
-        NewGameView()
+        NewGameView(introView: .constant(.nothing))
             .environmentObject({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)

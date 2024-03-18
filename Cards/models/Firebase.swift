@@ -36,13 +36,14 @@ import FirebaseFirestoreSwift
     
     var docRef: DocumentReference!
     
-    init() {
+    func reinitialize() {
         if self.gameState != nil {
 //            teamListeners.removeAllListeners()
 //            playerListeners.removeAllListeners()
             
             removeGameInfoListener()
             removeTeamPlayerNameListener()
+            removePlayersListener()
         }
         
         self.gameOutcome = .undetermined

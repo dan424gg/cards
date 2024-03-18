@@ -7,49 +7,53 @@
 
 import SwiftUI
 
+enum IntroViewType {
+    case newGame, existingGame, loadingScreen, nothing
+}
 
 struct IntroView: View {
     @Binding var blur: Bool
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @EnvironmentObject var specs: DeviceSpecs
+    @State var introView: IntroViewType = .nothing
     @State var showNewGameView: Bool = false
     @State var showExistingGameView: Bool = false
+    @State var showLoadingView: Bool = false
     @State var scale: Double = 1.0
             
     var body: some View {
         ZStack {
-            if showNewGameView {
-                NewGameView()
+            if introView == .newGame {
+                NewGameView(introView: $introView)
                     .transition(.move(edge: .leading).combined(with: .opacity))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .contentShape(Rectangle())
                     .onTapGesture {
                         endTextEditing()
-                        if showNewGameView {
-                            withAnimation(.snappy(duration: 0.3)) {
-                                showNewGameView = false
-                            }
-                        } else if showExistingGameView {
-                            withAnimation(.snappy(duration: 0.3)) {
-                                showExistingGameView = false
-                            }
+                        withAnimation(.snappy(duration: 0.3)) {
+                            introView = .nothing
                         }
                     }
-            } else if showExistingGameView {
-                ExistingGameView()
+            } else if introView == .existingGame {
+                ExistingGameView(introView: $introView)
                     .transition(.move(edge: .leading).combined(with: .opacity))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .contentShape(Rectangle())
                     .onTapGesture {
                         endTextEditing()
-                        if showNewGameView {
-                            withAnimation(.snappy(duration: 0.3)) {
-                                showNewGameView = false
-                            }
-                        } else if showExistingGameView {
-                            withAnimation(.snappy(duration: 0.3)) {
-                                showExistingGameView = false
-                            }
+                        withAnimation(.snappy(duration: 0.3)) {
+                            introView = .nothing
+                        }
+                    }
+            } else if introView == .loadingScreen {
+                LoadingScreen()
+                    .transition(.move(edge: .trailing).combined(with: .opacity))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        endTextEditing()
+                        withAnimation(.snappy(duration: 0.3)) {
+                            introView = .nothing
                         }
                     }
             } else {
@@ -66,14 +70,14 @@ struct IntroView: View {
                     VStack(spacing: 15) {
                         Button {
                             withAnimation(.smooth(duration: 0.3)) {
-                                showExistingGameView = true
+                                introView = .existingGame
                             }
                         } label: {
                             Text("Join Game")
                                 .padding()
                                 .foregroundStyle(Color.theme.primary)
-                                .font(.custom("LuckiestGuy-Regular", size: 20))
-                                .offset(y: 2)
+                                .font(.custom("LuckiestGuy-Regular", size: 22))
+                                .offset(y: 2.2)
                                 .frame(width: specs.maxX * 0.75)
                         }
                         .background(Color.theme.white)
@@ -82,14 +86,14 @@ struct IntroView: View {
 
                         Button {
                             withAnimation(.smooth(duration: 0.3)) {
-                                showNewGameView = true
+                                introView = .newGame
                             }
                         } label: {
                             Text("New Game")
                                 .padding()
                                 .foregroundStyle(Color.theme.white)
-                                .font(.custom("LuckiestGuy-Regular", size: 20))
-                                .offset(y: 2)
+                                .font(.custom("LuckiestGuy-Regular", size: 22))
+                                .offset(y: 2.2)
                                 .frame(width: specs.maxX * 0.75)
                         }
                         .background(Color.theme.primary)

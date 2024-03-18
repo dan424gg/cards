@@ -32,14 +32,15 @@ struct GamePicker: View {
             Picker("Game", selection: $gameSelected) {
                 ForEach(Games.allCases, id: \.self) { game in
                     Text(game.name.capitalized)
-                        .font(.system(size: 15, weight: .thin))
                 }
             }
             .disabled(!(firebaseHelper.playerState?.is_lead ?? false))
         } label: {
             HStack(spacing: 2) {
                 Text(gameSelected.id.capitalized)
-                    .font(.system(size: 15, weight: .thin))
+                    .foregroundStyle(Color.theme.primary)
+                    .font(.custom("LuckiestGuy-Regular", size: 18))
+                    .offset(y: 1.8)
 //                if firebaseHelper.playerState?.is_lead ?? false {
 //                    Image(systemName: "arrow.up.and.down")
 //                        .font(.system(size: 15, weight: .thin))
@@ -47,6 +48,10 @@ struct GamePicker: View {
             }
         }
         .onChange(of: firebaseHelper.gameState?.game_name, {
+            guard firebaseHelper.gameState != nil else {
+                return
+            }
+            
             if let gameExists = Games.allCases.first(where: { $0.id == firebaseHelper.gameState!.game_name }) {
                 gameSelected = gameExists
                 preventCyclicalUpdate = true
