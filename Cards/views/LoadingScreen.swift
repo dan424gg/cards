@@ -202,7 +202,11 @@ struct LoadingScreen: View {
                 }
             }
             .padding(25)
-            .getSize(onChange: { /*if size == .zero { */size = $0 /*}*/})
+            .getSize(onChange: { newSize in
+                withAnimation {
+                    size = newSize
+                }
+            })
         }
         .onTapGesture {
             endTextEditing()
