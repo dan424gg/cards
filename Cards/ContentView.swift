@@ -18,19 +18,15 @@ struct ContentView: View {
         ZStack {
             MainView(visible: $blur)
                 .zIndex(1.0)
-//                .background {
-                    ZStack {
-                        Color("OffWhite")
-                            .opacity(0.07)
-                        ForEach(Array(0...20), id: \.self) { i in
-                            LineOfSuits(index: i)
-                                .offset(y: CGFloat(-120 * Double(i)))
-                        }
-                        .position(x: specs.maxX / 2, y: specs.maxY * 1.5)
-                    }
-                    .zIndex(0.0)
-//                }
-                .sheetDisplayer(coordinator: sheetCoordinator)
+            ZStack {
+                Color.theme.background
+                ForEach(Array(0...20), id: \.self) { i in
+                    LineOfSuits(index: i)
+                        .offset(y: CGFloat(-120 * Double(i)))
+                }
+                .position(x: specs.maxX / 2, y: specs.maxY * 1.5)
+            }
+            .zIndex(0.0)
         }
     }
 }

@@ -73,6 +73,24 @@
 		1EA245802AED6F71003B0943 /* TurnOneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA2457F2AED6F71003B0943 /* TurnOneView.swift */; };
 		1EA245822AED70B3003B0943 /* CardInHandArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA245812AED70B3003B0943 /* CardInHandArea.swift */; };
 		1EA759132AE2272A00537BB5 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 1EA759122AE2272A00537BB5 /* FirebaseFirestoreSwift */; };
+		1EA903A62BA20FEA00CF76E3 /* luckiest-guy.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1EA903A52BA20FEA00CF76E3 /* luckiest-guy.ttf */; };
+		1EA903A72BA20FEA00CF76E3 /* luckiest-guy.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1EA903A52BA20FEA00CF76E3 /* luckiest-guy.ttf */; };
+		1EA903A82BA20FEA00CF76E3 /* luckiest-guy.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1EA903A52BA20FEA00CF76E3 /* luckiest-guy.ttf */; };
+		1EA903A92BA20FEA00CF76E3 /* luckiest-guy.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1EA903A52BA20FEA00CF76E3 /* luckiest-guy.ttf */; };
+		1EA903AA2BA20FEA00CF76E3 /* luckiest-guy.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1EA903A52BA20FEA00CF76E3 /* luckiest-guy.ttf */; };
+		1EA903AB2BA20FEA00CF76E3 /* luckiest-guy.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1EA903A52BA20FEA00CF76E3 /* luckiest-guy.ttf */; };
+		1EA903AE2BA22A3F00CF76E3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1EA903AD2BA22A3F00CF76E3 /* LaunchScreen.storyboard */; };
+		1EA903AF2BA22A3F00CF76E3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1EA903AD2BA22A3F00CF76E3 /* LaunchScreen.storyboard */; };
+		1EA903B02BA22A3F00CF76E3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1EA903AD2BA22A3F00CF76E3 /* LaunchScreen.storyboard */; };
+		1EA903B12BA22A3F00CF76E3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1EA903AD2BA22A3F00CF76E3 /* LaunchScreen.storyboard */; };
+		1EA903B22BA22A3F00CF76E3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1EA903AD2BA22A3F00CF76E3 /* LaunchScreen.storyboard */; };
+		1EA903B32BA22A3F00CF76E3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1EA903AD2BA22A3F00CF76E3 /* LaunchScreen.storyboard */; };
+		1EA903B52BA22F7E00CF76E3 /* LaunchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA903B42BA22F7E00CF76E3 /* LaunchView.swift */; };
+		1EA903B62BA22F7E00CF76E3 /* LaunchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA903B42BA22F7E00CF76E3 /* LaunchView.swift */; };
+		1EA903B72BA22F7E00CF76E3 /* LaunchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA903B42BA22F7E00CF76E3 /* LaunchView.swift */; };
+		1EA903B82BA22F7E00CF76E3 /* LaunchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA903B42BA22F7E00CF76E3 /* LaunchView.swift */; };
+		1EA903B92BA22F7E00CF76E3 /* LaunchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA903B42BA22F7E00CF76E3 /* LaunchView.swift */; };
+		1EA903BA2BA22F7E00CF76E3 /* LaunchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA903B42BA22F7E00CF76E3 /* LaunchView.swift */; };
 		1EAE46882B828C0800F7519B /* GameOutcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EAE46872B828C0800F7519B /* GameOutcomeView.swift */; };
 		1EAE46892B828C9100F7519B /* GameOutcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EAE46872B828C0800F7519B /* GameOutcomeView.swift */; };
 		1EAE468A2B828C9400F7519B /* GameOutcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EAE46872B828C0800F7519B /* GameOutcomeView.swift */; };
@@ -400,6 +418,9 @@
 		1E9C48F52AE7B3F3008C518D /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		1EA2457F2AED6F71003B0943 /* TurnOneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnOneView.swift; sourceTree = "<group>"; };
 		1EA245812AED70B3003B0943 /* CardInHandArea.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardInHandArea.swift; sourceTree = "<group>"; };
+		1EA903A52BA20FEA00CF76E3 /* luckiest-guy.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "luckiest-guy.ttf"; path = "../../../Downloads/luckiest-guy.ttf"; sourceTree = "<group>"; };
+		1EA903AD2BA22A3F00CF76E3 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		1EA903B42BA22F7E00CF76E3 /* LaunchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchView.swift; sourceTree = "<group>"; };
 		1EAE46872B828C0800F7519B /* GameOutcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOutcomeView.swift; sourceTree = "<group>"; };
 		1EAE468E2B8296D700F7519B /* IntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroView.swift; sourceTree = "<group>"; };
 		1EBED90A2AD7BBFF008B85EE /* Cards.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cards.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -624,6 +645,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		1EA903AC2BA229F100CF76E3 /* launch screen */ = {
+			isa = PBXGroup;
+			children = (
+				1EA903AD2BA22A3F00CF76E3 /* LaunchScreen.storyboard */,
+				1EA903B42BA22F7E00CF76E3 /* LaunchView.swift */,
+			);
+			path = "launch screen";
+			sourceTree = "<group>";
+		};
 		1EBED9012AD7BBFF008B85EE = {
 			isa = PBXGroup;
 			children = (
@@ -657,6 +687,7 @@
 			children = (
 				1ECE76472B714BBF004F2072 /* UITesting */,
 				1EBED9112AD7BC00008B85EE /* Assets.xcassets */,
+				1EA903A52BA20FEA00CF76E3 /* luckiest-guy.ttf */,
 				1EE5F1292AE8A3750089162D /* Info.plist */,
 				1E25B49F2AD7CF8B008DFACE /* GoogleService-Info.plist */,
 				1EBED94A2AD7BF15008B85EE /* models */,
@@ -718,6 +749,7 @@
 		1EBED93F2AD7BCC6008B85EE /* views */ = {
 			isa = PBXGroup;
 			children = (
+				1EA903AC2BA229F100CF76E3 /* launch screen */,
 				1EBED9402AD7BCD0008B85EE /* games */,
 				1EBED9442AD7BCFE008B85EE /* LoadingScreen.swift */,
 				1E4CC8F72AFB4A3500ECC77B /* GameView.swift */,
@@ -1044,6 +1076,8 @@
 			files = (
 				1EBED9152AD7BC01008B85EE /* Preview Assets.xcassets in Resources */,
 				1EBED9122AD7BC00008B85EE /* Assets.xcassets in Resources */,
+				1EA903A62BA20FEA00CF76E3 /* luckiest-guy.ttf in Resources */,
+				1EA903AE2BA22A3F00CF76E3 /* LaunchScreen.storyboard in Resources */,
 				1E25B4A02AD7CF8B008DFACE /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1068,6 +1102,8 @@
 			files = (
 				1ED85E932B718B3000807548 /* Preview Assets.xcassets in Resources */,
 				1ED85E942B718B3000807548 /* Assets.xcassets in Resources */,
+				1EA903A72BA20FEA00CF76E3 /* luckiest-guy.ttf in Resources */,
+				1EA903AF2BA22A3F00CF76E3 /* LaunchScreen.storyboard in Resources */,
 				1ED85E952B718B3000807548 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1078,6 +1114,8 @@
 			files = (
 				1ED85ECC2B71904300807548 /* Preview Assets.xcassets in Resources */,
 				1ED85ECD2B71904300807548 /* Assets.xcassets in Resources */,
+				1EA903A82BA20FEA00CF76E3 /* luckiest-guy.ttf in Resources */,
+				1EA903B02BA22A3F00CF76E3 /* LaunchScreen.storyboard in Resources */,
 				1ED85ECE2B71904300807548 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1088,6 +1126,8 @@
 			files = (
 				1ED85F712B71904D00807548 /* Preview Assets.xcassets in Resources */,
 				1ED85F722B71904D00807548 /* Assets.xcassets in Resources */,
+				1EA903A92BA20FEA00CF76E3 /* luckiest-guy.ttf in Resources */,
+				1EA903B12BA22A3F00CF76E3 /* LaunchScreen.storyboard in Resources */,
 				1ED85F732B71904D00807548 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1098,6 +1138,8 @@
 			files = (
 				1ED85FA82B71904E00807548 /* Preview Assets.xcassets in Resources */,
 				1ED85FA92B71904E00807548 /* Assets.xcassets in Resources */,
+				1EA903AA2BA20FEA00CF76E3 /* luckiest-guy.ttf in Resources */,
+				1EA903B22BA22A3F00CF76E3 /* LaunchScreen.storyboard in Resources */,
 				1ED85FAA2B71904E00807548 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1108,6 +1150,8 @@
 			files = (
 				1ED85FDF2B71904F00807548 /* Preview Assets.xcassets in Resources */,
 				1ED85FE02B71904F00807548 /* Assets.xcassets in Resources */,
+				1EA903AB2BA20FEA00CF76E3 /* luckiest-guy.ttf in Resources */,
+				1EA903B32BA22A3F00CF76E3 /* LaunchScreen.storyboard in Resources */,
 				1ED85FE12B71904F00807548 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1132,6 +1176,7 @@
 				1E265EEF2B1EB47D0040E8A9 /* GameHeader.swift in Sources */,
 				1E939CFD2AE3606D00D64551 /* GameState.swift in Sources */,
 				1E20F1792AF3524100F2B368 /* CardPlaceHolder.swift in Sources */,
+				1EA903B52BA22F7E00CF76E3 /* LaunchView.swift in Sources */,
 				1E8D45EE2B585EE5007543BC /* Utils.swift in Sources */,
 				1EC258EB2B9A5DD0001B78EB /* SideBar.swift in Sources */,
 				1EFA9F5B2AF584CC00FA092C /* TurnTwoView.swift in Sources */,
@@ -1223,6 +1268,7 @@
 				1EC258F82B9E38C6001B78EB /* NewGameView.swift in Sources */,
 				1ED85E852B718B3000807548 /* LoadingScreen.swift in Sources */,
 				1E8A2E6D2B8D1E4E00A40148 /* GameSetUpView.swift in Sources */,
+				1EA903B62BA22F7E00CF76E3 /* LaunchView.swift in Sources */,
 				1ED85E872B718B3000807548 /* TeamState.swift in Sources */,
 				1ED85E882B718B3000807548 /* SwiftUIView.swift in Sources */,
 				1ED85E892B718B3000807548 /* CardsApp.swift in Sources */,
@@ -1271,6 +1317,7 @@
 				1EC258F92B9E38C6001B78EB /* NewGameView.swift in Sources */,
 				1ED85EBE2B71904300807548 /* LoadingScreen.swift in Sources */,
 				1E8A2E6E2B8D1E4F00A40148 /* GameSetUpView.swift in Sources */,
+				1EA903B72BA22F7E00CF76E3 /* LaunchView.swift in Sources */,
 				1ED85EC02B71904300807548 /* TeamState.swift in Sources */,
 				1ED85EC12B71904300807548 /* SwiftUIView.swift in Sources */,
 				1ED85EC22B71904300807548 /* CardsApp.swift in Sources */,
@@ -1319,6 +1366,7 @@
 				1EC258FB2B9E38C9001B78EB /* NewGameView.swift in Sources */,
 				1ED85F632B71904D00807548 /* LoadingScreen.swift in Sources */,
 				1E8A2E6F2B8D1E4F00A40148 /* GameSetUpView.swift in Sources */,
+				1EA903B82BA22F7E00CF76E3 /* LaunchView.swift in Sources */,
 				1ED85F652B71904D00807548 /* TeamState.swift in Sources */,
 				1ED85F662B71904D00807548 /* SwiftUIView.swift in Sources */,
 				1ED85F672B71904D00807548 /* CardsApp.swift in Sources */,
@@ -1367,6 +1415,7 @@
 				1EC258FC2B9E38C9001B78EB /* NewGameView.swift in Sources */,
 				1ED85F9A2B71904E00807548 /* LoadingScreen.swift in Sources */,
 				1E8A2E702B8D1E5000A40148 /* GameSetUpView.swift in Sources */,
+				1EA903B92BA22F7E00CF76E3 /* LaunchView.swift in Sources */,
 				1ED85F9C2B71904E00807548 /* TeamState.swift in Sources */,
 				1ED85F9D2B71904E00807548 /* SwiftUIView.swift in Sources */,
 				1ED85F9E2B71904E00807548 /* CardsApp.swift in Sources */,
@@ -1415,6 +1464,7 @@
 				1EC258FD2B9E38CA001B78EB /* NewGameView.swift in Sources */,
 				1ED85FD12B71904F00807548 /* LoadingScreen.swift in Sources */,
 				1E8A2E712B8D1E5000A40148 /* GameSetUpView.swift in Sources */,
+				1EA903BA2BA22F7E00CF76E3 /* LaunchView.swift in Sources */,
 				1ED85FD32B71904F00807548 /* TeamState.swift in Sources */,
 				1ED85FD42B71904F00807548 /* SwiftUIView.swift in Sources */,
 				1ED85FD52B71904F00807548 /* CardsApp.swift in Sources */,
@@ -1646,6 +1696,7 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -1677,6 +1728,7 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;

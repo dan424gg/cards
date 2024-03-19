@@ -22,7 +22,7 @@ struct MainView: View {
                     }
                     .transition(.opacity.animation(.easeInOut(duration: 0.5).delay(0.5)))
             } else {
-                IntroView(blur: $visible, sheetCoordinator: sheetCoordinator)
+                IntroView(blur: $visible)
                     .transition(.opacity.animation(.easeInOut(duration: 0.5)))
             }
         }

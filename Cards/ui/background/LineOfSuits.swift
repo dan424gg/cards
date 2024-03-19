@@ -91,6 +91,7 @@ struct LineOfSuits: View {
             // updated arrayLen to be a multiple of 4
             let remainder: Int = arrayLen % 4
             arrayLen += (4 - remainder)
+            
             array = Array(0..<arrayLen)
         }
     }
@@ -104,10 +105,13 @@ struct LineOfSuits: View {
         @State var pos = CGPoint(x: 0.0, y: 0.0)
         
         var body: some View {
-            Image(systemName: "suit.\(suit)")
-                .foregroundColor(suit == "spade" || suit == "club" ? .black.opacity(0.22) : .red.opacity(0.25))
-                .scaleEffect(1.3)
-//                .position(x: specs.maxX - CGFloat(Double(index) * (specs.maxX / 20.0)), y: (Double(index) * (specs.maxY / 20.0)))
+            Image(systemName: "suit.\(suit).fill")
+                .if(Color.theme.id == "CardGameColorTheme", {
+                    $0.foregroundStyle(suit == "spade" || suit == "club" ? .black.opacity(0.7) : Color.theme.primary.opacity(0.7))
+                }, else: {
+                    $0.foregroundStyle(Color.theme.primary.opacity(0.4))
+                })
+                .scaleEffect(1.2)
                 .position(pos)
                 .onAppear {
                     let maxX = specs.maxX + 20
