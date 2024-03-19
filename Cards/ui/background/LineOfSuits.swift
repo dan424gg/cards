@@ -132,6 +132,7 @@ struct LineOfSuits: View {
                 }
         }
     }
+
 }
 
 #Preview {

@@ -51,7 +51,6 @@ struct GamePicker: View {
             guard firebaseHelper.gameState != nil else {
                 return
             }
-            
             if let gameExists = Games.allCases.first(where: { $0.id == firebaseHelper.gameState!.game_name }) {
                 gameSelected = gameExists
                 preventCyclicalUpdate = true

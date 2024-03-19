@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+
 enum IntroViewType {
     case newGame, existingGame, loadingScreen, nothing
 }

@@ -224,6 +224,10 @@ struct LoadingScreen: View {
             } else {
                 width = max(name.width(usingFont: UIFont.systemFont(ofSize: 15)) + 35, geo.frame(in: .local).width * 0.33)
             }
+            .buttonStyle(.borderedProminent)
+            .disabled(!equalNumOfPlayersOnTeam(players: firebaseHelper.players))
+        } else {
+            Text("Waiting to start game...")
         }
         
         return width

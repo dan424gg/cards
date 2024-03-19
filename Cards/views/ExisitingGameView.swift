@@ -94,6 +94,7 @@ struct ExistingGameView: View {
                 }
             })
         }
+
         .onTapGesture {
             endTextEditing()
         }
