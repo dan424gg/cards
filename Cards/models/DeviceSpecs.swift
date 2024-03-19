@@ -17,6 +17,5 @@ class DeviceSpecs: ObservableObject {
         size = geo.frame(in: .global).size
         maxX = geo.frame(in: .global).maxX
         maxY = geo.frame(in: .global).maxY
-
     }
 }

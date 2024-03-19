@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ExistingGameView: View {
+    @Binding var introView: IntroViewType
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @EnvironmentObject var specs: DeviceSpecs
     @State private var notValid: Bool = true
@@ -16,49 +17,84 @@ struct ExistingGameView: View {
     @State var size: CGSize = .zero
     
     var body: some View {
-        
-        VStack {
-            Text("Join Game")
-                .font(.title2)
-            CustomTextField(textFieldHint: "Group ID", value: $groupId)
-            CustomTextField(textFieldHint: "Name", value: $fullName)
+        ZStack {
+            RoundedRectangle(cornerRadius: 20.0)
+//                .fill(.white)
+                .fill(Color.theme.primary)
+                .frame(width: 300, height: 300)
             
-            Button("Submit", systemImage: notValid ? "x.circle" : "checkmark.circle", action: {
-                Task {
-                    await firebaseHelper.joinGameCollection(fullName: fullName, id: groupId)
-                }
-            })
-            .labelStyle(.iconOnly)
-            .symbolRenderingMode(.palette)
-            .foregroundStyle(notValid ? .gray.opacity(0.5) : .green)
-            .disabled(notValid)
-            .font(.system(size: 35))
-        }
-        .onChange(of: [fullName, groupId], {
-            if fullName.isEmpty || (groupId.isEmpty) {
-                withAnimation {
-                    notValid = true
-                }
-            } else {
-                if !groupId.isEmpty {
+            VStack {
+                Text("Join Game")
+                    .font(.custom("LuckiestGuy-Regular", size: 40))
+                    .offset(y: 5)
+                    .foregroundStyle(Color.theme.white)
+                    .getSize(onChange: {
+                        print($0)
+                    })
+                
+                CustomTextField(textFieldHint: "Group ID", value: $groupId)
+                CustomTextField(textFieldHint: "Name", value: $fullName)
+                
+                Button {
+                    endTextEditing()
+                    
+                    withAnimation(.smooth(duration: 0.3)) {
+                        introView = .loadingScreen
+                    }
+                    
                     Task {
-                        if await firebaseHelper.checkValidId(id: groupId) {
-                            withAnimation {
-                                notValid = false
-                            }
-                        } else {
-                            withAnimation {
-                                notValid = true
-                            }
-                        }
+                        await firebaseHelper.joinGameCollection(fullName: fullName, id: groupId)
+                    }
+                } label: {
+                    Text("Submit")
+                        .padding()
+                        .foregroundStyle(Color.white)
+                        .font(.custom("LuckiestGuy-Regular", size: 25))
+                        .offset(y: 2.2)
+                        .frame(width: 150)
+                }
+//                .background(Color.theme.white)
+//                .clipShape(Capsule())
+//                .shadow(color: Color.theme.secondary, radius: 2)
+                
+//                Button("Submit", systemImage: notValid ? "x.circle" : "checkmark.circle", action: {
+//                    Task {
+//                        await firebaseHelper.joinGameCollection(fullName: fullName, id: groupId)
+//                    }
+//                })
+//                .labelStyle(.iconOnly)
+//                .symbolRenderingMode(.palette)
+//                .foregroundStyle(notValid ? .gray.opacity(0.5) : .green)
+//                .disabled(notValid)
+//                .font(.system(size: 35))
+            }
+            .onChange(of: [fullName, groupId], {
+                if fullName.isEmpty || (groupId.isEmpty) {
+                    withAnimation {
+                        notValid = true
                     }
                 } else {
-                    withAnimation {
-                        notValid = false
+                    if !groupId.isEmpty {
+                        Task {
+                            if await firebaseHelper.checkValidId(id: groupId) {
+                                withAnimation {
+                                    notValid = false
+                                }
+                            } else {
+                                withAnimation {
+                                    notValid = true
+                                }
+                            }
+                        }
+                    } else {
+                        withAnimation {
+                            notValid = false
+                        }
                     }
                 }
-            }
-        })
+            })
+        }
+
         .onTapGesture {
             endTextEditing()
         }
@@ -67,7 +103,7 @@ struct ExistingGameView: View {
 
 #Preview {
     return GeometryReader { geo in
-        ExistingGameView()
+        ExistingGameView(introView: .constant(.nothing))
             .environmentObject({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)

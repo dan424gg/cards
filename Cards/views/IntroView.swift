@@ -7,107 +7,111 @@
 
 import SwiftUI
 
+
+enum IntroViewType {
+    case newGame, existingGame, loadingScreen, nothing
+}
+
 struct IntroView: View {
     @Binding var blur: Bool
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @EnvironmentObject var specs: DeviceSpecs
+    @State var introView: IntroViewType = .nothing
     @State var showNewGameView: Bool = false
     @State var showExistingGameView: Bool = false
+    @State var showLoadingView: Bool = false
     @State var scale: Double = 1.0
-    @StateObject var sheetCoordinator: SheetCoordinator<SheetType>
             
     var body: some View {
         ZStack {
-            if showNewGameView || showExistingGameView {
-                ZStack {
-                    Color.blue
-                        .opacity(0.000001)
-                        .frame(width: specs.maxX, height: specs.maxY)
-                        .onTapGesture {
-                            if showNewGameView {
-                                withAnimation(.spring(duration: 0.3)) {
-                                    blur = false
-                                    showNewGameView = false
-                                }
-                            } else if showExistingGameView {
-                                withAnimation(.spring(duration: 0.3)) {
-                                    blur = false
-                                    showExistingGameView = false
-                                }
-                            }
+            if introView == .newGame {
+                NewGameView(introView: $introView)
+                    .transition(.move(edge: .leading).combined(with: .opacity))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        endTextEditing()
+                        withAnimation(.snappy(duration: 0.3)) {
+                            introView = .nothing
                         }
-                        .zIndex(0.0)
-
-                    RoundedRectangle(cornerRadius: 20.0)
-                        .fill(.white)
-                        .fill(Color("OffWhite").opacity(0.2))
-                        .frame(width: 300, height: 300)
-                        .position(x: specs.maxX / 2, y: specs.maxY / 2)
-                        .zIndex(1.0)
-                    
-                    if showNewGameView {
-                        NewGameView()
-                            .zIndex(1.0)
-                    } else if showExistingGameView {
-                        ExistingGameView()
-                            .zIndex(1.0)
                     }
-                }
-//                .transition(blurReplace)
+            } else if introView == .existingGame {
+                ExistingGameView(introView: $introView)
+                    .transition(.move(edge: .leading).combined(with: .opacity))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        endTextEditing()
+                        withAnimation(.snappy(duration: 0.3)) {
+                            introView = .nothing
+                        }
+                    }
+            } else if introView == .loadingScreen {
+                LoadingScreen()
+                    .transition(.move(edge: .trailing).combined(with: .opacity))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        endTextEditing()
+                        withAnimation(.snappy(duration: 0.3)) {
+                            introView = .nothing
+                        }
+                    }
             } else {
                 ZStack {
                     Text("CARDS")
-                        .font(.system(size: 100, weight: .light))
-                        .foregroundStyle(.black)
-                        .position(x: specs.maxX / 2, y: specs.maxY * 0.25)
-                        .zIndex(1.0)
-                    
+                        .font(.custom("LuckiestGuy-Regular", size: 120))
+                        .tracking(10)
+                        .foregroundStyle(Color.theme.title)
+                        .position(x: specs.maxX / 2, y: specs.maxY * 0.3)
+                        .offset(x: 5)
+                        .shadow(radius: 5)
+                        .shadow(radius: 5)
+
                     VStack(spacing: 15) {
                         Button {
-                            withAnimation(.spring(duration: 0.3)) {
-                                showExistingGameView = true
-                                blur.toggle()
+                            withAnimation(.smooth(duration: 0.3)) {
+                                introView = .existingGame
                             }
                         } label: {
                             Text("Join Game")
-                                .foregroundStyle(.black)
-                                .font(.system(size: 15, weight: .thin))
-                                .frame(width: specs.maxX * 0.66, height: 33)
+                                .padding()
+                                .foregroundStyle(Color.theme.primary)
+                                .font(.custom("LuckiestGuy-Regular", size: 22))
+                                .offset(y: 2.2)
+                                .frame(width: specs.maxX * 0.75)
                         }
-                        .background(.thinMaterial)
-                        .tint(Color("OffWhite").opacity(0.7))
-                        .buttonStyle(.bordered)
-                        
+                        .background(Color.theme.white)
+                        .clipShape(Capsule())
+                        .shadow(color: Color.theme.secondary, radius: 2)
+
                         Button {
-                            withAnimation(.spring(duration: 0.3)) {
-                                showNewGameView = true
-                                blur.toggle()
+                            withAnimation(.smooth(duration: 0.3)) {
+                                introView = .newGame
                             }
                         } label: {
                             Text("New Game")
-                                .foregroundStyle(.black)
-                                .font(.system(size: 15, weight: .thin))
-                                .frame(width: specs.maxX * 0.66, height: 33)
+                                .padding()
+                                .foregroundStyle(Color.theme.white)
+                                .font(.custom("LuckiestGuy-Regular", size: 22))
+                                .offset(y: 2.2)
+                                .frame(width: specs.maxX * 0.75)
                         }
-                        .background(.thinMaterial)
-                        .tint(Color("OffWhite").opacity(0.7))
-                        .buttonStyle(.bordered)
+                        .background(Color.theme.primary)
+                        .clipShape(Capsule())
+                        .shadow(color: Color.theme.secondary, radius: 2)
                     }
-                    .zIndex(1.0)
                     .position(x: specs.maxX / 2, y: specs.maxY * 0.75)
                 }
-                .transition(.blurReplace)
+                .transition(.opacity)
             }
         }
-
     }
 }
 
 #Preview {
-    @StateObject var sheetCoordinator = SheetCoordinator<SheetType>()
-
     return GeometryReader { geo in
-        IntroView(blur: .constant(false), sheetCoordinator: sheetCoordinator)
+        IntroView(blur: .constant(false))
             .environmentObject({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)

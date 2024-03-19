@@ -15,25 +15,19 @@ struct ContentView: View {
     @State var blur: Bool = false
         
     var body: some View {
-        MainView(visible: $blur)
-            .background {
-                ZStack {
-                    Color("OffWhite")
-                        .opacity(0.07)
-                    ForEach(Array(0...20), id: \.self) { i in
-                        LineOfSuits(index: i)
-                            .offset(y: CGFloat(-90 * i))
-                    }
-                    .position(x: specs.maxX / 2, y: specs.maxY * 1.5)
+        ZStack {
+            MainView(visible: $blur)
+                .zIndex(1.0)
+            ZStack {
+                Color.theme.background
+                ForEach(Array(0...20), id: \.self) { i in
+                    LineOfSuits(index: i)
+                        .offset(y: CGFloat(-120 * Double(i)))
                 }
-                .blur(radius: blur ? 3 : 0)
+                .position(x: specs.maxX / 2, y: specs.maxY * 1.5)
             }
-            .onTapGesture {
-                withAnimation {
-                    blur.toggle()
-                }
-            }
-            .sheetDisplayer(coordinator: sheetCoordinator)
+            .zIndex(0.0)
+        }
     }
 }
 

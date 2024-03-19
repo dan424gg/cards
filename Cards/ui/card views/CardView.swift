@@ -11,7 +11,7 @@ struct CardView: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     var cardItem: CardItem
     @Binding var cardIsDisabled: Bool
-    @State var backside = false
+    @State var backside = true
     @State var backDegree = 0.0
     @State var frontDegree = 90.0
     @State var naturalOffset = false
@@ -38,7 +38,7 @@ struct CardView: View {
                     RoundedRectangle(cornerRadius: 10)
                         .fill(.blue.gradient)
                         .frame(width: width, height: height)
-                        .shadow(color: .black, radius: 2, x: 0, y: 0)
+//                        .shadow(color: .black, radius: 2, x: 0, y: 0)
                     
                     Image(systemName: "seal.fill")
                         .resizable()
