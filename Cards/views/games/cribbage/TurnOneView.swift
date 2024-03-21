@@ -51,7 +51,7 @@ struct TurnOneView: View {
                                 }
                         } else {
                             if cardsDragged.count == 1 {
-                                CardView(cardItem: CardItem(id: cardsDragged[0]), cardIsDisabled: .constant(true))
+                                CardView(cardItem: CardItem(id: cardsDragged[0]), cardIsDisabled: .constant(true), backside: .constant(false))
                                 CardPlaceHolder()
                                     .border(secondDropAreaBorderColor, width: secondDropAreaBorderWidth)
                                     .dropDestination(for: CardItem.self) { items, location in
@@ -66,8 +66,8 @@ struct TurnOneView: View {
                                     }
 
                             } else {
-                                CardView(cardItem: CardItem(id: cardsDragged[0]), cardIsDisabled: .constant(true))
-                                CardView(cardItem: CardItem(id: cardsDragged[1]), cardIsDisabled: .constant(true))
+                                CardView(cardItem: CardItem(id: cardsDragged[0]), cardIsDisabled: .constant(true), backside: .constant(false))
+                                CardView(cardItem: CardItem(id: cardsDragged[1]), cardIsDisabled: .constant(true), backside: .constant(false))
                             }
                         }
                     }
@@ -86,7 +86,7 @@ struct TurnOneView: View {
                                 firstDropAreaBorderWidth = inDropArea ? 7.0 : 1.0
                             }
                     } else {
-                        CardView(cardItem: CardItem(id: cardsDragged[0]), cardIsDisabled: .constant(true))
+                        CardView(cardItem: CardItem(id: cardsDragged[0]), cardIsDisabled: .constant(true), backside: .constant(false))
                     }
                 case 6:
                     if (firebaseHelper.playerState!.player_num == firebaseHelper.gameState?.dealer) ||
@@ -108,7 +108,7 @@ struct TurnOneView: View {
                                 }
                         }
                         else {
-                            CardView(cardItem: CardItem(id: cardsDragged[0]), cardIsDisabled: .constant(true))
+                            CardView(cardItem: CardItem(id: cardsDragged[0]), cardIsDisabled: .constant(true), backside: .constant(false))
                         }
                     }
                 default:

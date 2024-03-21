@@ -8,16 +8,39 @@
 import SwiftUI
 import Combine
 
+struct NamespaceEnvironmentKey: EnvironmentKey {
+    static var defaultValue: Namespace.ID = Namespace().wrappedValue
+}
+
+extension EnvironmentValues {
+    var namespace: Namespace.ID {
+        get { self[NamespaceEnvironmentKey.self] }
+        set { self[NamespaceEnvironmentKey.self] = newValue }
+    }
+}
+
+extension View {
+    func namespace(_ value: Namespace.ID) -> some View {
+        environment(\.namespace, value)
+    }
+}
+
 struct ContentView: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @EnvironmentObject var specs: DeviceSpecs
     @StateObject var sheetCoordinator = SheetCoordinator<SheetType>()
     @State var blur: Bool = false
+    
+    @Namespace var namespace
         
     var body: some View {
+//        SwiftUIView()
+//            .position(x: specs.maxX / 2, y: specs.maxY / 2)
         ZStack {
             MainView(visible: $blur)
                 .zIndex(1.0)
+                .namespace(namespace)
+
             ZStack {
                 Color.theme.background
                 ForEach(Array(0...20), id: \.self) { i in
