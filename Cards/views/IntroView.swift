@@ -61,7 +61,7 @@ struct IntroView: View {
                 ZStack {
                     Text("CARDS")
                         .font(.custom("LuckiestGuy-Regular", size: 120))
-                        .tracking(10)
+                        .tracking(8)
                         .foregroundStyle(Color.theme.title)
                         .position(x: specs.maxX / 2, y: specs.maxY * 0.3)
                         .offset(x: 5)

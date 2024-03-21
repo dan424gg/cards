@@ -159,6 +159,7 @@ struct LoadingScreen: View {
                                             .offset(y: 22)
                                             .shadow(color: .black, radius: team.color == "Red" ? 5 : 1)
                                     }
+                                
                                 ForEach(firebaseHelper.players.filter { $0.team_num == team.team_num }, id: \.self) { player in
                                     Text(player.name)
                                         .foregroundStyle(Color.theme.white)
@@ -175,7 +176,8 @@ struct LoadingScreen: View {
                     Button {
                         Task {
                             await firebaseHelper.reorderPlayerNumbers()
-                            await firebaseHelper.updateGame(["is_playing": true, "turn": 1])
+//                            try await Task.sleep(nanoseconds: UInt64(3.0 * Double(NSEC_PER_SEC)))
+                            await firebaseHelper.updateGame(["is_playing": true, "turn": 0])
                         }
                     } label: {
                         Text("Play!")
@@ -224,10 +226,6 @@ struct LoadingScreen: View {
             } else {
                 width = max(name.width(usingFont: UIFont.systemFont(ofSize: 15)) + 35, geo.frame(in: .local).width * 0.33)
             }
-            .buttonStyle(.borderedProminent)
-            .disabled(!equalNumOfPlayersOnTeam(players: firebaseHelper.players))
-        } else {
-            Text("Waiting to start game...")
         }
         
         return width

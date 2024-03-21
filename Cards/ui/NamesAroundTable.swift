@@ -11,13 +11,14 @@
 import SwiftUI
 
 struct NamesAroundTable: View {
+    @Binding var cards: [Int]
+    @Environment(\.namespace) var namespace
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @StateObject private var gameObservable = GameObservable(game: GameState.game)
     @State var sortedPlayerList: [PlayerState] = []
     @State var startingRotation = 0
     @State var multiplier = 0
     @State var tableRotation = 0
-    
     @State var playerTurn = 0
     @State var scoringPlays: [ScoringHand] = []
     
@@ -31,28 +32,27 @@ struct NamesAroundTable: View {
                     .frame(width: 200, height: 125)
                     .rotationEffect(applyRotation(index: 0))
             } else {
-                ForEach(Array(sortedPlayerList.enumerated()), id: \.offset) { (index, player) in
-                    PlayerView(player: player, index: index, playerTurn: playerTurn)
+                ForEach(Array($sortedPlayerList.enumerated()), id: \.offset) { (index, player) in
+                    PlayerView(cards: $cards, player: player, index: index, playerTurn: playerTurn)
                         .rotationEffect(applyRotation(index: index))
                         .rotationEffect(.degrees(Double(tableRotation)))
                         .offset(y: applyOffset(index: index))
                 }
             }
             
-            Button("stuff") {
-                withAnimation {
-                    if gameObservable.game.turn == 4 {
-                        gameObservable.game.turn = 3
-                    } else {
-                        gameObservable.game.turn = 4
-                    }
-                }
-            }
+//            Button("stuff") {
+//                withAnimation {
+//                    if gameObservable.game.turn == 4 {
+//                        gameObservable.game.turn = 3
+//                    } else {
+//                        gameObservable.game.turn = 4
+//                    }
+//                }
+//            }
         }
         .onChange(of: firebaseHelper.gameState?.player_turn ?? playerTurn, {
             if let gameState = firebaseHelper.gameState {
                 if gameState.turn > 2 {
-                    print("got here with player_turn: \(gameState.player_turn) and tableRotation: \(tableRotation)")
                     withAnimation(.snappy(duration: 1.5)) {
                         tableRotation = (tableRotation - multiplier)
                     }
@@ -150,6 +150,6 @@ struct NamesAroundTable: View {
 }
 
 #Preview {
-    NamesAroundTable()
+    NamesAroundTable(cards: .constant(Array(0...51)))
         .environmentObject(FirebaseHelper())
 }

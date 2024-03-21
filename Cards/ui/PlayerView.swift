@@ -11,16 +11,18 @@ struct PlayerView: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @StateObject private var gameObservable = GameObservable(game: GameState.game)
     
-    var player: PlayerState
+    @Binding var cards: [Int]
+    @Binding var player: PlayerState
     var index: Int
     var playerTurn: Int
     
+    @State var cardsInHand: [Int] = []
     @State var startingRotation = 0
     @State var multiplier = 0
     @State var scoringPlays: [ScoringHand] = []
     
     var body: some View {
-        if (firebaseHelper.gameState?.turn ?? 3 == 2) {
+        if (firebaseHelper.gameState?.turn ?? 3 == 2)  {
             VStack(spacing: -45) {
                 Text(player.name)
                     .foregroundStyle(((firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn) == player.player_num && firebaseHelper.gameState?.turn == 2) ? Color("greenForPlayerPlaying") : .black)
@@ -46,10 +48,42 @@ struct PlayerView: View {
                 VStack(spacing: -45) {
                     Text(player.name)
                         .foregroundStyle(((firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn) == player.player_num && firebaseHelper.gameState?.turn == 2) ? Color("greenForPlayerPlaying") : .black)
-                    CardInHandArea(cardsDragged: .constant([]), cardsInHand: Binding(get: { player.cards_in_hand }, set: { _ in }), showBackside: player.player_num > firebaseHelper.gameState?.player_turn ?? playerTurn)
+                    CardInHandArea(cardsDragged: .constant([]), cardsInHand: $cardsInHand, showBackside: player.player_num > firebaseHelper.gameState?.player_turn ?? playerTurn)
                         .rotationEffect(.degrees(180))
-                        .scaleEffect(x: 0.5, y: 0.5)
+                        .scaleEffect(x: 0.25, y: 0.25)
                         .frame(width: 50, height: 125)
+                        .onChange(of: player.cards_in_hand, initial: true, { (old, new) in
+                            // check if a card was removed, run animation
+                            if old.count > new.count {
+                                let diff = old.filter { !new.contains($0) }
+                                var temp = diff
+                                
+                                for i in 0..<diff.count {
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + (0.5 * Double(i)), execute: {
+                                        withAnimation {
+                                            cardsInHand.removeAll(where: {
+                                                $0 == temp.first
+                                            })
+                                            cards.append(temp.removeFirst())
+                                        }
+                                    })
+                                }
+                            } else { // card was added
+                                let diff = new.filter { !old.contains($0) }
+                                var temp = diff
+                                
+                                for i in 0..<diff.count {
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + (0.5 * Double(i)), execute: {
+                                        withAnimation {
+                                            cards.removeAll(where: {
+                                                $0 == temp.first
+                                            })
+                                            cardsInHand.append(temp.removeFirst())
+                                        }
+                                    })
+                                }
+                            }
+                        })
                 }
                 .offset(y: -145)
             }
@@ -57,10 +91,42 @@ struct PlayerView: View {
             VStack(spacing: -45) {
                 Text(player.name)
                     .foregroundStyle(((firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn) == player.player_num && firebaseHelper.gameState?.turn == 2) ? Color("greenForPlayerPlaying") : .black)
-                CardInHandArea(cardsDragged: .constant([]), cardsInHand: Binding(get: { player.cards_in_hand }, set: { _ in }), showBackside: true)
+                CardInHandArea(cardsDragged: .constant([]), cardsInHand: $cardsInHand, showBackside: true)
                     .rotationEffect(.degrees(180))
-                    .scaleEffect(x: 0.5, y: 0.5)
+                    .scaleEffect(x: 0.25, y: 0.25)
                     .frame(width: 50, height: 125)
+                    .onChange(of: player.cards_in_hand, initial: true, { (old, new) in
+                        // check if a card was removed, run animation
+                        if old.count > new.count {
+                            let diff = old.filter { !new.contains($0) }
+                            var temp = diff
+                            
+                            for i in 0..<diff.count {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + (0.5 * Double(i)), execute: {
+                                    withAnimation {
+                                        cardsInHand.removeAll(where: {
+                                            $0 == temp.first
+                                        })
+                                        cards.append(temp.removeFirst())
+                                    }
+                                })
+                            }
+                        } else { // card was added
+                            let diff = new.filter { !old.contains($0) }
+                            var temp = diff
+                            
+                            for i in 0..<diff.count {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + (0.5 * Double(i)), execute: {
+                                    withAnimation {
+                                        cards.removeAll(where: {
+                                            $0 == temp.first
+                                        })
+                                        cardsInHand.append(temp.removeFirst())
+                                    }
+                                })
+                            }
+                        }
+                    })
             }
             .offset(y: -145)
         }
@@ -102,6 +168,6 @@ struct PlayerView: View {
 }
 
 #Preview {
-    PlayerView(player: PlayerState.player_one, index: 0, playerTurn: 0)
+    PlayerView(cards: .constant(Array(0...51)), player: .constant(PlayerState.player_one), index: 0, playerTurn: 0)
         .environmentObject(FirebaseHelper())
 }

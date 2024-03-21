@@ -11,7 +11,7 @@ struct CardView: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     var cardItem: CardItem
     @Binding var cardIsDisabled: Bool
-    @State var backside = true
+    @Binding var backside: Bool
     @State var backDegree = 0.0
     @State var frontDegree = 90.0
     @State var naturalOffset = false
@@ -23,22 +23,15 @@ struct CardView: View {
         firebaseHelper.gameState?.play_cards ?? [],
         firebaseHelper.playerState?.cards_in_hand ?? []
     ]}
-    var width = 50.0
-    var height = 100.0
 
     var body: some View {
         VStack {
             ZStack {
                 // backside
                 ZStack {
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(.black.opacity(0.7), lineWidth: 1)
-                        .frame(width: 50, height: 100)
-                    
-                    RoundedRectangle(cornerRadius: 10)
+                    RoundedRectangle(cornerRadius: 3.5)
                         .fill(.blue.gradient)
-                        .frame(width: width, height: height)
-//                        .shadow(color: .black, radius: 2, x: 0, y: 0)
+                        .stroke(.black.opacity(0.7), lineWidth: 0.5)
                     
                     Image(systemName: "seal.fill")
                         .resizable()
@@ -55,33 +48,35 @@ struct CardView: View {
                         .frame(width: 38.46, height: 45)
                         .foregroundColor(.white.opacity(0.7))
                 }
-                .frame(width: 50, height: 100)
+                .frame(width: 60, height: 100)
                 .rotation3DEffect(
                     .degrees(frontDegree), axis: (x: 0.0, y: 1.0, z: 0.0)
                 )
                 
                 // frontside
                 ZStack {
-                    RoundedRectangle(cornerRadius: 10)
+                    RoundedRectangle(cornerRadius: 3.5)
                         .fill(Color.white)
                         .fill(notUsable ? Color.gray.opacity(0.35) : Color.clear)
-                        .stroke(Color.black, lineWidth: 1)
-                    VStack (spacing: 30) {
-                        VStack (alignment: .center, spacing: 0) {
-                            Text(cardItem.card.value)
-                                .font(.caption2)
-                            Image(systemName: "suit.\(cardItem.card.suit)")
-                                .imageScale(.small)
-                        }
-                        .position(CGPoint(x: 10, y: 20))
+                        .stroke(Color.black, lineWidth: 0.5)
+                    
+                    ZStack {
                         Text(cardItem.card.value)
-                            .font(.largeTitle)
-                            .multilineTextAlignment(.center)
-                            .position(x: 25, y: -10)
+                            .font(.custom("LuckiestGuy-Regular", size: 18))
+                            .offset(y: 2.2)
+                            .position(x: 9, y: 11)
+                        
+                        Text(cardItem.card.value)
+                            .font(.custom("LuckiestGuy-Regular", size: 18))
+                            .offset(y: 2.2)
+                            .position(x: 51, y: 89)
+                        
+                        Image(systemName: "suit.\(cardItem.card.suit).fill")
+                            .font(.title)
                     }
                     .foregroundStyle(cardItem.card.suit == "spade" || cardItem.card.suit == "club" ? Color.black.opacity(0.8) : Color.red.opacity(0.8))
                 }
-                .frame(width: 50, height: 100)
+                .frame(width: 60, height: 100)
                 .draggable(cardItem)
                 .disabled(backside || cardIsDisabled)
                 .rotation3DEffect(
@@ -92,16 +87,39 @@ struct CardView: View {
                 if backside {
                     backDegree = -90.0
                     frontDegree = 0.0
-                }
-                
-                if naturalOffset {
-                    var rng = RandomNumberGeneratorWithSeed(seed: cardItem.id * (firebaseHelper.gameState?.group_id ?? 1))
-                    // [-5,5)
-                    rotationOffset = (Double(Int(rng.next()) % 10000) / 1000.0) - 5.0
-                    // [-1,1)
-                    positionOffset = (Double(Int(rng.next()) % 10000) / 5000.0) - 1.0
+                } else {
+                    backDegree = 0.0
+                    frontDegree = 90.0
                 }
             }
+            .onChange(of: backside, initial: true, {
+                if backside {
+                    withAnimation(.linear(duration: 0.2)) {
+                        backDegree = -90.0
+                    }
+                    
+                    withAnimation(.linear(duration: 0.2).delay(0.2)) {
+                        frontDegree = 0.0
+                    }
+                } else {
+                    withAnimation(.linear(duration: 0.2).delay(0.2)) {
+                        backDegree = 0.0
+                    }
+                    
+                    withAnimation(.linear(duration: 0.2)) {
+                        frontDegree = 90.0
+                    }
+                }
+            })
+                
+//                if naturalOffset {
+//                    var rng = RandomNumberGeneratorWithSeed(seed: cardItem.id * (firebaseHelper.gameState?.group_id ?? 1))
+//                    // [-5,5)
+//                    rotationOffset = (Double(Int(rng.next()) % 10000) / 1000.0) - 5.0
+//                    // [-1,1)
+//                    positionOffset = (Double(Int(rng.next()) % 10000) / 5000.0) - 1.0
+//                }
+//            }
             .onChange(of: [firebaseHelper.gameState?.play_cards, firebaseHelper.playerState?.cards_in_hand], initial: true, {
                 guard firebaseHelper.gameState != nil, firebaseHelper.playerState != nil, firebaseHelper.gameState!.turn == 2 else {
                     return
@@ -118,6 +136,6 @@ struct CardView: View {
 }
 
 #Preview {
-    CardView(cardItem: CardItem(id: 14), cardIsDisabled: .constant(false))
+    CardView(cardItem: CardItem(id: 51), cardIsDisabled: .constant(false), backside: .constant(false))
         .environmentObject(FirebaseHelper())
 }

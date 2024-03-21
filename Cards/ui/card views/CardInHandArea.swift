@@ -9,36 +9,35 @@ import SwiftUI
 
 
 struct CardInHandArea: View {
+    @Environment(\.namespace) var namespace
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @Binding var cardsDragged: [Int]
     @Binding var cardsInHand: [Int]
     
+    @State var temp: [Int] = []
+        
     var showBackside = false
     
     var body: some View {
-        VStack {
-            ZStack {
-                ForEach(Array(cardsInHand.enumerated()), id: \.offset) { (index, cardId) in
-                    CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(false), backside: showBackside)
-                        .offset(y: -50)
-                        .rotationEffect(.degrees(-Double((cardsInHand.count - 1) * 6) + Double(index * 12)))
-                }
+        ZStack {
+            ForEach(Array(cardsInHand.enumerated()), id: \.offset) { (index, cardId) in
+                CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(false), backside: .constant(showBackside))
+                    .matchedGeometryEffect(id: cardId, in: namespace)
+                    .offset(y: -50)
+                    .scaleEffect(x: 2, y: 2)
+                    .rotationEffect(.degrees(-Double((cardsInHand.count - 1) * 6) + Double(index * 12)))
             }
-            .onChange(of: firebaseHelper.playerState?.cards_in_hand, initial: true, {
-                cardsInHand = firebaseHelper.playerState?.cards_in_hand ?? [1,2,3]
-            })
-            .dropDestination(for: CardItem.self) { items, location in
-                if !cardsInHand.contains(items.first!.id) {
-                    cardsInHand.append(items.first!.id)
-                    cardsDragged.removeAll(where: { card in
-                        card == items.first!.id
-                    })
-                }
-                return true
-            }
-            .padding()
         }
-
+//            .dropDestination(for: CardItem.self) { items, location in
+//                if !cardsInHand.contains(items.first!.id) {
+//                    cardsInHand.append(items.first!.id)
+//                    cardsDragged.removeAll(where: { card in
+//                        card == items.first!.id
+//                    })
+//                }
+//                return true
+//            }
+//            .padding()
     }
 }
 

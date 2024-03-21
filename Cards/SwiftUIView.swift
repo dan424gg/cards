@@ -8,70 +8,106 @@
 import SwiftUI
 
 struct SwiftUIView: View {
-    @State var animating: Bool = false
-    @State var counter: Int = 0
-    @State var cardToPullBack: Int = -1
-    @State var inReverse: Bool = false
-    @State var nums: [Int] = Array(0...9)
-    @State var newPile: [Int] = []
+    @EnvironmentObject var firebase: FirebaseHelper
+    @State var cardsInHand: [Int] = []
+    @State var cards: [Int] = Array(0...14)
     
-    private let timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
-    
+    @Environment(\.namespace) var namespace
+        
     var body: some View {
         ZStack {
-            ForEach(nums, id: \.self) { i in
-                AnimatingCardView(cardToPullBack: $cardToPullBack, counter: $counter, inReverse: $inReverse, newPile: $newPile, index: i)
+            ForEach(cards, id: \.self) { card in
+                CardView(cardItem: CardItem(id: card), cardIsDisabled: .constant(true), backside: .constant(true))
+                    .matchedGeometryEffect(id: card, in: namespace)
             }
+            
+            HStack(spacing: 30, content: {
+                Button("add") {
+                    firebase.playerState!.cards_in_hand.append(Int.random(in: 5...14))
+                }
+                
+                CardInHandArea(cardsDragged: .constant([]), cardsInHand: $cardsInHand)
+                    .frame(width: 100, height: 100)
+                
+                Button("remove") {
+                    firebase.playerState!.cards_in_hand.removeFirst()
+                }
+            })
+            .frame(width: 300, height: 200)
+            .offset(y: 300)
+
+            Button("press me") {
+                withAnimation {
+                    if cards.isEmpty {
+                        cards = Array(0...14)
+                        cardsInHand = []
+                    } else {
+                        firebase.playerState!.cards_in_hand = Array(0...4)
+                    }
+                }
+            }
+            .offset(y: -100)
         }
-        .onAppear {
-            counter = nums.count + 1
-        }
-        .onReceive(timer, perform: { _ in
-            if counter >= -10 {
-                counter -= 1
+        .onChange(of: firebase.playerState?.cards_in_hand, initial: true, { (old, new) in
+            guard firebase.playerState != nil, old != nil, new != nil else {
+                firebase.playerState = PlayerState()
+                return
+            }
+            
+            // check if a card was removed, run animation
+            if old!.count > new!.count {
+                let diff = old!.filter { !new!.contains($0) }
+                var temp = diff
+                
+                for i in 0..<diff.count {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + (0.5 * Double(i)), execute: {
+                        withAnimation {
+                            cardsInHand.removeAll(where: {
+                                $0 == temp.first
+                            })
+                            cards.append(temp.removeFirst())
+                        }
+                    })
+                }
             } else {
-                counter = nums.count + 10
+                var diff = new!.filter { !old!.contains($0) }
+                print(diff)
+                print(cards)
+                
+                for i in 0..<diff.count {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + (0.5 * Double(i)), execute: {
+                        if let idx = cards.first(where: {
+                            $0 == diff.removeFirst()
+                        }) {
+                            withAnimation {
+                                print(idx)
+                                cardsInHand.append(cards.remove(at: idx))
+                            }
+                        }
+                    })
+                }
             }
         })
     }
+}
+
+struct TestView: View {
+    @EnvironmentObject var firebase: FirebaseHelper
+    @State var temp: [Int] = []
     
-    struct AnimatingCardView: View {
-        @Binding var cardToPullBack: Int
-        @Binding var counter: Int
-        @Binding var inReverse: Bool
-        @Binding var newPile: [Int]
-        
-        @State var offset: CGSize = .zero
-        @State var rotation: Angle = .zero
-        
-        var index: Int
-        
-        var body: some View {
-            CardView(cardItem: CardItem(id: 0), cardIsDisabled: .constant(true), backside: true)
-                .onChange(of: counter, {
-                    if counter == index {
-//                        if index % 2 == 0 {
-                            withAnimation(.easeInOut) {
-//                                offset = CGSize(width: 100 * (Double(index) / 52.0), height: -300 * (Double(index) / 52.0))
-                                rotation = Angle(degrees: 360  * (Double(index) / 10.0))
-                            }
-//                        } else {
-//                            withAnimation(.easeInOut) {
-////                                offset = CGSize(width: -100 * (Double(index) / 52.0), height: -300 * (Double(index) / 52.0))
-//                                rotation = Angle(degrees: -75  * (Double(index) / 52.0))
-//                            }
-//                        }
-                    }
-                    if counter == (-10) {
-                        withAnimation(.easeInOut) {
-                            offset = .zero
-                            rotation = .zero
-                        }
-                    }
-                })
-                .rotationEffect(rotation)
-                .offset(offset)
-        }
+    var body: some View {
+        CardInHandArea(cardsDragged: .constant([]), cardsInHand: $temp)
+            .border(.red)
+            .offset(y: 200)
+            .onChange(of: firebase.playerState?.cards_in_hand, initial: true, { (old, new) in
+                guard new != nil, old != nil else {
+                    return
+                }
+                
+                withAnimation {
+                    temp = new!
+                }
+            })
     }
 }
 

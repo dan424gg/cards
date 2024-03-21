@@ -16,19 +16,14 @@ import FirebaseFirestoreSwift
     private var gameStateListener: ListenerRegistration!
     private var teamsListener: ListenerRegistration!
     private var playersListener: ListenerRegistration!
-//    private var teamListeners = LinkedList()
-//    private var playerListeners = LinkedList()
-    
+        
     @Published var gameOutcome: GameOutcome = .undetermined
-    
     @Published private var db = Firestore.firestore()
     @Published var gameState: GameState?
     @Published var teamState: TeamState?
     @Published var playerState: PlayerState?
-
     @Published var players: [PlayerState] = []
     @Published var teams: [TeamState] = []
-    
     @Published var showWarning: Bool = false
     @Published var warning: String = ""
     @Published var showError: Bool = false
@@ -895,7 +890,11 @@ import FirebaseFirestoreSwift
                      ((player.player_num + 1) % gameState!.num_players) == gameState!.dealer) {
                     continue
                 }
-                await updatePlayer(["cards_in_hand": [gameState!.cards.removeFirst()]], uid: player.uid, arrayAction: .append)
+                
+                var card = gameState!.cards.removeFirst()
+                
+                await updateGame(["cards": [card]], arrayAction: .remove)
+                await updatePlayer(["cards_in_hand": [card]], uid: player.uid, arrayAction: .append)
             }
         }
         

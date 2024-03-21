@@ -57,9 +57,9 @@ struct GamePicker: View {
             }
         })
         .onChange(of: gameSelected, initial: true, {
-            guard firebaseHelper.gameState != nil, firebaseHelper.playerState != nil, firebaseHelper.playerState!.is_lead else {
-                return
-            }
+//            guard firebaseHelper.playerState!.is_lead else {
+//                return
+//            }
             
             if !preventCyclicalUpdate {
                 Task {

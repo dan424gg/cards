@@ -38,12 +38,11 @@ struct ExistingGameView: View {
                 Button {
                     endTextEditing()
                     
-                    withAnimation(.smooth(duration: 0.3)) {
-                        introView = .loadingScreen
-                    }
-                    
                     Task {
                         await firebaseHelper.joinGameCollection(fullName: fullName, id: groupId)
+                        withAnimation(.smooth(duration: 0.3)) {
+                            introView = .loadingScreen
+                        }
                     }
                 } label: {
                     Text("Submit")

@@ -255,6 +255,7 @@ func endTextEditing() {
 }
 
 struct DisplayPlayersHandContainer: View {
+    @Environment(\.namespace) var namespace
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     var player: PlayerState? = nil
     var crib: [Int] = []
@@ -262,15 +263,16 @@ struct DisplayPlayersHandContainer: View {
 
     @State var scoringPlays: [ScoringHand] = []
     @State var play: ScoringHand? = nil
-    
+        
     var body: some View {
         VStack {
             Text(play?.pointsCallOut ?? "")
                 .font(.title2)
             HStack {
                 ForEach(player?.cards_in_hand ?? crib, id: \.self) { card in
-                    CardView(cardItem: CardItem(id: card), cardIsDisabled: .constant(true))
+                    CardView(cardItem: CardItem(id: card), cardIsDisabled: .constant(true), backside: .constant(false))
                         .offset(y: play != nil && play!.cardsInScoredHand.contains(card) ? -25 : 0)
+                        .matchedGeometryEffect(id: card, in: namespace)
                 }
                 .onChange(of: player, initial: true, {
                     guard (player != nil) ^ (crib != []) else {

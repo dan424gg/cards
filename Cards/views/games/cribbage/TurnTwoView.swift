@@ -10,10 +10,10 @@ import Combine
 
 
 struct TurnTwoView: View {
-    @EnvironmentObject var firebaseHelper: FirebaseHelper
     @Binding var cardsDragged: [Int]
     @Binding var cardsInHand: [Int]
-        
+    @Environment(\.namespace) var namespace
+    @EnvironmentObject var firebaseHelper: FirebaseHelper
     @State private var dropAreaBorderColor: Color = .clear
     @State private var dropAreaBorderWidth: CGFloat = 1.0
     @State private var pointsCallOut: [String] = []
@@ -38,8 +38,9 @@ struct TurnTwoView: View {
                                 .border(dropAreaBorderColor, width: dropAreaBorderWidth)
                         } else {
                             ForEach(cardsDragged.reversed(), id: \.self) { cardId in
-                                CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(true), naturalOffset: true)
+                                CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(true), backside: .constant(false), naturalOffset: true)
                                     .disabled(true)
+                                    .matchedGeometryEffect(id: cardId, in: namespace)
                             }
                         }
                     }
@@ -65,8 +66,9 @@ struct TurnTwoView: View {
                                 .border(dropAreaBorderColor, width: dropAreaBorderWidth)
                         } else {
                             ForEach(cardsDragged, id: \.self) { cardId in
-                                CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(true), naturalOffset: true)
+                                CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(true), backside: .constant(false), naturalOffset: true)
                                     .disabled(true)
+                                    .matchedGeometryEffect(id: cardId, in: namespace)
                             }
                         }
                     }

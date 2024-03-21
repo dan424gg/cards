@@ -10,61 +10,101 @@ import SwiftUI
 struct GameView: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @EnvironmentObject var specs: DeviceSpecs
+    @Namespace var cardsNS
     @State var showSnackbar: Bool = true
+    @State var cards: [Int] = []
     @State var cardsDragged: [Int] = []
     @State var cardsInHand: [Int] = []
     @State var initial = true
     @State var scale: Double = 0.0
         
     var body: some View {
-            ZStack {
-                GameHeader()
-                
-                // "table"
-                PlayingTable()
-                    .stroke(Color.gray.opacity(0.5))
-                    .aspectRatio(1.15, contentMode: .fit)
-                    .position(x: specs.maxX / 2, y: specs.maxY / 2 / 1.5 )
-                
-                NamesAroundTable()
-                    .position(x: specs.maxX / 2, y: specs.maxY / 2 / 1.5 )
-                
-                CribbageBoard()
-                    .scaleEffect(x: 0.8, y: 0.8)
-                    .position(x: specs.maxX / 2, y: specs.maxY / 2 / 1.65 )
-                
-                DeckOfCardsView()
-                    .scaleEffect(x: 0.65, y: 0.65)
-                    .position(x: specs.maxX / 2, y: specs.maxY / 2 / 1.2)
-                
-                // game that is being played
-                VStack {
-                    switch (firebaseHelper.gameState?.game_name ?? "cribbage") {
-                        case "cribbage":
-                            Cribbage(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
-                                .frame(width: specs.maxX, height: specs.maxY)
-                                .position(x: specs.maxX / 2, y: specs.maxY / 2 / 0.85)
-                        default:
-                            Text("\(firebaseHelper.gameState?.game_name ?? "nothing")")
-                    }
-                }
-                
-                if (firebaseHelper.gameState?.turn ?? 2 < 3) {
-                    CardInHandArea(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
-                        .position(x: specs.maxX / 2, y: specs.maxY / 2)
-                        .scaleEffect(x: 2, y: 2)
-                        .transition(.move(edge: .bottom))
-                }
-                
-                if firebaseHelper.playerState?.player_num ?? 1 == firebaseHelper.gameState?.dealer ?? 1 {
-                    Text("Dealer")
-                        .position(x: specs.maxX - 50, y: specs.maxY - 10)
-                }
-                
-                GameOutcomeView(outcome: $firebaseHelper.gameOutcome)
+        ZStack {
+//            GameHeader()
+            
+            // "table"
+            PlayingTable()
+                .stroke(Color.gray.opacity(0.5))
+                .aspectRatio(1.15, contentMode: .fit)
+                .position(x: specs.maxX / 2, y: specs.maxY * 0.4)
+            
+            NamesAroundTable(cards: $cards)
+                .position(x: specs.maxX / 2, y: specs.maxY * 0.4)
+            
+            CribbageBoard()
+                .scaleEffect(x: 0.8, y: 0.8)
+                .position(x: specs.maxX / 2, y: specs.maxY * 0.39 )
+            
+            DeckOfCardsView(cards: $cards)
+                .position(x: specs.maxX / 2, y: specs.maxY * 0.56)
+            
+            // game that is being played
+            switch (firebaseHelper.gameState?.game_name ?? "cribbage") {
+                case "cribbage":
+                    Cribbage(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
+                        .frame(width: specs.maxX, height: specs.maxY)
+                        .position(x: specs.maxX / 2, y: specs.maxY * 0.7)
+                default:
+                    Text("nothing")
             }
-        
-        .border(.red)
+
+            if (firebaseHelper.gameState?.turn ?? 2 < 3) {
+                CardInHandArea(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
+                    .position(x: specs.maxX / 2, y: specs.maxY * 1.07)
+                    .onChange(of: firebaseHelper.playerState?.cards_in_hand, initial: true, { (old, new) in
+                        guard firebaseHelper.playerState != nil, old != nil, new != nil else {
+                            return
+                        }
+                        
+                        // check if a card was removed, run animation
+                        if old!.count > new!.count {
+                            let diff = old!.filter { !new!.contains($0) }
+                            var temp = diff
+                            
+                            for i in 0..<diff.count {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + (0.5 * Double(i)), execute: {
+                                    withAnimation {
+                                        cardsInHand.removeAll(where: {
+                                            $0 == temp.first
+                                        })
+                                        cards.append(temp.removeFirst())
+                                    }
+                                })
+                            }
+                        } else { // card was added
+                            let diff = new!.filter { !old!.contains($0) }
+                            var temp = diff
+                            
+                            for i in 0..<diff.count {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + (0.5 * Double(i)), execute: {
+                                    withAnimation {
+                                        cards.removeAll(where: {
+                                            $0 == temp.first
+                                        })
+                                        cardsInHand.append(temp.removeFirst())
+                                    }
+                                })
+                            }
+                        }
+                    })
+            }
+            
+            if firebaseHelper.playerState?.player_num ?? 1 == firebaseHelper.gameState?.dealer ?? 1 {
+                Text("Dealer")
+                    .position(x: specs.maxX - 50, y: specs.maxY - 10)
+            }
+            
+            GameOutcomeView(outcome: $firebaseHelper.gameOutcome)
+        }
+        .onAppear {
+            cards = Array(0...51)
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0, execute: {
+                Task {
+                    await firebaseHelper.updateGame(["turn": 1])
+                }
+            })
+        }
         .disabled(firebaseHelper.gameOutcome != .undetermined)
         .overlay(content: {
             if (firebaseHelper.gameState == nil || firebaseHelper.playerState == nil) {
@@ -96,8 +136,6 @@ struct GameView: View {
                     await firebaseHelper.updateGame(["who_won": firebaseHelper.teamState!.team_num])
                 }
                 firebaseHelper.gameOutcome = .win
-            } else {
-                firebaseHelper.gameOutcome = .lose
             }
         })
         .onChange(of: firebaseHelper.gameState?.who_won, {
@@ -111,7 +149,7 @@ struct GameView: View {
                 firebaseHelper.gameOutcome = .lose
             }
         })
-        .onChange(of: firebaseHelper.gameState?.turn, initial: true, {
+        .onChange(of: firebaseHelper.gameState?.turn, {
             guard firebaseHelper.gameState != nil, firebaseHelper.playerState != nil else {
                 return
             }
@@ -134,7 +172,7 @@ struct GameView: View {
                 }
             }
         })
-        .onChange(of: firebaseHelper.gameState?.dealer, initial: true, {
+        .onChange(of: firebaseHelper.gameState?.dealer, {
             if firebaseHelper.playerState?.player_num == firebaseHelper.gameState?.dealer &&
                 firebaseHelper.gameState?.turn == 1 {
                 Task {
@@ -150,8 +188,7 @@ struct PlayingTable: Shape {
         let r = rect.height / 2
         let center = CGPoint(x: rect.midX, y: rect.midY)
         var path = Path()
-        path.addArc(center: center, radius: r,
-                        startAngle: Angle(degrees: 135), endAngle: Angle(degrees: 45), clockwise: false)
+        path.addArc(center: center, radius: r, startAngle: Angle(degrees: 135), endAngle: Angle(degrees: 45), clockwise: false)
         return path
     }
 }
@@ -165,7 +202,7 @@ struct PlayingTable: Shape {
                 return envObj
             }() )
             .environmentObject(FirebaseHelper())
-            .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
+//            .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
             .background(Color("OffWhite").opacity(0.1))
         
     }

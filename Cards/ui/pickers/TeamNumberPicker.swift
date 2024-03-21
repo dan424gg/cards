@@ -44,6 +44,10 @@ struct TeamPicker: View {
             }
         })
         .onChange(of: teamNum) {
+            guard firebaseHelper.playerState != nil else {
+                return
+            }
+            
             if (firebaseHelper.playerState!.team_num != teamNum) {
                 Task {
                     await firebaseHelper.changeTeam(newTeamNum: teamNum)
