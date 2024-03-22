@@ -12,7 +12,7 @@ struct GameView: View {
     @EnvironmentObject var specs: DeviceSpecs
     @Namespace var cardsNS
     @State var showSnackbar: Bool = true
-    @State var cards: [Int] = []
+//    @State var cards: [Int] = []
     @State var cardsDragged: [Int] = []
     @State var cardsInHand: [Int] = []
     @State var initial = true
@@ -28,14 +28,14 @@ struct GameView: View {
                 .aspectRatio(1.15, contentMode: .fit)
                 .position(x: specs.maxX / 2, y: specs.maxY * 0.4)
             
-            NamesAroundTable(cards: $cards)
+            NamesAroundTable()
                 .position(x: specs.maxX / 2, y: specs.maxY * 0.4)
             
             CribbageBoard()
                 .scaleEffect(x: 0.8, y: 0.8)
                 .position(x: specs.maxX / 2, y: specs.maxY * 0.39 )
             
-            DeckOfCardsView(cards: $cards)
+            DeckOfCardsView()
                 .position(x: specs.maxX / 2, y: specs.maxY * 0.56)
             
             // game that is being played
@@ -49,44 +49,50 @@ struct GameView: View {
             }
 
             if (firebaseHelper.gameState?.turn ?? 2 < 3) {
-                CardInHandArea(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
+                CardInHandArea(cardsDragged: $cardsDragged, cardsInHand: .constant([-1]))
                     .position(x: specs.maxX / 2, y: specs.maxY * 1.07)
-                    .onChange(of: firebaseHelper.playerState?.cards_in_hand, initial: true, { (old, new) in
-                        guard firebaseHelper.playerState != nil, old != nil, new != nil else {
-                            return
-                        }
-                        
-                        // check if a card was removed, run animation
-                        if old!.count > new!.count {
-                            let diff = old!.filter { !new!.contains($0) }
-                            var temp = diff
-                            
-                            for i in 0..<diff.count {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + (0.5 * Double(i)), execute: {
-                                    withAnimation {
-                                        cardsInHand.removeAll(where: {
-                                            $0 == temp.first
-                                        })
-                                        cards.append(temp.removeFirst())
-                                    }
-                                })
-                            }
-                        } else { // card was added
-                            let diff = new!.filter { !old!.contains($0) }
-                            var temp = diff
-                            
-                            for i in 0..<diff.count {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + (0.5 * Double(i)), execute: {
-                                    withAnimation {
-                                        cards.removeAll(where: {
-                                            $0 == temp.first
-                                        })
-                                        cardsInHand.append(temp.removeFirst())
-                                    }
-                                })
-                            }
-                        }
-                    })
+//                    .onChange(of: firebaseHelper.playerState?.cards_in_hand, initial: true, { (old, new) in
+//                        guard firebaseHelper.playerState != nil, firebaseHelper.gameState != nil, old != nil, new != nil else {
+//                            return
+//                        }
+//                        
+//                        // check if a card was removed, run animation
+//                        if old!.count > new!.count {
+//                            let diff = old!.filter { !new!.contains($0) }
+//                            var temp = diff
+//                            
+//                            for i in 0..<diff.count {
+//                                DispatchQueue.main.asyncAfter(deadline: .now() + (0.5 * Double(i)), execute: {
+//                                    Task {
+//                                        withAnimation {
+//                                            cardsInHand.removeAll(where: {
+//                                                $0 == temp.first
+//                                            })
+//                                        }
+//                                        await firebaseHelper.updateGame(["cards": [temp.removeFirst()]], arrayAction: .append)
+////                                        cards.append(temp.removeFirst())
+//                                    }
+//                                })
+//                            }
+//                        } else { // card was added
+//                            let diff = new!.filter { !old!.contains($0) }
+//                            var temp = diff
+//                            
+//                            for i in 0..<diff.count {
+//                                DispatchQueue.main.asyncAfter(deadline: .now() + (0.5 * Double(i)), execute: {
+//                                    Task {
+//                                        await firebaseHelper.updateGame(["cards": [temp.first ?? -1]], arrayAction: .remove)
+////                                        cards.removeAll(where: {
+////                                            $0 == temp.first
+////                                        })
+//                                        withAnimation {
+//                                            cardsInHand.append(temp.removeFirst())
+//                                        }
+//                                    }
+//                                })
+//                            }
+//                        }
+//                    })
             }
             
             if firebaseHelper.playerState?.player_num ?? 1 == firebaseHelper.gameState?.dealer ?? 1 {
@@ -96,10 +102,8 @@ struct GameView: View {
             
             GameOutcomeView(outcome: $firebaseHelper.gameOutcome)
         }
-        .onAppear {
-            cards = Array(0...51)
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0, execute: {
+        .onAppear {            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5, execute: {
                 Task {
                     await firebaseHelper.updateGame(["turn": 1])
                 }

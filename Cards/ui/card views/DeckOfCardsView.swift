@@ -11,7 +11,7 @@ struct DeckOfCardsView: View {
     @Environment(\.namespace) var namespace
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @EnvironmentObject var specs: DeviceSpecs
-    @Binding var cards: [Int]
+//    @Binding var cards: [Int]
     @State var dontShowCrib: Bool = true
     @State var dontShowStarter: Bool = true
     @StateObject private var gameObservable = GameObservable(game: GameState.game)
@@ -50,7 +50,7 @@ struct DeckOfCardsView: View {
                                     CardView(cardItem: CardItem(id: gameObservable.game.starter_card), cardIsDisabled: .constant(true), backside: $dontShowStarter, naturalOffset: true)
                                         .offset(x: -0.1 * Double(gameObservable.game.cards.endIndex), y: -0.1 * Double(gameObservable.game.cards.endIndex))
                                 } else {
-                                    ForEach(Array(cards.enumerated()), id: \.offset) { (index, cardId) in
+                                    ForEach(Array(firebaseHelper.gameState!.cards.enumerated()), id: \.offset) { (index, cardId) in
                                         CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(true), backside: .constant(true), naturalOffset: true)
                                             .matchedGeometryEffect(id: cardId, in: namespace)
                                             .offset(x: -0.1 * Double(index), y: -0.1 * Double(index))
@@ -128,7 +128,7 @@ struct DeckOfCardsView: View {
 
 #Preview {
     return GeometryReader { geo in
-        DeckOfCardsView(cards: .constant(Array(0...51)))
+        DeckOfCardsView()
             .environmentObject({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)

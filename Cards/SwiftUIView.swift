@@ -19,6 +19,7 @@ struct SwiftUIView: View {
             ForEach(cards, id: \.self) { card in
                 CardView(cardItem: CardItem(id: card), cardIsDisabled: .constant(true), backside: .constant(true))
                     .matchedGeometryEffect(id: card, in: namespace)
+                    .zIndex(0.0)
             }
             
             HStack(spacing: 30, content: {
@@ -26,8 +27,8 @@ struct SwiftUIView: View {
                     firebase.playerState!.cards_in_hand.append(Int.random(in: 5...14))
                 }
                 
-                CardInHandArea(cardsDragged: .constant([]), cardsInHand: $cardsInHand)
-                    .frame(width: 100, height: 100)
+                TestView(temp: $cardsInHand)
+                    .zIndex(1.0)
                 
                 Button("remove") {
                     firebase.playerState!.cards_in_hand.removeFirst()
@@ -42,72 +43,49 @@ struct SwiftUIView: View {
                         cards = Array(0...14)
                         cardsInHand = []
                     } else {
-                        firebase.playerState!.cards_in_hand = Array(0...4)
+                        for i in 4...9 {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + (1.0 * Double(i)), execute: {
+                                withAnimation {
+                                    firebase.gameState!.cards.removeAll(where: {
+                                        $0 == i
+                                    })
+                                    
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: {
+                                        withAnimation {   
+                                            firebase.playerState!.cards_in_hand.append(i)
+                                        }
+                                    })
+                                }
+                            })
+                        }
                     }
                 }
             }
             .offset(y: -100)
         }
-        .onChange(of: firebase.playerState?.cards_in_hand, initial: true, { (old, new) in
-            guard firebase.playerState != nil, old != nil, new != nil else {
-                firebase.playerState = PlayerState()
-                return
-            }
-            
-            // check if a card was removed, run animation
-            if old!.count > new!.count {
-                let diff = old!.filter { !new!.contains($0) }
-                var temp = diff
-                
-                for i in 0..<diff.count {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + (0.5 * Double(i)), execute: {
-                        withAnimation {
-                            cardsInHand.removeAll(where: {
-                                $0 == temp.first
-                            })
-                            cards.append(temp.removeFirst())
-                        }
-                    })
-                }
-            } else {
-                var diff = new!.filter { !old!.contains($0) }
-                print(diff)
-                print(cards)
-                
-                for i in 0..<diff.count {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + (0.5 * Double(i)), execute: {
-                        if let idx = cards.first(where: {
-                            $0 == diff.removeFirst()
-                        }) {
-                            withAnimation {
-                                print(idx)
-                                cardsInHand.append(cards.remove(at: idx))
-                            }
-                        }
-                    })
-                }
-            }
-        })
+        .onAppear {
+            firebase.gameState = GameState()
+            firebase.playerState = PlayerState()
+        }
     }
 }
 
 struct TestView: View {
     @EnvironmentObject var firebase: FirebaseHelper
-    @State var temp: [Int] = []
+    @Binding var temp: [Int]
     
     var body: some View {
-        CardInHandArea(cardsDragged: .constant([]), cardsInHand: $temp)
-            .border(.red)
-            .offset(y: 200)
-            .onChange(of: firebase.playerState?.cards_in_hand, initial: true, { (old, new) in
-                guard new != nil, old != nil else {
-                    return
-                }
-                
-                withAnimation {
-                    temp = new!
-                }
-            })
+        TestView2(temp: $temp)
+    }
+}
+
+struct TestView2: View {
+    @EnvironmentObject var firebase: FirebaseHelper
+    @Binding var temp: [Int]
+    
+    var body: some View {
+        CardInHandArea(cardsDragged: .constant([]), cardsInHand: .constant([-1]))
+            .frame(width: 100, height: 100)
     }
 }
 
