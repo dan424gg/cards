@@ -576,17 +576,19 @@ import FirebaseFirestoreSwift
                         }
                         
                         if change.type == .modified {
-                            let modifiedPlayerData = try change.document.data(as: PlayerState.self)
-                            
-                            if modifiedPlayerData.uid == playerState!.uid {
-                                playerState! = modifiedPlayerData
+                            try withAnimation(.linear(duration: 0.2)) {
+                                let modifiedPlayerData = try change.document.data(as: PlayerState.self)
+                                
+                                if modifiedPlayerData.uid == playerState!.uid {
+                                    playerState! = modifiedPlayerData
+                                }
+                                
+                                let loc = self.players.firstIndex { player in
+                                    player.uid == modifiedPlayerData.uid
+                                }
+                                
+                                self.players[loc!] = modifiedPlayerData
                             }
-                            
-                            let loc = self.players.firstIndex { player in
-                                player.uid == modifiedPlayerData.uid
-                            }
-                            
-                            self.players[loc!] = modifiedPlayerData
                         }
                         
                         if change.type == .removed {
@@ -627,11 +629,13 @@ import FirebaseFirestoreSwift
                 }
                 
                 do {
-                    self.gameState = try snapshot!.data(as: GameState.self)
-                    if self.gameState!.num_players == 4 {
-                        if self.playerState!.team_num == 3 {
-                            Task {
-                                await self.changeTeam(newTeamNum: 1)
+                    try withAnimation(.linear(duration: 0.2)) {
+                        self.gameState = try snapshot!.data(as: GameState.self)
+                        if self.gameState!.num_players == 4 {
+                            if self.playerState!.team_num == 3 {
+                                Task {
+                                    await self.changeTeam(newTeamNum: 1)
+                                }
                             }
                         }
                     }
@@ -891,10 +895,15 @@ import FirebaseFirestoreSwift
                     continue
                 }
                 
-                var card = gameState!.cards.removeFirst()
-                
-                await updateGame(["cards": [card]], arrayAction: .remove)
-                await updatePlayer(["cards_in_hand": [card]], uid: player.uid, arrayAction: .append)
+                if let card = gameState!.cards.first {
+                    do {
+                        try await Task.sleep(nanoseconds: UInt64((0.5 * Double(i)) * Double(NSEC_PER_SEC)))
+                        await updateGame(["cards": [card]], arrayAction: .remove)
+                        await updatePlayer(["cards_in_hand": [card]], uid: player.uid, arrayAction: .append)
+                    } catch {
+                        print("error when dealing card: \(error)")
+                    }
+                }
             }
         }
         

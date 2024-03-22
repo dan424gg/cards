@@ -17,15 +17,27 @@ struct CardInHandArea: View {
     @State var temp: [Int] = []
         
     var showBackside = false
-    
+
     var body: some View {
         ZStack {
-            ForEach(Array(cardsInHand.enumerated()), id: \.offset) { (index, cardId) in
-                CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(false), backside: .constant(showBackside))
-                    .matchedGeometryEffect(id: cardId, in: namespace)
-                    .offset(y: -50)
-                    .scaleEffect(x: 2, y: 2)
-                    .rotationEffect(.degrees(-Double((cardsInHand.count - 1) * 6) + Double(index * 12)))
+            if cardsInHand == [-1] {
+                ForEach(Array(firebaseHelper.playerState?.cards_in_hand.enumerated() ?? [].enumerated()), id: \.offset) { (index, cardId) in
+                    CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(false), backside: .constant(showBackside))
+                        .matchedGeometryEffect(id: cardId, in: namespace)
+//                        .transition(.scale.combined(with: .opacity))
+                        .offset(y: -50)
+                        .scaleEffect(x: 2, y: 2)
+                        .rotationEffect(.degrees(-Double((firebaseHelper.playerState!.cards_in_hand.count - 1) * 6) + Double(index * 12)))
+                }
+            } else {
+                ForEach(Array(cardsInHand.enumerated()), id: \.offset) { (index, cardId) in
+                    CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(false), backside: .constant(showBackside))
+                        .matchedGeometryEffect(id: cardId, in: namespace)
+//                        .transition(.scale.combined(with: .opacity))
+                        .offset(y: -50)
+                        .scaleEffect(x: 2, y: 2)
+                        .rotationEffect(.degrees(-Double((firebaseHelper.playerState!.cards_in_hand.count - 1) * 6) + Double(index * 12)))
+                }
             }
         }
 //            .dropDestination(for: CardItem.self) { items, location in

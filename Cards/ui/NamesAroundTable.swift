@@ -11,7 +11,7 @@
 import SwiftUI
 
 struct NamesAroundTable: View {
-    @Binding var cards: [Int]
+//    @Binding var cards: [Int]
     @Environment(\.namespace) var namespace
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @StateObject private var gameObservable = GameObservable(game: GameState.game)
@@ -20,12 +20,11 @@ struct NamesAroundTable: View {
     @State var multiplier = 0
     @State var tableRotation = 0
     @State var playerTurn = 0
-    @State var scoringPlays: [ScoringHand] = []
     
     var body: some View {
         ZStack {
             if (firebaseHelper.gameState?.turn ?? gameObservable.game.turn == 4) {
-                DisplayPlayersHandContainer(crib: firebaseHelper.gameState?.crib ?? gameObservable.game.crib, visibilityFor: 3.0, scoringPlays: scoringPlays)
+                DisplayPlayersHandContainer(crib: firebaseHelper.gameState?.crib ?? gameObservable.game.crib, visibilityFor: 3.0)
                     .rotationEffect(.degrees(Double(180)))
                     .scaleEffect(x: 0.75, y: 0.75)
                     .offset(y: -300)
@@ -33,7 +32,7 @@ struct NamesAroundTable: View {
                     .rotationEffect(applyRotation(index: 0))
             } else {
                 ForEach(Array($sortedPlayerList.enumerated()), id: \.offset) { (index, player) in
-                    PlayerView(cards: $cards, player: player, index: index, playerTurn: playerTurn)
+                    PlayerView(player: player, index: index, playerTurn: playerTurn)
                         .rotationEffect(applyRotation(index: index))
                         .rotationEffect(.degrees(Double(tableRotation)))
                         .offset(y: applyOffset(index: index))
@@ -150,6 +149,6 @@ struct NamesAroundTable: View {
 }
 
 #Preview {
-    NamesAroundTable(cards: .constant(Array(0...51)))
+    NamesAroundTable()
         .environmentObject(FirebaseHelper())
 }
