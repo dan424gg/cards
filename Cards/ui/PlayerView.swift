@@ -8,99 +8,61 @@
 import SwiftUI
 
 struct PlayerView: View {
+    @Namespace var names
+    @EnvironmentObject var specs: DeviceSpecs
     @EnvironmentObject var firebaseHelper: FirebaseHelper
-    @StateObject private var gameObservable = GameObservable(game: GameState.game)
-    
-//    @Binding var cards: [Int]
+    @StateObject var gameObservable: GameObservable
     @Binding var player: PlayerState
     var index: Int
     var playerTurn: Int
     
-    @State var cardsInHand: [Int] = []
+    @State var shown: Bool = false
     
     var body: some View {
-        if (firebaseHelper.gameState?.turn ?? 3 == 2)  {
-            VStack(spacing: -45) {
-                Text(player.name)
-                    .foregroundStyle(((firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn) == player.player_num && firebaseHelper.gameState?.turn == 2) ? Color("greenForPlayerPlaying") : .black)
-                TurnTwoView(cardsDragged: .constant(player.cards_dragged), cardsInHand: .constant([]), otherPlayer: true)
-                    .rotationEffect(.degrees(180))
-                    .scaleEffect(x: 0.5, y: 0.5)
-                    .frame(width: 50, height: 125)
-            }
-            .offset(y: -145)
-        } else if (firebaseHelper.gameState?.turn ?? 2 == 3) {
-            if (firebaseHelper.gameState?.player_turn ?? playerTurn == player.player_num) {
-                VStack {
-                    DisplayPlayersHandContainer(player: player, visibilityFor: 3.0)
+        switch (firebaseHelper.gameState?.game_name ?? "cribbage") {
+            case "cribbage":
+                ZStack {
                     Text(player.name)
-                        .font(.title3)
+                        .font(.custom("LuckiestGuy-Regular", size: 16))
+                        .offset(y: 1.6)
                         .foregroundStyle(((firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn) == player.player_num && firebaseHelper.gameState?.turn == 2) ? Color("greenForPlayerPlaying") : .black)
+                        .zIndex(1.0)
+                        .offset(x: shown ? ((player.name.width(usingFont: UIFont.init(name: "LuckiestGuy-Regular", size: 16)!)) / -2.0) - 5.0 : 0.0)
+
+                    PointContainer(player: .constant(player))
+                        .geometryGroup()
+                        .opacity(shown ? 1.0 : 0.0)
+                        .offset(x: shown ? (35.0 / 2.0) + 5.0 : 0.0)
+                        .zIndex(0.0)
                 }
-                .rotationEffect(.degrees(180))
-                .scaleEffect(x: 0.75, y: 0.75)
-                .offset(y: -145)
-                .frame(width: 200, height: 125)
-            } else {
-                VStack(spacing: -45) {
-                    Text(player.name)
-                        .foregroundStyle(((firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn) == player.player_num && firebaseHelper.gameState?.turn == 2) ? Color("greenForPlayerPlaying") : .black)
-                    CardInHandArea(cardsDragged: .constant([]), cardsInHand: $player.cards_in_hand, showBackside: player.player_num > firebaseHelper.gameState?.player_turn ?? playerTurn)
-                        .rotationEffect(.degrees(180))
-                        .scaleEffect(x: 0.25, y: 0.25)
-                        .frame(width: 50, height: 125)
-                }
-                .offset(y: -145)
-            }
-        } else {
-            VStack(spacing: -45) {
-                Text(player.name)
-                    .foregroundStyle(((firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn) == player.player_num && firebaseHelper.gameState?.turn == 2) ? Color("greenForPlayerPlaying") : .black)
-                CardInHandArea(cardsDragged: .constant([]), cardsInHand: $player.cards_in_hand, showBackside: true)
-                    .rotationEffect(.degrees(180))
-                    .scaleEffect(x: 0.25, y: 0.25)
-                    .frame(width: 50, height: 125)
-            }
-            .offset(y: -145)
+                .onChange(of: gameObservable.game.player_turn, {
+                    if (((firebaseHelper.gameState?.turn ?? gameObservable.game.turn) >= 3) && ((firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn) == player.player_num)) {
+                        withAnimation {
+                            shown = true
+                        }
+                    }
+                })
+                .transition(.offset().combined(with: .opacity))
+                .animation(.easeInOut, value: (firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn))
+                .frame(height: 56)
+            default:
+                Text("Shouldn't get here")
         }
-            
-            
-//        if (firebaseHelper.gameState?.turn ?? 3 == 3 && firebaseHelper.gameState?.player_turn ?? playerTurn == player.player_num) {
-//            VStack {
-//                DisplayPlayersHandContainer(player: player, scoringPlays: firebaseHelper.checkPlayerHandForPoints(player.cards_in_hand, firebaseHelper.gameState?.starter_card ?? gameObservable.game.starter_card), visibilityFor: 3.0)
-//                Text(player.name)
-//                    .font(.title3)
-//                    .foregroundStyle(((firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn) == player.player_num && firebaseHelper.gameState?.turn == 2) ? Color("greenForPlayerPlaying") : .black)
-//            }
-//            .onAppear {
-//                scoringPlays = firebaseHelper.checkPlayerHandForPoints(player.cards_in_hand, firebaseHelper.gameState?.starter_card ?? gameObservable.game.starter_card)
-//            }
-//            .rotationEffect(.degrees(180))
-//            .scaleEffect(x: 0.75, y: 0.75)
-//            .offset(y: -145)
-//            .frame(width: 200, height: 125)
-//        } else {
-//            VStack(spacing: -45) {
-//                Text(player.name)
-//                    .foregroundStyle(((firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn) == player.player_num && firebaseHelper.gameState?.turn == 2) ? Color("greenForPlayerPlaying") : .black)
-//                if (firebaseHelper.gameState?.turn ?? 3 == 2) {
-//                    TurnTwoView(cardsDragged: .constant(player.cards_dragged), cardsInHand: .constant([]), otherPlayer: true)
-//                        .rotationEffect(.degrees(180))
-//                        .scaleEffect(x: 0.5, y: 0.5)
-//                        .frame(width: 50, height: 125)
-//                } else {
-//                    CardInHandArea(cardsDragged: .constant([]), cardsInHand: Binding(get: { player.cards_in_hand }, set: { _ in }), showBackside: true)
-//                        .rotationEffect(.degrees(180))
-//                        .scaleEffect(x: 0.5, y: 0.5)
-//                        .frame(width: 50, height: 125)
-//                }
-//            }
-//            .offset(y: -145)
-//        }
     }
 }
 
 #Preview {
-    PlayerView(player: .constant(PlayerState.player_one), index: 0, playerTurn: 0)
-        .environmentObject(FirebaseHelper())
+    return GeometryReader { geo in
+        PlayerView(gameObservable: GameObservable(game: .game), player: .constant(PlayerState.player_one), index: 0, playerTurn: 0)
+            .environmentObject({ () -> DeviceSpecs in
+                let envObj = DeviceSpecs()
+                envObj.setProperties(geo)
+                return envObj
+            }() )
+            .environmentObject(FirebaseHelper())
+//            .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
+            .background(Color("OffWhite").opacity(0.1))
+        
+    }
+    .ignoresSafeArea()
 }

@@ -481,6 +481,33 @@ import FirebaseFirestoreSwift
                         
                         break
                         
+                    case "num_cards_in_play":
+                        guard type(of: value) is Int.Type else {
+                            print("\(key): \(value) needs to be Int in updateGame()!")
+                            return
+                        }
+                        
+                        switch (arrayAction) {
+                            case .append:
+                                try await docRef!.updateData([
+                                    "\(key)": FieldValue.increment(Double(value as! Int))
+                                ])
+                                break
+                            case .remove:
+                                print("You can't use .remove with the \"num_cards_in_play\" field!")
+                                break
+                            case .replace:
+                                try await docRef!.updateData([
+                                    "\(key)": value
+                                ])
+                                break
+                            default:
+                                print("UDPATEGAME: you have to have a action flag set to manipulate cards!")
+                                return
+                        }
+                        
+                        break
+                        
                     default:
                         print("UPDATEGAME: key: \(key) doesn't exist when trying to update game!")
                         return
@@ -568,36 +595,31 @@ import FirebaseFirestoreSwift
                     try snapshot!.documentChanges.forEach { change in
                         if change.type == .added {
                             let newPlayerData = try change.document.data(as: PlayerState.self)
-                            if !self.players.contains(where: { player in
-                                player.uid == newPlayerData.uid
-                            }) {
+                            
+                            if (self.playerState!.player_num != newPlayerData.player_num)
+                                && (!self.players.contains(where: { $0.uid == newPlayerData.uid })) {
                                 self.players.append(newPlayerData)
                             }
                         }
                         
                         if change.type == .modified {
-                            try withAnimation(.linear(duration: 0.2)) {
+//                            try withAnimation(.linear(duration: 0.2)) {
                                 let modifiedPlayerData = try change.document.data(as: PlayerState.self)
                                 
                                 if modifiedPlayerData.uid == playerState!.uid {
                                     playerState! = modifiedPlayerData
+                                } else if let loc = self.players.firstIndex(where: { $0.uid == modifiedPlayerData.uid }) {
+                                    self.players[loc] = modifiedPlayerData
                                 }
-                                
-                                let loc = self.players.firstIndex { player in
-                                    player.uid == modifiedPlayerData.uid
-                                }
-                                
-                                self.players[loc!] = modifiedPlayerData
-                            }
+//                            }
                         }
                         
                         if change.type == .removed {
                             let removedPlayerData = try change.document.data(as: PlayerState.self)
-                            let loc = self.players.firstIndex { player in
-                                player.uid == removedPlayerData.uid
-                            }
                             
-                            self.players.remove(at: loc!)
+                            if let loc = self.players.firstIndex(where: { $0.uid == removedPlayerData.uid }) {
+                                self.players.remove(at: loc)
+                            }
                         }
                     }
                 } catch {
@@ -771,6 +793,7 @@ import FirebaseFirestoreSwift
         } while (await checkValidId(id: groupId))
         #endif
         
+        print("gameId = \(groupId)")
         docRef = db.collection("games").document("\(groupId)")
         
         do {
@@ -863,9 +886,12 @@ import FirebaseFirestoreSwift
             return
         }
         
+        var allPlayers = players
+        allPlayers.append(playerState!)
+        
         // ensure cards_in_hand is cleared for all players
-        for player in players {
-            await updatePlayer(["cards_in_hand": [Int]()], uid: player.uid, arrayAction: .replace)
+        for player in allPlayers {
+            await updatePlayer(["cards_in_hand": [Int](), "cards_dragged": [Int]()], uid: player.uid, arrayAction: .replace)
         }
         
         // ensure crib is cleared
@@ -886,7 +912,7 @@ import FirebaseFirestoreSwift
         }
         
         for i in 0..<numberOfCards {
-            for player in players {
+            for player in allPlayers {
                 // check for 6 person edge case
                 if numberOfPlayers == 6 &&
                     i == 4 &&
@@ -897,7 +923,7 @@ import FirebaseFirestoreSwift
                 
                 if let card = gameState!.cards.first {
                     do {
-                        try await Task.sleep(nanoseconds: UInt64((0.5 * Double(i)) * Double(NSEC_PER_SEC)))
+                        try await Task.sleep(nanoseconds: UInt64(0.3 * Double(NSEC_PER_SEC)))
                         await updateGame(["cards": [card]], arrayAction: .remove)
                         await updatePlayer(["cards_in_hand": [card]], uid: player.uid, arrayAction: .append)
                     } catch {
@@ -914,9 +940,9 @@ import FirebaseFirestoreSwift
         guard (player != nil) ^ (crib != nil) else {
             return []
         }
-        guard playerState != nil, gameState != nil, teamState != nil else {
-            return []
-        }
+//        guard playerState != nil, gameState != nil, teamState != nil else {
+//            return []
+//        }
         
         if player?.cards_in_hand == [] {
             return []
@@ -968,14 +994,18 @@ import FirebaseFirestoreSwift
             pointsCallOut.append("15 for \(points)!")
             await updateGame([
                 "running_sum": (gameState!.running_sum + card.pointValue) % 31,
-                "play_cards": [cardNumber]
+                "play_cards": [cardNumber],
+                "num_cards_in_play": 1
             ], arrayAction: .append)
         }
         // Check for 31
         else if card.pointValue + gameState!.running_sum == 31 {
             points += 2
             pointsCallOut.append("31 for \(points)!")
-            await updateGame(["running_sum": 0, "play_cards": [] as! [Int]], arrayAction: .replace)
+            await updateGame(["running_sum": 0,
+                              "play_cards": [] as! [Int]
+                             ], arrayAction: .replace)
+            await updateGame(["num_cards_in_play": 1], arrayAction: .append)
         }
         else if (card.pointValue + gameState!.running_sum > 31) {
             pointsCallOut.append("You can't go over 31!")
@@ -985,7 +1015,8 @@ import FirebaseFirestoreSwift
         else {
             await updateGame([
                 "running_sum": (gameState!.running_sum + card.pointValue) % 31,
-                "play_cards": [cardNumber]
+                "play_cards": [cardNumber],
+                "num_cards_in_play": 1
             ], arrayAction: .append)
         }
         
@@ -1016,7 +1047,12 @@ import FirebaseFirestoreSwift
         }
         
         // if current player has one card and every other player has no cards
-        if (players.filter { player in player.player_num != playerState!.player_num }.allSatisfy({ player in player.cards_in_hand.count == 0 }) && playerState!.cards_in_hand.count <= 1) {
+//        if (players.filter { player in player.player_num != playerState!.player_num }.allSatisfy({ player in player.cards_in_hand.count == 0 }) && playerState!.cards_in_hand.count <= 1) {
+//            points += 1
+//            pointsCallOut.append("\(points) for last card!")
+//        }
+        
+        if (gameState!.num_cards_in_play == (gameState!.num_players * 4)) {
             points += 1
             pointsCallOut.append("\(points) for last card!")
         }
@@ -1166,22 +1202,10 @@ import FirebaseFirestoreSwift
         
         findCombinations(0, 0, [] as! [Int])
     }
-    
-    func checkIfPlayIsPossible() -> Bool {
-        guard playerState != nil, gameState != nil else {
-            return false
-        }
-        
-        for card in playerState!.cards_in_hand {
-            if CardItem(id: card).card.pointValue + gameState!.running_sum <= 31 {
-                return true
-            }
-        }
-        
-        return false
-    }
 
     func unreadyAllPlayers() async {
+        await updatePlayer(["is_ready": false])
+        
         for player in players {
             await updatePlayer(["is_ready": false], uid: player.uid)
         }
@@ -1190,11 +1214,32 @@ import FirebaseFirestoreSwift
     func playersAreReady() -> Bool {
         for player in players {
             if !player.is_ready {
+                print("player \(player.name) is not ready!")
                 return false
             }
         }
         
+        if !playerState!.is_ready {
+            return false
+        }
+        
+        print("all players are ready!")
+        
         return true
+    }
+    
+    func equalNumOfPlayersOnTeam() -> Bool {
+        guard playerState != nil else {
+            return false
+        }
+        
+        var numOfPlayers = [0,0,0]
+        numOfPlayers[playerState!.team_num - 1] += 1
+        for player in players {
+            numOfPlayers[player.team_num - 1] += 1
+        }
+        // if third team has no players, or the count is equal to another team
+        return numOfPlayers[0] == numOfPlayers[1] && (numOfPlayers[2] == 0 || numOfPlayers[0] == numOfPlayers[2])
     }
     
     func reorderPlayerNumbers() async {

@@ -28,10 +28,11 @@ public struct GameState: Hashable, Codable {
     
     // used during "The Play"
     var play_cards: [Int] = []
+    var num_cards_in_play: Int = 0
     var running_sum: Int = 0
     var num_go: Int = 0
     
-    static var game: GameState = GameState(group_id: 1234, is_playing: true, num_teams: 3, turn: 1, game_name: "cribbage", num_players: 6, dealer: 0, team_with_crib: 1, crib: Array(0...3), cards: Array(29...51).shuffled(), starter_card: 4, player_turn: 0)
+    static var game: GameState = GameState(group_id: 1234, is_playing: true, num_teams: 3, turn: 3, game_name: "cribbage", num_players: 6, dealer: 0, team_with_crib: 1, crib: Array(0...3), cards: Array(29...51).shuffled(), starter_card: 4, player_turn: 0)
     
     enum CodingKeys: CodingKey {
         case group_id
@@ -51,6 +52,7 @@ public struct GameState: Hashable, Codable {
         case play_cards
         case running_sum
         case num_go
+        case num_cards_in_play
     }
 }
 

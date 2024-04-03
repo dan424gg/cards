@@ -11,8 +11,8 @@
 import SwiftUI
 
 struct NamesAroundTable: View {
-//    @Binding var cards: [Int]
     @Environment(\.namespace) var namespace
+    @EnvironmentObject var specs: DeviceSpecs
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @StateObject private var gameObservable = GameObservable(game: GameState.game)
     @State var sortedPlayerList: [PlayerState] = []
@@ -21,48 +21,24 @@ struct NamesAroundTable: View {
     @State var tableRotation = 0
     @State var playerTurn = 0
     
+    private var timer = Timer.publish(every: 2.0, on: .main, in: .common).autoconnect()
+    
     var body: some View {
         ZStack {
-            if (firebaseHelper.gameState?.turn ?? gameObservable.game.turn == 4) {
-                DisplayPlayersHandContainer(crib: firebaseHelper.gameState?.crib ?? gameObservable.game.crib, visibilityFor: 3.0)
-                    .rotationEffect(.degrees(Double(180)))
-                    .scaleEffect(x: 0.75, y: 0.75)
-                    .offset(y: -300)
-                    .frame(width: 200, height: 125)
-                    .rotationEffect(applyRotation(index: 0))
-            } else {
-                ForEach(Array($sortedPlayerList.enumerated()), id: \.offset) { (index, player) in
-                    PlayerView(player: player, index: index, playerTurn: playerTurn)
-                        .rotationEffect(applyRotation(index: index))
-                        .rotationEffect(.degrees(Double(tableRotation)))
-                        .offset(y: applyOffset(index: index))
-                }
+            ForEach(Array($sortedPlayerList.enumerated()), id: \.offset) { (index, player) in
+                PlayerView(gameObservable: gameObservable, player: player, index: index, playerTurn: playerTurn)
+                    .offset(y: -185)
+                    .rotationEffect(applyRotation(index: index))
+                    .rotationEffect(.degrees(Double(tableRotation)))
+                    .offset(y: applyOffset(index: index))
             }
-            
-//            Button("stuff") {
-//                withAnimation {
-//                    if gameObservable.game.turn == 4 {
-//                        gameObservable.game.turn = 3
-//                    } else {
-//                        gameObservable.game.turn = 4
-//                    }
-//                }
-//            }
         }
-        .onChange(of: firebaseHelper.gameState?.player_turn ?? playerTurn, {
-            if let gameState = firebaseHelper.gameState {
-                if gameState.turn > 2 {
-                    withAnimation(.snappy(duration: 1.5)) {
-                        tableRotation = (tableRotation - multiplier)
-                    }
-                }
-            } else {
-                withAnimation {
-                    tableRotation = (tableRotation - multiplier)
-                    gameObservable.game.player_turn = (gameObservable.game.player_turn + 1) % 7
-                }
-            }
+        .onReceive(timer, perform: { _ in
+            gameObservable.game.player_turn = ((gameObservable.game.player_turn + 1) % gameObservable.game.num_players)
         })
+        .onAppear {
+            updateMultiplierAndRotation()
+        }
         .onChange(of: firebaseHelper.players, initial: true, {
             guard firebaseHelper.playerState != nil, firebaseHelper.gameState != nil else {
                 sortedPlayerList = [PlayerState.player_one, PlayerState.player_two, PlayerState.player_three, PlayerState.player_four, PlayerState.player_five, PlayerState.player_six]
@@ -71,24 +47,18 @@ struct NamesAroundTable: View {
                 return
             }
             
-            let playerList = firebaseHelper.players
-                .sorted(by: { $0.player_num < $1.player_num })
-            
-            if firebaseHelper.gameState!.turn > 2 {
-                sortedPlayerList = playerList
-            } else {
-                let beforePlayer = playerList[0..<firebaseHelper.playerState!.player_num]
-                let afterPlayer = playerList[firebaseHelper.playerState!.player_num..<playerList.count]
-                
-                sortedPlayerList = Array(afterPlayer + beforePlayer)
-                    .filter { $0.player_num != firebaseHelper.playerState!.player_num }
-            }
-        })
-        .onChange(of: firebaseHelper.gameState?.turn, initial: true, {
-            if (firebaseHelper.gameState?.turn == 1) {
-                tableRotation = 0
-            }
-            updateMultiplierAndRotation()
+            sortedPlayerList = firebaseHelper.players
+//                .sorted(by: { $0.player_num < $1.player_num })
+//            
+//            if firebaseHelper.gameState!.turn > 2 {
+//                sortedPlayerList = playerList
+//            } else {
+//                let beforePlayer = playerList[0..<firebaseHelper.playerState!.player_num]
+//                let afterPlayer = playerList[firebaseHelper.playerState!.player_num..<playerList.count]
+//                
+//                sortedPlayerList = Array(afterPlayer + beforePlayer)
+//                    .filter { $0.player_num != firebaseHelper.playerState!.player_num }
+//            }
         })
     }
     
@@ -127,11 +97,11 @@ struct NamesAroundTable: View {
 //        }
         
         return withAnimation {
-            if (firebaseHelper.gameState?.turn ?? gameObservable.game.turn > 2) && (firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn == index) {
-                return 150.0
-            } else {
+//            if (firebaseHelper.gameState?.turn ?? gameObservable.game.turn > 2) && (firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn == index) {
+//                return 150.0
+//            } else {
                 return 0.0
-            }
+//            }
         }
     }
     
@@ -149,6 +119,17 @@ struct NamesAroundTable: View {
 }
 
 #Preview {
-    NamesAroundTable()
-        .environmentObject(FirebaseHelper())
+    return GeometryReader { geo in
+        NamesAroundTable()
+            .environmentObject({ () -> DeviceSpecs in
+                let envObj = DeviceSpecs()
+                envObj.setProperties(geo)
+                return envObj
+            }() )
+            .environmentObject(FirebaseHelper())
+            .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
+            .background(Color("OffWhite").opacity(0.1))
+        
+    }
+    .ignoresSafeArea()
 }

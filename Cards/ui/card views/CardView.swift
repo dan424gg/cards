@@ -19,10 +19,10 @@ struct CardView: View {
     @State var positionOffset: Double = 0.0
     @State var notUsable: Bool = false
     
-    var cardArrs: [[Int]] {[
-        firebaseHelper.gameState?.play_cards ?? [],
-        firebaseHelper.playerState?.cards_in_hand ?? []
-    ]}
+//    var cardArrs: [[Int]] {[
+//        firebaseHelper.gameState?.play_cards ?? [],
+//        firebaseHelper.playerState?.cards_in_hand ?? []
+//    ]}
 
     var body: some View {
         VStack {
@@ -64,15 +64,23 @@ struct CardView: View {
                         Text(cardItem.card.value)
                             .font(.custom("LuckiestGuy-Regular", size: 18))
                             .offset(y: 2.2)
-                            .position(x: 9, y: 11)
+                            .position(x: cardItem.card.value == "10" ? 11 : 9, y: 11)
+                        Image(systemName: "suit.\(cardItem.card.suit).fill")
+                            .font(.system(size: 11))
+                            .position(x: 9, y: 26)
                         
                         Text(cardItem.card.value)
                             .font(.custom("LuckiestGuy-Regular", size: 18))
                             .offset(y: 2.2)
-                            .position(x: 51, y: 89)
+                            .position(x: cardItem.card.value == "10" ? 11 : 9, y: 11)
+                            .rotationEffect(.degrees(180.0))
+                        Image(systemName: "suit.\(cardItem.card.suit).fill")
+                            .font(.system(size: 11))
+                            .position(x: 9, y: 26)
+                            .rotationEffect(.degrees(180.0))
                         
                         Image(systemName: "suit.\(cardItem.card.suit).fill")
-                            .font(.title)
+                            .font(.title3)
                     }
                     .foregroundStyle(cardItem.card.suit == "spade" || cardItem.card.suit == "club" ? Color.black.opacity(0.8) : Color.red.opacity(0.8))
                 }
@@ -111,15 +119,6 @@ struct CardView: View {
                     }
                 }
             })
-                
-//                if naturalOffset {
-//                    var rng = RandomNumberGeneratorWithSeed(seed: cardItem.id * (firebaseHelper.gameState?.group_id ?? 1))
-//                    // [-5,5)
-//                    rotationOffset = (Double(Int(rng.next()) % 10000) / 1000.0) - 5.0
-//                    // [-1,1)
-//                    positionOffset = (Double(Int(rng.next()) % 10000) / 5000.0) - 1.0
-//                }
-//            }
             .onChange(of: [firebaseHelper.gameState?.play_cards, firebaseHelper.playerState?.cards_in_hand], initial: true, {
                 guard firebaseHelper.gameState != nil, firebaseHelper.playerState != nil, firebaseHelper.gameState!.turn == 2 else {
                     return

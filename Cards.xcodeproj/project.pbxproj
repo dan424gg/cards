@@ -39,6 +39,12 @@
 		1E4722B22B8E4D630067A890 /* GamePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4722AD2B8E4BBE0067A890 /* GamePicker.swift */; };
 		1E4722B32B8E4D630067A890 /* GamePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4722AD2B8E4BBE0067A890 /* GamePicker.swift */; };
 		1E4CC8F82AFB4A3500ECC77B /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4CC8F72AFB4A3500ECC77B /* GameView.swift */; };
+		1E68C2A82BAF38E800FAD83E /* CardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E68C2A72BAF38E800FAD83E /* CardsView.swift */; };
+		1E68C2A92BAF392B00FAD83E /* CardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E68C2A72BAF38E800FAD83E /* CardsView.swift */; };
+		1E68C2AA2BAF392C00FAD83E /* CardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E68C2A72BAF38E800FAD83E /* CardsView.swift */; };
+		1E68C2AB2BAF392C00FAD83E /* CardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E68C2A72BAF38E800FAD83E /* CardsView.swift */; };
+		1E68C2AC2BAF392D00FAD83E /* CardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E68C2A72BAF38E800FAD83E /* CardsView.swift */; };
+		1E68C2AD2BAF392E00FAD83E /* CardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E68C2A72BAF38E800FAD83E /* CardsView.swift */; };
 		1E7E89232B9107F100E3626E /* LineOfSuits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7E89222B9107F100E3626E /* LineOfSuits.swift */; };
 		1E7E89242B91089000E3626E /* LineOfSuits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7E89222B9107F100E3626E /* LineOfSuits.swift */; };
 		1E7E89252B91089000E3626E /* LineOfSuits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7E89222B9107F100E3626E /* LineOfSuits.swift */; };
@@ -317,6 +323,12 @@
 		1EE16CF92B10930600B35787 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 1EE16CF82B10930600B35787 /* FirebaseFirestore */; };
 		1EE16CFB2B10961100B35787 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 1EE16CFA2B10961100B35787 /* FirebaseFirestoreSwift */; };
 		1EE5F12B2AE8A5EF0089162D /* CardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE5F12A2AE8A5EF0089162D /* CardItem.swift */; };
+		1EF4295E2BBC59EB00121C1A /* DisplayPointsInHand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EF4295D2BBC59EB00121C1A /* DisplayPointsInHand.swift */; };
+		1EF4295F2BBC5AD900121C1A /* DisplayPointsInHand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EF4295D2BBC59EB00121C1A /* DisplayPointsInHand.swift */; };
+		1EF429602BBC5ADA00121C1A /* DisplayPointsInHand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EF4295D2BBC59EB00121C1A /* DisplayPointsInHand.swift */; };
+		1EF429612BBC5ADA00121C1A /* DisplayPointsInHand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EF4295D2BBC59EB00121C1A /* DisplayPointsInHand.swift */; };
+		1EF429622BBC5ADB00121C1A /* DisplayPointsInHand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EF4295D2BBC59EB00121C1A /* DisplayPointsInHand.swift */; };
+		1EF429632BBC5ADB00121C1A /* DisplayPointsInHand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EF4295D2BBC59EB00121C1A /* DisplayPointsInHand.swift */; };
 		1EFA9F5B2AF584CC00FA092C /* TurnTwoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFA9F5A2AF584CC00FA092C /* TurnTwoView.swift */; };
 		1EFB1F8F2B59C56E001C0ADA /* SwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFB1F8E2B59C56E001C0ADA /* SwiftUIView.swift */; };
 /* End PBXBuildFile section */
@@ -406,6 +418,7 @@
 		1E4338E62B0D460900E212CD /* LinkedList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedList.swift; sourceTree = "<group>"; };
 		1E4722AD2B8E4BBE0067A890 /* GamePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamePicker.swift; sourceTree = "<group>"; };
 		1E4CC8F72AFB4A3500ECC77B /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
+		1E68C2A72BAF38E800FAD83E /* CardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsView.swift; sourceTree = "<group>"; };
 		1E7E89222B9107F100E3626E /* LineOfSuits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineOfSuits.swift; sourceTree = "<group>"; };
 		1E87BC082B65A6170084BEAB /* PlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerView.swift; sourceTree = "<group>"; };
 		1E8A2E5A2B87CF3200A40148 /* DeviceSpecs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceSpecs.swift; sourceTree = "<group>"; };
@@ -460,6 +473,7 @@
 		1ED8601D2B71905100807548 /* Cards copy 6-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Cards copy 6-Info.plist"; path = "/Users/wells/coding/cards/Cards copy 6-Info.plist"; sourceTree = "<absolute>"; };
 		1EE5F1292AE8A3750089162D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1EE5F12A2AE8A5EF0089162D /* CardItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardItem.swift; sourceTree = "<group>"; };
+		1EF4295D2BBC59EB00121C1A /* DisplayPointsInHand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayPointsInHand.swift; sourceTree = "<group>"; };
 		1EFA9F5A2AF584CC00FA092C /* TurnTwoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnTwoView.swift; sourceTree = "<group>"; };
 		1EFB1F8E2B59C56E001C0ADA /* SwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -592,6 +606,14 @@
 			path = "Copy Targets Info";
 			sourceTree = "<group>";
 		};
+		1E7970FC2BB3483200221DD1 /* TurnTwo */ = {
+			isa = PBXGroup;
+			children = (
+				1EFA9F5A2AF584CC00FA092C /* TurnTwoView.swift */,
+			);
+			path = TurnTwo;
+			sourceTree = "<group>";
+		};
 		1E7E89212B9107DF00E3626E /* background */ = {
 			isa = PBXGroup;
 			children = (
@@ -634,6 +656,7 @@
 				1EA245812AED70B3003B0943 /* CardInHandArea.swift */,
 				1E20F1782AF3524100F2B368 /* CardPlaceHolder.swift */,
 				1E8D31A72B05644300FC9C68 /* DeckOfCardsView.swift */,
+				1E68C2A72BAF38E800FAD83E /* CardsView.swift */,
 			);
 			path = "card views";
 			sourceTree = "<group>";
@@ -742,6 +765,7 @@
 				1E87BC082B65A6170084BEAB /* PlayerView.swift */,
 				1EAE46872B828C0800F7519B /* GameOutcomeView.swift */,
 				1EC258EA2B9A5DD0001B78EB /* SideBar.swift */,
+				1EF4295D2BBC59EB00121C1A /* DisplayPointsInHand.swift */,
 			);
 			path = ui;
 			sourceTree = "<group>";
@@ -793,9 +817,9 @@
 		1EFA9F592AF5848D00FA092C /* cribbage */ = {
 			isa = PBXGroup;
 			children = (
+				1E7970FC2BB3483200221DD1 /* TurnTwo */,
 				1EBED9482AD7BD88008B85EE /* CribbageView.swift */,
 				1EA2457F2AED6F71003B0943 /* TurnOneView.swift */,
-				1EFA9F5A2AF584CC00FA092C /* TurnTwoView.swift */,
 			);
 			path = cribbage;
 			sourceTree = "<group>";
@@ -1192,6 +1216,7 @@
 				1ECCDABD2AE600DA00EFF167 /* GameStartButton.swift in Sources */,
 				1EBED9492AD7BD88008B85EE /* CribbageView.swift in Sources */,
 				1EBED94C2AD7BF2C008B85EE /* Firebase.swift in Sources */,
+				1E68C2A82BAF38E800FAD83E /* CardsView.swift in Sources */,
 				1E4CC8F82AFB4A3500ECC77B /* GameView.swift in Sources */,
 				1EAE468F2B8296D700F7519B /* IntroView.swift in Sources */,
 				1E87BC092B65A6170084BEAB /* PlayerView.swift in Sources */,
@@ -1210,6 +1235,7 @@
 				1E3C3EB22B8547B4000FCAE6 /* SheetCordinator.swift in Sources */,
 				1ED272522B02A49C00B21600 /* NamesAroundTable.swift in Sources */,
 				1E8D31A82B05644300FC9C68 /* DeckOfCardsView.swift in Sources */,
+				1EF4295E2BBC59EB00121C1A /* DisplayPointsInHand.swift in Sources */,
 				1E8A2E5B2B87CF3200A40148 /* DeviceSpecs.swift in Sources */,
 				1EC258F52B9E3291001B78EB /* NewGameView.swift in Sources */,
 				1E8A2E6C2B8BADEF00A40148 /* GameSetUpView.swift in Sources */,
@@ -1242,6 +1268,7 @@
 				1EAE46892B828C9100F7519B /* GameOutcomeView.swift in Sources */,
 				1ED85E6D2B718B3000807548 /* UITestingHelper.swift in Sources */,
 				1ED85E6F2B718B3000807548 /* GameHeader.swift in Sources */,
+				1EF4295F2BBC5AD900121C1A /* DisplayPointsInHand.swift in Sources */,
 				1ED85E702B718B3000807548 /* GameState.swift in Sources */,
 				1ED85E712B718B3000807548 /* CardPlaceHolder.swift in Sources */,
 				1EC258FE2B9E38CE001B78EB /* ExisitingGameView.swift in Sources */,
@@ -1251,6 +1278,7 @@
 				1E3C3EB52B866A7D000FCAE6 /* SheetEnum.swift in Sources */,
 				1ED85E752B718B3000807548 /* LinkedList.swift in Sources */,
 				1ED85E762B718B3000807548 /* DiagonalLines.swift in Sources */,
+				1E68C2A92BAF392B00FAD83E /* CardsView.swift in Sources */,
 				1ED85E772B718B3000807548 /* ContentView.swift in Sources */,
 				1ED85E782B718B3000807548 /* PlayerState.swift in Sources */,
 				1ED85E792B718B3000807548 /* TurnOneView.swift in Sources */,
@@ -1291,6 +1319,7 @@
 				1EAE468C2B828C9500F7519B /* GameOutcomeView.swift in Sources */,
 				1ED85EA62B71904300807548 /* UITestingHelper.swift in Sources */,
 				1ED85EA82B71904300807548 /* GameHeader.swift in Sources */,
+				1EF429602BBC5ADA00121C1A /* DisplayPointsInHand.swift in Sources */,
 				1ED85EA92B71904300807548 /* GameState.swift in Sources */,
 				1ED85EAA2B71904300807548 /* CardPlaceHolder.swift in Sources */,
 				1EC258FF2B9E38CF001B78EB /* ExisitingGameView.swift in Sources */,
@@ -1300,6 +1329,7 @@
 				1E3C3EB72B866A83000FCAE6 /* SheetEnum.swift in Sources */,
 				1ED85EAE2B71904300807548 /* LinkedList.swift in Sources */,
 				1ED85EAF2B71904300807548 /* DiagonalLines.swift in Sources */,
+				1E68C2AA2BAF392C00FAD83E /* CardsView.swift in Sources */,
 				1ED85EB02B71904300807548 /* ContentView.swift in Sources */,
 				1ED85EB12B71904300807548 /* PlayerState.swift in Sources */,
 				1ED85EB22B71904300807548 /* TurnOneView.swift in Sources */,
@@ -1340,6 +1370,7 @@
 				1EAE468B2B828C9400F7519B /* GameOutcomeView.swift in Sources */,
 				1ED85F4B2B71904D00807548 /* UITestingHelper.swift in Sources */,
 				1ED85F4D2B71904D00807548 /* GameHeader.swift in Sources */,
+				1EF429612BBC5ADA00121C1A /* DisplayPointsInHand.swift in Sources */,
 				1ED85F4E2B71904D00807548 /* GameState.swift in Sources */,
 				1ED85F4F2B71904D00807548 /* CardPlaceHolder.swift in Sources */,
 				1EC259002B9E38CF001B78EB /* ExisitingGameView.swift in Sources */,
@@ -1349,6 +1380,7 @@
 				1E3C3EB82B866A83000FCAE6 /* SheetEnum.swift in Sources */,
 				1ED85F532B71904D00807548 /* LinkedList.swift in Sources */,
 				1ED85F542B71904D00807548 /* DiagonalLines.swift in Sources */,
+				1E68C2AB2BAF392C00FAD83E /* CardsView.swift in Sources */,
 				1ED85F552B71904D00807548 /* ContentView.swift in Sources */,
 				1ED85F562B71904D00807548 /* PlayerState.swift in Sources */,
 				1ED85F572B71904D00807548 /* TurnOneView.swift in Sources */,
@@ -1389,6 +1421,7 @@
 				1EAE468A2B828C9400F7519B /* GameOutcomeView.swift in Sources */,
 				1ED85F822B71904E00807548 /* UITestingHelper.swift in Sources */,
 				1ED85F842B71904E00807548 /* GameHeader.swift in Sources */,
+				1EF429622BBC5ADB00121C1A /* DisplayPointsInHand.swift in Sources */,
 				1ED85F852B71904E00807548 /* GameState.swift in Sources */,
 				1ED85F862B71904E00807548 /* CardPlaceHolder.swift in Sources */,
 				1EC259012B9E38D0001B78EB /* ExisitingGameView.swift in Sources */,
@@ -1398,6 +1431,7 @@
 				1E3C3EB92B866A84000FCAE6 /* SheetEnum.swift in Sources */,
 				1ED85F8A2B71904E00807548 /* LinkedList.swift in Sources */,
 				1ED85F8B2B71904E00807548 /* DiagonalLines.swift in Sources */,
+				1E68C2AC2BAF392D00FAD83E /* CardsView.swift in Sources */,
 				1ED85F8C2B71904E00807548 /* ContentView.swift in Sources */,
 				1ED85F8D2B71904E00807548 /* PlayerState.swift in Sources */,
 				1ED85F8E2B71904E00807548 /* TurnOneView.swift in Sources */,
@@ -1438,6 +1472,7 @@
 				1EAE468D2B828C9600F7519B /* GameOutcomeView.swift in Sources */,
 				1ED85FB92B71904F00807548 /* UITestingHelper.swift in Sources */,
 				1ED85FBB2B71904F00807548 /* GameHeader.swift in Sources */,
+				1EF429632BBC5ADB00121C1A /* DisplayPointsInHand.swift in Sources */,
 				1ED85FBC2B71904F00807548 /* GameState.swift in Sources */,
 				1ED85FBD2B71904F00807548 /* CardPlaceHolder.swift in Sources */,
 				1EC259022B9E38D0001B78EB /* ExisitingGameView.swift in Sources */,
@@ -1447,6 +1482,7 @@
 				1E3C3EB62B866A80000FCAE6 /* SheetEnum.swift in Sources */,
 				1ED85FC12B71904F00807548 /* LinkedList.swift in Sources */,
 				1ED85FC22B71904F00807548 /* DiagonalLines.swift in Sources */,
+				1E68C2AD2BAF392E00FAD83E /* CardsView.swift in Sources */,
 				1ED85FC32B71904F00807548 /* ContentView.swift in Sources */,
 				1ED85FC42B71904F00807548 /* PlayerState.swift in Sources */,
 				1ED85FC52B71904F00807548 /* TurnOneView.swift in Sources */,

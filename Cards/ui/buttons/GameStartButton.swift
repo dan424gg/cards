@@ -18,7 +18,7 @@ struct GameStartButton: View {
             }
         }
         .buttonStyle(.borderedProminent)
-        .disabled((firebaseHelper.gameState?.group_id ?? 0) == 0 || !equalNumOfPlayersOnTeam(players: firebaseHelper.players))
+        .disabled((firebaseHelper.gameState?.group_id ?? 0) == 0 || !firebaseHelper.equalNumOfPlayersOnTeam())
     }
 }
 

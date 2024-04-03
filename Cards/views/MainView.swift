@@ -12,20 +12,39 @@ struct MainView: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @EnvironmentObject var specs: DeviceSpecs
     @StateObject var sheetCoordinator = SheetCoordinator<SheetType>()
+    @State var showGameView: Bool = false
 
     var body: some View {
         ZStack {
-            if firebaseHelper.gameState?.is_playing ?? false {
-                GameView()
-                    .onAppear {
-                        sheetCoordinator.currentSheet = nil
-                    }
-//                    .transition(.opacity.animation(.easeInOut(duration: 0.5)))
+            if (firebaseHelper.gameState?.is_playing ?? false) && showGameView {
+//                NavigationStack {
+                    GameView()
+//                        .ignoresSafeArea()
+//                        .toolbar {
+//                            ToolbarItem(placement: .topBarLeading, content: {
+//                                Button {
+//                                    withAnimation {
+//                                        showGameView = false
+//                                        firebaseHelper.reinitialize()
+//                                    }
+//                                } label: {
+//                                     Text("Exit")
+//                                        .foregroundStyle(.red)
+//                                        .font(.custom("LuckiestGuy-Regular", size: 16))
+//                                        .offset(y: 1.6)
+//                                }
+//                            })
+//                        }
+//                }
             } else {
                 IntroView(blur: $visible)
+                    .onAppear {
+                        showGameView = true
+                    }
 //                    .transition(.opacity.animation(.easeInOut(duration: 0.5)))
             }
         }
+        .transition(.move(edge: .bottom))
     }
 }
 

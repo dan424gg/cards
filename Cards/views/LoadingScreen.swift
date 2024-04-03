@@ -160,6 +160,13 @@ struct LoadingScreen: View {
                                             .shadow(color: .black, radius: team.color == "Red" ? 5 : 1)
                                     }
                                 
+                                if firebaseHelper.playerState!.team_num == team.team_num {
+                                    Text(firebaseHelper.playerState!.name)
+                                        .foregroundStyle(Color.theme.white)
+                                        .font(.custom("LuckiestGuy-Regular", size: 18))
+                                        .offset(y: 1.8)
+                                }
+                                
                                 ForEach(firebaseHelper.players.filter { $0.team_num == team.team_num }, id: \.self) { player in
                                     Text(player.name)
                                         .foregroundStyle(Color.theme.white)
@@ -186,7 +193,7 @@ struct LoadingScreen: View {
                             .font(.custom("LuckiestGuy-Regular", size: 25))
                             .offset(y: 2.2)
                     }
-                    .disabled(!equalNumOfPlayersOnTeam(players: firebaseHelper.players))
+                    .disabled(!firebaseHelper.equalNumOfPlayersOnTeam())
                     
     //                Button("Play!") {
     //                    Task {
@@ -229,19 +236,6 @@ struct LoadingScreen: View {
         }
         
         return width
-    }
-}
-
-func equalNumOfPlayersOnTeam(players: [PlayerState]) -> Bool {
-    if players.count < 2 {
-        return false
-    } else {
-        var numOfPlayers = [0,0,0]
-        for player in players {
-            numOfPlayers[player.team_num - 1] += 1
-        }
-        // if third team has no players, or the count is equal to another team
-        return numOfPlayers[0] == numOfPlayers[1] && (numOfPlayers[2] == 0 || numOfPlayers[0] == numOfPlayers[2])
     }
 }
 

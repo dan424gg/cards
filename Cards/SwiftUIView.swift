@@ -84,7 +84,7 @@ struct TestView2: View {
     @Binding var temp: [Int]
     
     var body: some View {
-        CardInHandArea(cardsDragged: .constant([]), cardsInHand: .constant([-1]))
+        CardInHandArea(cards: .constant(Array(0...51)), cardsDragged: .constant([]), cardsInHand: .constant([-1]))
             .frame(width: 100, height: 100)
     }
 }
