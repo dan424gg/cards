@@ -15,7 +15,6 @@ struct PlayerView: View {
     @Binding var player: PlayerState
     var index: Int
     var playerTurn: Int
-    
     @State var shown: Bool = false
     
     var body: some View {

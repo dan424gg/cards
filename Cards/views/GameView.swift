@@ -13,7 +13,6 @@ struct GameView: View {
     @Namespace var cardsNS
     @State var showSnackbar: Bool = true
     @StateObject private var gameObservable = GameObservable(game: GameState.game)
-
     @State var initial = true
     @State var shown: Bool = false                                          // for cribbage
 

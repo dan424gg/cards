@@ -14,7 +14,6 @@ struct CardInHandArea: View {
     @Binding var cards: [Int]
     @Binding var cardsDragged: [Int]
     @Binding var cardsInHand: [Int]
-    
     @State var shownCardsInHand: [Int] = []
     @StateObject var gameObservable: GameObservable = GameObservable(game: .game)
         

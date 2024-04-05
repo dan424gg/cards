@@ -604,7 +604,6 @@ import FirebaseFirestoreSwift
                         }
                         
                         if change.type == .modified {
-//                            try withAnimation(.linear(duration: 0.2)) {
                                 let modifiedPlayerData = try change.document.data(as: PlayerState.self)
                                 
                                 if modifiedPlayerData.uid == playerState!.uid {
@@ -612,7 +611,6 @@ import FirebaseFirestoreSwift
                                 } else if let loc = self.players.firstIndex(where: { $0.uid == modifiedPlayerData.uid }) {
                                     self.players[loc] = modifiedPlayerData
                                 }
-//                            }
                         }
                         
                         if change.type == .removed {

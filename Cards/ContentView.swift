@@ -41,15 +41,15 @@ struct ContentView: View {
                 .zIndex(1.0)
                 .namespace(namespace)
 
-//            ZStack {
-//                Color.theme.background
-//                ForEach(Array(0...20), id: \.self) { i in
-//                    LineOfSuits(index: i)
-//                        .offset(y: CGFloat(-120 * Double(i)))
-//                }
-//                .position(x: specs.maxX / 2, y: specs.maxY * 1.5)
-//            }
-//            .zIndex(0.0)
+            ZStack {
+                Color.theme.background
+                ForEach(Array(0...20), id: \.self) { i in
+                    LineOfSuits(index: i)
+                        .offset(y: CGFloat(-120 * Double(i)))
+                }
+                .position(x: specs.maxX / 2, y: specs.maxY * 1.5)
+            }
+            .zIndex(0.0)
         }
     }
 }

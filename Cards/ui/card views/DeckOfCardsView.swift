@@ -35,12 +35,21 @@ struct DeckOfCardsView: View {
                                         .matchedGeometryEffect(id: cardId, in: namespace)
                                         .offset(x: -0.1 * Double(index), y: -0.1 * Double(index))
                                 }
-                            }
+                                
+                                if new == 4 {
+                                    withAnimation {
+                                        dontShowCrib = false
+                                    }
+                                }
+                            })
+                            #endif
                         }
                     }
                 default: EmptyView()
             }
         }
+        .scaleEffect(0.66)
+//        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 

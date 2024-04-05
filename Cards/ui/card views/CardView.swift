@@ -18,11 +18,6 @@ struct CardView: View {
     @State var rotationOffset: Double = 0.0
     @State var positionOffset: Double = 0.0
     @State var notUsable: Bool = false
-    
-//    var cardArrs: [[Int]] {[
-//        firebaseHelper.gameState?.play_cards ?? [],
-//        firebaseHelper.playerState?.cards_in_hand ?? []
-//    ]}
 
     var body: some View {
         VStack {
