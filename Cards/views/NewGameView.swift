@@ -42,15 +42,11 @@ struct NewGameView: View {
                 } label: {
                     Text("Submit")
                         .padding()
-                        .foregroundStyle(Color.theme.primary)
+                        .foregroundStyle(Color.white)
                         .font(.custom("LuckiestGuy-Regular", size: 25))
                         .offset(y: 2.2)
                         .frame(width: 150)
                 }
-                .background(Color.theme.white)
-                .clipShape(Capsule())
-                .shadow(color: Color.theme.secondary, radius: 2)
-                .padding()
             }
             .onChange(of: fullName, {
                 withAnimation {

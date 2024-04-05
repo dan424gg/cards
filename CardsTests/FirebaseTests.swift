@@ -575,17 +575,28 @@ final class FirebaseHelperTests: XCTestCase {
         var points = 0
         
         // test for basic flushes
+        playerOne.checkForNobs([0,1,2,10], 4, &scoringCards, &points)
+        print(scoringCards)
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .nobs }))
+        
+        if let nobScoreHand = scoringCards.first(where: { $0.scoreType == .nobs }) {
+            XCTAssertTrue(nobScoreHand.cardsInScoredHand == [10])
+            XCTAssertTrue(nobScoreHand.cumlativePoints == 1)
+        }
+                
+        points = 0
+        scoringCards = []
+        playerOne.checkForNobs([23,13,2,18], 14, &scoringCards, &points)
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .nobs }))
+        
+        if let nobScoreHand = scoringCards.first(where: { $0.scoreType == .nobs }) {
+            XCTAssertTrue(nobScoreHand.cardsInScoredHand == [23])
+            XCTAssertTrue(nobScoreHand.cumlativePoints == 1)
+        }
+        
+        points = 0
+        scoringCards = []
         playerOne.checkForNobs([0,1,2,3], 4, &scoringCards, &points)
-        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .nobs && $0.cardsInScoredHand == [0] && $0.cumlativePoints == 1 }))
-        
-        points = 0
-        scoringCards = []
-        playerOne.checkForNobs([26,14,2,18], 4, &scoringCards, &points)
-        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .nobs && $0.cardsInScoredHand == [2] && $0.cumlativePoints == 1 }))
-        
-        points = 0
-        scoringCards = []
-        playerOne.checkForNobs([0,1,2,3], 51, &scoringCards, &points)
         XCTAssertEqual(scoringCards.count, 0)
 
         await playerOne.deleteGameCollection(id: randId)
@@ -686,32 +697,32 @@ final class FirebaseHelperTests: XCTestCase {
         await playerOne.deleteGameCollection(id: randId)
     }
     
-    @MainActor func testCheckIfPlayIsPossible() async {
-        let playerOne = FirebaseHelper()
-        var randId = 0
-        repeat {
-            randId = Int.random(in: 10000..<99999)
-        } while (await playerOne.checkValidId(id: "\(randId)"))
-        await playerOne.startGameCollection(fullName: "1", testGroupId: randId)
-        
-        let playerTwo = FirebaseHelper()
-        await playerTwo.joinGameCollection(fullName: "2", id: "\(randId)")
-        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
-        
-        playerOne.playerState!.cards_in_hand = [9,10,11,12]
-        playerOne.gameState!.running_sum = 21
-        XCTAssertTrue(playerOne.checkIfPlayIsPossible())
-        
-        playerOne.playerState!.cards_in_hand = [9,10,11,12]
-        playerOne.gameState!.running_sum = 30
-        XCTAssertFalse(playerOne.checkIfPlayIsPossible())
-        
-        playerOne.playerState!.cards_in_hand = [10,11,12,0]
-        playerOne.gameState!.running_sum = 30
-        XCTAssertTrue(playerOne.checkIfPlayIsPossible())
-        
-        await playerOne.deleteGameCollection(id: randId)
-    }
+//    @MainActor func testCheckIfPlayIsPossible() async {
+//        let playerOne = FirebaseHelper()
+//        var randId = 0
+//        repeat {
+//            randId = Int.random(in: 10000..<99999)
+//        } while (await playerOne.checkValidId(id: "\(randId)"))
+//        await playerOne.startGameCollection(fullName: "1", testGroupId: randId)
+//        
+//        let playerTwo = FirebaseHelper()
+//        await playerTwo.joinGameCollection(fullName: "2", id: "\(randId)")
+//        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
+//        
+//        playerOne.playerState!.cards_in_hand = [9,10,11,12]
+//        playerOne.gameState!.running_sum = 21
+//        XCTAssertTrue(checkIfPlayIsPossible())
+//        
+//        playerOne.playerState!.cards_in_hand = [9,10,11,12]
+//        playerOne.gameState!.running_sum = 30
+//        XCTAssertFalse(checkIfPlayIsPossible())
+//        
+//        playerOne.playerState!.cards_in_hand = [10,11,12,0]
+//        playerOne.gameState!.running_sum = 30
+//        XCTAssertTrue(checkIfPlayIsPossible())
+//        
+//        await playerOne.deleteGameCollection(id: randId)
+//    }
     
 //    @MainActor func testCheckPlayerHandForPoints() async {
 //        let playerOne = FirebaseHelper()

@@ -12,101 +12,80 @@ import Combine
 struct TurnTwoView: View {
     @Binding var cardsDragged: [Int]
     @Binding var cardsInHand: [Int]
+    @State var invalid: Bool = true
     @Environment(\.namespace) var namespace
     @EnvironmentObject var firebaseHelper: FirebaseHelper
-    @State private var dropAreaBorderColor: Color = .clear
-    @State private var dropAreaBorderWidth: CGFloat = 1.0
     @State private var pointsCallOut: [String] = []
     @State private var showAllCards: Bool = false
     @State var timer: Timer?
+    @State var displayTimedTextContainer: Bool = false
+    @State var points: Int = -1
     
-    var otherPlayer: Bool
+    var otherPlayer: Bool = false
     
     var body: some View {
-        VStack(spacing: 33) {
-            if (!otherPlayer) {
-                Text("The Play")
-                    .font(.title3)
-                    .foregroundStyle(.gray)
-            }
-            
+        VStack {
             ZStack {
-                VStack {
-                    HStack {
-                        if cardsDragged.isEmpty {
-                            CardPlaceHolder()
-                                .border(dropAreaBorderColor, width: dropAreaBorderWidth)
-                        } else {
-                            ForEach(cardsDragged.reversed(), id: \.self) { cardId in
-                                CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(true), backside: .constant(false), naturalOffset: true)
-                                    .disabled(true)
-                                    .matchedGeometryEffect(id: cardId, in: namespace)
-                            }
-                        }
-                    }
-                    .dropDestination(for: CardItem.self, action: handleDropAction, isTargeted: handleIsTargeted)
-                    
-                    if !otherPlayer {
-                        HStack {
-                            Text("\(firebaseHelper.gameState?.running_sum ?? 14)")
-                                .bold()
-                            Button("Go", action: handleGoButton)
-                                .buttonStyle(.bordered)
-                        }
-                    }
-                }
-                .frame(width: 250, height: 75)
-                .opacity(showAllCards ? 1.0 : 0.0)
-                .disabled(handleDisabledState())
-
                 HStack {
-                    ZStack {
-                        if cardsDragged.isEmpty {
-                            CardPlaceHolder()
-                                .border(dropAreaBorderColor, width: dropAreaBorderWidth)
-                        } else {
-                            ForEach(cardsDragged, id: \.self) { cardId in
-                                CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(true), backside: .constant(false), naturalOffset: true)
-                                    .disabled(true)
-                                    .matchedGeometryEffect(id: cardId, in: namespace)
-                            }
-                        }
+                    if (showAllCards) {
+                        horizontalViewOfCards
+//                            .frame(width: 200, height: 100)
+                    } else {
+                        stackedViewOfCards
+                            .frame(width: 60, height: 100)
                     }
-                    .dropDestination(for: CardItem.self, action: handleDropAction, isTargeted: handleIsTargeted)
                     
                     if !otherPlayer {
                         VStack {
                             Text("\(firebaseHelper.gameState?.running_sum ?? 14)")
-                                .bold()
-                            Button("Go", action: handleGoButton)
-                                .buttonStyle(.bordered)
+                                .font(.custom("LuckiestGuy-Regular", size: 16))
+                                .offset(y: 1.6)
+                            
+                            Button {
+                                handleGoButton()
+                            } label: {
+                                Text("Go")
+                                    .font(.custom("LuckiestGuy-Regular", size: 16))
+                                    .offset(y: 1.6)
+                            }
+                            .buttonStyle(.bordered)
+                            .disabled(handleDisabledState())
+                            
+                            Button {
+                                withAnimation(.smooth(duration: 0.5)) {
+                                    showAllCards.toggle()
+                                }
+                            } label: {
+                                Text("Show")
+                                    .font(.custom("LuckiestGuy-Regular", size: 16))
+                                    .offset(y: 1.6)
+                            }
+                            .buttonStyle(.bordered)
                         }
                     }
                 }
-                .frame(width: 250, height: 75)
-                .opacity(showAllCards ? 0.0 : 1.0)
-                .disabled(handleDisabledState())
+                .transition(.offset())
+                
+                TimedTextContainer(display: $displayTimedTextContainer, textArray: $pointsCallOut, visibilityFor: 2.0)
+                    .shadow(color: .white, radius: 10)
             }
-            TimedTextContainer(textArray: $pointsCallOut, visibilityFor: 2.0)
-        }
-        .onTapGesture {
-            if showAllCards {
-                timer?.invalidate()
-                timer = nil
-                withAnimation {
-                    showAllCards = false
-                }
-            } else {
-                withAnimation {
-                    showAllCards = true
-                }
-                timer = Timer.scheduledTimer(withTimeInterval: 2.3, repeats: false, block: { _ in
-                    withAnimation {
-                        showAllCards = false
+            
+            if (!otherPlayer) {
+                Button {
+                    Task {
+                        await handleSubmitButton()
                     }
-                })
+                } label: {
+                    Text("Submit")
+                        .foregroundStyle(invalid ? .red : .green)
+                        .font(.custom("LuckiestGuy-Regular", size: 16))
+                        .offset(y: 1.6)
+                }
+                .buttonStyle(.bordered)
+                .disabled(invalid)
             }
         }
+        .frame(height: 100)
         .onAppear {
             guard firebaseHelper.playerState != nil, firebaseHelper.gameState != nil, firebaseHelper.playerState!.is_lead else {
                 return
@@ -116,103 +95,193 @@ struct TurnTwoView: View {
                 await firebaseHelper.updateGame(["player_turn": (firebaseHelper.gameState!.dealer + 1) % firebaseHelper.gameState!.num_players])
             }
         }
-        .if(!otherPlayer) { view in
-            view
-                .onChange(of: firebaseHelper.playerState?.cards_in_hand, {
-                    handleCardsInHandChange()
-                })
-                .onChange(of: cardsDragged, {
-                    handleCardsDraggedChange()
-                })
-                .onDisappear(perform: handleOnDisappear)
-        }
-    }
-    
-    private func handleCardsInHandChange() {
-        guard let playerState = firebaseHelper.playerState else {
-            return
-        }
-        
-        if playerState.cards_in_hand.isEmpty {
-            Task {
-                await firebaseHelper.updatePlayer(["is_ready": true])
+        .onChange(of: cardsInHand, {
+            
+        })
+        .onChange(of: cardsDragged, { (old, new) in
+            guard !otherPlayer, !cardsDragged.isEmpty else {
+                return
             }
-        }
-    }
-    
-    private func handleCardsDraggedChange() {
-        guard firebaseHelper.gameState != nil else {
-            return
-        }
-        
-        Task {
-            await firebaseHelper.updatePlayer(["cards_in_hand": cardsDragged], arrayAction: .remove)
-            await firebaseHelper.updatePlayer(["cards_dragged": cardsDragged], arrayAction: .replace)
-        }
-    }
-    
-    private func handleOnDisappear() {
-        Task {
-            await firebaseHelper.updatePlayer(["cards_in_hand": cardsDragged], arrayAction: .replace)
-            cardsDragged = []
-            await firebaseHelper.updatePlayer(["cards_dragged": cardsDragged], arrayAction: .replace)
-        }
-    }
-    
-    private func handleDropAction(_ items: [CardItem], _ location: CGPoint) -> Bool {
-        guard let gameState = firebaseHelper.gameState, let playerState = firebaseHelper.playerState, let teamState = firebaseHelper.teamState else {
-            return false
-        }
-        
-        if (gameState.player_turn == playerState.player_num) {
+            
             Task {
                 var callouts: [String] = []
-                let points = await firebaseHelper.managePlayTurn(cardInPlay: items.first!.id, pointsCallOut: &callouts)
-                pointsCallOut = callouts
                 
-                if (points != -1) {                    
-                    await firebaseHelper.updateTeam(["points": points + teamState.points])
-                    await firebaseHelper.updateGame(["player_turn": (gameState.player_turn + 1) % gameState.num_players])
-     
-                    cardsInHand.removeAll { card in
-                        card == items.first!.id
+                if checkForValidityOfPlay(cardsDragged.last ?? -1, runningSum: firebaseHelper.gameState?.running_sum ?? 32, pointsCallOut: &callouts) {
+                    invalid = false
+                } else if (cardsDragged.count - (firebaseHelper.playerState?.cards_dragged.count ?? 0) == 1) {
+                    pointsCallOut = callouts
+                    displayTimedTextContainer = true
+                    invalid = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4, execute: {
+                        withAnimation {
+                            cardsInHand.append(cardsDragged.removeLast())
+                        }
+                    })
+                }
+            }
+        })
+    }
+    
+    var horizontalViewOfCards: some View {
+        Group {
+            if cardsDragged.count > 3 {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 5) {
+                        ForEach(Array(cardsDragged.reversed().enumerated()), id: \.offset) { (index, cardId) in
+                            CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(true), backside: .constant(false), naturalOffset: true)
+                                .matchedGeometryEffect(id: cardId, in: namespace)
+                                .zIndex(Double(-index))
+                                .onTapGesture {
+                                    handleCardTapGesture(cardId)
+                                }
+                            
+                        }
                     }
-                    cardsDragged.append(items.first!.id)
-                    
-                    return true
-                } else {
-                    return false
+                    .padding()
+                }
+                .frame(width: 200, height: 100)
+            } else {
+                HStack(spacing: 5) {
+                    ForEach(Array(cardsDragged.reversed().enumerated()), id: \.offset) { (index, cardId) in
+                        CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(true), backside: .constant(false), naturalOffset: true)
+                            .matchedGeometryEffect(id: cardId, in: namespace)
+                            .zIndex(Double(-index))
+                            .onTapGesture {
+                                handleCardTapGesture(cardId)
+                            }
+                        
+                    }
                 }
             }
         }
-        return false
     }
-    
-    private func handleIsTargeted(_ inDropArea: Bool) {
-        guard let gameState = firebaseHelper.gameState, let playerState = firebaseHelper.playerState else {
-            return
-        }
-        
-        if gameState.player_turn == playerState.player_num {
-            dropAreaBorderColor = inDropArea ? .green : .clear
-            dropAreaBorderWidth = inDropArea ? 7.0 : 1.0
+
+    var stackedViewOfCards: some View {
+        ZStack {
+            ForEach(Array(cardsDragged.reversed().enumerated()), id: \.offset) { (index, cardId) in
+                CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(true), backside: .constant(false), naturalOffset: true)
+                    .matchedGeometryEffect(id: cardId, in: namespace)
+                    .zIndex(Double(-index))
+                    .onTapGesture {
+                        handleCardTapGesture(cardId)
+                    }
+            }
         }
     }
     
     private func handleGoButton() {
-        if !firebaseHelper.checkIfPlayIsPossible() {
+        guard firebaseHelper.gameState != nil else {
+            return
+        }
+
+        if !checkIfPlayIsPossible() {
             Task {
                 if let teamState = firebaseHelper.teamState {
+                    withAnimation(.smooth(duration: 0.5)) {
+                        showAllCards = false
+                    }
                     var callouts: [String] = []
                     let points = await firebaseHelper.managePlayTurn(cardInPlay: nil, pointsCallOut: &callouts)
                     pointsCallOut = callouts
                     
                     await firebaseHelper.updateTeam(["points": points + teamState.points])
                     await firebaseHelper.updateGame(["player_turn": (firebaseHelper.gameState!.player_turn + 1) % firebaseHelper.gameState!.num_players])
+                    
+                    if cardsInHand.isEmpty {
+                        Task {
+                            do { try await Task.sleep(nanoseconds: 2500000000) } catch { print(error) }
+                            
+                            if firebaseHelper.gameState!.num_cards_in_play == (firebaseHelper.gameState!.num_players * 4) {
+                                await firebaseHelper.updateGame(["player_turn": -1])
+                            }
+                            
+                            await firebaseHelper.updatePlayer(["is_ready": true])
+                        }
+                    }
                 }
             }
         } else {
             pointsCallOut.append("You have a card you can play!")
+        }
+    }
+    
+    private func checkIfPlayIsPossible() -> Bool {
+        guard firebaseHelper.gameState != nil else {
+            return false
+        }
+        
+        for card in cardsInHand {
+            if checkForValidityOfPlay(card, runningSum: firebaseHelper.gameState!.running_sum) {
+                return true
+            }
+        }
+        
+        return false
+    }
+    
+    private func handleOtherPlayerCardTapGesture() {
+        if showAllCards {
+            timer?.invalidate()
+            timer = nil
+            withAnimation(.smooth(duration: 0.5)) {
+                showAllCards = false
+            }
+        } else {
+            withAnimation(.smooth(duration: 0.5)) {
+                showAllCards = true
+            }
+            
+            timer = Timer.scheduledTimer(withTimeInterval: 2.3, repeats: false, block: { _ in
+                withAnimation(.smooth(duration: 0.5)) {
+                    showAllCards = false
+                }
+            })
+        }
+    }
+    
+    private func handleCardTapGesture(_ cardId: Int) {
+        if otherPlayer {
+            handleOtherPlayerCardTapGesture()
+        } else if (firebaseHelper.playerState?.cards_dragged.last ?? -1) != cardId {
+            withAnimation {
+                cardsInHand.append(cardId)
+                cardsDragged.removeAll(where: { $0 == cardId })
+            }
+        }
+    }
+    
+    private func handleSubmitButton() async {
+        guard firebaseHelper.gameState != nil, firebaseHelper.teamState != nil else {
+            return
+        }
+        
+        var callouts: [String] = []
+        points = await firebaseHelper.managePlayTurn(cardInPlay: cardsDragged.last, pointsCallOut: &callouts)
+        pointsCallOut = callouts
+        
+        withAnimation {
+            displayTimedTextContainer = true
+        }
+        
+        withAnimation(.smooth(duration: 0.5)) {
+            showAllCards = false
+        }
+        
+        invalid = true
+        await firebaseHelper.updateTeam(["points": points + firebaseHelper.teamState!.points])
+        await firebaseHelper.updatePlayer(["cards_dragged": cardsDragged], arrayAction: .append)
+        await firebaseHelper.updateGame(["player_turn": (firebaseHelper.gameState!.player_turn + 1) % firebaseHelper.gameState!.num_players])
+        
+        if cardsInHand.isEmpty {
+            Task {
+                do { try await Task.sleep(nanoseconds: 2500000000) } catch { print(error) }
+                
+                if firebaseHelper.gameState!.num_cards_in_play == (firebaseHelper.gameState!.num_players * 4) {
+                    await firebaseHelper.updateGame(["player_turn": -1])
+                }
+                
+                await firebaseHelper.updatePlayer(["is_ready": true])
+            }
         }
     }
     
@@ -227,7 +296,7 @@ struct TurnTwoView: View {
 
 struct TurnTwoView_Previews: PreviewProvider {
     static var previews: some View {
-        TurnTwoView(cardsDragged: .constant([0,1,2,3,4]), cardsInHand: .constant([]), otherPlayer: false)
+        TurnTwoView(cardsDragged: .constant([0,1,2,3]), cardsInHand: .constant([]))
             .environmentObject(FirebaseHelper())
     }
 }

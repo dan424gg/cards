@@ -42,26 +42,27 @@ final class LoadingScreenTests: XCTestCase {
         await playerOne.deleteGameCollection(id: randId)
     }
     
-    func testEqualNumOfPlayersOnTeam() {
-        var playerList: [PlayerState] = []
+    @MainActor func testEqualNumOfPlayersOnTeam() async {
+        let firebaseHelper = FirebaseHelper()
+//        var playerList: [PlayerState] = []
         
-        playerList.append(PlayerState(uid: "1", team_num: 1))
-        XCTAssertFalse(equalNumOfPlayersOnTeam(players: playerList))
+        firebaseHelper.playerState = PlayerState(uid: "1", team_num: 1)
+        XCTAssertFalse(firebaseHelper.equalNumOfPlayersOnTeam())
 
-        playerList.append(PlayerState(uid: "2", team_num: 2))
-        XCTAssertTrue(equalNumOfPlayersOnTeam(players: playerList))
+        firebaseHelper.players.append(PlayerState(uid: "2", team_num: 2))
+        XCTAssertTrue(firebaseHelper.equalNumOfPlayersOnTeam())
 
-        playerList.append(PlayerState(uid: "3", team_num: 1))
-        XCTAssertFalse(equalNumOfPlayersOnTeam(players: playerList))
+        firebaseHelper.players.append(PlayerState(uid: "3", team_num: 1))
+        XCTAssertFalse(firebaseHelper.equalNumOfPlayersOnTeam())
         
-        playerList.append(PlayerState(uid: "4", team_num: 2))
-        XCTAssertTrue(equalNumOfPlayersOnTeam(players: playerList))
+        firebaseHelper.players.append(PlayerState(uid: "4", team_num: 2))
+        XCTAssertTrue(firebaseHelper.equalNumOfPlayersOnTeam())
         
-        playerList.append(PlayerState(uid: "5", team_num: 3))
-        XCTAssertFalse(equalNumOfPlayersOnTeam(players: playerList))
+        firebaseHelper.players.append(PlayerState(uid: "5", team_num: 3))
+        XCTAssertFalse(firebaseHelper.equalNumOfPlayersOnTeam())
         
-        playerList.append(PlayerState(uid: "6", team_num: 3))
-        XCTAssertTrue(equalNumOfPlayersOnTeam(players: playerList))
+        firebaseHelper.players.append(PlayerState(uid: "6", team_num: 3))
+        XCTAssertTrue(firebaseHelper.equalNumOfPlayersOnTeam())
     }
     
     func testCardItemOperators() {

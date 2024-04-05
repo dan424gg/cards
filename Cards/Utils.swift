@@ -33,6 +33,7 @@ enum ScoringType: Hashable {
     case run
     case set
     case sum
+    case invalid
 }
 
 extension Array {
@@ -250,6 +251,27 @@ func ??<T>(lhs: Binding<Optional<T>>, rhs: T) -> Binding<T> {
     )
 }
 
+func checkForValidityOfPlay(_ card: Int, runningSum: Int, pointsCallOut: inout [String]) -> Bool {
+    guard card > -1 else {
+        return false
+    }
+    
+    if ((CardItem(id: card).card.pointValue + runningSum) > 31) {
+        pointsCallOut.append("You can't go over 31!")
+        return false
+    } else {
+        return true
+    }
+}
+
+func checkForValidityOfPlay(_ card: Int, runningSum: Int) -> Bool {
+    guard card > -1 else {
+        return false
+    }
+    
+    return (CardItem(id: card).card.pointValue + runningSum) <= 31
+}
+
 func getTime() -> String {
     let formatter = DateFormatter()
     formatter.timeStyle = .long
@@ -313,7 +335,6 @@ struct DisplayPlayersHandContainer: View {
                                 withAnimation {
                                     play = nil
                                 } completion: {
-                                    
                                     if (crib != []) {
                                         Task {
                                             if (firebaseHelper.playerState!.is_lead) {
@@ -403,33 +424,39 @@ struct StrokeText: View {
 struct TimedTextContainer: View {
     @State private var string: String = ""
     @State private var idx: Int = 0
+    @Binding var display: Bool
     @Binding var textArray: [String]
     
     var visibilityFor: TimeInterval
     
     var body: some View {
-        Text(string)
-            .font(.title2)
-            .id(string)
-            .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .opacity))
-            .onChange(of: textArray, initial: true, {
-                if !textArray.isEmpty {
-                    for i in 0...textArray.count {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + (visibilityFor * Double(i))) {
-                            if i >= textArray.count {
-                                withAnimation {
-                                    string = ""
-                                    textArray.removeAll()
-                                }
-                            } else {
-                                withAnimation {
-                                    string = textArray[i]
+        if display {
+            Text(string)
+                .font(.title2)
+                .id(string)
+                .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .opacity))
+                .onChange(of: textArray, initial: true, {
+                    if !textArray.isEmpty {
+                        for i in 0...textArray.count {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + (visibilityFor * Double(i))) {
+                                if i >= textArray.count {
+                                    withAnimation {
+                                        string = ""
+                                        textArray.removeAll()
+                                    }
+                                } else {
+                                    withAnimation {
+                                        string = textArray[i]
+                                    }
                                 }
                             }
                         }
                     }
+                })
+                .onDisappear {
+                    display = false
                 }
-            })
+        }
     }
 }
 

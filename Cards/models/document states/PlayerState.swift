@@ -21,12 +21,12 @@ public struct PlayerState: Hashable, Codable {
     var player_num: Int = -1
     var cards_dragged: [Int] = []
 
-    static var player_one = PlayerState(name: "Daniel", uid: "1", cards_in_hand: Array(5...8), is_lead: true, team_num: 1, player_num: 0, cards_dragged: Array(0...3))
-    static var player_two = PlayerState(name: "Katie", uid: "2", cards_in_hand: Array(9...12), is_lead: false, team_num: 2, player_num: 1, cards_dragged: Array(0...3))
-    static var player_three = PlayerState(name: "Ben", uid: "3", cards_in_hand: Array(13...16), is_lead: false, team_num: 3, player_num: 2, cards_dragged: Array(0...3))
-    static var player_four = PlayerState(name: "Alex", uid: "4", cards_in_hand: Array(17...20), is_lead: false, team_num: 2, player_num: 3, cards_dragged: Array(0...3))
-    static var player_five = PlayerState(name: "Ryan", uid: "5", cards_in_hand: Array(21...24), is_lead: false, team_num: 3, player_num: 4, cards_dragged: Array(0...3))
-    static var player_six = PlayerState(name: "Nitant", uid: "6", cards_in_hand: Array(25...28), is_lead: false, team_num: 2, player_num: 5, cards_dragged: Array(0...3))
+    static var player_one = PlayerState(name: "Daniel", uid: "1", cards_in_hand: Array(5...8), is_lead: true, team_num: 1, player_num: 0, cards_dragged: Array(5...8))
+    static var player_two = PlayerState(name: "Katie", uid: "2", cards_in_hand: Array(9...12), is_lead: false, team_num: 2, player_num: 1, cards_dragged: Array(9...12))
+    static var player_three = PlayerState(name: "Ben", uid: "3", cards_in_hand: Array(13...16), is_lead: false, team_num: 3, player_num: 2, cards_dragged: Array(13...16))
+    static var player_four = PlayerState(name: "Alex", uid: "4", cards_in_hand: Array(17...20), is_lead: false, team_num: 1, player_num: 3, cards_dragged: Array(17...20))
+    static var player_five = PlayerState(name: "Ryan", uid: "5", cards_in_hand: Array(21...24), is_lead: false, team_num: 2, player_num: 4, cards_dragged: Array(21...24))
+    static var player_six = PlayerState(name: "Nitant", uid: "6", cards_in_hand: Array(25...28), is_lead: false, team_num: 3, player_num: 5, cards_dragged: Array(25...28))
     
     enum CodingKeys: CodingKey {
         case name

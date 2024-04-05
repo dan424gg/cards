@@ -52,20 +52,6 @@ struct ExistingGameView: View {
                         .offset(y: 2.2)
                         .frame(width: 150)
                 }
-//                .background(Color.theme.white)
-//                .clipShape(Capsule())
-//                .shadow(color: Color.theme.secondary, radius: 2)
-                
-//                Button("Submit", systemImage: notValid ? "x.circle" : "checkmark.circle", action: {
-//                    Task {
-//                        await firebaseHelper.joinGameCollection(fullName: fullName, id: groupId)
-//                    }
-//                })
-//                .labelStyle(.iconOnly)
-//                .symbolRenderingMode(.palette)
-//                .foregroundStyle(notValid ? .gray.opacity(0.5) : .green)
-//                .disabled(notValid)
-//                .font(.system(size: 35))
             }
             .onChange(of: [fullName, groupId], {
                 if fullName.isEmpty || (groupId.isEmpty) {
