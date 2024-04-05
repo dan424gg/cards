@@ -15,9 +15,8 @@ struct GameView: View {
     @StateObject private var gameObservable = GameObservable(game: GameState.game)
 
     @State var initial = true
-    @State var shown: Bool = false            // for cribbage
-    private let timer: Timer? = nil           // for cribbage
-    
+    @State var shown: Bool = false                                          // for cribbage
+
     var body: some View {
         ZStack {
             PlayingTable()
@@ -34,22 +33,16 @@ struct GameView: View {
             
             CardsView()
             
-            if (((firebaseHelper.gameState?.turn ?? gameObservable.game.turn) >= 3) 
-                && ((firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn) == (firebaseHelper.playerState?.player_num ?? PlayerState.player_six.player_num)))
-                || shown {
-                PointContainer(player: .constant(firebaseHelper.playerState ?? PlayerState.player_six), user: true)
+            if shown {
+                PointContainer(player: firebaseHelper.playerState ?? PlayerState.player_six, user: true)
                     .position(x: specs.maxX / 2, y: specs.maxY * 0.71)
-                    .transition(.scale)
-                    .onAppear {
-                        shown = true
-                    }
+                    .transition(.opacity)
             }            
             
             GameOutcomeView(outcome: $firebaseHelper.gameOutcome)
         }
-        .animation(.default, value: (firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn))
         .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5, execute: {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
                 Task {
                     await firebaseHelper.updateGame(["turn": 0])
                 }
@@ -104,25 +97,71 @@ struct GameView: View {
             }
         })
         .onChange(of: firebaseHelper.gameState?.turn, initial: true, {
-            guard firebaseHelper.gameState != nil, firebaseHelper.playerState != nil, firebaseHelper.playerState!.is_lead else {
+            guard firebaseHelper.gameState != nil else {
                 return
             }
             
             if firebaseHelper.gameState!.turn == 0 {
+                shown = false
+                
+                guard firebaseHelper.playerState!.is_lead else {
+                    return
+                }
+                
                 if initial {
                     // pick first dealer randomly
                     let randDealer = Int.random(in: 0..<(firebaseHelper.gameState!.num_players))
                     
-                    Task {
-                        await firebaseHelper.updateGame(["dealer": randDealer])
+                    // determine dealer's team for crib
+                    if let teamWithCrib = firebaseHelper.players.first(where: { $0.player_num == randDealer })?.team_num {
+                        Task {
+                            await firebaseHelper.updateGame(["dealer": randDealer, "team_with_crib": teamWithCrib])
+                        }
+                        
+                        initial = false
+                    } else {
+                        let teamWithCrib = firebaseHelper.playerState!.team_num
+                        
+                        Task {
+                            await firebaseHelper.updateGame(["dealer": randDealer, "team_with_crib": teamWithCrib])
+                        }
+                        
+                        initial = false
                     }
-                    
-                    initial = false
                 } else {
-                    // rotate dealer
+                    // rotate dealer and team with crib
                     Task {
-                        await firebaseHelper.updateGame(["dealer": ((firebaseHelper.gameState!.dealer + 1) % firebaseHelper.gameState!.num_players)])
+                        await firebaseHelper.updateGame(["dealer": ((firebaseHelper.gameState!.dealer + 1) % firebaseHelper.gameState!.num_players),
+                                                         "team_with_crib": (firebaseHelper.gameState!.team_with_crib + 1) % firebaseHelper.gameState!.num_teams])
                     }
+                }
+            } else if firebaseHelper.gameState!.turn == 3 {
+                let numPlayers = firebaseHelper.gameState!.num_players
+                
+                for i in 0...numPlayers {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + (Double(i + 1) * 1.5), execute: {
+                        if i == numPlayers {
+                            Task {
+                                await firebaseHelper.updatePlayer(["is_ready": true])
+                            }
+                        } else if i == 0 {
+                            // UPDATING GAMESTATE LOCALLY
+                            firebaseHelper.gameState!.player_turn = (firebaseHelper.gameState!.dealer + 1) % numPlayers
+                            if firebaseHelper.playerState!.player_num == firebaseHelper.gameState!.player_turn {
+                                withAnimation {
+                                    shown = true
+                                }
+                            }
+                        } else {
+                            // UPDATING GAMESTATE LOCALLY
+                            firebaseHelper.gameState!.player_turn = (firebaseHelper.gameState!.player_turn + 1) % numPlayers
+                            if firebaseHelper.playerState!.player_num == firebaseHelper.gameState!.player_turn {
+                                withAnimation {
+                                    shown = true
+                                }
+                            }
+                        }
+                    })
                 }
             }
         })

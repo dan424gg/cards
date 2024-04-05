@@ -29,13 +29,21 @@ struct PlayerView: View {
                         .zIndex(1.0)
                         .offset(x: shown ? ((player.name.width(usingFont: UIFont.init(name: "LuckiestGuy-Regular", size: 16)!)) / -2.0) - 5.0 : 0.0)
 
-                    PointContainer(player: .constant(player))
-                        .geometryGroup()
-                        .opacity(shown ? 1.0 : 0.0)
-                        .offset(x: shown ? (35.0 / 2.0) + 5.0 : 0.0)
-                        .zIndex(0.0)
+                    if shown {
+                        PointContainer(player: player)
+                            .geometryGroup()
+                            .offset(x: shown ? (35.0 / 2.0) + 5.0 : 0.0)
+                            .zIndex(0.0)
+                    }
                 }
-                .onChange(of: gameObservable.game.player_turn, {
+                .onChange(of: firebaseHelper.gameState?.turn, { (_, new) in
+                    if new == 0 {
+                        withAnimation {
+                            shown = false
+                        }
+                    }
+                })
+                .onChange(of: firebaseHelper.gameState?.player_turn, {
                     if (((firebaseHelper.gameState?.turn ?? gameObservable.game.turn) >= 3) && ((firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn) == player.player_num)) {
                         withAnimation {
                             shown = true
@@ -43,7 +51,6 @@ struct PlayerView: View {
                     }
                 })
                 .transition(.offset().combined(with: .opacity))
-                .animation(.easeInOut, value: (firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn))
                 .frame(height: 56)
             default:
                 Text("Shouldn't get here")
@@ -60,7 +67,7 @@ struct PlayerView: View {
                 return envObj
             }() )
             .environmentObject(FirebaseHelper())
-//            .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
+            .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
             .background(Color("OffWhite").opacity(0.1))
         
     }

@@ -606,14 +606,6 @@
 			path = "Copy Targets Info";
 			sourceTree = "<group>";
 		};
-		1E7970FC2BB3483200221DD1 /* TurnTwo */ = {
-			isa = PBXGroup;
-			children = (
-				1EFA9F5A2AF584CC00FA092C /* TurnTwoView.swift */,
-			);
-			path = TurnTwo;
-			sourceTree = "<group>";
-		};
 		1E7E89212B9107DF00E3626E /* background */ = {
 			isa = PBXGroup;
 			children = (
@@ -817,9 +809,9 @@
 		1EFA9F592AF5848D00FA092C /* cribbage */ = {
 			isa = PBXGroup;
 			children = (
-				1E7970FC2BB3483200221DD1 /* TurnTwo */,
 				1EBED9482AD7BD88008B85EE /* CribbageView.swift */,
 				1EA2457F2AED6F71003B0943 /* TurnOneView.swift */,
+				1EFA9F5A2AF584CC00FA092C /* TurnTwoView.swift */,
 			);
 			path = cribbage;
 			sourceTree = "<group>";

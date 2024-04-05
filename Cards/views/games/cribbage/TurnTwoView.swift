@@ -170,6 +170,10 @@ struct TurnTwoView: View {
     }
     
     private func handleGoButton() {
+        guard firebaseHelper.gameState != nil else {
+            return
+        }
+
         if !checkIfPlayIsPossible() {
             Task {
                 if let teamState = firebaseHelper.teamState {
@@ -182,6 +186,18 @@ struct TurnTwoView: View {
                     
                     await firebaseHelper.updateTeam(["points": points + teamState.points])
                     await firebaseHelper.updateGame(["player_turn": (firebaseHelper.gameState!.player_turn + 1) % firebaseHelper.gameState!.num_players])
+                    
+                    if cardsInHand.isEmpty {
+                        Task {
+                            do { try await Task.sleep(nanoseconds: 2500000000) } catch { print(error) }
+                            
+                            if firebaseHelper.gameState!.num_cards_in_play == (firebaseHelper.gameState!.num_players * 4) {
+                                await firebaseHelper.updateGame(["player_turn": -1])
+                            }
+                            
+                            await firebaseHelper.updatePlayer(["is_ready": true])
+                        }
+                    }
                 }
             }
         } else {
@@ -259,6 +275,11 @@ struct TurnTwoView: View {
         if cardsInHand.isEmpty {
             Task {
                 do { try await Task.sleep(nanoseconds: 2500000000) } catch { print(error) }
+                
+                if firebaseHelper.gameState!.num_cards_in_play == (firebaseHelper.gameState!.num_players * 4) {
+                    await firebaseHelper.updateGame(["player_turn": -1])
+                }
+                
                 await firebaseHelper.updatePlayer(["is_ready": true])
             }
         }

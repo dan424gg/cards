@@ -87,6 +87,7 @@ import FirebaseFirestoreSwift
         showError = false
     }
     
+    
     func updatePlayer(_ newState: [String: Any], uid: String? = nil, arrayAction: ArrayActionType? = nil) async {
         guard docRef != nil else {
             print("docRef was nil before updating player information")
@@ -964,7 +965,7 @@ import FirebaseFirestoreSwift
         checkForSets(cards + [starterCard], &scoringPlays, &points)
         checkForFlush(cards, starterCard, &scoringPlays, &points)
         checkForNobs(cards, starterCard, &scoringPlays, &points)
-        
+                
         return scoringPlays
     }
     
@@ -1214,7 +1215,6 @@ import FirebaseFirestoreSwift
     func playersAreReady() -> Bool {
         for player in players {
             if !player.is_ready {
-                print("player \(player.name) is not ready!")
                 return false
             }
         }
@@ -1222,9 +1222,7 @@ import FirebaseFirestoreSwift
         if !playerState!.is_ready {
             return false
         }
-        
-        print("all players are ready!")
-        
+                
         return true
     }
     

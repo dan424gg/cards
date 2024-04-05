@@ -184,7 +184,7 @@ struct LoadingScreen: View {
                         Task {
                             await firebaseHelper.reorderPlayerNumbers()
 //                            try await Task.sleep(nanoseconds: UInt64(3.0 * Double(NSEC_PER_SEC)))
-                            await firebaseHelper.updateGame(["is_playing": true, "turn": 0])
+                            await firebaseHelper.updateGame(["is_playing": true])
                         }
                     } label: {
                         Text("Play!")

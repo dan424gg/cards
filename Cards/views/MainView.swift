@@ -41,7 +41,6 @@ struct MainView: View {
                     .onAppear {
                         showGameView = true
                     }
-//                    .transition(.opacity.animation(.easeInOut(duration: 0.5)))
             }
         }
         .transition(.move(edge: .bottom))
