@@ -9,6 +9,12 @@ import SwiftUI
 import Combine
 import CoreGraphics
 
+extension Animation {
+    static func normal() -> Animation {
+        Animation.linear.speed(1.5)
+    }
+}
+
 struct CribbageBoard: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     var numPlayers = 3
@@ -28,6 +34,11 @@ struct CribbageBoard: View {
                     if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
                         TeamThreePath(rect: rect, team: $teams[2])
                     }
+                    
+                    Button("increment") {
+                        teams[0].points += 5
+                    }
+                    .offset(y: 100)
                 }
             }
             .onAppear {
@@ -73,7 +84,7 @@ struct CribbageBoard: View {
         .frame(width: 150, height: 65)
         .onChange(of: firebaseHelper.teams, initial: true, {
             guard firebaseHelper.teams != [] else {
-                teams = [TeamState(team_num: 1, points: 67, color: "Red"), TeamState(team_num: 2, points: 74, color: "Blue"), TeamState(team_num: 3, points: 61, color: "Green")]
+                teams = [TeamState(team_num: 1, points: 0, color: "Red"), TeamState(team_num: 2, points: 74, color: "Blue"), TeamState(team_num: 3, points: 61, color: "Green")]
                 return
             }
             
@@ -113,7 +124,132 @@ struct TeamOnePath: View {
         }
     }
     
+    @State var firstLineTrimValue: Double = 0.0
+    @State var secondLineTrimValue: Double = 0.0
+    @State var thirdLineTrimValue: Double = 0.0
+    @State var bigCurveTrimValue: Double = 0.0
+    @State var smallCurveTrimValue: Double = 0.0
+    
     var body: some View {
+        ZStack {
+            ghostPath
+            
+            // path 1 point line
+            Path { path in
+                path.move(to: CGPoint(x: rect.minX, y: rect.minY + (trackWidthAdjustment / 2)))
+                path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY + (trackWidthAdjustment / 2)))
+            }
+            .trim(from: 0.0, to: firstLineTrimValue)
+            .stroke(Color(team.color).opacity(0.8), lineWidth: trackWidthAdjustment)
+
+            Path { path in
+                path.move(to: CGPoint(x: rect.maxX, y: rect.minY + (trackWidthAdjustment / 2)))
+                path.addArc(center: CGPoint(x: rect.maxX, y: rect.midY), radius: rect.midY - (trackWidthAdjustment / 2), startAngle: .degrees(270), endAngle: .degrees(90), clockwise: false)
+            }
+            .trim(from: 0.0, to: bigCurveTrimValue)
+            .stroke(Color(team.color).opacity(0.8), lineWidth: trackWidthAdjustment)
+
+            Path { path in
+                path.move(to: CGPoint(x: rect.maxX, y: rect.maxY - (trackWidthAdjustment / 2)))
+                path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY - (trackWidthAdjustment / 2)))
+            }
+            .trim(from: 0.0, to: secondLineTrimValue)
+            .stroke(Color(team.color).opacity(0.8), lineWidth: trackWidthAdjustment)
+
+            Path { path in
+                path.move(to: CGPoint(x: rect.minX, y: rect.maxY - (trackWidthAdjustment / 2)))
+                path.addArc(center: CGPoint(x: rect.minX, y: ((rect.midY - midYAdjustment) / 2) + rect.midY), radius: ((rect.midY + midYAdjustment) / 2) - (trackWidthAdjustment / 2), startAngle: .degrees(90), endAngle: .degrees(270), clockwise: false)
+            }
+            .trim(from: 0.0, to: smallCurveTrimValue)
+            .stroke(Color(team.color).opacity(0.8), lineWidth: trackWidthAdjustment)
+
+            Path { path in
+                path.move(to: CGPoint(x: rect.minX, y: rect.midY - midYAdjustment + (trackWidthAdjustment / 2)))
+                path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY - midYAdjustment + (trackWidthAdjustment / 2)))
+            }
+            .trim(from: 0, to: thirdLineTrimValue)
+            .stroke(Color(team.color).opacity(0.8), lineWidth: trackWidthAdjustment)
+        }
+        .onChange(of: team.points, { (old, new) in
+            var points = Double(new)
+            
+            if points <= 35.0 {
+                withAnimation(.normal()) {
+                    firstLineTrimValue = points / 35.0
+                }
+            } else if points <= 45.0 {
+                points -= 35.0
+                
+                if firstLineTrimValue != 1.0 {
+                    withAnimation(.normal()) {
+                        firstLineTrimValue = 1.0
+                    } completion: {
+                        withAnimation(.normal()) {
+                            bigCurveTrimValue = points / 10.0
+                        }
+                    }
+                } else {
+                    withAnimation(.normal()) {
+                        bigCurveTrimValue = points / 10.0
+                    }
+                }
+            } else if points <= 80.0 {
+                points -= 45.0
+                
+                if bigCurveTrimValue != 1.0 {
+                    withAnimation(.normal()) {
+                        bigCurveTrimValue = 1.0
+                    } completion: {
+                        withAnimation(.normal()) {
+                            secondLineTrimValue = points / 35.0
+                        }
+                    }
+                } else {
+                    withAnimation(.normal()) {
+                        secondLineTrimValue = points / 35.0
+                    }
+                }
+            } else if points <= 85.0 {
+                points -= 80.0
+                
+                if secondLineTrimValue != 1.0 {
+                    withAnimation(.normal()) {
+                        secondLineTrimValue = 1.0
+                    } completion: {
+                        withAnimation(.normal()) {
+                            smallCurveTrimValue = points / 5.0
+                        }
+                    }
+                } else {
+                    withAnimation(.normal()) {
+                        smallCurveTrimValue = points / 5.0
+                    }
+                }
+            } else if points <= 120.0 {
+                points -= 85.0
+                
+                if smallCurveTrimValue != 1.0 {
+                    withAnimation(.normal()) {
+                        smallCurveTrimValue = 1.0
+                    } completion: {
+                        withAnimation(.normal()) {
+                            thirdLineTrimValue = points / 35.0
+                        }
+                    }
+                } else {
+                    withAnimation(.normal()) {
+                        thirdLineTrimValue = points / 35.0
+                    }
+                }
+            } else {
+                withAnimation(.normal()) {
+                    thirdLineTrimValue = 1.0
+                }
+            }
+        })
+    }
+    
+    var ghostPath: some View {
         ZStack {
             // path 1
             Path { path in
@@ -132,18 +268,6 @@ struct TeamOnePath: View {
                 path.addLine(to: CGPoint(x: rect.minX, y: rect.minY))
             }
             .fill(Color.gray.opacity(0.35))
-            
-            // path 1 point line
-            Path { path in
-                path.move(to: CGPoint(x: rect.minX, y: rect.minY + (trackWidthAdjustment / 2)))
-                path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY + (trackWidthAdjustment / 2)))
-                path.addArc(center: CGPoint(x: rect.maxX, y: rect.midY), radius: rect.midY - (trackWidthAdjustment / 2), startAngle: .degrees(270), endAngle: .degrees(90), clockwise: false)
-                path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY - (trackWidthAdjustment / 2)))
-                path.addArc(center: CGPoint(x: rect.minX, y: ((rect.midY - midYAdjustment) / 2) + rect.midY), radius: ((rect.midY + midYAdjustment) / 2) - (trackWidthAdjustment / 2), startAngle: .degrees(90), endAngle: .degrees(270), clockwise: false)
-                path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY - midYAdjustment + (trackWidthAdjustment / 2)))
-            }
-            .trim(from: 0, to: Double(team.points) / 121.0)
-            .stroke(Color(team.color).opacity(0.8), lineWidth: trackWidthAdjustment)
         }
     }
 }
@@ -176,6 +300,12 @@ struct TeamTwoPath: View {
             return 7.5
         }
     }
+    
+    @State var firstLineTrimValue: Double = 0.0
+    @State var secondLineTrimValue: Double = 0.0
+    @State var thirdLineTrimValue: Double = 0.0
+    @State var bigCurveTrimValue: Double = 0.0
+    @State var smallCurveTrimValue: Double = 0.0
     
     var body: some View {
         ZStack {

@@ -16,7 +16,7 @@ struct SwiftUIView: View {
                 path.move(to: CGPoint(x: 50, y: 0))
                 path.addLine(to: CGPoint(x: 150, y: 0))
             }
-            .trim(from: 0.0, to: firstLineTrim)
+            .trim(from: 0.0, to: 1.0)
             .stroke(.black, lineWidth: 5)
             
             Path { path in
