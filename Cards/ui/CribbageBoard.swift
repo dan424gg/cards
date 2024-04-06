@@ -18,56 +18,28 @@ extension Animation {
 struct CribbageBoard: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @State var teams: [TeamState] = []
-    @State var rect: CGRect = .zero
     @State var showPoints = false
     @State var timer: Timer?
     
     var numPlayers = 3
 
     var body: some View {
-        GeometryReader { geo in
-            ZStack {
-                if teams != [] {
-                    TeamOnePath(rect: rect, team: $teams[0])
+        ZStack {
+            if teams != [] {
+                Group {
+                    TeamOnePath(team: $teams[0])
                         .zIndex(0.0)
                     
-                    TeamTwoPath(rect: rect, team: $teams[1])
+                    TeamTwoPath(team: $teams[1])
                         .zIndex(0.0)
                     
                     if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
-                        TeamThreePath(rect: rect, team: $teams[2])
+                        TeamThreePath(team: $teams[2])
                             .zIndex(0.0)
                     }
-                    
-//                    Button("incr") {
-//                        teams[0].points += 5
-//                        teams[1].points += 5
-//                        teams[2].points += 5
-//                    }
-//                    .offset(y: 100)
                 }
+                .blur(radius: showPoints ? 7 : 0)
             }
-            .onAppear {
-                rect = geo.frame(in: .local)
-            }
-            .onTapGesture(perform: {
-                withAnimation(.easeInOut) {
-                    if showPoints {
-                        timer?.invalidate()
-                        timer = nil
-                        showPoints = false
-                    } else {
-                        showPoints = true
-                        timer = Timer.scheduledTimer(withTimeInterval: 2.3, repeats: false, block: { _ in
-                            withAnimation(.easeInOut) {
-                                showPoints = false
-                            }
-                        })
-                    }
-                }
-            })
-            .zIndex(0)
-            .blur(radius: showPoints ? 7 : 0)
             
             HStack {
                 ForEach(Array(teams.enumerated()), id: \.offset) { (index, team) in
@@ -83,11 +55,27 @@ struct CribbageBoard: View {
                     }
                 }
             }
-            .zIndex(0)
+            .zIndex(0.0)
             .opacity(showPoints ? 1.0 : 0.0)
             .frame(width: 155)
         }
         .frame(width: 150, height: 65)
+        .onTapGesture(perform: {
+            withAnimation(.easeInOut) {
+                if showPoints {
+                    timer?.invalidate()
+                    timer = nil
+                    showPoints = false
+                } else {
+                    showPoints = true
+                    timer = Timer.scheduledTimer(withTimeInterval: 2.3, repeats: false, block: { _ in
+                        withAnimation(.easeInOut) {
+                            showPoints = false
+                        }
+                    })
+                }
+            }
+        })
         .onChange(of: firebaseHelper.teams, initial: true, {
             guard firebaseHelper.teams != [] else {
                 teams = [TeamState(team_num: 1, points: 0, color: "Red"), TeamState(team_num: 2, points: 0, color: "Blue"), TeamState(team_num: 3, points: 0, color: "Green")]
@@ -102,12 +90,16 @@ struct CribbageBoard: View {
 }
 
 struct TeamOnePath: View {
-    var rect: CGRect
     @Binding var team: TeamState
     @EnvironmentObject var firebaseHelper: FirebaseHelper
-    
+    @State var firstLineTrimValue: Double = 0.0
+    @State var secondLineTrimValue: Double = 0.0
+    @State var thirdLineTrimValue: Double = 0.0
+    @State var bigCurveTrimValue: Double = 0.0
+    @State var smallCurveTrimValue: Double = 0.0
+
     var numPlayers = 3
-    
+    var midYAdjustment = 7.5
     var trackWidthAdjustment: Double {
         if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
             return 5.0
@@ -122,20 +114,7 @@ struct TeamOnePath: View {
             return 7.5
         }
     }
-    var midYAdjustment: Double {
-        if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
-            return 7.5
-        } else {
-            return 7.5
-        }
-    }
-    
-    @State var firstLineTrimValue: Double = 0.0
-    @State var secondLineTrimValue: Double = 0.0
-    @State var thirdLineTrimValue: Double = 0.0
-    @State var bigCurveTrimValue: Double = 0.0
-    @State var smallCurveTrimValue: Double = 0.0
-    
+        
     var body: some View {
         ZStack {
             ghostPath
@@ -257,12 +236,16 @@ struct TeamOnePath: View {
 }
 
 struct TeamTwoPath: View {
-    var rect: CGRect
     @Binding var team: TeamState
     @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @State var firstLineTrimValue: Double = 0.0
+    @State var secondLineTrimValue: Double = 0.0
+    @State var thirdLineTrimValue: Double = 0.0
+    @State var bigCurveTrimValue: Double = 0.0
+    @State var smallCurveTrimValue: Double = 0.0
     
     var numPlayers = 3
-    
+    var midYAdjustment = 7.5
     var trackWidthAdjustment: Double {
         if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
             return 5.0
@@ -277,19 +260,6 @@ struct TeamTwoPath: View {
             return 7.5
         }
     }
-    var midYAdjustment: Double {
-        if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
-            return 7.5
-        } else {
-            return 7.5
-        }
-    }
-    
-    @State var firstLineTrimValue: Double = 0.0
-    @State var secondLineTrimValue: Double = 0.0
-    @State var thirdLineTrimValue: Double = 0.0
-    @State var bigCurveTrimValue: Double = 0.0
-    @State var smallCurveTrimValue: Double = 0.0
     
     var body: some View {
         ZStack {
@@ -408,7 +378,6 @@ struct TeamTwoPath: View {
 }
 
 struct TeamThreePath: View {
-    var rect: CGRect
     @Binding var team: TeamState
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @State var firstLineTrimValue: Double = 0.0
@@ -418,7 +387,7 @@ struct TeamThreePath: View {
     @State var smallCurveTrimValue: Double = 0.0
     
     var numPlayers = 3
-    
+    var midYAdjustment = 7.5
     var trackWidthAdjustment: Double {
         if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
             return 5.0
@@ -429,13 +398,6 @@ struct TeamThreePath: View {
     var trackPosAdjustment: Double {
         if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
             return 5.0
-        } else {
-            return 7.5
-        }
-    }
-    var midYAdjustment: Double {
-        if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
-            return 7.5
         } else {
             return 7.5
         }
