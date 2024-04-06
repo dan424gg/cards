@@ -13,43 +13,33 @@ struct DeckOfCardsView: View {
     @EnvironmentObject var specs: DeviceSpecs
     @Binding var cards: [Int]
     @StateObject private var gameObservable = GameObservable(game: GameState.game)
-
+    
     var tempTeam = TeamState(team_num: 1, points: 50)
-        
+    
     var body: some View {
         ZStack {
             switch(gameObservable.game.game_name) {
                 case "cribbage":
-                    HStack(spacing: 5) {
-                        // displaying the deck
-                        ZStack {
-                            if firebaseHelper.gameState == nil {
-                                ForEach(Array(gameObservable.game.cards.enumerated()), id: \.offset) { (index, cardId) in
-                                    CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(true), backside: .constant(true), naturalOffset: true)
-                                        .matchedGeometryEffect(id: cardId, in: namespace)
-                                        .offset(x: -0.1 * Double(index), y: -0.1 * Double(index))
-                                }
-                            } else {
-                                ForEach(Array(cards.enumerated()), id: \.offset) { (index, cardId) in
-                                    CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(true), backside: .constant(true), naturalOffset: true)
-                                        .matchedGeometryEffect(id: cardId, in: namespace)
-                                        .offset(x: -0.1 * Double(index), y: -0.1 * Double(index))
-                                }
-                                
-                                if new == 4 {
-                                    withAnimation {
-                                        dontShowCrib = false
-                                    }
-                                }
-                            })
-                            #endif
+                    // displaying the deck
+                    ZStack {
+                        if firebaseHelper.gameState == nil {
+                            ForEach(Array(gameObservable.game.cards.enumerated()), id: \.offset) { (index, cardId) in
+                                CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(true), backside: .constant(true), naturalOffset: true)
+                                    .matchedGeometryEffect(id: cardId, in: namespace)
+                                    .offset(x: -0.1 * Double(index), y: -0.1 * Double(index))
+                            }
+                        } else {
+                            ForEach(Array(cards.enumerated()), id: \.offset) { (index, cardId) in
+                                CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(true), backside: .constant(true), naturalOffset: true)
+                                    .matchedGeometryEffect(id: cardId, in: namespace)
+                                    .offset(x: -0.1 * Double(index), y: -0.1 * Double(index))
+                            }
                         }
                     }
-                default: EmptyView()
+                default:
+                    Text("shouldn't get here")
             }
         }
-        .scaleEffect(0.66)
-//        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 

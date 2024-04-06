@@ -12,11 +12,84 @@ import CoreGraphics
 struct CribbageBoard: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     var numPlayers = 3
-    var previewTeams: [TeamState] = [TeamState(team_num: 1, points: 74, color: "Red"), TeamState(team_num: 2, points: 74, color: "Blue"), TeamState(team_num: 3, points: 61, color: "Green")]
     @State var teams: [TeamState] = []
     @State var rect: CGRect = .zero
     @State var showPoints = false
     @State var timer: Timer?
+    
+    var body: some View {
+        GeometryReader { geo in
+            ZStack {
+                if teams != [] {
+                    TeamOnePath(rect: rect, team: $teams[0])
+                    
+                    TeamTwoPath(rect: rect, team: $teams[1])
+                    
+                    if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
+                        TeamThreePath(rect: rect, team: $teams[2])
+                    }
+                }
+            }
+            .onAppear {
+                rect = geo.frame(in: .local)
+            }
+            .onTapGesture(perform: {
+                withAnimation(.easeInOut) {
+                    if showPoints {
+                        timer?.invalidate()
+                        timer = nil
+                        showPoints = false
+                    } else {
+                        showPoints = true
+                        timer = Timer.scheduledTimer(withTimeInterval: 2.3, repeats: false, block: { _ in
+                            withAnimation(.easeInOut) {
+                                showPoints = false
+                            }
+                        })
+                    }
+                }
+            })
+            .zIndex(0)
+            .blur(radius: showPoints ? 7 : 0)
+            
+            HStack {
+                ForEach(Array(teams.enumerated()), id: \.offset) { (index, team) in
+                    VStack {
+                        Text("\(team.team_num)")
+                            .font(.headline)
+                        Text("\(team.points)")
+                            .font(.subheadline)
+                    }
+                    
+                    if index != teams.endIndex - 1 {
+                        Divider()
+                    }
+                }
+            }
+            .zIndex(0)
+            .opacity(showPoints ? 1.0 : 0.0)
+            .frame(width: rect.width + 5)
+        }
+        .frame(width: 150, height: 65)
+        .onChange(of: firebaseHelper.teams, initial: true, {
+            guard firebaseHelper.teams != [] else {
+                teams = [TeamState(team_num: 1, points: 67, color: "Red"), TeamState(team_num: 2, points: 74, color: "Blue"), TeamState(team_num: 3, points: 61, color: "Green")]
+                return
+            }
+            
+            teams = firebaseHelper.teams.sorted(by: {
+                $0.team_num < $1.team_num
+            })
+        })
+    }
+}
+
+struct TeamOnePath: View {
+    var rect: CGRect
+    @Binding var team: TeamState
+    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    
+    var numPlayers = 3
     
     var trackWidthAdjustment: Double {
         if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
@@ -40,85 +113,7 @@ struct CribbageBoard: View {
         }
     }
     
-    
     var body: some View {
-//        ZStack {
-            GeometryReader { geo in
-                ZStack {
-                    TeamOnePath
-                    
-                    TeamTwoPath
-                    
-                    // path 3
-                    if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
-                        TeamThreePath
-                    }
-                }
-                .onAppear {
-                    rect = geo.frame(in: .local)
-                }
-                .onTapGesture(perform: {
-                    withAnimation(.easeInOut) {
-                        if showPoints {
-                            timer?.invalidate()
-                            timer = nil
-                            showPoints = false
-                        } else {
-                            showPoints = true
-                            timer = Timer.scheduledTimer(withTimeInterval: 2.3, repeats: false, block: { _ in
-                                withAnimation(.easeInOut) {
-                                    showPoints = false
-                                }
-                            })
-                        }
-                    }
-                })
-                .zIndex(0)
-                .blur(radius: showPoints ? 7 : 0)
-                
-                HStack {
-                    if firebaseHelper.teams == [] {
-                        ForEach(Array(previewTeams.sorted(by: { $0.team_num < $1.team_num }).enumerated()), id: \.offset) { (index, team) in
-                            VStack {
-                                Text("\(team.team_num)")
-                                    .font(.headline)
-                                Text("\(team.points)")
-                                    .font(.subheadline)
-                            }
-                            
-                            if index != previewTeams.endIndex - 1 {
-                                Divider()
-                            }
-                        }
-                    } else {
-                        ForEach(Array(firebaseHelper.teams.sorted(by: { $0.team_num < $1.team_num }).enumerated()), id: \.offset) { (index, team) in
-                            VStack {
-                                Text("\(team.team_num)")
-                                    .font(.headline)
-                                Text("\(team.points)")
-                                    .font(.subheadline)
-                            }
-                            
-                            if index != firebaseHelper.teams.endIndex - 1 {
-                                Divider()
-                            }
-                        }
-                    }
-                }
-                .zIndex(0)
-                .opacity(showPoints ? 1.0 : 0.0)
-                .frame(width: rect.width + 5)
-            }
-            .frame(width: 150, height: 65)
-//        }
-//        .onChange(of: firebaseHelper.teams, initial: true, {
-//            teams = firebaseHelper.teams.sorted(by: {
-//                $0.team_num < $1.team_num
-//            })
-//        })
-    }
-    
-    var TeamOnePath: some View {
         ZStack {
             // path 1
             Path { path in
@@ -147,12 +142,42 @@ struct CribbageBoard: View {
                 path.addArc(center: CGPoint(x: rect.minX, y: ((rect.midY - midYAdjustment) / 2) + rect.midY), radius: ((rect.midY + midYAdjustment) / 2) - (trackWidthAdjustment / 2), startAngle: .degrees(90), endAngle: .degrees(270), clockwise: false)
                 path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY - midYAdjustment + (trackWidthAdjustment / 2)))
             }
-            .trim(from: 0, to: Double(teams == [] ? previewTeams[0].points : teams[0].points) / 121.0)
-            .stroke(Color(teams == [] ? previewTeams[0].color : teams[0].color).opacity(0.8), lineWidth: trackWidthAdjustment)
+            .trim(from: 0, to: Double(team.points) / 121.0)
+            .stroke(Color(team.color).opacity(0.8), lineWidth: trackWidthAdjustment)
+        }
+    }
+}
+
+struct TeamTwoPath: View {
+    var rect: CGRect
+    @Binding var team: TeamState
+    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    
+    var numPlayers = 3
+    
+    var trackWidthAdjustment: Double {
+        if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
+            return 5.0
+        } else {
+            return 7.5
+        }
+    }
+    var trackPosAdjustment: Double {
+        if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
+            return 5.0
+        } else {
+            return 7.5
+        }
+    }
+    var midYAdjustment: Double {
+        if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
+            return 7.5
+        } else {
+            return 7.5
         }
     }
     
-    var TeamTwoPath: some View {
+    var body: some View {
         ZStack {
             // path 2
             Path { path in
@@ -180,12 +205,42 @@ struct CribbageBoard: View {
                 path.addArc(center: CGPoint(x: rect.minX, y: ((rect.midY - midYAdjustment) / 2) + rect.midY), radius: ((rect.midY + midYAdjustment) / 2) - trackPosAdjustment - (trackWidthAdjustment / 2), startAngle: .degrees(90), endAngle: .degrees(270), clockwise: false)
                 path.addLine(to: CGPoint(x: rect.maxX, y: (rect.midY - midYAdjustment) + trackPosAdjustment + (trackWidthAdjustment / 2)))
             }
-            .trim(from: 0, to: Double(teams == [] ? previewTeams[1].points : teams[1].points) / 121.0)
-            .stroke(Color(teams == [] ? previewTeams[1].color : teams[1].color).opacity(0.8), lineWidth: trackWidthAdjustment)
+            .trim(from: 0, to: Double(team.points) / 121.0)
+            .stroke(Color(team.color).opacity(0.8), lineWidth: trackWidthAdjustment)
+        }
+    }
+}
+
+struct TeamThreePath: View {
+    var rect: CGRect
+    @Binding var team: TeamState
+    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    
+    var numPlayers = 3
+    
+    var trackWidthAdjustment: Double {
+        if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
+            return 5.0
+        } else {
+            return 7.5
+        }
+    }
+    var trackPosAdjustment: Double {
+        if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
+            return 5.0
+        } else {
+            return 7.5
+        }
+    }
+    var midYAdjustment: Double {
+        if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
+            return 7.5
+        } else {
+            return 7.5
         }
     }
     
-    var TeamThreePath: some View {
+    var body: some View {
         ZStack {
             // path 3
             Path { path in
@@ -213,8 +268,8 @@ struct CribbageBoard: View {
                 path.addArc(center: CGPoint(x: rect.minX, y: ((rect.midY - midYAdjustment) / 2) + rect.midY), radius: ((rect.midY + midYAdjustment) / 2) - (2 * trackPosAdjustment) - (trackWidthAdjustment / 2), startAngle: .degrees(90), endAngle: .degrees(270), clockwise: false)
                 path.addLine(to: CGPoint(x: rect.maxX, y: (rect.midY - midYAdjustment) + (2 * trackPosAdjustment) + (trackWidthAdjustment / 2)))
             }
-            .trim(from: 0, to: Double(teams == [] ? previewTeams[2].points : teams[2].points) / 121.0)
-            .stroke(Color(teams == [] ? previewTeams[2].color : teams[2].color).opacity(0.8), lineWidth: trackWidthAdjustment)
+            .trim(from: 0, to: Double(team.points) / 121.0)
+            .stroke(Color(team.color).opacity(0.8), lineWidth: trackWidthAdjustment)
         }
     }
 }
