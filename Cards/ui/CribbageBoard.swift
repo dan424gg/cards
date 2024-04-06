@@ -17,12 +17,13 @@ extension Animation {
 
 struct CribbageBoard: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
-    var numPlayers = 3
     @State var teams: [TeamState] = []
     @State var rect: CGRect = .zero
     @State var showPoints = false
     @State var timer: Timer?
     
+    var numPlayers = 3
+
     var body: some View {
         GeometryReader { geo in
             ZStack {
@@ -37,6 +38,13 @@ struct CribbageBoard: View {
                         TeamThreePath(rect: rect, team: $teams[2])
                             .zIndex(0.0)
                     }
+                    
+//                    Button("incr") {
+//                        teams[0].points += 5
+//                        teams[1].points += 5
+//                        teams[2].points += 5
+//                    }
+//                    .offset(y: 100)
                 }
             }
             .onAppear {
@@ -77,7 +85,7 @@ struct CribbageBoard: View {
             }
             .zIndex(0)
             .opacity(showPoints ? 1.0 : 0.0)
-            .frame(width: rect.width + 5)
+            .frame(width: 155)
         }
         .frame(width: 150, height: 65)
         .onChange(of: firebaseHelper.teams, initial: true, {
@@ -134,37 +142,37 @@ struct TeamOnePath: View {
             
             // path 1 point line
             Path { path in
-                path.move(to: CGPoint(x: rect.minX, y: rect.minY + (trackWidthAdjustment / 2)))
-                path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY + (trackWidthAdjustment / 2)))
+                path.move(to: CGPoint(x: 0, y: 0 + (trackWidthAdjustment / 2)))
+                path.addLine(to: CGPoint(x: 150, y: 0 + (trackWidthAdjustment / 2)))
             }
             .trim(from: 0.0, to: firstLineTrimValue)
             .stroke(Color(team.color).opacity(0.8), lineWidth: trackWidthAdjustment)
             .onChange(of: firstLineTrimValue, { print("path 1: \(firstLineTrimValue)") })
 
             Path { path in
-                path.move(to: CGPoint(x: rect.maxX, y: rect.minY + (trackWidthAdjustment / 2)))
-                path.addArc(center: CGPoint(x: rect.maxX, y: rect.midY), radius: rect.midY - (trackWidthAdjustment / 2), startAngle: .degrees(270), endAngle: .degrees(90), clockwise: false)
+                path.move(to: CGPoint(x: 150, y: 0 + (trackWidthAdjustment / 2)))
+                path.addArc(center: CGPoint(x: 150, y: 32.5), radius: 32.5 - (trackWidthAdjustment / 2), startAngle: .degrees(270), endAngle: .degrees(90), clockwise: false)
             }
             .trim(from: 0.0, to: bigCurveTrimValue)
             .stroke(Color(team.color).opacity(0.8), lineWidth: trackWidthAdjustment)
 
             Path { path in
-                path.move(to: CGPoint(x: rect.maxX, y: rect.maxY - (trackWidthAdjustment / 2)))
-                path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY - (trackWidthAdjustment / 2)))
+                path.move(to: CGPoint(x: 150, y: 65 - (trackWidthAdjustment / 2)))
+                path.addLine(to: CGPoint(x: 0, y: 65 - (trackWidthAdjustment / 2)))
             }
             .trim(from: 0.0, to: secondLineTrimValue)
             .stroke(Color(team.color).opacity(0.8), lineWidth: trackWidthAdjustment)
 
             Path { path in
-                path.move(to: CGPoint(x: rect.minX, y: rect.maxY - (trackWidthAdjustment / 2)))
-                path.addArc(center: CGPoint(x: rect.minX, y: ((rect.midY - midYAdjustment) / 2) + rect.midY), radius: ((rect.midY + midYAdjustment) / 2) - (trackWidthAdjustment / 2), startAngle: .degrees(90), endAngle: .degrees(270), clockwise: false)
+                path.move(to: CGPoint(x: 0, y: 65 - (trackWidthAdjustment / 2)))
+                path.addArc(center: CGPoint(x: 0, y: ((32.5 - midYAdjustment) / 2) + 32.5), radius: ((32.5 + midYAdjustment) / 2) - (trackWidthAdjustment / 2), startAngle: .degrees(90), endAngle: .degrees(270), clockwise: false)
             }
             .trim(from: 0.0, to: smallCurveTrimValue)
             .stroke(Color(team.color).opacity(0.8), lineWidth: trackWidthAdjustment)
 
             Path { path in
-                path.move(to: CGPoint(x: rect.minX, y: rect.midY - midYAdjustment + (trackWidthAdjustment / 2)))
-                path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY - midYAdjustment + (trackWidthAdjustment / 2)))
+                path.move(to: CGPoint(x: 0, y: 32.5 - midYAdjustment + (trackWidthAdjustment / 2)))
+                path.addLine(to: CGPoint(x: 150, y: 32.5 - midYAdjustment + (trackWidthAdjustment / 2)))
             }
             .trim(from: 0, to: thirdLineTrimValue)
             .stroke(Color(team.color).opacity(0.8), lineWidth: trackWidthAdjustment)
@@ -229,19 +237,19 @@ struct TeamOnePath: View {
         ZStack {
             // path 1
             Path { path in
-                path.move(to: CGPoint(x: rect.minX, y: rect.minY))
-                path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
-                path.addArc(center: CGPoint(x: rect.maxX, y: rect.midY), radius: rect.midY, startAngle: .degrees(270), endAngle: .degrees(90), clockwise: false)
-                path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
-                path.addArc(center: CGPoint(x: rect.minX, y: ((rect.midY - midYAdjustment) / 2) + rect.midY), radius: ((rect.midY + midYAdjustment) / 2), startAngle: .degrees(90), endAngle: .degrees(270), clockwise: false)
-                path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY - midYAdjustment))
-                path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY - midYAdjustment + trackWidthAdjustment))
-                path.addLine(to: CGPoint(x: rect.minX, y: (rect.midY - midYAdjustment) + trackWidthAdjustment))
-                path.addArc(center: CGPoint(x: (rect.minX), y: ((rect.midY - midYAdjustment) / 2) + rect.midY), radius: ((rect.midY + midYAdjustment) / 2) - trackWidthAdjustment, startAngle: .degrees(270), endAngle: .degrees(90), clockwise: true)
-                path.addLine(to: CGPoint(x: (rect.maxX), y: rect.maxY - trackWidthAdjustment))
-                path.addArc(center: CGPoint(x: rect.maxX, y: rect.midY), radius: rect.midY - trackWidthAdjustment, startAngle: .degrees(90), endAngle: .degrees(270), clockwise: true)
-                path.addLine(to: CGPoint(x: rect.minX, y: rect.minY + trackWidthAdjustment))
-                path.addLine(to: CGPoint(x: rect.minX, y: rect.minY))
+                path.move(to: CGPoint(x: 0, y: 0))
+                path.addLine(to: CGPoint(x: 150, y: 0))
+                path.addArc(center: CGPoint(x: 150, y: 32.5), radius: 32.5, startAngle: .degrees(270), endAngle: .degrees(90), clockwise: false)
+                path.addLine(to: CGPoint(x: 150, y: 65))
+                path.addArc(center: CGPoint(x: 0, y: ((32.5 - midYAdjustment) / 2) + 32.5), radius: ((32.5 + midYAdjustment) / 2), startAngle: .degrees(90), endAngle: .degrees(270), clockwise: false)
+                path.addLine(to: CGPoint(x: 150, y: 32.5 - midYAdjustment))
+                path.addLine(to: CGPoint(x: 150, y: 32.5 - midYAdjustment + trackWidthAdjustment))
+                path.addLine(to: CGPoint(x: 0, y: (32.5 - midYAdjustment) + trackWidthAdjustment))
+                path.addArc(center: CGPoint(x: (0), y: ((32.5 - midYAdjustment) / 2) + 32.5), radius: ((32.5 + midYAdjustment) / 2) - trackWidthAdjustment, startAngle: .degrees(270), endAngle: .degrees(90), clockwise: true)
+                path.addLine(to: CGPoint(x: (150), y: 65 - trackWidthAdjustment))
+                path.addArc(center: CGPoint(x: 150, y: 32.5), radius: 32.5 - trackWidthAdjustment, startAngle: .degrees(90), endAngle: .degrees(270), clockwise: true)
+                path.addLine(to: CGPoint(x: 0, y: 0 + trackWidthAdjustment))
+                path.addLine(to: CGPoint(x: 0, y: 0))
             }
             .fill(Color.gray.opacity(0.35))
         }
@@ -289,36 +297,36 @@ struct TeamTwoPath: View {
             
             // path 2 point line
             Path { path in
-                path.move(to: CGPoint(x: rect.minX, y: rect.minY + trackPosAdjustment + (trackWidthAdjustment / 2)))
-                path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY + trackPosAdjustment + (trackWidthAdjustment / 2)))
+                path.move(to: CGPoint(x: 0, y: 0 + trackPosAdjustment + (trackWidthAdjustment / 2)))
+                path.addLine(to: CGPoint(x: 150, y: 0 + trackPosAdjustment + (trackWidthAdjustment / 2)))
             }
             .trim(from: 0.0, to: firstLineTrimValue)
             .stroke(Color(team.color).opacity(0.8), lineWidth: trackWidthAdjustment)
             
             Path { path in
-                path.move(to: CGPoint(x: rect.maxX, y: rect.minY + trackPosAdjustment + (trackWidthAdjustment / 2)))
-                path.addArc(center: CGPoint(x: rect.maxX, y: rect.midY), radius: rect.midY - trackPosAdjustment - (trackWidthAdjustment / 2), startAngle: .degrees(270), endAngle: .degrees(90), clockwise: false)
+                path.move(to: CGPoint(x: 150, y: 0 + trackPosAdjustment + (trackWidthAdjustment / 2)))
+                path.addArc(center: CGPoint(x: 150, y: 32.5), radius: 32.5 - trackPosAdjustment - (trackWidthAdjustment / 2), startAngle: .degrees(270), endAngle: .degrees(90), clockwise: false)
             }
             .trim(from: 0.0, to: bigCurveTrimValue)
             .stroke(Color(team.color).opacity(0.8), lineWidth: trackWidthAdjustment)
             
             Path { path in
-                path.move(to: CGPoint(x: rect.maxX, y: rect.maxY - trackPosAdjustment - (trackWidthAdjustment / 2)))
-                path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY - trackPosAdjustment - (trackWidthAdjustment / 2)))
+                path.move(to: CGPoint(x: 150, y: 65 - trackPosAdjustment - (trackWidthAdjustment / 2)))
+                path.addLine(to: CGPoint(x: 0, y: 65 - trackPosAdjustment - (trackWidthAdjustment / 2)))
             }
             .trim(from: 0.0, to: secondLineTrimValue)
             .stroke(Color(team.color).opacity(0.8), lineWidth: trackWidthAdjustment)
 
             Path { path in
-                path.move(to: CGPoint(x: rect.minX, y: rect.maxY - trackPosAdjustment - (trackWidthAdjustment / 2)))
-                path.addArc(center: CGPoint(x: rect.minX, y: ((rect.midY - midYAdjustment) / 2) + rect.midY), radius: ((rect.midY + midYAdjustment) / 2) - trackPosAdjustment - (trackWidthAdjustment / 2), startAngle: .degrees(90), endAngle: .degrees(270), clockwise: false)
+                path.move(to: CGPoint(x: 0, y: 65 - trackPosAdjustment - (trackWidthAdjustment / 2)))
+                path.addArc(center: CGPoint(x: 0, y: ((32.5 - midYAdjustment) / 2) + 32.5), radius: ((32.5 + midYAdjustment) / 2) - trackPosAdjustment - (trackWidthAdjustment / 2), startAngle: .degrees(90), endAngle: .degrees(270), clockwise: false)
             }
             .trim(from: 0.0, to: smallCurveTrimValue)
             .stroke(Color(team.color).opacity(0.8), lineWidth: trackWidthAdjustment)
             
             Path { path in
-                path.move(to: CGPoint(x: rect.minX, y: rect.midY - midYAdjustment + trackPosAdjustment + (trackWidthAdjustment / 2)))
-                path.addLine(to: CGPoint(x: rect.maxX, y: (rect.midY - midYAdjustment) + trackPosAdjustment + (trackWidthAdjustment / 2)))
+                path.move(to: CGPoint(x: 0, y: 32.5 - midYAdjustment + trackPosAdjustment + (trackWidthAdjustment / 2)))
+                path.addLine(to: CGPoint(x: 150, y: (32.5 - midYAdjustment) + trackPosAdjustment + (trackWidthAdjustment / 2)))
             }
             .trim(from: 0.0, to: thirdLineTrimValue)
             .stroke(Color(team.color).opacity(0.8), lineWidth: trackWidthAdjustment)
@@ -382,18 +390,18 @@ struct TeamTwoPath: View {
     var ghostPath: some View {
         // path 2
         Path { path in
-            path.move(to: CGPoint(x: rect.minX, y: rect.minY + trackPosAdjustment))
-            path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY + trackPosAdjustment))
-            path.addArc(center: CGPoint(x: rect.maxX, y: rect.midY), radius: rect.midY - trackPosAdjustment, startAngle: .degrees(270), endAngle: .degrees(90), clockwise: false)
-            path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY - trackPosAdjustment))
-            path.addArc(center: CGPoint(x: rect.minX, y: ((rect.midY - midYAdjustment) / 2) + rect.midY), radius: ((rect.midY + midYAdjustment) / 2) - trackPosAdjustment, startAngle: .degrees(90), endAngle: .degrees(270), clockwise: false)
-            path.addLine(to: CGPoint(x: rect.maxX, y: (rect.midY - midYAdjustment) + trackPosAdjustment))
-            path.addLine(to: CGPoint(x: rect.maxX, y: (rect.midY - midYAdjustment) + trackWidthAdjustment + trackPosAdjustment))
-            path.addArc(center: CGPoint(x: (rect.minX), y: ((rect.midY - midYAdjustment) / 2) + rect.midY), radius: ((rect.midY + midYAdjustment) / 2) - trackWidthAdjustment - trackPosAdjustment, startAngle: .degrees(270), endAngle: .degrees(90), clockwise: true)
-            path.addLine(to: CGPoint(x: (rect.maxX), y: rect.maxY - trackWidthAdjustment - trackPosAdjustment))
-            path.addArc(center: CGPoint(x: rect.maxX, y: rect.midY), radius: rect.midY - trackWidthAdjustment - trackPosAdjustment, startAngle: .degrees(90), endAngle: .degrees(270), clockwise: true)
-            path.addLine(to: CGPoint(x: rect.minX, y: rect.minY + trackWidthAdjustment + trackPosAdjustment))
-            path.addLine(to: CGPoint(x: rect.minX, y: rect.minY + trackPosAdjustment))
+            path.move(to: CGPoint(x: 0, y: 0 + trackPosAdjustment))
+            path.addLine(to: CGPoint(x: 150, y: 0 + trackPosAdjustment))
+            path.addArc(center: CGPoint(x: 150, y: 32.5), radius: 32.5 - trackPosAdjustment, startAngle: .degrees(270), endAngle: .degrees(90), clockwise: false)
+            path.addLine(to: CGPoint(x: 150, y: 65 - trackPosAdjustment))
+            path.addArc(center: CGPoint(x: 0, y: ((32.5 - midYAdjustment) / 2) + 32.5), radius: ((32.5 + midYAdjustment) / 2) - trackPosAdjustment, startAngle: .degrees(90), endAngle: .degrees(270), clockwise: false)
+            path.addLine(to: CGPoint(x: 150, y: (32.5 - midYAdjustment) + trackPosAdjustment))
+            path.addLine(to: CGPoint(x: 150, y: (32.5 - midYAdjustment) + trackWidthAdjustment + trackPosAdjustment))
+            path.addArc(center: CGPoint(x: (0), y: ((32.5 - midYAdjustment) / 2) + 32.5), radius: ((32.5 + midYAdjustment) / 2) - trackWidthAdjustment - trackPosAdjustment, startAngle: .degrees(270), endAngle: .degrees(90), clockwise: true)
+            path.addLine(to: CGPoint(x: (150), y: 65 - trackWidthAdjustment - trackPosAdjustment))
+            path.addArc(center: CGPoint(x: 150, y: 32.5), radius: 32.5 - trackWidthAdjustment - trackPosAdjustment, startAngle: .degrees(90), endAngle: .degrees(270), clockwise: true)
+            path.addLine(to: CGPoint(x: 0, y: 0 + trackWidthAdjustment + trackPosAdjustment))
+            path.addLine(to: CGPoint(x: 0, y: 0 + trackPosAdjustment))
         }
         .fill(Color.gray.opacity(0.35))
     }
@@ -439,36 +447,36 @@ struct TeamThreePath: View {
             
             // path 3 point line
             Path { path in
-                path.move(to: CGPoint(x: rect.minX, y: rect.minY + (2 * trackPosAdjustment) + (trackWidthAdjustment / 2)))
-                path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY + (2 * trackPosAdjustment) + (trackWidthAdjustment / 2)))
+                path.move(to: CGPoint(x: 0, y: 0 + (2 * trackPosAdjustment) + (trackWidthAdjustment / 2)))
+                path.addLine(to: CGPoint(x: 150, y: 0 + (2 * trackPosAdjustment) + (trackWidthAdjustment / 2)))
             }
             .trim(from: 0.0, to: firstLineTrimValue)
             .stroke(Color(team.color).opacity(0.8), lineWidth: trackWidthAdjustment)
             
             Path { path in
-                path.move(to: CGPoint(x: rect.maxX, y: rect.minY + (2 * trackPosAdjustment) + (trackWidthAdjustment / 2)))
-                path.addArc(center: CGPoint(x: rect.maxX, y: rect.midY), radius: rect.midY - (2 * trackPosAdjustment) - (trackWidthAdjustment / 2), startAngle: .degrees(270), endAngle: .degrees(90), clockwise: false)
+                path.move(to: CGPoint(x: 150, y: 0 + (2 * trackPosAdjustment) + (trackWidthAdjustment / 2)))
+                path.addArc(center: CGPoint(x: 150, y: 32.5), radius: 32.5 - (2 * trackPosAdjustment) - (trackWidthAdjustment / 2), startAngle: .degrees(270), endAngle: .degrees(90), clockwise: false)
             }
             .trim(from: 0.0, to: bigCurveTrimValue)
             .stroke(Color(team.color).opacity(0.8), lineWidth: trackWidthAdjustment)
             
             Path { path in
-                path.move(to: CGPoint(x: rect.maxX, y: rect.maxY - (2 * trackPosAdjustment) - (trackWidthAdjustment / 2)))
-                path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY - (2 * trackPosAdjustment) - (trackWidthAdjustment / 2)))
+                path.move(to: CGPoint(x: 150, y: 65 - (2 * trackPosAdjustment) - (trackWidthAdjustment / 2)))
+                path.addLine(to: CGPoint(x: 0, y: 65 - (2 * trackPosAdjustment) - (trackWidthAdjustment / 2)))
             }
             .trim(from: 0.0, to: secondLineTrimValue)
             .stroke(Color(team.color).opacity(0.8), lineWidth: trackWidthAdjustment)
             
             Path { path in
-                path.move(to: CGPoint(x: rect.minX, y: rect.maxY - (2 * trackPosAdjustment) - (trackWidthAdjustment / 2)))
-                path.addArc(center: CGPoint(x: rect.minX, y: ((rect.midY - midYAdjustment) / 2) + rect.midY), radius: ((rect.midY + midYAdjustment) / 2) - (2 * trackPosAdjustment) - (trackWidthAdjustment / 2), startAngle: .degrees(90), endAngle: .degrees(270), clockwise: false)
+                path.move(to: CGPoint(x: 0, y: 65 - (2 * trackPosAdjustment) - (trackWidthAdjustment / 2)))
+                path.addArc(center: CGPoint(x: 0, y: ((32.5 - midYAdjustment) / 2) + 32.5), radius: ((32.5 + midYAdjustment) / 2) - (2 * trackPosAdjustment) - (trackWidthAdjustment / 2), startAngle: .degrees(90), endAngle: .degrees(270), clockwise: false)
             }
             .trim(from: 0.0, to: smallCurveTrimValue)
             .stroke(Color(team.color).opacity(0.8), lineWidth: trackWidthAdjustment)
             
             Path { path in
-                path.move(to: CGPoint(x: rect.minX, y: rect.midY - midYAdjustment + (2 * trackPosAdjustment) + (trackWidthAdjustment / 2)))
-                path.addLine(to: CGPoint(x: rect.maxX, y: (rect.midY - midYAdjustment) + (2 * trackPosAdjustment) + (trackWidthAdjustment / 2)))
+                path.move(to: CGPoint(x: 0, y: 32.5 - midYAdjustment + (2 * trackPosAdjustment) + (trackWidthAdjustment / 2)))
+                path.addLine(to: CGPoint(x: 150, y: (32.5 - midYAdjustment) + (2 * trackPosAdjustment) + (trackWidthAdjustment / 2)))
             }
             .trim(from: 0.0, to: thirdLineTrimValue)
             .stroke(Color(team.color).opacity(0.8), lineWidth: trackWidthAdjustment)
@@ -533,18 +541,18 @@ struct TeamThreePath: View {
     var ghostPath: some View {
         // path 3
         Path { path in
-            path.move(to: CGPoint(x: rect.minX, y: rect.minY + (2 * trackPosAdjustment)))
-            path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY + (2 * trackPosAdjustment)))
-            path.addArc(center: CGPoint(x: rect.maxX, y: rect.midY), radius: rect.midY - (2 * trackPosAdjustment), startAngle: .degrees(270), endAngle: .degrees(90), clockwise: false)
-            path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY - (2 * trackPosAdjustment)))
-            path.addArc(center: CGPoint(x: rect.minX, y: ((rect.midY - midYAdjustment) / 2) + rect.midY), radius: ((rect.midY + midYAdjustment) / 2) - (2 * trackPosAdjustment), startAngle: .degrees(90), endAngle: .degrees(270), clockwise: false)
-            path.addLine(to: CGPoint(x: rect.maxX, y: (rect.midY - midYAdjustment) + (2 * trackPosAdjustment)))
-            path.addLine(to: CGPoint(x: rect.maxX, y: (rect.midY - midYAdjustment) + trackWidthAdjustment + (2 * trackPosAdjustment)))
-            path.addArc(center: CGPoint(x: (rect.minX), y: ((rect.midY - midYAdjustment) / 2) + rect.midY), radius: ((rect.midY + midYAdjustment) / 2) - trackWidthAdjustment - (2 * trackPosAdjustment), startAngle: .degrees(270), endAngle: .degrees(90), clockwise: true)
-            path.addLine(to: CGPoint(x: (rect.maxX), y: rect.maxY - trackWidthAdjustment - (2 * trackPosAdjustment)))
-            path.addArc(center: CGPoint(x: rect.maxX, y: rect.midY), radius: rect.midY - trackWidthAdjustment - (2 * trackPosAdjustment), startAngle: .degrees(90), endAngle: .degrees(270), clockwise: true)
-            path.addLine(to: CGPoint(x: rect.minX, y: rect.minY + trackWidthAdjustment + (2 * trackPosAdjustment)))
-            path.addLine(to: CGPoint(x: rect.minX, y: rect.minY + (2 * trackPosAdjustment)))
+            path.move(to: CGPoint(x: 0, y: 0 + (2 * trackPosAdjustment)))
+            path.addLine(to: CGPoint(x: 150, y: 0 + (2 * trackPosAdjustment)))
+            path.addArc(center: CGPoint(x: 150, y: 32.5), radius: 32.5 - (2 * trackPosAdjustment), startAngle: .degrees(270), endAngle: .degrees(90), clockwise: false)
+            path.addLine(to: CGPoint(x: 150, y: 65 - (2 * trackPosAdjustment)))
+            path.addArc(center: CGPoint(x: 0, y: ((32.5 - midYAdjustment) / 2) + 32.5), radius: ((32.5 + midYAdjustment) / 2) - (2 * trackPosAdjustment), startAngle: .degrees(90), endAngle: .degrees(270), clockwise: false)
+            path.addLine(to: CGPoint(x: 150, y: (32.5 - midYAdjustment) + (2 * trackPosAdjustment)))
+            path.addLine(to: CGPoint(x: 150, y: (32.5 - midYAdjustment) + trackWidthAdjustment + (2 * trackPosAdjustment)))
+            path.addArc(center: CGPoint(x: (0), y: ((32.5 - midYAdjustment) / 2) + 32.5), radius: ((32.5 + midYAdjustment) / 2) - trackWidthAdjustment - (2 * trackPosAdjustment), startAngle: .degrees(270), endAngle: .degrees(90), clockwise: true)
+            path.addLine(to: CGPoint(x: (150), y: 65 - trackWidthAdjustment - (2 * trackPosAdjustment)))
+            path.addArc(center: CGPoint(x: 150, y: 32.5), radius: 32.5 - trackWidthAdjustment - (2 * trackPosAdjustment), startAngle: .degrees(90), endAngle: .degrees(270), clockwise: true)
+            path.addLine(to: CGPoint(x: 0, y: 0 + trackWidthAdjustment + (2 * trackPosAdjustment)))
+            path.addLine(to: CGPoint(x: 0, y: 0 + (2 * trackPosAdjustment)))
         }
         .fill(Color.gray.opacity(0.35))
     }
