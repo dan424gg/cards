@@ -10,7 +10,7 @@ import SwiftUI
 struct PointContainer: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @State var teamColor: Color = .purple
-    @State var playerPoints: Int = -1
+    @State var playerPoints: Int = 0
     @StateObject var gameObservable: GameObservable = GameObservable(game: .game)
     
     var player: PlayerState = PlayerState()
@@ -23,12 +23,12 @@ struct PointContainer: View {
                 Text("+ \(playerPoints)")
                     .font(.custom("LuckiestGuy-Regular", size: user ? 56 : 16))
                     .frame(minWidth: user ? 94 : 31, minHeight: user ? 56 : 16)
-                    .offset(y: user ? 9.0 : 2.85)
-                    .padding(user ? 10.0 : 2.0)
+                    .offset(y: user ? 7 : 2)
+                    .padding(user ? 7.0 : 2.0)
                     .background(content: {
                         RoundedRectangle(cornerRadius: 5)
-                            .fill(.ultraThinMaterial)
                             .stroke(teamColor, lineWidth: user ? 5.0 : 2.0)
+                            .background { VisualEffectView(effect: UIBlurEffect(style: .systemThickMaterial)).clipShape(RoundedRectangle(cornerRadius: 5)) }
                     })
                     .foregroundStyle(teamColor)
             }
@@ -42,11 +42,8 @@ struct PointContainer: View {
                 if let gameState = firebaseHelper.gameState {
                     if let team = firebaseHelper.teams.first(where: { $0.team_num == gameState.team_with_crib }) {
                         teamColor = Color("\(team.color)")
-                        print("found the team")
                     
                         let scoringHands = firebaseHelper.checkCardsForPoints(crib: gameState.crib, gameState.starter_card)
-                        print("scoringPlays: \(scoringHands)")
-
                         if let lastScoringHand = scoringHands.last {
                             playerPoints = lastScoringHand.cumlativePoints
                         } else {
@@ -68,7 +65,7 @@ struct PointContainer: View {
                     if let team = firebaseHelper.teams.first(where: { $0.team_num == player.team_num }) {
                         teamColor = Color("\(team.color)")
                         
-                        let scoringHands = firebaseHelper.checkCardsForPoints(player: player, gameState.starter_card)
+                        let scoringHands = firebaseHelper.checkCardsForPoints(playerCards: player.cards_in_hand, gameState.starter_card)
                         
                         if let lastScoringHand = scoringHands.last {
                             playerPoints = lastScoringHand.cumlativePoints
@@ -91,7 +88,7 @@ struct PointContainer: View {
                         teamColor = Color("\(team.color)")
                     }
                     
-                    let scoringHands = firebaseHelper.checkCardsForPoints(player: player, gameObservable.game.starter_card)
+                    let scoringHands = firebaseHelper.checkCardsForPoints(playerCards: player.cards_in_hand, gameObservable.game.starter_card)
                     
                     if let lastScoringHand = scoringHands.last {
                         playerPoints = lastScoringHand.cumlativePoints
@@ -112,8 +109,7 @@ struct PointContainer: View {
             }() )
             .environmentObject(FirebaseHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
-            .background(Color("OffWhite").opacity(0.1))
-        
+            .background(Color.theme.background)
     }
     .ignoresSafeArea()
 }

@@ -16,24 +16,57 @@ struct ExistingGameView: View {
     @State var fullName: String = ""
     @State var size: CGSize = .zero
     
+    @State var showErrorMessage: Bool = false
+    @State var error: Error? = nil
+    @State var timer: Timer?
+    
+    func validateGroupId(groupId: String) {
+        Task {
+            if await firebaseHelper.checkValidId(id: groupId) {
+                if error != nil {
+                    withAnimation {
+                        error = Error(message: "Valid!", errorType: .success)
+                    }
+                }
+            } else {
+                withAnimation {
+                    error = Error(message: "Group Id is not valid!", errorType: .error)
+                }
+            }
+        }
+    }
+    
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 20.0)
-//                .fill(.white)
-                .fill(Color.theme.primary)
-                .frame(width: 300, height: 300)
+            if error != nil {
+                ErrorMessage(error: error!)
+                    .geometryGroup()
+                    .onChange(of: error, initial: true, {
+                        timer?.invalidate()
+                        timer = nil
+                        timer = Timer.scheduledTimer(withTimeInterval: 4.0, repeats: false, block: { _ in
+                            withAnimation {
+                                error = nil
+                            }
+                        })
+                    })
+                    .frame(height: 150)
+                    .offset(y: -170)
+                    .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .opacity))
+            }
             
-            VStack {
+            VStack(spacing: 20) {
                 Text("Join Game")
                     .font(.custom("LuckiestGuy-Regular", size: 40))
-                    .offset(y: 5)
+                    .baselineOffset(-5)
                     .foregroundStyle(Color.theme.white)
-                    .getSize(onChange: {
-                        print($0)
-                    })
+                    .frame(height: 40)
                 
-                CustomTextField(textFieldHint: "Group ID", value: $groupId)
-                CustomTextField(textFieldHint: "Name", value: $fullName)
+                VStack(spacing: 5) {
+                    CustomTextField(textFieldHint: "Group ID", validationFunciton: validateGroupId, value: $groupId)
+                        .keyboardType(.numberPad)
+                    CustomTextField(textFieldHint: "Name", value: $fullName)
+                }
                 
                 Button {
                     endTextEditing()
@@ -46,40 +79,22 @@ struct ExistingGameView: View {
                     }
                 } label: {
                     Text("Submit")
-                        .padding()
-                        .foregroundStyle(Color.white)
-                        .font(.custom("LuckiestGuy-Regular", size: 25))
-                        .offset(y: 2.2)
-                        .frame(width: 150)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 12)
+                        .font(.custom("LuckiestGuy-Regular", size: 24))
+                        .baselineOffset(-5)
+                        .foregroundStyle(Color.theme.primary)
+                        .background(Color.theme.white)
+                        .clipShape(Capsule())
                 }
             }
-            .onChange(of: [fullName, groupId], {
-                if fullName.isEmpty || (groupId.isEmpty) {
-                    withAnimation {
-                        notValid = true
-                    }
-                } else {
-                    if !groupId.isEmpty {
-                        Task {
-                            if await firebaseHelper.checkValidId(id: groupId) {
-                                withAnimation {
-                                    notValid = false
-                                }
-                            } else {
-                                withAnimation {
-                                    notValid = true
-                                }
-                            }
-                        }
-                    } else {
-                        withAnimation {
-                            notValid = false
-                        }
-                    }
-                }
-            })
+            .padding()
+            .background {
+                RoundedRectangle(cornerRadius: 20.0)
+                    .fill(Color.theme.primary)
+                    .frame(width: 300)
+            }
         }
-
         .onTapGesture {
             endTextEditing()
         }
@@ -97,5 +112,6 @@ struct ExistingGameView: View {
             .environmentObject(FirebaseHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
     }
+    .background(Color.theme.background)
     .ignoresSafeArea()
 }

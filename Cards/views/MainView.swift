@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct MainView: View {
-    @Binding var visible: Bool
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @EnvironmentObject var specs: DeviceSpecs
     @StateObject var sheetCoordinator = SheetCoordinator<SheetType>()
@@ -31,13 +30,13 @@ struct MainView: View {
 //                                     Text("Exit")
 //                                        .foregroundStyle(.red)
 //                                        .font(.custom("LuckiestGuy-Regular", size: 16))
-//                                        .offset(y: 1.6)
+//                                        .baselineOffset(-1.6)
 //                                }
 //                            })
 //                        }
 //                }
             } else {
-                IntroView(blur: $visible)
+                IntroView()
                     .onAppear {
                         showGameView = true
                     }
@@ -49,7 +48,7 @@ struct MainView: View {
 
 #Preview {
     return GeometryReader { geo in
-        MainView(visible: .constant(false))
+        MainView()
             .environmentObject({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)

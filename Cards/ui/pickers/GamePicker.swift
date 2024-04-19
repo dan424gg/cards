@@ -40,7 +40,7 @@ struct GamePicker: View {
                 Text(gameSelected.id.capitalized)
                     .foregroundStyle(Color.theme.primary)
                     .font(.custom("LuckiestGuy-Regular", size: 18))
-                    .offset(y: 1.8)
+                    .baselineOffset(-1.8)
 //                if firebaseHelper.playerState?.is_lead ?? false {
 //                    Image(systemName: "arrow.up.and.down")
 //                        .font(.system(size: 15, weight: .thin))

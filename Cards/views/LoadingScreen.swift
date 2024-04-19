@@ -29,7 +29,7 @@ struct LoadingScreen: View {
                     Text(String(firebaseHelper.gameState?.group_id ?? 12345))
                         .foregroundStyle(Color.theme.primary)
                         .font(.custom("LuckiestGuy-Regular", size: 18))
-                        .offset(y: 1.8)
+                        .baselineOffset(-1.8)
                         .padding(10)
                         .background(
                             RoundedRectangle(cornerRadius: 30)
@@ -50,7 +50,7 @@ struct LoadingScreen: View {
                     TextField("", text: $name, prompt: Text("Name").foregroundStyle(.gray.opacity(0.5)))
                         .foregroundStyle(Color.theme.primary)
                         .font(.custom("LuckiestGuy-Regular", size: 18))
-                        .offset(y: 1.8)
+                        .baselineOffset(-1.8)
                         .multilineTextAlignment(.center)
                         .focused($isFocused)
                         .onChange(of: firebaseHelper.playerState?.name, initial: true, {
@@ -92,52 +92,52 @@ struct LoadingScreen: View {
 //                        VStack {
 //                            Text("Team \(TeamState.team_one.team_num)")
 //                                .font(.custom("LuckiestGuy-Regular", size: 20))
-//                                .offset(y: 2)
+//                                .baselineOffset(-2)
 //                                .padding(6)
 //                                .foregroundStyle(Color(TeamState.team_one.color))
 //                                .shadow(radius: 5)
 //                                .background {
 //                                    RoundedRectangle(cornerRadius: 30)
 //                                        .stroke(Color(TeamState.team_one.color), lineWidth: 1.3)
-//                                        .offset(y: -25)
+//                                        .baselineOffset(--25)
 //                                        .clipped()
-//                                        .offset(y: 22)
+//                                        .baselineOffset(-22)
 //                                        .shadow(radius: 5)
 //                                }
 //                            Text("Dan")
 //                                .foregroundStyle(Color.theme.white)
 //                                .font(.custom("LuckiestGuy-Regular", size: 18))
-//                                .offset(y: 1.8)
+//                                .baselineOffset(-1.8)
 //                            Text("Katie")
 //                                .foregroundStyle(Color.theme.white)
 //                                .font(.custom("LuckiestGuy-Regular", size: 18))
-//                                .offset(y: 1.8)
+//                                .baselineOffset(-1.8)
 //                        }
 //                        .frame(height: 100, alignment: .top)
 //                        
 //                        VStack {
 //                            Text("Team \(TeamState.team_two.team_num)")
 //                                .font(.custom("LuckiestGuy-Regular", size: 20))
-//                                .offset(y: 2)
+//                                .baselineOffset(-2)
 //                                .padding(6)
 //                                .foregroundStyle(Color(TeamState.team_two.color))
 //                                .shadow(color: .black, radius: 1)
 //                                .background {
 //                                    RoundedRectangle(cornerRadius: 30)
 //                                        .stroke(Color(TeamState.team_two.color), lineWidth: 1.3)
-//                                        .offset(y: -25)
+//                                        .baselineOffset(--25)
 //                                        .clipped()
-//                                        .offset(y: 22)
+//                                        .baselineOffset(-22)
 //                                        .shadow(radius: 1)
 //                                }
 //                            Text("Ben")
 //                                .foregroundStyle(Color.theme.white)
 //                                .font(.custom("LuckiestGuy-Regular", size: 18))
-//                                .offset(y: 1.8)
+//                                .baselineOffset(-1.8)
 //                            Text("Alex")
 //                                .foregroundStyle(Color.theme.white)
 //                                .font(.custom("LuckiestGuy-Regular", size: 18))
-//                                .offset(y: 1.8)
+//                                .baselineOffset(-1.8)
 //                        }
 //                        .frame(height: 100, alignment: .top)
 //                    }
@@ -147,7 +147,7 @@ struct LoadingScreen: View {
                             VStack {
                                 Text("Team \(team.team_num)")
                                     .font(.custom("LuckiestGuy-Regular", size: 20))
-                                    .offset(y: 2)
+                                    .baselineOffset(-2)
                                     .shadow(color: .black, radius: team.color == "Red" ? 5 : 1)
                                     .padding(6)
                                     .foregroundStyle(Color(team.color))
@@ -164,14 +164,14 @@ struct LoadingScreen: View {
                                     Text(firebaseHelper.playerState!.name)
                                         .foregroundStyle(Color.theme.white)
                                         .font(.custom("LuckiestGuy-Regular", size: 18))
-                                        .offset(y: 1.8)
+                                        .baselineOffset(-1.8)
                                 }
                                 
                                 ForEach(firebaseHelper.players.filter { $0.team_num == team.team_num }, id: \.self) { player in
                                     Text(player.name)
                                         .foregroundStyle(Color.theme.white)
                                         .font(.custom("LuckiestGuy-Regular", size: 18))
-                                        .offset(y: 1.8)
+                                        .baselineOffset(-1.8)
                                 }
                             }
                             .frame(height: 100, alignment: .top)
@@ -183,15 +183,18 @@ struct LoadingScreen: View {
                     Button {
                         Task {
                             await firebaseHelper.reorderPlayerNumbers()
-//                            try await Task.sleep(nanoseconds: UInt64(3.0 * Double(NSEC_PER_SEC)))
                             await firebaseHelper.updateGame(["is_playing": true])
                         }
+                        
+                        firebaseHelper.logAnalytics(AnalyticsEvents.game_started)
+                        firebaseHelper.logAnalytics(AnalyticsEvents.num_players, ["players": 5])
+                        firebaseHelper.logAnalytics(AnalyticsEvents.num_teams, ["teams": firebaseHelper.gameState!.num_teams])
                     } label: {
                         Text("Play!")
                             .padding()
                             .foregroundStyle(Color.white)
                             .font(.custom("LuckiestGuy-Regular", size: 25))
-                            .offset(y: 2.2)
+                            .baselineOffset(-2.2)
                     }
                     .disabled(!firebaseHelper.equalNumOfPlayersOnTeam())
                     
@@ -207,7 +210,7 @@ struct LoadingScreen: View {
                     Text("Waiting to start game...")
                         .foregroundStyle(Color.theme.white)
                         .font(.custom("LuckiestGuy-Regular", size: 18))
-                        .offset(y: 1.8)
+                        .baselineOffset(-1.8)
                 }
             }
             .padding(25)

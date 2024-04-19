@@ -29,7 +29,6 @@ struct TurnTwoView: View {
                 HStack {
                     if (showAllCards) {
                         horizontalViewOfCards
-//                            .frame(width: 200, height: 100)
                     } else {
                         stackedViewOfCards
                             .frame(width: 60, height: 100)
@@ -38,15 +37,16 @@ struct TurnTwoView: View {
                     if !otherPlayer {
                         VStack {
                             Text("\(firebaseHelper.gameState?.running_sum ?? 14)")
+                                .foregroundStyle(Color.theme.textColor)
                                 .font(.custom("LuckiestGuy-Regular", size: 16))
-                                .offset(y: 1.6)
+                                .baselineOffset(-1.6)
                             
                             Button {
                                 handleGoButton()
                             } label: {
                                 Text("Go")
                                     .font(.custom("LuckiestGuy-Regular", size: 16))
-                                    .offset(y: 1.6)
+                                    .baselineOffset(-1.6)
                             }
                             .buttonStyle(.bordered)
                             .disabled(handleDisabledState())
@@ -58,7 +58,7 @@ struct TurnTwoView: View {
                             } label: {
                                 Text("Show")
                                     .font(.custom("LuckiestGuy-Regular", size: 16))
-                                    .offset(y: 1.6)
+                                    .baselineOffset(-1.6)
                             }
                             .buttonStyle(.bordered)
                         }
@@ -66,8 +66,7 @@ struct TurnTwoView: View {
                 }
                 .transition(.offset())
                 
-                TimedTextContainer(display: $displayTimedTextContainer, textArray: $pointsCallOut, visibilityFor: 2.0)
-                    .shadow(color: .white, radius: 10)
+                TimedTextContainer(display: $displayTimedTextContainer, textArray: $pointsCallOut, visibilityFor: 2.0, color: Color(firebaseHelper.teamState?.color ?? "Teal"))
             }
             
             if (!otherPlayer) {
@@ -79,13 +78,13 @@ struct TurnTwoView: View {
                     Text("Submit")
                         .foregroundStyle(invalid ? .red : .green)
                         .font(.custom("LuckiestGuy-Regular", size: 16))
-                        .offset(y: 1.6)
+                        .baselineOffset(-1.6)
                 }
                 .buttonStyle(.bordered)
                 .disabled(invalid)
             }
         }
-        .frame(height: 100)
+        .frame(height: 140)
         .onAppear {
             guard firebaseHelper.playerState != nil, firebaseHelper.gameState != nil, firebaseHelper.playerState!.is_lead else {
                 return
@@ -95,29 +94,38 @@ struct TurnTwoView: View {
                 await firebaseHelper.updateGame(["player_turn": (firebaseHelper.gameState!.dealer + 1) % firebaseHelper.gameState!.num_players])
             }
         }
-        .onChange(of: cardsInHand, {
-            
-        })
         .onChange(of: cardsDragged, { (old, new) in
-            guard !otherPlayer, !cardsDragged.isEmpty else {
+            guard !cardsDragged.isEmpty else {
                 return
             }
-            
-            Task {
-                var callouts: [String] = []
-                
-                if checkForValidityOfPlay(cardsDragged.last ?? -1, runningSum: firebaseHelper.gameState?.running_sum ?? 32, pointsCallOut: &callouts) {
-                    invalid = false
-                } else if (cardsDragged.count - (firebaseHelper.playerState?.cards_dragged.count ?? 0) == 1) {
+
+            var callouts: [String] = []
+
+            if otherPlayer {
+                Task {
+                    _ = await firebaseHelper.managePlayTurn(cardInPlay: cardsDragged.last, pointsCallOut: &callouts, otherPlayer: true)
                     pointsCallOut = callouts
-                    displayTimedTextContainer = true
-                    invalid = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4, execute: {
+                    if !pointsCallOut.isEmpty {
                         withAnimation {
-                            cardsInHand.append(cardsDragged.removeLast())
+                            displayTimedTextContainer = true
                         }
-                    })
+                    }
                 }
+            } else {
+//                Task {
+                    if checkForValidityOfPlay(cardsDragged.last ?? -1, runningSum: firebaseHelper.gameState?.running_sum ?? 32, pointsCallOut: &callouts) {
+                        invalid = false
+                    } else if (cardsDragged.count - (firebaseHelper.playerState?.cards_dragged.count ?? 0) == 1) {
+                        pointsCallOut = callouts
+                        displayTimedTextContainer = true
+                        invalid = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4, execute: {
+                            withAnimation {
+                                cardsInHand.append(cardsDragged.removeLast())
+                            }
+                        })
+                    }
+//                }
             }
         })
     }
@@ -139,7 +147,7 @@ struct TurnTwoView: View {
                     }
                     .padding()
                 }
-                .frame(width: 200, height: 100)
+                .frame(width: 160, height: 100)
             } else {
                 HStack(spacing: 5) {
                     ForEach(Array(cardsDragged.reversed().enumerated()), id: \.offset) { (index, cardId) in
@@ -294,9 +302,17 @@ struct TurnTwoView: View {
     }
 }
 
-struct TurnTwoView_Previews: PreviewProvider {
-    static var previews: some View {
+#Preview {
+    return GeometryReader { geo in
         TurnTwoView(cardsDragged: .constant([0,1,2,3]), cardsInHand: .constant([]))
+            .environmentObject({ () -> DeviceSpecs in
+                let envObj = DeviceSpecs()
+                envObj.setProperties(geo)
+                return envObj
+            }() )
             .environmentObject(FirebaseHelper())
+            .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
+            .background(Color.theme.background)
     }
+    .ignoresSafeArea()
 }

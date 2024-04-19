@@ -78,7 +78,7 @@ struct CribbageBoard: View {
         })
         .onChange(of: firebaseHelper.teams, initial: true, {
             guard firebaseHelper.teams != [] else {
-                teams = [TeamState(team_num: 1, points: 0, color: "Red"), TeamState(team_num: 2, points: 0, color: "Blue"), TeamState(team_num: 3, points: 0, color: "Green")]
+                teams = [TeamState(team_num: 1, points: 63, color: "Red"), TeamState(team_num: 2, points: 70, color: "Blue"), TeamState(team_num: 3, points: 50, color: "Green")]
                 return
             }
             
@@ -126,7 +126,6 @@ struct TeamOnePath: View {
             }
             .trim(from: 0.0, to: firstLineTrimValue)
             .stroke(Color(team.color).opacity(0.8), lineWidth: trackWidthAdjustment)
-            .onChange(of: firstLineTrimValue, { print("path 1: \(firstLineTrimValue)") })
 
             Path { path in
                 path.move(to: CGPoint(x: 150, y: 0 + (trackWidthAdjustment / 2)))
@@ -156,7 +155,7 @@ struct TeamOnePath: View {
             .trim(from: 0, to: thirdLineTrimValue)
             .stroke(Color(team.color).opacity(0.8), lineWidth: trackWidthAdjustment)
         }
-        .onChange(of: team.points, { (old, new) in
+        .onChange(of: team.points, initial: true, { (old, new) in
             var points = Double(new)
             
             if points <= 35.0 {
@@ -230,7 +229,7 @@ struct TeamOnePath: View {
                 path.addLine(to: CGPoint(x: 0, y: 0 + trackWidthAdjustment))
                 path.addLine(to: CGPoint(x: 0, y: 0))
             }
-            .fill(Color.gray.opacity(0.35))
+            .fill(Color.white.opacity(0.5))
         }
     }
 }
@@ -268,13 +267,13 @@ struct TeamTwoPath: View {
             // path 2 point line
             Path { path in
                 path.move(to: CGPoint(x: 0, y: 0 + trackPosAdjustment + (trackWidthAdjustment / 2)))
-                path.addLine(to: CGPoint(x: 150, y: 0 + trackPosAdjustment + (trackWidthAdjustment / 2)))
+                path.addLine(to: CGPoint(x: 150, y: trackPosAdjustment + (trackWidthAdjustment / 2)))
             }
             .trim(from: 0.0, to: firstLineTrimValue)
             .stroke(Color(team.color).opacity(0.8), lineWidth: trackWidthAdjustment)
             
             Path { path in
-                path.move(to: CGPoint(x: 150, y: 0 + trackPosAdjustment + (trackWidthAdjustment / 2)))
+                path.move(to: CGPoint(x: 150, y: trackPosAdjustment + (trackWidthAdjustment / 2)))
                 path.addArc(center: CGPoint(x: 150, y: 32.5), radius: 32.5 - trackPosAdjustment - (trackWidthAdjustment / 2), startAngle: .degrees(270), endAngle: .degrees(90), clockwise: false)
             }
             .trim(from: 0.0, to: bigCurveTrimValue)
@@ -301,7 +300,7 @@ struct TeamTwoPath: View {
             .trim(from: 0.0, to: thirdLineTrimValue)
             .stroke(Color(team.color).opacity(0.8), lineWidth: trackWidthAdjustment)
         }
-        .onChange(of: team.points, { (old, new) in
+        .onChange(of: team.points, initial: true, { (old, new) in
             var points = Double(new)
             
             if points <= 35.0 {
@@ -373,7 +372,7 @@ struct TeamTwoPath: View {
             path.addLine(to: CGPoint(x: 0, y: 0 + trackWidthAdjustment + trackPosAdjustment))
             path.addLine(to: CGPoint(x: 0, y: 0 + trackPosAdjustment))
         }
-        .fill(Color.gray.opacity(0.35))
+        .fill(Color.white.opacity(0.5))
     }
 }
 
@@ -443,7 +442,7 @@ struct TeamThreePath: View {
             .trim(from: 0.0, to: thirdLineTrimValue)
             .stroke(Color(team.color).opacity(0.8), lineWidth: trackWidthAdjustment)
         }
-        .onChange(of: team.points, { (old, new) in
+        .onChange(of: team.points, initial: true, { (old, new) in
             var points = Double(new)
             
             if points <= 35.0 {
@@ -516,12 +515,15 @@ struct TeamThreePath: View {
             path.addLine(to: CGPoint(x: 0, y: 0 + trackWidthAdjustment + (2 * trackPosAdjustment)))
             path.addLine(to: CGPoint(x: 0, y: 0 + (2 * trackPosAdjustment)))
         }
-        .fill(Color.gray.opacity(0.35))
+        .fill(Color.white.opacity(0.5))
     }
 }
 
-
 #Preview {
-    CribbageBoard()
-        .environmentObject(FirebaseHelper())
+    ZStack {
+        Color.theme.background
+        CribbageBoard()
+            .environmentObject(FirebaseHelper())
+    }
+    .ignoresSafeArea()
 }
