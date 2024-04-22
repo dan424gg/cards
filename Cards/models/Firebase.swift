@@ -206,13 +206,41 @@ import FirebaseFirestoreSwift
 
                         break
                         
+                    case "callouts":
+                        guard type(of: value) is [String].Type else {
+                            print("\(value) needs to be [Int] in updatePlayer()!")
+                            return
+                        }
+                                                
+                        switch (arrayAction) {
+                            case .append:
+                                try await docRef.collection("players").document("\(uid ?? playerState!.uid)").updateData([
+                                    "\(key)": FieldValue.arrayUnion(value as! [String])
+                                ])
+                                break
+                            case .remove:
+                                try await docRef.collection("players").document("\(uid ?? playerState!.uid)").updateData([
+                                    "\(key)": FieldValue.arrayRemove(value as! [String])
+                                ])
+                                break
+                            case .replace:
+                                try await docRef.collection("players").document("\(uid ?? playerState!.uid)").updateData([
+                                    "\(key)": value as! [String]
+                                ])
+                                break
+                            default:
+                                print("UPDATEPLAYER: you have to have an action flag set to manipulate callouts!")
+                                return
+                        }
+                        break
+                        
                     default:
                         print("UPDATEPLAYER: property: \(key) doesn't exist or can't be changed when trying to update player!")
                         return
                 }
             }
         } catch {
-            print("UPDATEPLAYER: \(error)")
+            print("UPDATEPLAYER error: \(error)")
         }
     }
    
@@ -954,7 +982,7 @@ import FirebaseFirestoreSwift
         checkForSets(playerCards + [starterCard], &scoringPlays, &points)
         checkForFlush(playerCards, starterCard, &scoringPlays, &points)
         checkForNobs(playerCards, starterCard, &scoringPlays, &points)
-                
+        
         return scoringPlays
     }
     
@@ -981,14 +1009,7 @@ import FirebaseFirestoreSwift
         }
         
         guard let cardNumber = cardInPlay else {
-            var numGo: Int!
-            if otherPlayer {
-                numGo = gameState!.num_go - 1
-            } else {
-                numGo = gameState!.num_go
-            }
-            
-            if numGo == (gameState!.num_players - 1) {
+            if gameState!.num_go == (gameState!.num_players - 1) {
                 pointsCallOut.append("GO for 1!")
                 if !otherPlayer {
                     await updateGame(["num_go": 0, "running_sum": 0, "play_cards": [] as! [Int]], arrayAction: .replace)
@@ -997,30 +1018,17 @@ import FirebaseFirestoreSwift
             } else {
                 pointsCallOut.append("GO!")
                 if !otherPlayer {
-                    await updateGame(["num_go": numGo + 1])
+                    await updateGame(["num_go": gameState!.num_go + 1])
                 }
                 return 0
             }
         }
         
         var points = 0
-        var card: Card!
-        var playCards: [Int]!
-        var runningSum: Int!
-        var lastThreeCards: [Int]!
-        
-        if otherPlayer {
-            playCards = gameState!.play_cards
-            let lastPlayedCard = playCards.last!
-            card = CardItem(id: lastPlayedCard).card
-            runningSum = gameState!.running_sum - card.pointValue
-            lastThreeCards = playCards.dropLast().suffix(3)
-        } else {
-            card = CardItem(id: cardNumber).card
-            playCards = gameState!.play_cards
-            runningSum = gameState!.running_sum
-            lastThreeCards = playCards.suffix(3)
-        }
+        let card = CardItem(id: cardNumber).card
+        let playCards = gameState!.play_cards
+        let runningSum = gameState!.running_sum
+        let lastThreeCards = playCards.suffix(3)
         
         // Check for 15
         if card.pointValue + runningSum == 15 {
@@ -1188,9 +1196,9 @@ import FirebaseFirestoreSwift
         var maxNumOfCardsInRun = 0
         
         for i in 3...cards.count {
-            var numOfCardsInRun = 0
+            var numOfCardsInRun = 1
             var multiplier = 1
-            let runOfCards = Array(cards.suffix(i)).sorted(by: { CardItem(id: $0) < CardItem(id: $1) })
+            let runOfCards = Array(cards.sorted(by: { CardItem(id: $0) < CardItem(id: $1) }).prefix(i))
 
             // check if runOfCards is valid
             for c in 1..<runOfCards.count {
@@ -1201,16 +1209,18 @@ import FirebaseFirestoreSwift
                     multiplier *= 2
                 } else if (secondCard - firstCard != 1) {
                     multiplier = 1
-                    numOfCardsInRun = 0
+                    numOfCardsInRun = 1
                     break
                 } else {
                     numOfCardsInRun += 1
                 }
             }
             
-            if (((numOfCardsInRun + 1) * multiplier) > maxNumOfCardsInRun) {
-                maxNumOfCardsInRun = ((numOfCardsInRun + 1) * multiplier)
-                runOfCardsInMaxRun = runOfCards
+            if numOfCardsInRun > 2 {
+                if (((numOfCardsInRun) * multiplier) > maxNumOfCardsInRun) {
+                    maxNumOfCardsInRun = ((numOfCardsInRun) * multiplier)
+                    runOfCardsInMaxRun = runOfCards
+                }
             }
         }
         

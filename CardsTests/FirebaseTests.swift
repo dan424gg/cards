@@ -392,6 +392,56 @@ final class FirebaseHelperTests: XCTestCase {
         await playerOne.deleteGameCollection(id: randId)
     }
     
+    @MainActor func testCheckHandForPoints() async {
+        let playerOne = FirebaseHelper()
+        var randId = 0
+        repeat {
+            randId = Int.random(in: 10000..<99999)
+        } while (await playerOne.checkValidId(id: "\(randId)"))
+        await playerOne.startGameCollection(fullName: "1", testGroupId: randId)
+        
+        // test normal runs
+        XCTAssertEqual(playerOne.checkForRun([2, 4, 16]), 3)
+        XCTAssert(playerOne.checkForRun([0, 1, 51]) == 0)
+        XCTAssert(playerOne.checkForRun([11, 12, 13]) == 0)
+        XCTAssert(playerOne.checkForRun([2, 0, 1, 3]) == 4)
+        XCTAssert(playerOne.checkForRun([13, 11, 12]) == 0)
+        XCTAssert(playerOne.checkForRun([11, 12]) == 0)
+        XCTAssert(playerOne.checkForRun([0, 12]) == 0)
+        XCTAssertEqual(playerOne.checkForRun([2, 1, 39]), 3)
+        XCTAssertEqual(playerOne.checkForRun([2,4,5,0,1,6,3]), 7)
+        
+        // test runs with pairs inside (in show)
+        var scoringCards: [ScoringHand] = []
+        var points = 0
+
+        // Modify the XCTAssert line and keep the playerOne.checkForRun command
+        playerOne.checkForRun([0,1,1,2], &scoringCards, &points)
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .run && $0.cardsInScoredHand == [0,1,1,2] && $0.cumlativePoints == 6 }))
+        
+        points = 0
+        scoringCards = []
+        playerOne.checkForRun([13,41,27,15], &scoringCards, &points)
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .run && $0.cardsInScoredHand == [13,27,41,15] && $0.cumlativePoints == 6 }))
+        
+        points = 0
+        scoringCards = []
+        playerOne.checkForRun([0,1,1,2,2], &scoringCards, &points)
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .run && $0.cardsInScoredHand == [0,1,1,2,2] && $0.cumlativePoints == 12 }))
+        
+        points = 0
+        scoringCards = []
+        playerOne.checkForRun([4,4,5,6,6], &scoringCards, &points)
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .run && $0.cardsInScoredHand == [4,4,5,6,6] && $0.cumlativePoints == 12 }))
+        
+        points = 0
+        scoringCards = []
+        playerOne.checkForRun([17,30,18,45,6], &scoringCards, &points)
+        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .run && $0.cardsInScoredHand == [17,30,18,45,6] && $0.cumlativePoints == 12 }))
+        
+        await playerOne.deleteGameCollection(id: randId)
+    }
+    
     @MainActor func testCheckForRun() async {
         let playerOne = FirebaseHelper()
         var randId = 0
@@ -401,6 +451,7 @@ final class FirebaseHelperTests: XCTestCase {
         await playerOne.startGameCollection(fullName: "1", testGroupId: randId)
         
         // test normal runs
+        XCTAssertEqual(playerOne.checkForRun([0, 1, 2]), 3)
         XCTAssertEqual(playerOne.checkForRun([2, 4, 16]), 3)
         XCTAssert(playerOne.checkForRun([0, 1, 51]) == 0)
         XCTAssert(playerOne.checkForRun([11, 12, 13]) == 0)
@@ -724,21 +775,44 @@ final class FirebaseHelperTests: XCTestCase {
 //        await playerOne.deleteGameCollection(id: randId)
 //    }
     
-//    @MainActor func testCheckPlayerHandForPoints() async {
-//        let playerOne = FirebaseHelper()
-//        var randId = 0
-//        repeat {
-//            randId = Int.random(in: 10000..<99999)
-//        } while (await playerOne.checkValidId(id: "\(randId)"))
-//        await playerOne.startGameCollection(fullName: "1", testGroupId: randId)
-//        
-//        let scoringPlays = playerOne.checkPlayerHandForPoints([0,1,2,4,9], 11)
-//        XCTAssertTrue(scoringPlays.filter { $0.scoreType == .sum }.count == 4)
-//        XCTAssertTrue(scoringPlays.filter { $0.scoreType == .flush }.count == 1)
-//        XCTAssertEqual(scoringPlays.last!.cumlativePoints, 14)
-//        
-//        await playerOne.deleteGameCollection(id: randId)
-//    }
+    @MainActor func testCheckPlayerHandForPoints() async {
+        let playerOne = FirebaseHelper()
+        var randId = 0
+        repeat {
+            randId = Int.random(in: 10000..<99999)
+        } while (await playerOne.checkValidId(id: "\(randId)"))
+        await playerOne.startGameCollection(fullName: "1", testGroupId: randId)
+        
+        // A, 2, 3, 5, 10, Q
+        var scoringPlays = playerOne.checkCardsForPoints(playerCards: [0,1,2,4,9], 11)
+        XCTAssertTrue(scoringPlays.contains(where: { $0.scoreType == .run }))
+        XCTAssertTrue(scoringPlays.contains(where: { $0.scoreType == .sum }))
+        XCTAssertTrue(scoringPlays.contains(where: { $0.scoreType == .flush }))
+        
+        XCTAssertEqual(scoringPlays.filter { $0.scoreType == .run }.count, 1)
+        XCTAssertEqual(scoringPlays.filter { $0.scoreType == .sum }.count, 4)
+        XCTAssertEqual(scoringPlays.filter { $0.scoreType == .flush }.count, 1)
+        XCTAssertEqual(scoringPlays.last!.cumlativePoints, 16)
+        
+        // 8, 7, 6, 5, J
+        scoringPlays = playerOne.checkCardsForPoints(playerCards: [34,33,6,18], 11)
+        XCTAssertTrue(scoringPlays.contains(where: { $0.scoreType == .run }))
+        XCTAssertTrue(scoringPlays.contains(where: { $0.scoreType == .sum }))
+        
+        XCTAssertEqual(scoringPlays.filter { $0.scoreType == .run }.count, 1)
+        XCTAssertEqual(scoringPlays.filter { $0.scoreType == .sum }.count, 2)
+        XCTAssertEqual(scoringPlays.last!.cumlativePoints, 8)
+        
+        // Q, K, Q, K, Q
+        scoringPlays = playerOne.checkCardsForPoints(playerCards: [37,51,24,25], 11)
+        print(scoringPlays)
+        XCTAssertTrue(scoringPlays.contains(where: { $0.scoreType == .set }))
+        
+        XCTAssertEqual(scoringPlays.filter { $0.scoreType == .set }.count, 2)
+        XCTAssertEqual(scoringPlays.last!.cumlativePoints, 8)
+        
+        await playerOne.deleteGameCollection(id: randId)
+    }
     
     @MainActor func testUpdatePlayerNums() async {
         let playerOne = FirebaseHelper()

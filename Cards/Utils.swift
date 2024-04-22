@@ -430,7 +430,7 @@ struct TimedTextContainer: View {
     var color: Color = .purple
     
     var body: some View {
-        if display {
+//        if display {
             VStack {
                 Text(string)
                     .foregroundStyle(color)
@@ -440,34 +440,34 @@ struct TimedTextContainer: View {
                     .padding(.vertical, 10)
                     .id(string)
                     .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .opacity))
-                    .getSize(onChange: { print($0) })
-                    .onChange(of: textArray, initial: true, {
-                        if !textArray.isEmpty {
-                            for i in 0...textArray.count {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + (visibilityFor * Double(i))) {
-                                    if i >= textArray.count {
-                                        withAnimation {
-                                            print("got here")
-                                            display = false
-                                            string = ""
-                                            textArray.removeAll()
-                                        }
-                                    } else {
-                                        withAnimation {
-                                            string = textArray[i]
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    })
                     .background {
-                        RoundedRectangle(cornerRadius: 5)
-                            .stroke(color, lineWidth: 3)
-                            .background { VisualEffectView(effect: UIBlurEffect(style: .systemThickMaterial)).clipShape(RoundedRectangle(cornerRadius: 5)) }
+                        if !string.isEmpty {
+                            RoundedRectangle(cornerRadius: 5)
+                                .stroke(color, lineWidth: 3)
+                                .background { VisualEffectView(effect: UIBlurEffect(style: .systemThickMaterial)).clipShape(RoundedRectangle(cornerRadius: 5)) }
+                        }
                     }
                 Spacer()
             }
+            .onChange(of: textArray, initial: true, {
+                if !textArray.isEmpty {
+                    for i in 0...textArray.count {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + (visibilityFor * Double(i))) {
+                            if i >= textArray.count {
+                                withAnimation {
+                                    display = false
+                                    string = ""
+                                    textArray.removeAll()
+                                }
+                            } else {
+                                withAnimation {
+                                    string = textArray[i]
+                                }
+                            }
+                        }
+                    }
+                }
+            })
             .frame(height: 100)
             .offset(y: 28)
             .onTapGesture {
@@ -477,7 +477,7 @@ struct TimedTextContainer: View {
                     textArray.removeAll()
                 }
             }
-        }
+//        }
     }
 }
 

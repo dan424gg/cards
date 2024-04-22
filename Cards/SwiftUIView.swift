@@ -1,22 +1,32 @@
 import SwiftUI
 
 struct SwiftUIView: View {
-    @State var counter: Int = 0
+    @State var display: Bool = true
+    @State var text: [String] = ["1 for last card!"]
     
     var body: some View {
         VStack {
-            Text(determineText())
-            Button("incr") {
-                counter += 1
-            }
+            TimedTextContainer(display: $display, textArray: .constant(text), visibilityFor: 2.0)
+                .getSize(onChange: { print($0) })
+//            Button("do something") {
+//                text = ["this again", "another thing"]
+//                display = true
+//            }
         }
     }
+}
+
+struct DetermineText: View {
+    @Binding var counter: Int
     
-    func determineText() -> String {
-        if counter % 2 == 0 {
-            return "\(counter)"
-        } else {
-            return "odd!"
+    var body: some View {
+        VStack {
+            Text("\(counter)")
+            Button("incr") {
+                withAnimation {
+                    counter += 1
+                }
+            }
         }
     }
 }

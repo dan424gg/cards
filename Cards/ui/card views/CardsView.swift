@@ -26,6 +26,18 @@ struct CardsView: View {
     
     var body: some View {
         ZStack {
+//            Button("incr") {
+//                withAnimation {
+//                    gameObservable.game.turn = (gameObservable.game.turn + 1) % 5
+//                }
+////                if gameObservable.game.turn == 3 {
+////                    gameObservable.game.turn = 4
+////                } else {
+////                    gameObservable.game.turn = 3
+////                }
+//            }
+//            .offset(x: -150, y: 200)
+            
             switch (firebaseHelper.gameState?.game_name ?? "cribbage") {
                 case "cribbage":
                     cribbage_userDraggedCards
@@ -37,7 +49,7 @@ struct CardsView: View {
                         .zIndex(1.0)
                     
                     cribbage_commonCardArea
-                        .position(x: specs.maxX / 2, y: specs.maxY * 0.47)
+                        .position(x: specs.maxX / 2, y: specs.maxY * 0.5)
                 default:
                     EmptyView()
             }
@@ -137,7 +149,7 @@ struct CardsView: View {
                 case 2:
                     if firebaseHelper.players == [] {
                         ForEach(Array([PlayerState.player_two, PlayerState.player_three, PlayerState.player_four, PlayerState.player_five, PlayerState.player_six].enumerated()), id: \.offset) { (index, player) in
-                            TurnTwoView(cardsDragged: .constant(player.cards_dragged), cardsInHand: .constant([]), otherPlayer: true)
+                            TurnTwoView(cardsDragged: .constant(player.cards_dragged), cardsInHand: .constant([]), otherPlayer: true, otherPlayerPointCallOut: player.callouts, otherPlayerTeamNumber: player.team_num)
                                 .scaleEffect(0.5)
                                 .rotationEffect(.degrees(-180.0))
                                 .offset(y: -specs.maxY * 0.16)
@@ -148,7 +160,7 @@ struct CardsView: View {
                         }
                     } else {
                         ForEach(Array($firebaseHelper.players.enumerated()), id: \.offset) { (index, player) in
-                            TurnTwoView(cardsDragged: player.cards_dragged, cardsInHand: .constant([]), otherPlayer: true)
+                            TurnTwoView(cardsDragged: player.cards_dragged, cardsInHand: .constant([]), otherPlayer: true, otherPlayerPointCallOut: player.callouts.wrappedValue, otherPlayerTeamNumber: player.team_num.wrappedValue)
                                 .scaleEffect(0.5)
                                 .rotationEffect(.degrees(-180.0))
                                 .offset(y: -specs.maxY * 0.16)
@@ -186,7 +198,6 @@ struct CardsView: View {
                     Text("should not get here")
             }
         }
-        .frame(width: specs.maxX * 0.4, height: specs.maxY * 0.4)
     }
     
     var cribbage_userDraggedCards: some View {
@@ -231,9 +242,13 @@ struct CardsView: View {
                             Text("Submit")
                                 .foregroundStyle(determineSubmitColor())
                                 .font(.custom("LuckiestGuy-Regular", size: 16))
-                                .baselineOffset(-1.6)
+                                .baselineOffset(-5)
                         }
-                        .buttonStyle(.bordered)
+                        .frame(width: 80, height: 32)
+                        .background {
+                            VisualEffectView(effect: UIBlurEffect(style: .prominent))
+                                .clipShape(RoundedRectangle(cornerRadius: 5.0))
+                        }
                     }
                     .disabled(disableCardsDragged)
                 case 2:
@@ -317,18 +332,24 @@ struct CardsView: View {
                         }
 //                    }
                 }
-                .zIndex(0.0)
+                .zIndex(1.0)
                 
                 if firebaseHelper.gameState?.turn ?? gameObservable.game.turn == 4 {
-                    PointContainer(crib: true)
-                        .zIndex(1.0)
-                        .onAppear {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0, execute: {
-                                Task {
-                                    await firebaseHelper.updatePlayer(["is_ready": true])
-                                }
-                            })
-                        }
+                    VStack {
+                        PointContainer(crib: true)
+                            .scaleEffect(2.0)
+                            .offset(y: -90)
+                            .onAppear {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 3.0, execute: {
+                                    Task {
+                                        await firebaseHelper.updatePlayer(["is_ready": true])
+                                    }
+                                })
+                            }
+                    }
+                    .frame(height: 100)
+                    .transition(.move(edge: .bottom))
+                    .zIndex(0.0)
                 }
             }
             .frame(width: 141, height: 100)

@@ -27,18 +27,7 @@ struct GameView: View {
 //                }
 //                .position(x: specs.maxX / 2, y: specs.maxY * 1.5)
 //            }
-//            .zIndex(0.0)
-            
-//            Button("incr") {
-////                gameObservable.game.turn = (gameObservable.game.turn + 1) % 5
-//                if gameObservable.game.turn != 5 {
-//                    gameObservable.game.turn = 5
-//                } else {
-//                    gameObservable.game.turn = 1
-//                }
-//            }
-//            .offset(x: -150, y: 200)
-            
+//            .zIndex(0.0)            
             
             if playingGame {
                 Group {
@@ -68,8 +57,8 @@ struct GameView: View {
                     }
                     
                     if shown {
-                        PointContainer(player: firebaseHelper.playerState ?? PlayerState.player_six, user: true)
-                            .position(x: specs.maxX / 2, y: specs.maxY * 0.71)
+                        PointContainer(player: firebaseHelper.playerState ?? PlayerState.player_one, user: true)
+                            .position(x: specs.maxX / 2, y: specs.maxY * 0.68)
                             .transition(.opacity)
                     }
 
@@ -84,12 +73,12 @@ struct GameView: View {
                     .transition(.move(edge: .bottom))
             }
         }
-//        .onChange(of: gameObservable.game.turn, { (old, new) in
+//        .onChange(of: gameObservable.game.turn, initial: true, { (old, new) in
 //            withAnimation {
-//                if new == 5 {
-//                    playingGame = false
+//                if new == 1 {
+//                    shown = false
 //                } else {
-//                    playingGame = true
+//                    shown = true
 //                }
 //            }
 //        })
@@ -241,8 +230,8 @@ struct PlayingTable: Shape {
         let r = rect.height / 2
         let center = CGPoint(x: rect.midX, y: rect.midY)
         var path = Path()
-//        path.addArc(center: center, radius: r, startAngle: Angle(degrees: 135), endAngle: Angle(degrees: 45), clockwise: false)
-        path.addArc(center: center, radius: r, startAngle: Angle(degrees: 135), endAngle: Angle(degrees: 495), clockwise: false)
+        path.addArc(center: center, radius: r, startAngle: Angle(degrees: 125), endAngle: Angle(degrees: 55), clockwise: false)
+//        path.addArc(center: center, radius: r, startAngle: Angle(degrees: 135), endAngle: Angle(degrees: 495), clockwise: false)
         return path
     }
 }
