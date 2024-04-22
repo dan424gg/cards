@@ -26,17 +26,30 @@ struct CardsView: View {
     
     var body: some View {
         ZStack {
+//            Button("incr") {
+//                withAnimation {
+//                    gameObservable.game.turn = (gameObservable.game.turn + 1) % 5
+//                }
+////                if gameObservable.game.turn == 3 {
+////                    gameObservable.game.turn = 4
+////                } else {
+////                    gameObservable.game.turn = 3
+////                }
+//            }
+//            .offset(x: -150, y: 200)
+            
             switch (firebaseHelper.gameState?.game_name ?? "cribbage") {
                 case "cribbage":
                     cribbage_userDraggedCards
-                        .position(x: specs.maxX / 2, y: specs.maxY * 0.7)
+                        .position(x: specs.maxX / 2, y: specs.maxY * 0.675)
+                        .offset(y: 50)
                     
                     cribbage_otherPlayersCards
                         .position(x: specs.maxX / 2, y: specs.maxY * 0.4)
                         .zIndex(1.0)
                     
                     cribbage_commonCardArea
-                        .position(x: specs.maxX / 2, y: specs.maxY * 0.55)
+                        .position(x: specs.maxX / 2, y: specs.maxY * 0.5)
                 default:
                     EmptyView()
             }
@@ -44,6 +57,7 @@ struct CardsView: View {
             CardInHandArea(cards: $cards, cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
                 .position(x: specs.maxX / 2, y: specs.maxY * 1.05)
                 .zIndex(1.0)
+                .offset(y: 50)
         }
         .onChange(of: firebaseHelper.playerState?.cards_in_hand, {
             guard firebaseHelper.playerState != nil else {
@@ -112,7 +126,7 @@ struct CardsView: View {
                     if firebaseHelper.players == [] {
                         ForEach(Array([PlayerState.player_two, PlayerState.player_three, PlayerState.player_four, PlayerState.player_five, PlayerState.player_six].enumerated()), id: \.offset) { (index, player) in
                             CardInHandArea(cards: $cards, cardsDragged: .constant([]), cardsInHand: .constant(player.cards_in_hand), showBackside: true)
-                                .scaleEffect(0.3)
+                                .scaleEffect(0.25)
                                 .rotationEffect(.degrees(-180.0))
                                 .offset(y: -specs.maxY * 0.18)
                                 .rotationEffect(.degrees(Double(startingRotation + (multiplier * index))))
@@ -123,7 +137,7 @@ struct CardsView: View {
                     } else {
                         ForEach(Array($firebaseHelper.players.enumerated()), id: \.offset) { (index, player) in
                             CardInHandArea(cards: $cards, cardsDragged: .constant([]), cardsInHand: player.cards_in_hand, showBackside: true)
-                                .scaleEffect(0.2)
+                                .scaleEffect(0.25)
                                 .rotationEffect(.degrees(-180.0))
                                 .offset(y: -specs.maxY * 0.18)
                                 .rotationEffect(.degrees(Double(startingRotation + (multiplier * index))))
@@ -135,10 +149,10 @@ struct CardsView: View {
                 case 2:
                     if firebaseHelper.players == [] {
                         ForEach(Array([PlayerState.player_two, PlayerState.player_three, PlayerState.player_four, PlayerState.player_five, PlayerState.player_six].enumerated()), id: \.offset) { (index, player) in
-                            TurnTwoView(cardsDragged: .constant(player.cards_dragged), cardsInHand: .constant([]), otherPlayer: true)
-                                .scaleEffect(0.4)
+                            TurnTwoView(cardsDragged: .constant(player.cards_dragged), cardsInHand: .constant([]), otherPlayer: true, otherPlayerPointCallOut: player.callouts, otherPlayerTeamNumber: player.team_num)
+                                .scaleEffect(0.5)
                                 .rotationEffect(.degrees(-180.0))
-                                .offset(y: -specs.maxY * 0.17)
+                                .offset(y: -specs.maxY * 0.16)
                                 .rotationEffect(.degrees(Double(startingRotation + (multiplier * index))))
                         }
                         .onAppear {
@@ -146,10 +160,10 @@ struct CardsView: View {
                         }
                     } else {
                         ForEach(Array($firebaseHelper.players.enumerated()), id: \.offset) { (index, player) in
-                            TurnTwoView(cardsDragged: player.cards_dragged, cardsInHand: .constant([]), otherPlayer: true)
-                                .scaleEffect(0.4)
+                            TurnTwoView(cardsDragged: player.cards_dragged, cardsInHand: .constant([]), otherPlayer: true, otherPlayerPointCallOut: player.callouts.wrappedValue, otherPlayerTeamNumber: player.team_num.wrappedValue)
+                                .scaleEffect(0.5)
                                 .rotationEffect(.degrees(-180.0))
-                                .offset(y: -specs.maxY * 0.17)
+                                .offset(y: -specs.maxY * 0.16)
                                 .rotationEffect(.degrees(Double(startingRotation + (multiplier * index))))
                         }
                         .onAppear {
@@ -160,7 +174,7 @@ struct CardsView: View {
                     if firebaseHelper.players == [] {
                         ForEach(Array([PlayerState.player_two, PlayerState.player_three, PlayerState.player_four, PlayerState.player_five, PlayerState.player_six].enumerated()), id: \.offset) { (index, player) in
                             CardInHandArea(cards: $cards, cardsDragged: .constant([]), cardsInHand: .constant(player.cards_in_hand), showBackside: false)
-                                .scaleEffect(0.3)
+                                .scaleEffect(0.25)
                                 .rotationEffect(.degrees(-180.0))
                                 .offset(y: -specs.maxY * 0.18)
                                 .rotationEffect(.degrees(Double(startingRotation + (multiplier * index))))
@@ -171,7 +185,7 @@ struct CardsView: View {
                     } else {
                         ForEach(Array($firebaseHelper.players.enumerated()), id: \.offset) { (index, player) in
                             CardInHandArea(cards: $cards, cardsDragged: .constant([]), cardsInHand: player.cards_in_hand, showBackside: false)
-                                .scaleEffect(0.3)
+                                .scaleEffect(0.25)
                                 .rotationEffect(.degrees(-180.0))
                                 .offset(y: -specs.maxY * 0.18)
                                 .rotationEffect(.degrees(Double(startingRotation + (multiplier * index))))
@@ -184,7 +198,6 @@ struct CardsView: View {
                     Text("should not get here")
             }
         }
-        .frame(width: specs.maxX * 0.4, height: specs.maxY * 0.4)
     }
     
     var cribbage_userDraggedCards: some View {
@@ -192,9 +205,7 @@ struct CardsView: View {
             switch (firebaseHelper.gameState?.turn ?? gameObservable.game.turn) {
                 case 1:
                     VStack {
-                        Text("Pick \(firebaseHelper.gameState?.num_players ?? gameObservable.game.num_players == 2 ? "two cards" : "one card") for the crib!")
-                            .font(.custom("LuckiestGuy-Regular", size: 16))
-                            .offset(y: 1.6)
+                        determineTextForTurnOne()
                         Spacer()
                         HStack(spacing: 20) {
                             ForEach(cardsDragged, id: \.self) { card in
@@ -215,17 +226,28 @@ struct CardsView: View {
                                 return
                             }
                             
-                            Task {
-                                disableCardsDragged = true
-                                await firebaseHelper.updateGame(["crib": cardsDragged], arrayAction: .append)
-                                await firebaseHelper.updatePlayer(["cards_in_hand": cardsDragged], arrayAction: .remove)
-                                await firebaseHelper.updatePlayer(["is_ready": true], arrayAction: .replace)
+                            if playerReady() {
+                                Task {
+                                    disableCardsDragged = true
+                                    let tempCardsDragged = cardsDragged
+                                    cardsDragged.removeAll()
+                                    await firebaseHelper.updateGame(["crib": tempCardsDragged], arrayAction: .append)
+                                    await firebaseHelper.updatePlayer(["cards_in_hand": tempCardsDragged], arrayAction: .remove)
+                                    await firebaseHelper.updatePlayer(["is_ready": true], arrayAction: .replace)
+                                }
+                            } else {
+                                // show error
                             }
                         } label: {
                             Text("Submit")
                                 .foregroundStyle(determineSubmitColor())
                                 .font(.custom("LuckiestGuy-Regular", size: 16))
-                                .offset(y: 1.6)
+                                .baselineOffset(-5)
+                        }
+                        .frame(width: 80, height: 32)
+                        .background {
+                            VisualEffectView(effect: UIBlurEffect(style: .prominent))
+                                .clipShape(RoundedRectangle(cornerRadius: 5.0))
                         }
                     }
                     .disabled(disableCardsDragged)
@@ -233,12 +255,14 @@ struct CardsView: View {
                     VStack {
                         if firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn == firebaseHelper.playerState?.player_num ?? 0 {
                             Text("Play a card!")
+                                .foregroundStyle(Color.theme.textColor)
                                 .font(.custom("LuckiestGuy-Regular", size: 16))
-                                .offset(y: 1.6)
+                                .baselineOffset(-1.6)
                         } else {
-                            Text("Waiting...")
+                            Text("Waiting for other players...")
+                                .foregroundStyle(Color.theme.textColor)
                                 .font(.custom("LuckiestGuy-Regular", size: 16))
-                                .offset(y: 1.6)
+                                .baselineOffset(-1.6)
                         }
                         Spacer()
                         TurnTwoView(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
@@ -263,13 +287,13 @@ struct CardsView: View {
                                 cardsInHand = cardsDragged
                             }
                     }
-                    .offset(y: -10)
                 case 3:
                     ZStack {
                         VStack {
                             Text("Time to score hands!")
+                                .foregroundStyle(Color.theme.textColor)
                                 .font(.custom("LuckiestGuy-Regular", size: 16))
-                                .offset(y: 1.6)
+                                .baselineOffset(-1.6)
                             Spacer()
                         }
                     }
@@ -277,86 +301,153 @@ struct CardsView: View {
                     ZStack {
                         VStack {
                             Text("and the crib!")
+                                .foregroundStyle(Color.theme.textColor)
                                 .font(.custom("LuckiestGuy-Regular", size: 16))
-                                .offset(y: 1.6)
+                                .baselineOffset(-1.6)
                             Spacer()
                         }
                     }
                 default: EmptyView()
             }
         }
-        .frame(width: 250, height: 150)
+        .padding()
+        .background {
+            if (firebaseHelper.gameState?.turn ?? gameObservable.game.turn) != 0 {
+                RoundedRectangle(cornerRadius: 25.0)
+                    .stroke(Color.theme.white, lineWidth: 5.0)
+                    .fill(Color.theme.background)
+            }
+        }
+        .frame(width: 300, height: 200)
     }
     
     var cribbage_commonCardArea: some View {
-        HStack(spacing: -20) {
+        HStack(spacing: 30) {
             ZStack {
                 HStack(spacing: -33) {
-                    if firebaseHelper.gameState?.turn ?? gameObservable.game.turn > 1 {
+//                    if firebaseHelper.gameState?.turn ?? gameObservable.game.turn > 1 {
                         ForEach(Array(firebaseHelper.gameState?.crib.enumerated() ?? gameObservable.game.crib.enumerated()), id: \.offset) { (index, cardId) in
                             CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(false), backside: $dontShowCrib)
                                 .matchedGeometryEffect(id: cardId, in: namespace)
                         }
-                    }
+//                    }
                 }
-                .zIndex(0.0)
+                .zIndex(1.0)
                 
                 if firebaseHelper.gameState?.turn ?? gameObservable.game.turn == 4 {
-                    PointContainer(crib: true)
-                        .zIndex(1.0)
-                        .onAppear {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0, execute: {
-                                Task {
-                                    await firebaseHelper.updatePlayer(["is_ready": true])
-                                }
-                            })
-                        }
+                    VStack {
+                        PointContainer(crib: true)
+                            .scaleEffect(2.0)
+                            .offset(y: -90)
+                            .onAppear {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 3.0, execute: {
+                                    Task {
+                                        await firebaseHelper.updatePlayer(["is_ready": true])
+                                    }
+                                })
+                            }
+                    }
+                    .frame(height: 100)
+                    .transition(.move(edge: .bottom))
+                    .zIndex(0.0)
                 }
             }
-            .frame(width: 185, height: 100)
-            .scaleEffect(0.66)
+            .frame(width: 141, height: 100)
 
             ZStack {
                 CardView(cardItem: CardItem(id: firebaseHelper.gameState?.starter_card ?? gameObservable.game.starter_card), cardIsDisabled: .constant(true), backside: $dontShowStarter, naturalOffset: true)
                     .offset(x: -0.1 * Double(cards.endIndex), y: -0.1 * Double(cards.endIndex))
-                    .scaleEffect(0.66)
                     .zIndex(1.0)
                 
                 DeckOfCardsView(cards: $cards)
-                    .scaleEffect(0.66)
                     .zIndex(0.0)
             }
         }
+        .scaleEffect(0.55)
+        .frame(width: 150, height: 100)
     }
     
     func determineSubmitColor() -> Color {
+        if disableCardsDragged {
+            return .gray
+        } else if playerReady() {
+            return .green
+        } else {
+            return .red
+        }
+    }
+    
+    // used for turn one in cribbage
+    func playerReady() -> Bool {
+        switch (firebaseHelper.gameState?.num_players ?? gameObservable.game.num_players) {
+            case 2, 4:
+                return cardsDragged.count == 2
+            case 3:
+                return cardsDragged.count == 1
+            case 6:
+                if ((firebaseHelper.playerState?.player_num ?? 0) != (firebaseHelper.gameState?.dealer ?? gameObservable.game.dealer)
+                    && (((firebaseHelper.playerState?.player_num ?? 0) + 1) % (firebaseHelper.gameState?.num_players ?? gameObservable.game.num_players)) != (firebaseHelper.gameState?.dealer ?? gameObservable.game.dealer)) {
+                    return cardsDragged.count == 1
+                } else {
+                    return cardsDragged.count == 0
+                }
+            default:
+                return false
+        }
+    }
+    
+    // used for turn one in cribbage
+    func determineTextForTurnOne() -> some View {
+        ZStack {
+            switch (firebaseHelper.gameState?.num_players ?? gameObservable.game.num_players) {
+                case 2, 4:
+                    if playerReady() && disableCardsDragged {
+                        Text("Waiting for players to discard...")
+                            .font(.custom("LuckiestGuy-Regular", size: 16))
+                            .baselineOffset(-1.6)
+                    } else {
+                        Text("Pick \(firebaseHelper.gameState?.num_players ?? gameObservable.game.num_players == 2 ? "two cards" : "one card") for the crib!")
+                            .font(.custom("LuckiestGuy-Regular", size: 16))
+                            .baselineOffset(-1.6)
+                    }
+                case 3:
+                    if playerReady() && disableCardsDragged {
+                        Text("Waiting for players to discard...")
+                            .font(.custom("LuckiestGuy-Regular", size: 16))
+                            .baselineOffset(-1.6)
+                    } else {
+                        Text("Pick \(firebaseHelper.gameState?.num_players ?? gameObservable.game.num_players == 2 ? "two cards" : "one card") for the crib!")
+                            .font(.custom("LuckiestGuy-Regular", size: 16))
+                            .baselineOffset(-1.6)
+                    }
+                case 6:
+                    if playerReady() && disableCardsDragged {
+                        Text("Waiting for players to discard...")
+                            .font(.custom("LuckiestGuy-Regular", size: 16))
+                            .baselineOffset(-1.6)
+                    } else {
+                        Text("Pick \(firebaseHelper.gameState?.num_players ?? gameObservable.game.num_players == 2 ? "two cards" : "one card") for the crib!")
+                            .font(.custom("LuckiestGuy-Regular", size: 16))
+                            .baselineOffset(-1.6)
+                    }
+                default:
+                    Text("Shouldn't have got here")
+            }
+        }
+        .foregroundStyle(.white)
+    }
+    
+    func determineNumberOfCards() -> String {
         switch (firebaseHelper.gameState?.game_name ?? gameObservable.game.game_name) {
             case "cribbage":
-                switch (firebaseHelper.gameState?.turn ?? gameObservable.game.turn) {
-                    case 1:
-                        if firebaseHelper.gameState?.num_players ?? gameObservable.game.num_players == 2 {
-                            if cardsDragged.count < 2 {
-                                return .red
-                            } else {
-                                return .green
-                            }
-                        } else {
-                            if cardsDragged.count < 1 {
-                                return .red
-                            } else {
-                                return .green
-                            }
-                        }
-                    case 2:
-                        if cardsDragged.count - (firebaseHelper.playerState?.cards_dragged.count ?? 0) < 1 {
-                            return .red
-                        } else {
-                            return .green
-                        }
-                    default: return .black
+                if firebaseHelper.gameState?.num_players ?? gameObservable.game.num_players == 2
+                    || firebaseHelper.gameState?.num_players ?? gameObservable.game.num_players == 4 {
+                    return "two cards"
+                } else {
+                    return "one card"
                 }
-                
-            default: return .black
+            default:
+                return "no cards"
         }
     }
     

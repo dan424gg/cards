@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import Firebase
 import FirebaseCore
 import FirebaseFirestore
 import FirebaseFirestoreSwift
@@ -86,7 +87,6 @@ import FirebaseFirestoreSwift
         error = ""
         showError = false
     }
-    
     
     func updatePlayer(_ newState: [String: Any], uid: String? = nil, arrayAction: ArrayActionType? = nil) async {
         guard docRef != nil else {
@@ -206,13 +206,41 @@ import FirebaseFirestoreSwift
 
                         break
                         
+                    case "callouts":
+                        guard type(of: value) is [String].Type else {
+                            print("\(value) needs to be [Int] in updatePlayer()!")
+                            return
+                        }
+                                                
+                        switch (arrayAction) {
+                            case .append:
+                                try await docRef.collection("players").document("\(uid ?? playerState!.uid)").updateData([
+                                    "\(key)": FieldValue.arrayUnion(value as! [String])
+                                ])
+                                break
+                            case .remove:
+                                try await docRef.collection("players").document("\(uid ?? playerState!.uid)").updateData([
+                                    "\(key)": FieldValue.arrayRemove(value as! [String])
+                                ])
+                                break
+                            case .replace:
+                                try await docRef.collection("players").document("\(uid ?? playerState!.uid)").updateData([
+                                    "\(key)": value as! [String]
+                                ])
+                                break
+                            default:
+                                print("UPDATEPLAYER: you have to have an action flag set to manipulate callouts!")
+                                return
+                        }
+                        break
+                        
                     default:
                         print("UPDATEPLAYER: property: \(key) doesn't exist or can't be changed when trying to update player!")
                         return
                 }
             }
         } catch {
-            print("UPDATEPLAYER: \(error)")
+            print("UPDATEPLAYER error: \(error)")
         }
     }
    
@@ -222,7 +250,7 @@ import FirebaseFirestoreSwift
             return
         }
       
-        // type check updated states
+        // type checked updated states
         do {
             for (key, value) in newState {
                 switch (key) {
@@ -736,6 +764,12 @@ import FirebaseFirestoreSwift
         teamsListener.remove()
     }
     
+    func logAnalytics(_ event: String, _ parameters: [String : Any]? = nil) {
+        if false {
+            Analytics.logEvent(event, parameters: parameters)
+        }
+    }
+    
     func changeTeam(newTeamNum: Int) async {
         guard playerState != nil else {
             print("playerState was nil before trying to change it's team")
@@ -934,89 +968,104 @@ import FirebaseFirestoreSwift
         
         await updateGame(["starter_card": gameState!.cards.removeFirst(), "cards": gameState!.cards], arrayAction: .replace)
     }
-    
-    func checkCardsForPoints(player: PlayerState? = nil, crib: [Int]? = nil, _ starterCard: Int) -> [ScoringHand] {
-        guard (player != nil) ^ (crib != nil) else {
+
+    func checkCardsForPoints(playerCards: [Int], _ starterCard: Int) -> [ScoringHand] {
+        guard !playerCards.isEmpty else {
             return []
-        }
-//        guard playerState != nil, gameState != nil, teamState != nil else {
-//            return []
-//        }
-        
-        if player?.cards_in_hand == [] {
-            return []
-        }
-        
-        var cards: [Int] {
-            if (player != nil) {
-                player!.cards_in_hand
-            } else {
-                crib!
-            }
         }
         
         var points: Int = 0
         var scoringPlays: [ScoringHand] = []
 
-        checkForSum(cards + [starterCard], 15, &scoringPlays, &points)
-        checkForRun(cards + [starterCard], &scoringPlays, &points)
-        checkForSets(cards + [starterCard], &scoringPlays, &points)
-        checkForFlush(cards, starterCard, &scoringPlays, &points)
-        checkForNobs(cards, starterCard, &scoringPlays, &points)
+        checkForSum(playerCards + [starterCard], 15, &scoringPlays, &points)
+        checkForRun(playerCards + [starterCard], &scoringPlays, &points)
+        checkForSets(playerCards + [starterCard], &scoringPlays, &points)
+        checkForFlush(playerCards, starterCard, &scoringPlays, &points)
+        checkForNobs(playerCards, starterCard, &scoringPlays, &points)
+        
+        return scoringPlays
+    }
+    
+    func checkCardsForPoints(crib: [Int], _ starterCard: Int) -> [ScoringHand] {
+        guard !crib.isEmpty else {
+            return []
+        }
+        
+        var points: Int = 0
+        var scoringPlays: [ScoringHand] = []
+
+        checkForSum(crib + [starterCard], 15, &scoringPlays, &points)
+        checkForRun(crib + [starterCard], &scoringPlays, &points)
+        checkForSets(crib + [starterCard], &scoringPlays, &points)
+        checkForFlush(crib, starterCard, &scoringPlays, &points)
+        checkForNobs(crib, starterCard, &scoringPlays, &points)
                 
         return scoringPlays
     }
     
-    func managePlayTurn(cardInPlay: Int? = nil, pointsCallOut: inout [String]) async -> Int {
+    func managePlayTurn(cardInPlay: Int? = nil, pointsCallOut: inout [String], otherPlayer: Bool = false) async -> Int {
         guard gameState != nil else {
             return 0
         }
+        
         guard let cardNumber = cardInPlay else {
             if gameState!.num_go == (gameState!.num_players - 1) {
                 pointsCallOut.append("GO for 1!")
-                await updateGame(["num_go": 0, "running_sum": 0, "play_cards": [] as! [Int]], arrayAction: .replace)
+                if !otherPlayer {
+                    await updateGame(["num_go": 0, "running_sum": 0, "play_cards": [] as! [Int]], arrayAction: .replace)
+                }
                 return 1
             } else {
                 pointsCallOut.append("GO!")
-                await updateGame(["num_go": gameState!.num_go + 1])
+                if !otherPlayer {
+                    await updateGame(["num_go": gameState!.num_go + 1])
+                }
                 return 0
             }
         }
         
         var points = 0
         let card = CardItem(id: cardNumber).card
-        let lastThreeCards = gameState!.play_cards.suffix(3)
+        let playCards = gameState!.play_cards
+        let runningSum = gameState!.running_sum
+        let lastThreeCards = playCards.suffix(3)
         
         // Check for 15
-        if card.pointValue + gameState!.running_sum == 15 {
+        if card.pointValue + runningSum == 15 {
             points += 2
             pointsCallOut.append("15 for \(points)!")
-            await updateGame([
-                "running_sum": (gameState!.running_sum + card.pointValue) % 31,
-                "play_cards": [cardNumber],
-                "num_cards_in_play": 1
-            ], arrayAction: .append)
+            if !otherPlayer {
+                await updateGame([
+                    "running_sum": (runningSum + card.pointValue) % 31,
+                    "play_cards": [cardNumber],
+                    "num_cards_in_play": 1
+                ], arrayAction: .append)
+            }
         }
         // Check for 31
-        else if card.pointValue + gameState!.running_sum == 31 {
+        else if card.pointValue + runningSum == 31 {
             points += 2
             pointsCallOut.append("31 for \(points)!")
-            await updateGame(["running_sum": 0,
-                              "play_cards": [] as! [Int]
-                             ], arrayAction: .replace)
-            await updateGame(["num_cards_in_play": 1], arrayAction: .append)
+            if !otherPlayer {
+                await updateGame(["running_sum": 0,
+                                  "play_cards": [] as! [Int]
+                                 ], arrayAction: .replace)
+                await updateGame(["num_cards_in_play": 1], arrayAction: .append)
+            }
         }
-        else if (card.pointValue + gameState!.running_sum > 31) {
+        else if (card.pointValue + runningSum > 31) {
             pointsCallOut.append("You can't go over 31!")
             return -1
         }
         // Add card to running_sum
         else {
-            await updateGame([
-                "running_sum": (gameState!.running_sum + card.pointValue) % 31,
-                "play_cards": [cardNumber],
-                "num_cards_in_play": 1
-            ], arrayAction: .append)
+            if !otherPlayer {
+                await updateGame([
+                    "running_sum": (runningSum + card.pointValue) % 31,
+                    "play_cards": [cardNumber],
+                    "num_cards_in_play": 1
+                ], arrayAction: .append)
+            }
         }
         
         // Check for pairs, pair royal, and double pair royal
@@ -1039,24 +1088,18 @@ import FirebaseFirestoreSwift
         }
         
         // Check for run
-        let numberOfCardsInRun = checkForRun(gameState!.play_cards)
+        let numberOfCardsInRun = checkForRun(playCards)
         if numberOfCardsInRun != 0 {
             points += numberOfCardsInRun
             pointsCallOut.append("Run of \(numberOfCardsInRun) for \(points)!")
         }
-        
-        // if current player has one card and every other player has no cards
-//        if (players.filter { player in player.player_num != playerState!.player_num }.allSatisfy({ player in player.cards_in_hand.count == 0 }) && playerState!.cards_in_hand.count <= 1) {
-//            points += 1
-//            pointsCallOut.append("\(points) for last card!")
-//        }
         
         if (gameState!.num_cards_in_play == (gameState!.num_players * 4)) {
             points += 1
             pointsCallOut.append("\(points) for last card!")
         }
         
-        if (gameState?.num_go ?? 0) > 0 {
+        if !otherPlayer && (gameState?.num_go ?? 0) > 0 {
             await updateGame(["num_go": 0])
         }
         
@@ -1076,6 +1119,10 @@ import FirebaseFirestoreSwift
     }
     
     func checkForFlush(_ cards: [Int], _ starterCard: Int, _ scoringHands: inout [ScoringHand], _ points: inout Int) {
+        guard cards != [] else {
+            return
+        }
+        
         let suit = CardItem(id: cards[0]).card.suit
         
         if (cards.allSatisfy { CardItem(id: $0).card.suit == suit }) {
@@ -1149,9 +1196,9 @@ import FirebaseFirestoreSwift
         var maxNumOfCardsInRun = 0
         
         for i in 3...cards.count {
-            var numOfCardsInRun = 0
+            var numOfCardsInRun = 1
             var multiplier = 1
-            let runOfCards = Array(cards.suffix(i)).sorted(by: { CardItem(id: $0) < CardItem(id: $1) })
+            let runOfCards = Array(cards.sorted(by: { CardItem(id: $0) < CardItem(id: $1) }).prefix(i))
 
             // check if runOfCards is valid
             for c in 1..<runOfCards.count {
@@ -1162,16 +1209,18 @@ import FirebaseFirestoreSwift
                     multiplier *= 2
                 } else if (secondCard - firstCard != 1) {
                     multiplier = 1
-                    numOfCardsInRun = 0
+                    numOfCardsInRun = 1
                     break
                 } else {
                     numOfCardsInRun += 1
                 }
             }
             
-            if (((numOfCardsInRun + 1) * multiplier) > maxNumOfCardsInRun) {
-                maxNumOfCardsInRun = ((numOfCardsInRun + 1) * multiplier)
-                runOfCardsInMaxRun = runOfCards
+            if numOfCardsInRun > 2 {
+                if (((numOfCardsInRun) * multiplier) > maxNumOfCardsInRun) {
+                    maxNumOfCardsInRun = ((numOfCardsInRun) * multiplier)
+                    runOfCardsInMaxRun = runOfCards
+                }
             }
         }
         

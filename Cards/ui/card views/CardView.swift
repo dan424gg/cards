@@ -58,7 +58,7 @@ struct CardView: View {
                     ZStack {
                         Text(cardItem.card.value)
                             .font(.custom("LuckiestGuy-Regular", size: 18))
-                            .offset(y: 2.2)
+                            .baselineOffset(-2.2)
                             .position(x: cardItem.card.value == "10" ? 11 : 9, y: 11)
                         Image(systemName: "suit.\(cardItem.card.suit).fill")
                             .font(.system(size: 11))
@@ -66,7 +66,7 @@ struct CardView: View {
                         
                         Text(cardItem.card.value)
                             .font(.custom("LuckiestGuy-Regular", size: 18))
-                            .offset(y: 2.2)
+                            .baselineOffset(-2.2)
                             .position(x: cardItem.card.value == "10" ? 11 : 9, y: 11)
                             .rotationEffect(.degrees(180.0))
                         Image(systemName: "suit.\(cardItem.card.suit).fill")

@@ -30,7 +30,7 @@ struct TeamPicker: View {
                     Text("\(teamNum)")
                         .foregroundStyle(Color.theme.primary)
                         .font(.custom("LuckiestGuy-Regular", size: 18))
-                        .offset(y: 1.8)
+                        .baselineOffset(-1.8)
                 }
             }
         }

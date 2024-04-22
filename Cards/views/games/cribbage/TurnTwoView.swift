@@ -20,35 +20,62 @@ struct TurnTwoView: View {
     @State var timer: Timer?
     @State var displayTimedTextContainer: Bool = false
     @State var points: Int = -1
+    @State var color: Color = .purple
     
     var otherPlayer: Bool = false
+    var otherPlayerPointCallOut: [String] = []
+    var otherPlayerTeamNumber: Int = -1
     
     var body: some View {
         VStack {
-            ZStack {
-                HStack {
-                    if (showAllCards) {
-                        horizontalViewOfCards
-//                            .frame(width: 200, height: 100)
-                    } else {
-                        stackedViewOfCards
-                            .frame(width: 60, height: 100)
+            if otherPlayer {
+                ZStack {
+                    HStack {
+                        if (showAllCards) {
+                            horizontalViewOfCards
+                        } else {
+                            stackedViewOfCards
+                                .frame(width: 60, height: 100)
+                        }
                     }
+                    .transition(.offset())
                     
-                    if !otherPlayer {
+                    TimedTextContainer(display: $displayTimedTextContainer, textArray: .constant(otherPlayerPointCallOut), visibilityFor: 2.0, color: color)
+                        .onAppear {
+                            if let team = firebaseHelper.teams.first(where: { $0.team_num == otherPlayerTeamNumber }) {
+                                color = Color("\(team.color)")
+                            }
+                        }
+                }
+                .frame(width: 167, height: 100)
+            } else {
+                ZStack {
+                    HStack {
+                        if (showAllCards) {
+                            horizontalViewOfCards
+                        } else {
+                            stackedViewOfCards
+                                .frame(width: 60, height: 100)
+                        }
+                        
                         VStack {
                             Text("\(firebaseHelper.gameState?.running_sum ?? 14)")
+                                .foregroundStyle(Color.theme.textColor)
                                 .font(.custom("LuckiestGuy-Regular", size: 16))
-                                .offset(y: 1.6)
+                                .baselineOffset(-1.6)
                             
                             Button {
                                 handleGoButton()
                             } label: {
-                                Text("Go")
+                                Text("GO")
                                     .font(.custom("LuckiestGuy-Regular", size: 16))
-                                    .offset(y: 1.6)
+                                    .baselineOffset(-5)
                             }
-                            .buttonStyle(.bordered)
+                            .frame(width: 68, height: 32)
+                            .background {
+                                VisualEffectView(effect: UIBlurEffect(style: .prominent))
+                                    .clipShape(RoundedRectangle(cornerRadius: 5.0))
+                            }
                             .disabled(handleDisabledState())
                             
                             Button {
@@ -58,19 +85,25 @@ struct TurnTwoView: View {
                             } label: {
                                 Text("Show")
                                     .font(.custom("LuckiestGuy-Regular", size: 16))
-                                    .offset(y: 1.6)
+                                    .baselineOffset(-5)
                             }
-                            .buttonStyle(.bordered)
+                            .frame(width: 68, height: 32)
+                            .background {
+                                VisualEffectView(effect: UIBlurEffect(style: .prominent))
+                                    .clipShape(RoundedRectangle(cornerRadius: 5.0))
+                            }
                         }
                     }
+                    .transition(.offset())
+                    
+                    TimedTextContainer(display: $displayTimedTextContainer, textArray: $pointsCallOut, visibilityFor: 2.0, color: color)
+                        .onAppear {
+                            if let team = firebaseHelper.teamState {
+                                color = Color("\(team.color)")
+                            }
+                        }
                 }
-                .transition(.offset())
                 
-                TimedTextContainer(display: $displayTimedTextContainer, textArray: $pointsCallOut, visibilityFor: 2.0)
-                    .shadow(color: .white, radius: 10)
-            }
-            
-            if (!otherPlayer) {
                 Button {
                     Task {
                         await handleSubmitButton()
@@ -79,13 +112,17 @@ struct TurnTwoView: View {
                     Text("Submit")
                         .foregroundStyle(invalid ? .red : .green)
                         .font(.custom("LuckiestGuy-Regular", size: 16))
-                        .offset(y: 1.6)
+                        .baselineOffset(-5)
                 }
-                .buttonStyle(.bordered)
+                .frame(width: 80, height: 32)
+                .background {
+                    VisualEffectView(effect: UIBlurEffect(style: .prominent))
+                        .clipShape(RoundedRectangle(cornerRadius: 5.0))
+                }
                 .disabled(invalid)
             }
         }
-        .frame(height: 100)
+        .frame(height: 140)
         .onAppear {
             guard firebaseHelper.playerState != nil, firebaseHelper.gameState != nil, firebaseHelper.playerState!.is_lead else {
                 return
@@ -95,29 +132,23 @@ struct TurnTwoView: View {
                 await firebaseHelper.updateGame(["player_turn": (firebaseHelper.gameState!.dealer + 1) % firebaseHelper.gameState!.num_players])
             }
         }
-        .onChange(of: cardsInHand, {
-            
-        })
         .onChange(of: cardsDragged, { (old, new) in
-            guard !otherPlayer, !cardsDragged.isEmpty else {
+            guard !cardsDragged.isEmpty else {
                 return
             }
-            
-            Task {
-                var callouts: [String] = []
-                
-                if checkForValidityOfPlay(cardsDragged.last ?? -1, runningSum: firebaseHelper.gameState?.running_sum ?? 32, pointsCallOut: &callouts) {
-                    invalid = false
-                } else if (cardsDragged.count - (firebaseHelper.playerState?.cards_dragged.count ?? 0) == 1) {
-                    pointsCallOut = callouts
-                    displayTimedTextContainer = true
-                    invalid = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4, execute: {
-                        withAnimation {
-                            cardsInHand.append(cardsDragged.removeLast())
-                        }
-                    })
-                }
+
+            var callouts: [String] = []
+            if checkForValidityOfPlay(cardsDragged.last ?? -1, runningSum: firebaseHelper.gameState?.running_sum ?? 32, pointsCallOut: &callouts) {
+                invalid = false
+            } else if (cardsDragged.count - (firebaseHelper.playerState?.cards_dragged.count ?? 0) == 1) {
+                pointsCallOut = callouts
+                displayTimedTextContainer = true
+                invalid = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4, execute: {
+                    withAnimation {
+                        cardsInHand.append(cardsDragged.removeLast())
+                    }
+                })
             }
         })
     }
@@ -139,7 +170,7 @@ struct TurnTwoView: View {
                     }
                     .padding()
                 }
-                .frame(width: 200, height: 100)
+                .frame(width: 160, height: 100)
             } else {
                 HStack(spacing: 5) {
                     ForEach(Array(cardsDragged.reversed().enumerated()), id: \.offset) { (index, cardId) in
@@ -184,6 +215,7 @@ struct TurnTwoView: View {
                     let points = await firebaseHelper.managePlayTurn(cardInPlay: nil, pointsCallOut: &callouts)
                     pointsCallOut = callouts
                     
+                    await firebaseHelper.updatePlayer(["callouts": pointsCallOut], arrayAction: .replace)
                     await firebaseHelper.updateTeam(["points": points + teamState.points])
                     await firebaseHelper.updateGame(["player_turn": (firebaseHelper.gameState!.player_turn + 1) % firebaseHelper.gameState!.num_players])
                     
@@ -268,6 +300,7 @@ struct TurnTwoView: View {
         }
         
         invalid = true
+        await firebaseHelper.updatePlayer(["callouts": pointsCallOut], arrayAction: .replace)
         await firebaseHelper.updateTeam(["points": points + firebaseHelper.teamState!.points])
         await firebaseHelper.updatePlayer(["cards_dragged": cardsDragged], arrayAction: .append)
         await firebaseHelper.updateGame(["player_turn": (firebaseHelper.gameState!.player_turn + 1) % firebaseHelper.gameState!.num_players])
@@ -294,9 +327,17 @@ struct TurnTwoView: View {
     }
 }
 
-struct TurnTwoView_Previews: PreviewProvider {
-    static var previews: some View {
+#Preview {
+    return GeometryReader { geo in
         TurnTwoView(cardsDragged: .constant([0,1,2,3]), cardsInHand: .constant([]))
+            .environmentObject({ () -> DeviceSpecs in
+                let envObj = DeviceSpecs()
+                envObj.setProperties(geo)
+                return envObj
+            }() )
             .environmentObject(FirebaseHelper())
+            .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
+            .background(Color.theme.background)
     }
+    .ignoresSafeArea()
 }

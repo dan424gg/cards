@@ -1,60 +1,38 @@
-//
-//  SwiftUIView.swift
-//  Cards
-//
-//  Created by Daniel Wells on 1/18/24.
-//
-
 import SwiftUI
 
 struct SwiftUIView: View {
-    @EnvironmentObject var firebase: FirebaseHelper
-    @State var counter: Int = 0
-    @State var show = false
-            
+    @State var display: Bool = true
+    @State var text: [String] = ["1 for last card!"]
+    
     var body: some View {
         VStack {
-            if show {
-                Test(counter: counter)
-                    .transition(.slide.combined(with: .opacity))
-            }
-            
-            Button("increment") {
-                counter += 1
-            }
-            
-            Button("show counter") {
-                show = true
+            TimedTextContainer(display: $display, textArray: .constant(text), visibilityFor: 2.0)
+                .getSize(onChange: { print($0) })
+//            Button("do something") {
+//                text = ["this again", "another thing"]
+//                display = true
+//            }
+        }
+    }
+}
+
+struct DetermineText: View {
+    @Binding var counter: Int
+    
+    var body: some View {
+        VStack {
+            Text("\(counter)")
+            Button("incr") {
+                withAnimation {
+                    counter += 1
+                }
             }
         }
     }
 }
 
-struct Test: View {
-    var counter: Int
-    @State var shownCounter: Int = 0
-    
-    var body: some View {
-        Text("\(shownCounter)")
-            .onAppear {
-                print("shown")
-                shownCounter = counter
-            }
-    }
-}
-
-#Preview {
-    let deviceSpecs = DeviceSpecs()
-    
-    return GeometryReader { geo in
+struct SwiftUIView_Previews: PreviewProvider {
+    static var previews: some View {
         SwiftUIView()
-            .environmentObject({ () -> DeviceSpecs in
-                let envObj = DeviceSpecs()
-                envObj.setProperties(geo)
-                return envObj
-            }() )
-            .environmentObject(FirebaseHelper())
-            .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
     }
-    .ignoresSafeArea()
 }

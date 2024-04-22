@@ -72,6 +72,7 @@ protocol ColorTheme: Identifiable {
     
     var background: Color { get }
     var title: Color { get }
+    var textColor: Color { get }
     
     var primary: Color { get }
     var secondary: Color { get }
@@ -84,6 +85,7 @@ struct BananaColorTheme: ColorTheme {
     
     var background: Color = Color("Banana_Background")
     var title: Color = Color("Banana_Title")
+    var textColor: Color = Color("Banana_TextColor")
     var primary: Color = Color("Banana_Primary")
     var secondary: Color = Color("Banana_Secondary")
     var tertriary: Color = Color("Banana_Tertriary")
@@ -95,6 +97,7 @@ struct CardGameColorTheme: ColorTheme {
     
     var background: Color = Color("CardGame_Background")
     var title: Color = Color("CardGame_Title")
+    var textColor: Color = Color("CardGame_TextColor")
     var primary: Color = Color("CardGame_Primary")
     var secondary: Color = Color("CardGame_Secondary")
     var tertriary: Color = Color("CardGame_Tertriary")
@@ -313,12 +316,8 @@ struct DisplayPlayersHandContainer: View {
                     }
 
                     if scoringPlays == [] {
-                        if player != nil {
-                            guard player != nil, player!.cards_in_hand != [] else {
-                                return
-                            }
-                            
-                            scoringPlays = firebaseHelper.checkCardsForPoints(player: player, firebaseHelper.gameState!.starter_card)
+                        if player != nil {                            
+                            scoringPlays = firebaseHelper.checkCardsForPoints(playerCards: player!.cards_in_hand, firebaseHelper.gameState!.starter_card)
                         } else {
                             scoringPlays = firebaseHelper.checkCardsForPoints(crib: crib, firebaseHelper.gameState!.starter_card)
                         }
@@ -428,35 +427,57 @@ struct TimedTextContainer: View {
     @Binding var textArray: [String]
     
     var visibilityFor: TimeInterval
+    var color: Color = .purple
     
     var body: some View {
-        if display {
-            Text(string)
-                .font(.title2)
-                .id(string)
-                .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .opacity))
-                .onChange(of: textArray, initial: true, {
-                    if !textArray.isEmpty {
-                        for i in 0...textArray.count {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + (visibilityFor * Double(i))) {
-                                if i >= textArray.count {
-                                    withAnimation {
-                                        string = ""
-                                        textArray.removeAll()
-                                    }
-                                } else {
-                                    withAnimation {
-                                        string = textArray[i]
-                                    }
+//        if display {
+            VStack {
+                Text(string)
+                    .foregroundStyle(color)
+                    .font(.custom("LuckiestGuy-Regular", size: 18))
+                    .baselineOffset(-4)
+                    .padding(.horizontal)
+                    .padding(.vertical, 10)
+                    .id(string)
+                    .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .opacity))
+                    .background {
+                        if !string.isEmpty {
+                            RoundedRectangle(cornerRadius: 5)
+                                .stroke(color, lineWidth: 3)
+                                .background { VisualEffectView(effect: UIBlurEffect(style: .systemThickMaterial)).clipShape(RoundedRectangle(cornerRadius: 5)) }
+                        }
+                    }
+                Spacer()
+            }
+            .onChange(of: textArray, initial: true, {
+                if !textArray.isEmpty {
+                    for i in 0...textArray.count {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + (visibilityFor * Double(i))) {
+                            if i >= textArray.count {
+                                withAnimation {
+                                    display = false
+                                    string = ""
+                                    textArray.removeAll()
+                                }
+                            } else {
+                                withAnimation {
+                                    string = textArray[i]
                                 }
                             }
                         }
                     }
-                })
-                .onDisappear {
-                    display = false
                 }
-        }
+            })
+            .frame(height: 100)
+            .offset(y: 28)
+            .onTapGesture {
+                withAnimation {
+                    display = false
+                    string = ""
+                    textArray.removeAll()
+                }
+            }
+//        }
     }
 }
 

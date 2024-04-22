@@ -27,7 +27,7 @@ struct NamesAroundTable: View {
     var body: some View {
         ZStack {
             ForEach(Array($sortedPlayerList.enumerated()), id: \.offset) { (index, player) in
-                PlayerView(gameObservable: gameObservable, player: player, index: index, playerTurn: playerTurn)
+                PlayerView(player: player, index: index, playerTurn: playerTurn)
                     .offset(y: -185)
                     .rotationEffect(applyRotation(index: index))
             }
@@ -37,9 +37,7 @@ struct NamesAroundTable: View {
         }
         .onChange(of: firebaseHelper.players, initial: true, {
             guard firebaseHelper.playerState != nil, firebaseHelper.gameState != nil else {
-                sortedPlayerList = [PlayerState.player_one/*, PlayerState.player_two, PlayerState.player_three, PlayerState.player_four, PlayerState.player_five, PlayerState.player_six*/]
-                    .sorted(by: { $0.player_num < $1.player_num })
-//                    .filter { $0.player_num != 0 }
+                sortedPlayerList = GameState.players
                 return
             }
             
@@ -71,8 +69,8 @@ struct NamesAroundTable: View {
                     multiplier = 0
             }
         } else {
-            startingRotation = 0
-            multiplier = 0
+            startingRotation = 240
+            multiplier = 60
         }
     }
     

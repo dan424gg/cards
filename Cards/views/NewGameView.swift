@@ -17,15 +17,12 @@ struct NewGameView: View {
 
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 20.0)
-//                .fill(.thinMaterial)
-                .fill(Color.theme.primary)
-                .frame(width: 300, height: 300)
-            
-            VStack {
+            VStack(spacing: 20) {
                 Text("New Game")
                     .font(.custom("LuckiestGuy-Regular", size: 40))
+                    .baselineOffset(-10)
                     .foregroundStyle(Color.theme.white)
+                    .frame(height: 40)
                 
                 CustomTextField(textFieldHint: "Name", value: $fullName)
                 
@@ -41,12 +38,21 @@ struct NewGameView: View {
                     }
                 } label: {
                     Text("Submit")
-                        .padding()
-                        .foregroundStyle(Color.white)
-                        .font(.custom("LuckiestGuy-Regular", size: 25))
-                        .offset(y: 2.2)
-                        .frame(width: 150)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 12)
+                        .font(.custom("LuckiestGuy-Regular", size: 24))
+                        .baselineOffset(-5)
+                        .foregroundStyle(Color.theme.primary)
+                        .background(Color.theme.white)
+                        .clipShape(Capsule())
                 }
+            }
+            .padding()
+            .background {
+                RoundedRectangle(cornerRadius: 20.0)
+    //                .fill(.thinMaterial)
+                    .fill(Color.theme.primary)
+                    .frame(width: 300)
             }
             .onChange(of: fullName, {
                 withAnimation {
@@ -60,8 +66,10 @@ struct NewGameView: View {
         }
         .onTapGesture {
             endTextEditing()
-        }
+        }        
     }
+    
+    
 }
 
 #Preview {

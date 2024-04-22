@@ -37,7 +37,7 @@ struct ContentView: View {
 //        SwiftUIView()
 //            .position(x: specs.maxX / 2, y: specs.maxY / 2)
         ZStack {
-            MainView(visible: $blur)
+            MainView()
                 .zIndex(1.0)
                 .namespace(namespace)
 

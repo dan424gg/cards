@@ -14,32 +14,74 @@ struct GameView: View {
     @State var showSnackbar: Bool = true
     @StateObject private var gameObservable = GameObservable(game: GameState.game)
     @State var initial = true
-    @State var shown: Bool = false                                          // for cribbage
+    @State var shown: Bool = false          // for cribbage
+    @State var playingGame: Bool = true    // for cribbage
 
     var body: some View {
         ZStack {
-            PlayingTable()
-                .stroke(Color.black)
-                .frame(height: specs.maxY * 0.4)
-                .position(x: specs.maxX / 2, y: specs.maxY * 0.4)
+//            ZStack {
+//                Color.theme.background
+//                ForEach(Array(0...20), id: \.self) { i in
+//                    LineOfSuits(index: i)
+//                        .offset(y: CGFloat(-120 * Double(i)))
+//                }
+//                .position(x: specs.maxX / 2, y: specs.maxY * 1.5)
+//            }
+//            .zIndex(0.0)            
             
-            NamesAroundTable()
-                .position(x: specs.maxX / 2, y: specs.maxY * 0.4)
-            
-            CribbageBoard()
-                .scaleEffect(x: 0.8, y: 0.8)
-                .position(x: specs.maxX / 2, y: specs.maxY * 0.39 )
-            
-            CardsView()
-            
-            if shown {
-                PointContainer(player: firebaseHelper.playerState ?? PlayerState.player_six, user: true)
-                    .position(x: specs.maxX / 2, y: specs.maxY * 0.71)
-                    .transition(.opacity)
-            }            
-            
-            GameOutcomeView(outcome: $firebaseHelper.gameOutcome)
+            if playingGame {
+                Group {
+                    PlayingTable()
+                        .stroke(Color.theme.white, lineWidth: 5.0)
+                        .fill(Color.theme.background)
+                        .frame(height: specs.maxY * 0.4)
+                        .position(x: specs.maxX / 2, y: specs.maxY * 0.4)
+                        .offset(y: -50)
+                    
+                    NamesAroundTable()
+                        .position(x: specs.maxX / 2, y: specs.maxY * 0.4)
+                        .offset(y: -50)
+                    
+                    CribbageBoard()
+                        .scaleEffect(x: 0.8, y: 0.8)
+                        .position(x: specs.maxX / 2, y: specs.maxY * 0.38 )
+                        .offset(y: -50)
+                    
+                    CardsView()
+                            .offset(y: -50)
+                    
+                    if firebaseHelper.gameState?.dealer == firebaseHelper.playerState?.player_num {
+                        CribMarker()
+                            .position(x: specs.maxX * 0.90, y: specs.maxY * 0.95)
+                            .transition(.opacity)   // this might override the move transition below
+                    }
+                    
+                    if shown {
+                        PointContainer(player: firebaseHelper.playerState ?? PlayerState.player_one, user: true)
+                            .position(x: specs.maxX / 2, y: specs.maxY * 0.68)
+                            .transition(.opacity)
+                    }
+
+                    GameOutcomeView(outcome: $firebaseHelper.gameOutcome)
+                }
+                .geometryGroup()
+                .clipped()
+                .transition(.move(edge: .top))
+            } else {
+                PlayersHandsView()
+                    .geometryGroup()
+                    .transition(.move(edge: .bottom))
+            }
         }
+//        .onChange(of: gameObservable.game.turn, initial: true, { (old, new) in
+//            withAnimation {
+//                if new == 1 {
+//                    shown = false
+//                } else {
+//                    shown = true
+//                }
+//            }
+//        })
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
                 Task {
@@ -56,7 +98,7 @@ struct GameView: View {
             if firebaseHelper.playersAreReady() {
                 Task {
                     await firebaseHelper.unreadyAllPlayers()
-                    await firebaseHelper.updateGame(["turn": (firebaseHelper.gameState!.turn + 1) % 5])
+                    await firebaseHelper.updateGame(["turn": (firebaseHelper.gameState!.turn + 1) % 6])
                 }
             }
         })
@@ -68,7 +110,7 @@ struct GameView: View {
             if firebaseHelper.playersAreReady() {
                 Task {
                     await firebaseHelper.unreadyAllPlayers()
-                    await firebaseHelper.updateGame(["turn": (firebaseHelper.gameState!.turn + 1) % 5])
+                    await firebaseHelper.updateGame(["turn": (firebaseHelper.gameState!.turn + 1) % 6])
                 }
             }
         })
@@ -101,7 +143,9 @@ struct GameView: View {
             }
             
             if firebaseHelper.gameState!.turn == 0 {
-                shown = false
+                withAnimation {
+                    playingGame = true
+                }
                 
                 guard firebaseHelper.playerState!.is_lead else {
                     return
@@ -162,6 +206,11 @@ struct GameView: View {
                         }
                     })
                 }
+            } else if firebaseHelper.gameState!.turn == 5 {
+                withAnimation {
+                    shown = false
+                    playingGame = false
+                }
             }
         })
         .onChange(of: firebaseHelper.gameState?.dealer, {
@@ -181,7 +230,8 @@ struct PlayingTable: Shape {
         let r = rect.height / 2
         let center = CGPoint(x: rect.midX, y: rect.midY)
         var path = Path()
-        path.addArc(center: center, radius: r, startAngle: Angle(degrees: 135), endAngle: Angle(degrees: 45), clockwise: false)
+        path.addArc(center: center, radius: r, startAngle: Angle(degrees: 125), endAngle: Angle(degrees: 55), clockwise: false)
+//        path.addArc(center: center, radius: r, startAngle: Angle(degrees: 135), endAngle: Angle(degrees: 495), clockwise: false)
         return path
     }
 }
@@ -196,8 +246,7 @@ struct PlayingTable: Shape {
             }() )
             .environmentObject(FirebaseHelper())
 //            .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
-            .background(Color("OffWhite").opacity(0.1))
-        
+            .background(Color.theme.background)
     }
     .ignoresSafeArea()
 }

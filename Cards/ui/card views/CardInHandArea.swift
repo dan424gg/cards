@@ -36,7 +36,6 @@ struct CardInHandArea: View {
             shownCardsInHand = cardsInHand
         }
         .onChange(of: cardsInHand, { (old, new) in
-            print("cards \(new)")
             if new.count >= old.count {
                 let newCards = new.filter { !old.contains($0) }
                 for indivCard in newCards {

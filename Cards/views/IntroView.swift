@@ -7,13 +7,11 @@
 
 import SwiftUI
 
-
 enum IntroViewType {
     case newGame, existingGame, loadingScreen, nothing
 }
 
 struct IntroView: View {
-    @Binding var blur: Bool
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @EnvironmentObject var specs: DeviceSpecs
     @State var introView: IntroViewType = .nothing
@@ -26,6 +24,7 @@ struct IntroView: View {
         ZStack {
             if introView == .newGame {
                 NewGameView(introView: $introView)
+                    .geometryGroup()
                     .transition(.move(edge: .leading).combined(with: .opacity))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .contentShape(Rectangle())
@@ -37,6 +36,7 @@ struct IntroView: View {
                     }
             } else if introView == .existingGame {
                 ExistingGameView(introView: $introView)
+                    .geometryGroup()
                     .transition(.move(edge: .leading).combined(with: .opacity))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .contentShape(Rectangle())
@@ -48,6 +48,7 @@ struct IntroView: View {
                     }
             } else if introView == .loadingScreen {
                 LoadingScreen()
+                    .geometryGroup()
                     .transition(.move(edge: .trailing).combined(with: .opacity))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .contentShape(Rectangle())
@@ -62,11 +63,9 @@ struct IntroView: View {
                     Text("CARDS")
                         .font(.custom("LuckiestGuy-Regular", size: 120))
                         .tracking(8)
-                        .foregroundStyle(Color.theme.title)
+                        .foregroundStyle(Color.theme.white)
                         .position(x: specs.maxX / 2, y: specs.maxY * 0.3)
                         .offset(x: 5)
-                        .shadow(radius: 5)
-                        .shadow(radius: 5)
 
                     VStack(spacing: 15) {
                         Button {
@@ -75,31 +74,31 @@ struct IntroView: View {
                             }
                         } label: {
                             Text("Join Game")
-                                .padding()
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 12)
+                                .font(.custom("LuckiestGuy-Regular", size: 24))
+                                .baselineOffset(-5)
                                 .foregroundStyle(Color.theme.primary)
-                                .font(.custom("LuckiestGuy-Regular", size: 22))
-                                .offset(y: 2.2)
                                 .frame(width: specs.maxX * 0.75)
                         }
                         .background(Color.theme.white)
                         .clipShape(Capsule())
-                        .shadow(color: Color.theme.secondary, radius: 2)
-
+                        
                         Button {
                             withAnimation(.smooth(duration: 0.3)) {
                                 introView = .newGame
                             }
                         } label: {
                             Text("New Game")
-                                .padding()
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 12)
+                                .font(.custom("LuckiestGuy-Regular", size: 24))
+                                .baselineOffset(-5)
                                 .foregroundStyle(Color.theme.white)
-                                .font(.custom("LuckiestGuy-Regular", size: 22))
-                                .offset(y: 2.2)
                                 .frame(width: specs.maxX * 0.75)
                         }
                         .background(Color.theme.primary)
                         .clipShape(Capsule())
-                        .shadow(color: Color.theme.secondary, radius: 2)
                     }
                     .position(x: specs.maxX / 2, y: specs.maxY * 0.75)
                 }
@@ -111,7 +110,7 @@ struct IntroView: View {
 
 #Preview {
     return GeometryReader { geo in
-        IntroView(blur: .constant(false))
+        IntroView()
             .environmentObject({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)

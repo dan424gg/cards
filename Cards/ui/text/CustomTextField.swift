@@ -10,13 +10,10 @@ import SwiftUI
 
 
 struct CustomTextField: View {
-    enum Field: Hashable {
-        case value
-    }
-    
     @EnvironmentObject var specs: DeviceSpecs
     
     var textFieldHint: String
+    var validationFunciton: ((String) -> Void)? = nil
     
     @FocusState private var hasFocus: Bool
     @Binding var value: String
@@ -30,6 +27,13 @@ struct CustomTextField: View {
                 text: $value,
                 prompt: Text("\(textFieldHint)").foregroundStyle(.gray.opacity(0.4))
             )
+            .onChange(of: hasFocus, {
+                guard validationFunciton != nil, !value.isEmpty else {
+                    return
+                }
+                
+                validationFunciton!(value)
+            })
             .focused($hasFocus)
             .frame(width: size)
             .textFieldStyle(TextFieldBorder())
@@ -42,7 +46,7 @@ struct CustomTextField: View {
         .onChange(of: hasFocus, { (old, new) in
             withAnimation(.smooth(duration: 0.3)) {
                 if hasFocus {
-                    size = max(specs.maxX * 0.66, size > maxX ? maxX - 35 : size)
+                    size = max(specs.maxX * 0.6, size > maxX ? maxX - 35 : size)
                 } else {
                     size = value == "" ? maxX * 0.33 : value.width(usingFont: UIFont.init(name: "LuckiestGuy-Regular", size: 25)!) + 35
                 }
@@ -54,9 +58,9 @@ struct CustomTextField: View {
 struct TextFieldBorder: TextFieldStyle {
     func _body(configuration: TextField<Self._Label>) -> some View {
         configuration
-            .padding()
-            .font(.custom("LuckiestGuy-Regular", size: 20))
-            .offset(y: 2)
+            .font(.custom("LuckiestGuy-Regular", size: 24))
+            .baselineOffset(-2)
+            .padding(.vertical, 18)
             .background(Color.white)
             .clipShape(Capsule())
     }
