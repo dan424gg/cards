@@ -182,5 +182,13 @@ final class ListenerListTests: XCTestCase {
             // Put the code you want to measure the time of here.
         }
     }
+}
 
+final class ProfanityFilterTests: XCTestCase {
+    func testBadWord() {
+        var str = "fuck"
+        
+        XCTAssertNotEqual(str, ProfanityFilter.cleanUp(str))
+        XCTAssertEqual("****", ProfanityFilter.cleanUp(str))
+    }
 }

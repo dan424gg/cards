@@ -33,21 +33,21 @@ struct CardsApp: App {
             GeometryReader { geo in
                 ZStack {
                     ContentView()
-                        .environmentObject(firebaseHelper)
-                        .environmentObject({ () -> DeviceSpecs in
-                            let envObj = DeviceSpecs()
-                            envObj.setProperties(geo)
-                            return envObj
-                        }() )
                     
                     ZStack {
                         if showLaunch {
                             LaunchView(showLaunch: $showLaunch)
-                                .transition(.move(edge: .trailing))
+                                .transition(.blurReplace())
                         }
                     }
                     .zIndex(2.0)
                 }
+                .environmentObject(firebaseHelper)
+                .environmentObject({ () -> DeviceSpecs in
+                    let envObj = DeviceSpecs()
+                    envObj.setProperties(geo)
+                    return envObj
+                }() )
             }
             .ignoresSafeArea()
         }

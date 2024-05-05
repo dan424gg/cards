@@ -27,7 +27,7 @@ struct SheetDisplayer<Sheet: SheetEnum>: ViewModifier {
                         .presentationDetents(Set(detents), selection: $detentSelected)
                         .presentationBackground(.thinMaterial)
                         .onChange(of: geo.frame(in: .local).height, { (old, new) in
-                            print(geo.frame(in: .local).height, geo.frame(in: .global).maxY)
+//                            print(geo.frame(in: .local).height, geo.frame(in: .global).maxY)
                             if ((geo.frame(in: .local).height / geo.frame(in: .global).maxY) <= 0.2) {
                                 withAnimation(.easeInOut(duration: 0.2)) {
                                     opacity = ((((new / geo.frame(in: .global).maxY) - 0.08) / 0.8) * 10)

@@ -30,8 +30,6 @@ struct TeamColorPicker: View {
             }
         } label: {
             HStack {
-//                Text(teamColor)
-//                    .font(.system(size: 12))
                 Rectangle()
                     .fill(teamColor == "" ? .white : Color(teamColor))
                     .font(.system(size: 15, weight: .thin))
@@ -42,7 +40,7 @@ struct TeamColorPicker: View {
             teamColor = firebaseHelper.teamState?.color ?? "Orange"
         })
         .onChange(of: firebaseHelper.gameState?.colors_available, initial: true, {
-            listOfColorsAvailable = firebaseHelper.gameState?.colors_available ?? ["Red", "Blue", "Teal", "Green", "Yellow", "Orange"]
+            listOfColorsAvailable = (firebaseHelper.gameState?.colors_available ?? ["Red", "Blue", "Teal", "Green", "Yellow", "Orange"]).sorted()
         })
     }
 }

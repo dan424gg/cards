@@ -20,21 +20,16 @@ struct LoadingScreen: View {
     
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 20.0)
-                .fill(Color.theme.primary)
-                .frame(width: 300, height: size.height)
-            
             VStack(spacing: 20) {
                 HStack {
                     Text(String(firebaseHelper.gameState?.group_id ?? 12345))
-                        .foregroundStyle(Color.theme.primary)
+                        .foregroundStyle(specs.theme.colorWay.primary)
                         .font(.custom("LuckiestGuy-Regular", size: 18))
                         .baselineOffset(-1.8)
                         .padding(10)
                         .background(
                             RoundedRectangle(cornerRadius: 30)
                                 .fill(.white)
-                                .stroke(Color.theme.secondary, lineWidth: 1.0)
                         )
                     
                     GamePicker()
@@ -42,145 +37,21 @@ struct LoadingScreen: View {
                         .background(
                             RoundedRectangle(cornerRadius: 30)
                                 .fill(.white)
-                                .stroke(Color.theme.secondary, lineWidth: 1.0)
                         )
                 }
                 
-                HStack {
-                    TextField("", text: $name, prompt: Text("Name").foregroundStyle(.gray.opacity(0.5)))
-                        .foregroundStyle(Color.theme.primary)
-                        .font(.custom("LuckiestGuy-Regular", size: 18))
-                        .baselineOffset(-1.8)
-                        .multilineTextAlignment(.center)
-                        .focused($isFocused)
-                        .onChange(of: firebaseHelper.playerState?.name, initial: true, {
-                            name = firebaseHelper.playerState?.name ?? "No Name"
-                        })
-                        .onSubmit {
-                            guard firebaseHelper.playerState != nil, firebaseHelper.playerState!.name != name else {
-                                return
-                            }
-                            
-                            Task {
-                                await firebaseHelper.updatePlayer(["name": name])
-                            }
-                        }
-                    Divider()
-                    TeamPicker()
-                        .frame(width: 35)
-                    Divider()
-                    TeamColorPicker()
-                        .frame(width: 35)
-                }
+                PlayerEditor
                 .frame(width: specs.maxX * 0.6, height: 22)
                 .background(
                     RoundedRectangle(cornerRadius: 30)
                         .fill(.white)
-                        .stroke(Color("OffWhite"), lineWidth: 1.0)
                         .frame(width: specs.maxX * 0.66, height: 40)
                 )
-                .onChange(of: isFocused, {
-                    withAnimation {
-                        isEditing = isFocused
-                    }
-                })
             
-            
-            // for preview
-//                if firebaseHelper.teams == [] {
-//                    HStack(spacing: 20) {
-//                        VStack {
-//                            Text("Team \(TeamState.team_one.team_num)")
-//                                .font(.custom("LuckiestGuy-Regular", size: 20))
-//                                .baselineOffset(-2)
-//                                .padding(6)
-//                                .foregroundStyle(Color(TeamState.team_one.color))
-//                                .shadow(radius: 5)
-//                                .background {
-//                                    RoundedRectangle(cornerRadius: 30)
-//                                        .stroke(Color(TeamState.team_one.color), lineWidth: 1.3)
-//                                        .baselineOffset(--25)
-//                                        .clipped()
-//                                        .baselineOffset(-22)
-//                                        .shadow(radius: 5)
-//                                }
-//                            Text("Dan")
-//                                .foregroundStyle(Color.theme.white)
-//                                .font(.custom("LuckiestGuy-Regular", size: 18))
-//                                .baselineOffset(-1.8)
-//                            Text("Katie")
-//                                .foregroundStyle(Color.theme.white)
-//                                .font(.custom("LuckiestGuy-Regular", size: 18))
-//                                .baselineOffset(-1.8)
-//                        }
-//                        .frame(height: 100, alignment: .top)
-//                        
-//                        VStack {
-//                            Text("Team \(TeamState.team_two.team_num)")
-//                                .font(.custom("LuckiestGuy-Regular", size: 20))
-//                                .baselineOffset(-2)
-//                                .padding(6)
-//                                .foregroundStyle(Color(TeamState.team_two.color))
-//                                .shadow(color: .black, radius: 1)
-//                                .background {
-//                                    RoundedRectangle(cornerRadius: 30)
-//                                        .stroke(Color(TeamState.team_two.color), lineWidth: 1.3)
-//                                        .baselineOffset(--25)
-//                                        .clipped()
-//                                        .baselineOffset(-22)
-//                                        .shadow(radius: 1)
-//                                }
-//                            Text("Ben")
-//                                .foregroundStyle(Color.theme.white)
-//                                .font(.custom("LuckiestGuy-Regular", size: 18))
-//                                .baselineOffset(-1.8)
-//                            Text("Alex")
-//                                .foregroundStyle(Color.theme.white)
-//                                .font(.custom("LuckiestGuy-Regular", size: 18))
-//                                .baselineOffset(-1.8)
-//                        }
-//                        .frame(height: 100, alignment: .top)
-//                    }
-//                } else {
-                    HStack(spacing: 20) {
-                        ForEach(firebaseHelper.teams.sorted(by: { $0.team_num < $1.team_num }), id:\.self) { team in
-                            VStack {
-                                Text("Team \(team.team_num)")
-                                    .font(.custom("LuckiestGuy-Regular", size: 20))
-                                    .baselineOffset(-2)
-                                    .shadow(color: .black, radius: team.color == "Red" ? 5 : 1)
-                                    .padding(6)
-                                    .foregroundStyle(Color(team.color))
-                                    .background {
-                                        RoundedRectangle(cornerRadius: 30)
-                                            .stroke(Color(team.color), lineWidth: 1.3)
-                                            .offset(y: -25)
-                                            .clipped()
-                                            .offset(y: 22)
-                                            .shadow(color: .black, radius: team.color == "Red" ? 5 : 1)
-                                    }
-                                
-                                if firebaseHelper.playerState!.team_num == team.team_num {
-                                    Text(firebaseHelper.playerState!.name)
-                                        .foregroundStyle(Color.theme.white)
-                                        .font(.custom("LuckiestGuy-Regular", size: 18))
-                                        .baselineOffset(-1.8)
-                                }
-                                
-                                ForEach(firebaseHelper.players.filter { $0.team_num == team.team_num }, id: \.self) { player in
-                                    Text(player.name)
-                                        .foregroundStyle(Color.theme.white)
-                                        .font(.custom("LuckiestGuy-Regular", size: 18))
-                                        .baselineOffset(-1.8)
-                                }
-                            }
-                            .frame(height: 100, alignment: .top)
-                        }
-                    }
-//                }
+                playersList()
                 
                 if firebaseHelper.playerState?.is_lead ?? true {
-                    Button {
+                    CustomButton(name: "Play", submitFunction: {
                         Task {
                             await firebaseHelper.reorderPlayerNumbers()
                             await firebaseHelper.updateGame(["is_playing": true])
@@ -189,57 +60,138 @@ struct LoadingScreen: View {
                         firebaseHelper.logAnalytics(AnalyticsEvents.game_started)
                         firebaseHelper.logAnalytics(AnalyticsEvents.num_players, ["players": 5])
                         firebaseHelper.logAnalytics(AnalyticsEvents.num_teams, ["teams": firebaseHelper.gameState!.num_teams])
-                    } label: {
-                        Text("Play!")
-                            .padding()
-                            .foregroundStyle(Color.white)
-                            .font(.custom("LuckiestGuy-Regular", size: 25))
-                            .baselineOffset(-2.2)
-                    }
+                    })
                     .disabled(!firebaseHelper.equalNumOfPlayersOnTeam())
-                    
-    //                Button("Play!") {
-    //                    Task {
-    //                        await firebaseHelper.reorderPlayerNumbers()
-    //                        await firebaseHelper.updateGame(["is_playing": true, "turn": 1])
-    //                    }
-    //                }
-    //                .buttonStyle(.borderedProminent)
-    //                .disabled(!equalNumOfPlayersOnTeam(players: firebaseHelper.players))
+
                 } else {
                     Text("Waiting to start game...")
-                        .foregroundStyle(Color.theme.white)
+                        .foregroundStyle(specs.theme.colorWay.white)
                         .font(.custom("LuckiestGuy-Regular", size: 18))
                         .baselineOffset(-1.8)
                 }
             }
             .padding(25)
-            .getSize(onChange: { newSize in
-                withAnimation {
-                    size = newSize
-                }
-            })
+            .background {
+                RoundedRectangle(cornerRadius: 20.0)
+                    .fill(specs.theme.colorWay.primary)
+            }
         }
         .onTapGesture {
             endTextEditing()
         }
     }
     
-    func determineFrameWidth(geo: GeometryProxy) -> Double {
-        var width: Double = 0.0
+    var PlayerEditor: some View {
+        HStack {
+            TextField("", text: $name, prompt: Text("Name").foregroundStyle(.gray.opacity(0.5)))
+                .foregroundStyle(specs.theme.colorWay.primary)
+                .font(.custom("LuckiestGuy-Regular", size: 18))
+                .baselineOffset(-1.8)
+                .multilineTextAlignment(.center)
+                .focused($isFocused)
+                .onChange(of: firebaseHelper.playerState?.name, initial: true, {
+                    name = firebaseHelper.playerState?.name ?? "No Name"
+                })
+                .onChange(of: isFocused, { (old, new) in
+                    if old && !new {
+                        Task {
+                            await firebaseHelper.updatePlayer(["name": name])
+                        }
+                    }
+                })
+            Divider()
+            TeamPicker()
+                .frame(width: 35)
+            Divider()
+            TeamColorPicker()
+                .frame(width: 35)
+        }
+    }
+    
+    struct playersList: View {
+        @EnvironmentObject var specs: DeviceSpecs
+        @EnvironmentObject var firebaseHelper: FirebaseHelper
         
-        if isEditing {
-            width = geo.frame(in: .local).width * 0.66
-        } else {
-            if name.isEmpty {
-                width = geo.frame(in: .local).width * 0.33
+        var teams: [TeamState] {
+            if firebaseHelper.gameState != nil {
+                return firebaseHelper.teams
             } else {
-                width = max(name.width(usingFont: UIFont.systemFont(ofSize: 15)) + 35, geo.frame(in: .local).width * 0.33)
+                return GameState.teams
             }
         }
         
-        return width
+        var players: [PlayerState] {
+            if firebaseHelper.gameState != nil {
+                return firebaseHelper.players
+            } else {
+                return GameState.players
+            }
+        }
+        
+        var user: PlayerState {
+            if firebaseHelper.playerState != nil {
+                return firebaseHelper.playerState!
+            } else {
+                return PlayerState.player_one
+            }
+        }
+        
+        var body: some View {
+            HStack(spacing: 20) {
+                VStack {
+                    HStack (spacing: 20) {
+                        ForEach(teams.sorted(by: { $0.team_num < $1.team_num }), id:\.self) { team in
+                            Text("Team \(team.team_num)")
+                                .font(.custom("LuckiestGuy-Regular", size: 20))
+                                .baselineOffset(-2)
+                                .shadow(color: .black, radius: team.color == "Red" ? 5 : 1)
+                                .padding(6)
+                                .foregroundStyle(Color(team.color))
+                                .background {
+                                    RoundedRectangle(cornerRadius: 30)
+                                        .stroke(Color(team.color), lineWidth: 1.3)
+                                        .offset(y: -25)
+                                        .clipped()
+                                        .offset(y: 22)
+                                        .shadow(color: .black, radius: team.color == "Red" ? 5 : 1)
+                                }
+                        }
+                    }
+                    
+                    HStack (spacing: 20) {
+                        ForEach(teams.sorted(by: { $0.team_num < $1.team_num }), id:\.self) { team in
+                            VStack {
+                                if user.team_num == team.team_num {
+                                    Text(user.name)
+                                        .foregroundStyle(specs.theme.colorWay.white)
+                                        .font(.custom("LuckiestGuy-Regular", size: determineFont(user.name, 75)))
+                                        .baselineOffset(-1.8)
+                                }
+                                
+                                ForEach(players.filter { $0.team_num == team.team_num }, id: \.self) { player in
+                                    Text(player.name)
+                                        .foregroundStyle(specs.theme.colorWay.white)
+                                        .font(.custom("LuckiestGuy-Regular", size: determineFont(player.name, 75)))
+                                        .baselineOffset(-1.8)
+                                }
+                            }
+                            .frame(width: 75, alignment: .top)
+                        }
+                    }
+                    .frame(alignment: .top)
+                }
+            }
+        }
     }
+}
+
+func determineFont(_ string: String, _ containerSize: Int, _ defaultFontSize: Int = 18) -> CGFloat {
+    var newFontSize: Int = defaultFontSize
+    while string.width(usingFont: UIFont.init(name: "LuckiestGuy-Regular", size: CGFloat(newFontSize))!) > CGFloat(containerSize) {
+        newFontSize -= 1
+    }
+    
+    return CGFloat(newFontSize)
 }
 
 #Preview {

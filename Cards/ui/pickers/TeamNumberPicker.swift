@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TeamPicker: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var specs: DeviceSpecs
     @State var teamNum = 0
     
     var body: some View {
@@ -28,7 +29,7 @@ struct TeamPicker: View {
             } label: {
                 HStack(spacing: 2) {
                     Text("\(teamNum)")
-                        .foregroundStyle(Color.theme.primary)
+                        .foregroundStyle(specs.theme.colorWay.primary)
                         .font(.custom("LuckiestGuy-Regular", size: 18))
                         .baselineOffset(-1.8)
                 }

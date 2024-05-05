@@ -67,8 +67,8 @@ struct PlayersHandsView: View {
                     .padding(.vertical, 12)
                     .font(.custom("LuckiestGuy-Regular", size: 24))
                     .baselineOffset(-5)
-                    .foregroundStyle(Color.theme.primary)
-                    .background(Color.theme.white)
+                    .foregroundStyle(specs.theme.colorWay.primary)
+                    .background(specs.theme.colorWay.white)
                     .clipShape(Capsule())
             }
         }
@@ -78,7 +78,7 @@ struct PlayersHandsView: View {
                 .presentationDetents([.fraction(0.69)])
                 .presentationBackground(content: {
 //                    if expandedPlayer.is_ready {
-//                        Color.theme.primary
+//                        specs.theme.colorWay.primary
 //                    } else {
                         VisualEffectView(effect: UIBlurEffect(style: .regular))
 //                    }
@@ -99,7 +99,7 @@ struct PlayersHandsView: View {
         
         var body: some View {
             HStack {
-                PlayerView(player: .constant(player), index: 0, playerTurn: 0, fontSize: 24, defaultColor: .white)
+                PlayerView(player: .constant(player), index: 0, playerTurn: 0, fontSize: 24)
                 
                 Spacer()
                 
@@ -120,7 +120,7 @@ struct PlayersHandsView: View {
             .frame(width: specs.maxX * 0.7, height: 60)
             .background {
                 RoundedRectangle(cornerRadius: 25)
-                    .fill(player.is_ready ? Color.theme.primary : .black.opacity(0.15))
+                    .fill(player.is_ready ? specs.theme.colorWay.primary : .black.opacity(0.15))
             }
             .onAppear {
                 let playerScoringHands = firebaseHelper.checkCardsForPoints(playerCards: player.cards_in_hand, firebaseHelper.gameState?.starter_card ?? gameObservable.game.starter_card)
@@ -218,7 +218,7 @@ struct PlayerHand: View {
         .padding([.leading, .trailing, .bottom], 25)
         .background {
             RoundedRectangle(cornerRadius: 20.0)
-                .fill(player.is_ready ? Color.theme.primary.opacity(0.9) : .black.opacity(0.4))
+                .fill(player.is_ready ? specs.theme.colorWay.primary.opacity(0.9) : .black.opacity(0.4))
         }
     }
 
@@ -244,7 +244,7 @@ struct PlayerHand: View {
         .padding([.leading, .trailing, .bottom], 25)
         .background {
             RoundedRectangle(cornerRadius: 20.0)
-                .fill(player.is_ready ? Color.theme.primary.opacity(0.9) : .black.opacity(0.4))
+                .fill(player.is_ready ? specs.theme.colorWay.primary.opacity(0.9) : .black.opacity(0.4))
         }
     }
     
@@ -260,7 +260,7 @@ struct PlayerHand: View {
     
     func playerIndicator(expandedPlayer: Binding<PlayerState>) -> some View {
         VStack {
-            PlayerView(player: .constant(player), index: 0, playerTurn: 0, fontSize: 24, defaultColor: .white)
+            PlayerView(player: .constant(player), index: 0, playerTurn: 0, fontSize: 24)
             
             HStack(spacing: 0) {
                 Text("\(points)")
@@ -276,7 +276,7 @@ struct PlayerHand: View {
         .padding(.vertical, 5)
         .background {
             RoundedRectangle(cornerRadius: 25)
-                .fill(player.is_ready ? Color.theme.primary.opacity(0.9) : .black.opacity(0.4))
+                .fill(player.is_ready ? specs.theme.colorWay.primary.opacity(0.9) : .black.opacity(0.4))
         }
     }
 
@@ -338,7 +338,7 @@ struct PlayerHand: View {
             }() )
             .environmentObject(FirebaseHelper())
             .position(x: geo.frame(in: .local).midX, y: geo.frame(in: .local).midY)
-            .background(Color.theme.background)
+            .background(DeviceSpecs().theme.colorWay.background)
         
     }
 //    .ignoresSafeArea()

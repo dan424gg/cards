@@ -42,7 +42,7 @@ struct ContentView: View {
                 .namespace(namespace)
 
             ZStack {
-                Color.theme.background
+                specs.theme.colorWay.background
                 ForEach(Array(0...20), id: \.self) { i in
                     LineOfSuits(index: i)
                         .offset(y: CGFloat(-120 * Double(i)))

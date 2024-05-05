@@ -59,7 +59,7 @@ struct ExistingGameView: View {
                 Text("Join Game")
                     .font(.custom("LuckiestGuy-Regular", size: 40))
                     .baselineOffset(-5)
-                    .foregroundStyle(Color.theme.white)
+                    .foregroundStyle(specs.theme.colorWay.white)
                     .frame(height: 40)
                 
                 VStack(spacing: 5) {
@@ -68,32 +68,35 @@ struct ExistingGameView: View {
                     CustomTextField(textFieldHint: "Name", value: $fullName)
                 }
                 
-                Button {
+                CustomButton(name: "Submit", submitFunction: {
                     endTextEditing()
                     
                     Task {
+                        firebaseHelper.reinitialize()
                         await firebaseHelper.joinGameCollection(fullName: fullName, id: groupId)
                         withAnimation(.smooth(duration: 0.3)) {
                             introView = .loadingScreen
                         }
                     }
-                } label: {
-                    Text("Submit")
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 12)
-                        .font(.custom("LuckiestGuy-Regular", size: 24))
-                        .baselineOffset(-5)
-                        .foregroundStyle(Color.theme.primary)
-                        .background(Color.theme.white)
-                        .clipShape(Capsule())
-                }
+                })
             }
             .padding()
+            .frame(width: specs.maxX * 0.8)
             .background {
                 RoundedRectangle(cornerRadius: 20.0)
-                    .fill(Color.theme.primary)
-                    .frame(width: 300)
+                    .fill(specs.theme.colorWay.primary)
+//                    .frame(width: specs.maxX * 0.8)
             }
+        }
+        .overlay(alignment: .topTrailing) {
+            ImageButton(image: Image(systemName: "x.circle.fill"), submitFunction: {
+                withAnimation(.snappy.speed(1.0)) {
+                    introView = .nothing
+                }
+            })
+            .offset(x: 20.0, y: -20.0)
+            .font(.system(size: 45, weight: .heavy))
+            .foregroundStyle(specs.theme.colorWay.primary, specs.theme.colorWay.secondary)
         }
         .onTapGesture {
             endTextEditing()
@@ -112,6 +115,6 @@ struct ExistingGameView: View {
             .environmentObject(FirebaseHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
     }
-    .background(Color.theme.background)
+    .background(DeviceSpecs().theme.colorWay.background)
     .ignoresSafeArea()
 }

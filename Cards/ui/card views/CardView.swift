@@ -18,6 +18,8 @@ struct CardView: View {
     @State var rotationOffset: Double = 0.0
     @State var positionOffset: Double = 0.0
     @State var notUsable: Bool = false
+    
+    var scale: Double = 1.0
 
     var body: some View {
         VStack {
@@ -43,7 +45,7 @@ struct CardView: View {
                         .frame(width: 38.46, height: 45)
                         .foregroundColor(.white.opacity(0.7))
                 }
-                .frame(width: 60, height: 100)
+                .frame(width: Double(60 * scale), height: Double(100 * scale))
                 .rotation3DEffect(
                     .degrees(frontDegree), axis: (x: 0.0, y: 1.0, z: 0.0)
                 )
@@ -57,29 +59,29 @@ struct CardView: View {
                     
                     ZStack {
                         Text(cardItem.card.value)
-                            .font(.custom("LuckiestGuy-Regular", size: 18))
-                            .baselineOffset(-2.2)
-                            .position(x: cardItem.card.value == "10" ? 11 : 9, y: 11)
+                            .font(.custom("LuckiestGuy-Regular", size: Double(18 * scale)))
+                            .baselineOffset(-2.2 * Double(scale))
+                            .position(x: cardItem.card.value == "10" ? 11 * scale : 9 * scale, y: 11 * scale)
                         Image(systemName: "suit.\(cardItem.card.suit).fill")
-                            .font(.system(size: 11))
-                            .position(x: 9, y: 26)
+                            .font(.system(size: 11 * scale))
+                            .position(x: 9 * scale, y: 26 * scale)
                         
                         Text(cardItem.card.value)
-                            .font(.custom("LuckiestGuy-Regular", size: 18))
-                            .baselineOffset(-2.2)
-                            .position(x: cardItem.card.value == "10" ? 11 : 9, y: 11)
+                            .font(.custom("LuckiestGuy-Regular", size: 18 * scale))
+                            .baselineOffset(-2.2 * scale)
+                            .position(x: cardItem.card.value == "10" ? 11 * scale : 9 * scale, y: 11 * scale)
                             .rotationEffect(.degrees(180.0))
                         Image(systemName: "suit.\(cardItem.card.suit).fill")
-                            .font(.system(size: 11))
-                            .position(x: 9, y: 26)
+                            .font(.system(size: 11 * scale))
+                            .position(x: 9 * scale, y: 26 * scale)
                             .rotationEffect(.degrees(180.0))
                         
                         Image(systemName: "suit.\(cardItem.card.suit).fill")
-                            .font(.title3)
+                            .font(.system(size: 16 * scale))
                     }
                     .foregroundStyle(cardItem.card.suit == "spade" || cardItem.card.suit == "club" ? Color.black.opacity(0.8) : Color.red.opacity(0.8))
                 }
-                .frame(width: 60, height: 100)
+                .frame(width: Double(60 * scale), height: Double(100 * scale))
                 .draggable(cardItem)
                 .disabled(backside || cardIsDisabled)
                 .rotation3DEffect(
@@ -130,6 +132,6 @@ struct CardView: View {
 }
 
 #Preview {
-    CardView(cardItem: CardItem(id: 51), cardIsDisabled: .constant(false), backside: .constant(false))
+    CardView(cardItem: CardItem(id: 51), cardIsDisabled: .constant(false), backside: .constant(false), scale: 2.0)
         .environmentObject(FirebaseHelper())
 }

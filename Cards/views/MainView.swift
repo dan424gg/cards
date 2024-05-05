@@ -15,7 +15,7 @@ struct MainView: View {
 
     var body: some View {
         ZStack {
-            if (firebaseHelper.gameState?.is_playing ?? false) && showGameView {
+            if (firebaseHelper.gameState?.is_playing ?? false) /*&& showGameView*/ {
 //                NavigationStack {
                     GameView()
 //                        .ignoresSafeArea()
@@ -37,9 +37,9 @@ struct MainView: View {
 //                }
             } else {
                 IntroView()
-                    .onAppear {
-                        showGameView = true
-                    }
+//                    .onAppear {
+//                        showGameView = true
+//                    }
             }
         }
         .transition(.move(edge: .bottom))

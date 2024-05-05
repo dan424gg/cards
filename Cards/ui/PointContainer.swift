@@ -10,7 +10,7 @@ import SwiftUI
 struct PointContainer: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @State var teamColor: Color = .purple
-    @State var playerPoints: Int = 0
+    @State var playerPoints: Int = -1
     @StateObject var gameObservable: GameObservable = GameObservable(game: .game)
     
     var player: PlayerState = PlayerState()
@@ -109,7 +109,7 @@ struct PointContainer: View {
             }() )
             .environmentObject(FirebaseHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
-            .background(Color.theme.background)
+            .background(DeviceSpecs().theme.colorWay.background)
     }
     .ignoresSafeArea()
 }

@@ -19,9 +19,9 @@ public struct GameState: Hashable, Codable {
     var game_name: String = ""
     var num_players: Int = 0
     var dealer: Int = -1
-    var team_with_crib: Int = 0
+    var team_with_crib: Int = -1
     var crib: [Int] = []
-    var cards: [Int] = Array(0...51) // array containing int that reference a playing card
+    var cards: [Int] = Array(0...51).shuffled().shuffled() // array containing int that reference a playing card
     var starter_card: Int = -1
     var colors_available: [String] = ["Red", "Blue", "Teal", "Green", "Yellow", "Orange"]
     var player_turn: Int = -1
@@ -32,8 +32,9 @@ public struct GameState: Hashable, Codable {
     var running_sum: Int = 0
     var num_go: Int = 0
     
-    static var game: GameState = GameState(group_id: 1234, is_playing: true, num_teams: 3, turn: 4, game_name: "cribbage", num_players: 6, dealer: 0, team_with_crib: 1, crib: Array(0...3), cards: Array(29...51).shuffled(), starter_card: 4, player_turn: 0)
+    static var game: GameState = GameState(group_id: 1234, is_playing: true, num_teams: 3, turn: 2, game_name: "cribbage", num_players: 6, dealer: 0, team_with_crib: 1, crib: Array(0...3), cards: Array(29...51).shuffled(), starter_card: 4, player_turn: 1)
     static var players = [PlayerState.player_two, PlayerState.player_three, PlayerState.player_four, PlayerState.player_five, PlayerState.player_six]
+    static var teams = [TeamState.team_one, TeamState.team_two, TeamState.team_three]
     
     enum CodingKeys: CodingKey {
         case group_id

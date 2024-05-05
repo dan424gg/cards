@@ -25,7 +25,7 @@ struct CribbageBoard: View {
 
     var body: some View {
         ZStack {
-            if teams != [] {
+            if teams.count > 1 {
                 Group {
                     TeamOnePath(team: $teams[0])
                         .zIndex(0.0)
@@ -229,7 +229,7 @@ struct TeamOnePath: View {
                 path.addLine(to: CGPoint(x: 0, y: 0 + trackWidthAdjustment))
                 path.addLine(to: CGPoint(x: 0, y: 0))
             }
-            .fill(Color.white.opacity(0.5))
+            .fill(Color.white.opacity(0.7))
         }
     }
 }
@@ -372,7 +372,7 @@ struct TeamTwoPath: View {
             path.addLine(to: CGPoint(x: 0, y: 0 + trackWidthAdjustment + trackPosAdjustment))
             path.addLine(to: CGPoint(x: 0, y: 0 + trackPosAdjustment))
         }
-        .fill(Color.white.opacity(0.5))
+        .fill(Color.white.opacity(0.7))
     }
 }
 
@@ -515,13 +515,13 @@ struct TeamThreePath: View {
             path.addLine(to: CGPoint(x: 0, y: 0 + trackWidthAdjustment + (2 * trackPosAdjustment)))
             path.addLine(to: CGPoint(x: 0, y: 0 + (2 * trackPosAdjustment)))
         }
-        .fill(Color.white.opacity(0.5))
+        .fill(Color.white.opacity(0.7))
     }
 }
 
 #Preview {
     ZStack {
-        Color.theme.background
+        DeviceSpecs().theme.colorWay.background
         CribbageBoard()
             .environmentObject(FirebaseHelper())
     }

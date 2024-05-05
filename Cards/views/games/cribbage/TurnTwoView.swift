@@ -15,6 +15,7 @@ struct TurnTwoView: View {
     @State var invalid: Bool = true
     @Environment(\.namespace) var namespace
     @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var specs: DeviceSpecs
     @State private var pointsCallOut: [String] = []
     @State private var showAllCards: Bool = false
     @State var timer: Timer?
@@ -60,7 +61,7 @@ struct TurnTwoView: View {
                         
                         VStack {
                             Text("\(firebaseHelper.gameState?.running_sum ?? 14)")
-                                .foregroundStyle(Color.theme.textColor)
+                                .foregroundStyle(specs.theme.colorWay.textColor)
                                 .font(.custom("LuckiestGuy-Regular", size: 16))
                                 .baselineOffset(-1.6)
                             
@@ -128,9 +129,9 @@ struct TurnTwoView: View {
                 return
             }
             
-            Task {
-                await firebaseHelper.updateGame(["player_turn": (firebaseHelper.gameState!.dealer + 1) % firebaseHelper.gameState!.num_players])
-            }
+//            Task {
+//                await firebaseHelper.updateGame(["player_turn": (firebaseHelper.gameState!.dealer + 1) % firebaseHelper.gameState!.num_players])
+//            }
         }
         .onChange(of: cardsDragged, { (old, new) in
             guard !cardsDragged.isEmpty else {
@@ -307,11 +308,11 @@ struct TurnTwoView: View {
         
         if cardsInHand.isEmpty {
             Task {
-                do { try await Task.sleep(nanoseconds: 2500000000) } catch { print(error) }
-                
-                if firebaseHelper.gameState!.num_cards_in_play == (firebaseHelper.gameState!.num_players * 4) {
-                    await firebaseHelper.updateGame(["player_turn": -1])
-                }
+                do { try await Task.sleep(nanoseconds: UInt64(pointsCallOut.count * 2500000000)) } catch { print(error) }
+//
+//                if firebaseHelper.gameState!.num_cards_in_play == (firebaseHelper.gameState!.num_players * 4) {
+//                    await firebaseHelper.updateGame(["player_turn": -1])
+//                }
                 
                 await firebaseHelper.updatePlayer(["is_ready": true])
             }
@@ -337,7 +338,7 @@ struct TurnTwoView: View {
             }() )
             .environmentObject(FirebaseHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
-            .background(Color.theme.background)
+            .background(DeviceSpecs().theme.colorWay.background)
     }
     .ignoresSafeArea()
 }

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct GamePicker: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var specs: DeviceSpecs
     @State var gameSelected: Games = .cribbage
     @State var preventCyclicalUpdate: Bool = false
     
@@ -38,7 +39,7 @@ struct GamePicker: View {
         } label: {
             HStack(spacing: 2) {
                 Text(gameSelected.id.capitalized)
-                    .foregroundStyle(Color.theme.primary)
+                    .foregroundStyle(specs.theme.colorWay.primary)
                     .font(.custom("LuckiestGuy-Regular", size: 18))
                     .baselineOffset(-1.8)
 //                if firebaseHelper.playerState?.is_lead ?? false {

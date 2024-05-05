@@ -14,7 +14,7 @@ struct NamesAroundTable: View {
     @Environment(\.namespace) var namespace
     @EnvironmentObject var specs: DeviceSpecs
     @EnvironmentObject var firebaseHelper: FirebaseHelper
-    @StateObject private var gameObservable = GameObservable(game: GameState.game)
+    @StateObject var gameObservable: GameObservable
     @State var sortedPlayerList: [PlayerState] = []
     @State var startingRotation = 0
     @State var multiplier = 0
@@ -22,7 +22,7 @@ struct NamesAroundTable: View {
     @State var playerTurn = 0
     
     @State var doStuff = false
-    private var timer = Timer.publish(every: 2.0, on: .main, in: .common)
+    var timer = Timer.publish(every: 2.0, on: .main, in: .common)
     
     var body: some View {
         ZStack {
@@ -33,44 +33,46 @@ struct NamesAroundTable: View {
             }
         }
         .onAppear {
-            updateMultiplierAndRotation()
+            updateMultiplierAndRotation(firebaseHelper.gameState ?? gameObservable.game)
         }
-        .onChange(of: firebaseHelper.players, initial: true, {
+        .onChange(of: firebaseHelper.players, initial: true, { (_, new) in
             guard firebaseHelper.playerState != nil, firebaseHelper.gameState != nil else {
                 sortedPlayerList = GameState.players
                 return
             }
             
-            sortedPlayerList = firebaseHelper.players
+            if new.count > 2 {
+                let beforePlayer = new[0..<firebaseHelper.playerState!.player_num]
+                let afterPlayer = new[(firebaseHelper.playerState!.player_num + 1)..<new.count]
+                
+                sortedPlayerList = Array(afterPlayer + beforePlayer)
+            } else {
+                sortedPlayerList = new
+            }
         })
     }
     
-    func updateMultiplierAndRotation() {
-        if let gameState = firebaseHelper.gameState {
-            switch gameState.num_teams {
-                case 2:
-                    if gameState.num_players == 2 {
-                        startingRotation = 0
-                        multiplier = 0
-                    } else {
-                        startingRotation = 270
-                        multiplier = 90
-                    }
-                case 3:
-                    if gameState.num_players == 3 {
-                        startingRotation = 300
-                        multiplier = 120
-                    } else {
-                        startingRotation = 240
-                        multiplier = 60
-                    }
-                default:
+    func updateMultiplierAndRotation(_ gameState: GameState) {
+        switch gameState.num_teams {
+            case 2:
+                if gameState.num_players == 2 {
                     startingRotation = 0
                     multiplier = 0
-            }
-        } else {
-            startingRotation = 240
-            multiplier = 60
+                } else {
+                    startingRotation = 270
+                    multiplier = 90
+                }
+            case 3:
+                if gameState.num_players == 3 {
+                    startingRotation = 300
+                    multiplier = 120
+                } else {
+                    startingRotation = 240
+                    multiplier = 60
+                }
+            default:
+                startingRotation = 0
+                multiplier = 0
         }
     }
     
@@ -81,7 +83,7 @@ struct NamesAroundTable: View {
 
 #Preview {
     return GeometryReader { geo in
-        NamesAroundTable()
+        NamesAroundTable(gameObservable: GameObservable(game: .game))
             .environmentObject({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)
@@ -90,7 +92,6 @@ struct NamesAroundTable: View {
             .environmentObject(FirebaseHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
             .background(Color("OffWhite").opacity(0.1))
-        
     }
     .ignoresSafeArea()
 }

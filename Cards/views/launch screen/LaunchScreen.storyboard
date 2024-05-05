@@ -17,7 +17,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Cards" translatesAutoresizingMaskIntoConstraints="NO" id="Ula-30-DbU">
-                                <rect key="frame" x="96.666666666666686" y="400.33333333333331" width="199.99999999999994" height="51.333333333333314"/>
+                                <rect key="frame" x="96.666666666666686" y="400.33333333333331" width="200" height="51.333333333333314"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="200" id="Gxn-LB-uay"/>
                                     <constraint firstAttribute="width" secondItem="Ula-30-DbU" secondAttribute="height" multiplier="332:85" id="mb1-6L-yV0"/>
@@ -38,7 +38,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Cards" width="332" height="85"/>
+        <image name="Cards" width="374" height="98"/>
         <namedColor name="White">
             <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
