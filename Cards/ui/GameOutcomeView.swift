@@ -9,29 +9,35 @@ import SwiftUI
 
 struct GameOutcomeView: View {
     @EnvironmentObject private var firebaseHelper: FirebaseHelper
+    @EnvironmentObject private var specs: DeviceSpecs
     @Binding var outcome: GameOutcome
     @State var endGameOpacity: Double = 1.0
+    @State var scale: Double = 1.0
 
     var body: some View {
-        ZStack {
+        Group {
             switch (outcome) {
                 case .win:
                     ZStack {
-                        VisualEffectView(effect: UIBlurEffect(style: .light))
+                        VisualEffectView(effect: UIBlurEffect(style: .prominent))
                             .ignoresSafeArea(.all)
-                        Text("You win!")
-                            .foregroundStyle(.green)
-                            .font(.largeTitle)
+                        VStack(spacing: 50) {
+                            CText("You won!", size: 50)
+                                .foregroundStyle(.green)
+                                .shadow(color: .white, radius: 10)
+                        }
                     }
                     .zIndex(0)
                     .transition(.opacity)
                 case .lose:
                     ZStack {
-                        VisualEffectView(effect: UIBlurEffect(style: .light))
+                        VisualEffectView(effect: UIBlurEffect(style: .prominent))
                             .ignoresSafeArea(.all)
-                        Text("You lose!")
-                            .foregroundStyle(.red)
-                            .font(.largeTitle)
+                        VStack(spacing: 50) {
+                            CText("You lost!", size: 50)
+                                .foregroundStyle(.red)
+                                .shadow(color: .white, radius: 10)
+                        }
                     }
                     .zIndex(0)
                     .transition(.opacity)
@@ -39,19 +45,27 @@ struct GameOutcomeView: View {
                     EmptyView()
             }
         }
-        .opacity(endGameOpacity)
-        .animation(.easeInOut.speed(0.5).delay(0.3), value: outcome)
-        .onChange(of: outcome, {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
-                withAnimation(.easeInOut.speed(0.3).delay(0.3)) {
-                    endGameOpacity = 0.0
-                }
-            }
-        })
+        .onAppear {
+            firebaseHelper.logAnalytics(.game_ended)
+        }
+        .animation(.easeInOut.speed(0.5).delay(1.0), value: outcome)
     }
 }
 
 #Preview {
-    GameOutcomeView(outcome: .constant(.lose))
+    return GeometryReader { geo in
+        ZStack {
+            GameView()
+            GameOutcomeView(outcome: .constant(.lose))
+        }
+        .environmentObject({ () -> DeviceSpecs in
+            let envObj = DeviceSpecs()
+            envObj.setProperties(geo)
+            return envObj
+        }() )
         .environmentObject(FirebaseHelper())
+        .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
+        .background(DeviceSpecs().theme.colorWay.background)
+    }
+    .ignoresSafeArea()
 }

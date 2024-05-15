@@ -25,8 +25,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 struct CardsApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @State var showLaunch: Bool = true
-    @StateObject private var firebaseHelper = FirebaseHelper()
-    @StateObject private var deviceSpecs = DeviceSpecs()
         
     var body: some Scene {
         WindowGroup {
@@ -42,7 +40,7 @@ struct CardsApp: App {
                     }
                     .zIndex(2.0)
                 }
-                .environmentObject(firebaseHelper)
+                .environmentObject(FirebaseHelper())
                 .environmentObject({ () -> DeviceSpecs in
                     let envObj = DeviceSpecs()
                     envObj.setProperties(geo)

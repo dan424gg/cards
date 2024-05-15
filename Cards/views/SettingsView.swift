@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct SettingsView: View {
+    @Environment(\.openURL) private var openURL
+    @EnvironmentObject var firebaseHelper: FirebaseHelper
     @EnvironmentObject var specs: DeviceSpecs
     @Binding var introView: IntroViewType
     @AppStorage(AppStorageConstants.theme) var theme: ColorTheme = .classic
@@ -17,29 +19,27 @@ struct SettingsView: View {
     var body: some View {
         ZStack {
             VStack(alignment: .center) {
-                Text("Settings")
+                CText("Settings", size: 40)
                     .font(.custom("LuckiestGuy-Regular", size: 40))
-                    .baselineOffset(-10)
-                    .foregroundStyle(specs.theme.colorWay.textColor)
-                    .frame(height: 40)
                 
                 HStack {
-                    CText("Change Theme", size: 20)
+                    CText("Theme")
                     Spacer()
                     Menu {
                         Picker("theme", selection: $theme) {
                             ForEach(ColorTheme.allCases, id: \.self) { theme in
-                                CText(theme.id)
+                                Text(theme.id)
                             }
                         }
                         .id(hack)
                         .onChange(of: theme, {
+                            firebaseHelper.logAnalytics(.theme_picked, ["theme": theme.id])
                             withAnimation {
                                 hack += 1
                             }
                         })
                     } label: {
-                        CText(theme.id, size: 20)
+                        CText(theme.id)
                             .foregroundStyle(specs.theme.colorWay.secondary)
                     }
                 }
@@ -58,13 +58,25 @@ struct SettingsView: View {
                     VisualEffectView(effect: UIBlurEffect(style: .systemThinMaterialDark))
                         .clipShape(RoundedRectangle(cornerRadius: 25.0))
                 }
-                
-                CText("Terms and Conditions", size: Int(determineFont("Terms and Conditions", Int((specs.maxX * 0.8) - 60.0), 24)))
-                    .padding()
-                    .background {
-                        VisualEffectView(effect: UIBlurEffect(style: .systemThinMaterialDark))
-                            .clipShape(RoundedRectangle(cornerRadius: 25.0))
+                                
+                HStack {
+                    CText("Privacy Policy", size: Int(determineFont("Privacy Policy", Int((specs.maxX * 0.8) - 60.0), 24)))
+                        .foregroundStyle(specs.theme.colorWay.secondary)
+                    Image(systemName: "link")
+                        .fontWeight(.heavy)
+                        .imageScale(.large)
+                        .foregroundStyle(specs.theme.colorWay.secondary)
+                }
+                .padding()
+                .background {
+                    VisualEffectView(effect: UIBlurEffect(style: .systemThinMaterialDark))
+                        .clipShape(RoundedRectangle(cornerRadius: 25.0))
+                }
+                .onTapGesture {
+                    if let url = URL(string: "https://cards-8e688.web.app/") {
+                        openURL(url)
                     }
+                }
             }
             .padding()
             .background {

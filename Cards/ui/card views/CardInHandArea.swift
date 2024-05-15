@@ -14,7 +14,6 @@ struct CardInHandArea: View {
     @Binding var cards: [Int]
     @Binding var cardsDragged: [Int]
     @Binding var cardsInHand: [Int]
-//    @State var shownCardsInHand: [Int] = []
     @StateObject var gameObservable: GameObservable = GameObservable(game: .game)
         
     var showBackside = false
@@ -24,7 +23,6 @@ struct CardInHandArea: View {
             ForEach(Array(cardsInHand.enumerated()), id: \.offset) { (index, cardId) in
                 CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(false), backside: .constant(showBackside), scale: 2.0)
                     .offset(y: -100)
-//                    .scaleEffect(x: 2, y: 2)
                     .rotationEffect(.degrees(-Double((cardsInHand.count - 1) * 6) + Double(index * 12)))
                     .onTapGesture {
                         determineTapGesture(cardId: cardId)

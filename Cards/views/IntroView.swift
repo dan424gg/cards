@@ -25,39 +25,32 @@ struct IntroView: View {
             if introView == .newGame {
                 NewGameView(introView: $introView)
                     .geometryGroup()
+                    .KeyboardAwarePadding(offset: -48)
                     .transition(.move(edge: .leading).combined(with: .opacity))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .contentShape(Rectangle())
                     .onTapGesture {
                         endTextEditing()
-                        withAnimation(.snappy.speed(1.0)) {
-                            introView = .nothing
-                        }
                     }
             } else if introView == .existingGame {
                 ExistingGameView(introView: $introView)
+                    .geometryGroup()
+                    .KeyboardAwarePadding(offset: -48)
+                    .transition(.move(edge: .trailing).combined(with: .opacity))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        endTextEditing()
+                    }
+            } else if introView == .loadingScreen {
+                LoadingScreen(introView: $introView)
                     .geometryGroup()
                     .transition(.move(edge: .trailing).combined(with: .opacity))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .contentShape(Rectangle())
                     .onTapGesture {
                         endTextEditing()
-                        withAnimation(.snappy.speed(1.0)) {
-                            introView = .nothing
-                        }
                     }
-            } else if introView == .loadingScreen {
-                LoadingScreen()
-                    .geometryGroup()
-                    .transition(.move(edge: .trailing).combined(with: .opacity))
-//                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-//                    .contentShape(Rectangle())
-//                    .onTapGesture {
-//                        endTextEditing()
-//                        withAnimation(.snappy.speed(1.0)) {
-//                            introView = .nothing
-//                        }
-//                    }
             } else if introView == .settings {
                 SettingsView(introView: $introView)
                     .geometryGroup()
@@ -66,18 +59,14 @@ struct IntroView: View {
                     .contentShape(Rectangle())
                     .onTapGesture {
                         endTextEditing()
-                        withAnimation(.snappy.speed(1.0)) {
-                            introView = .nothing
-                        }
                     }
+                
             } else {
                 ZStack {
-                    Text("CARDS")
-                        .font(.custom("LuckiestGuy-Regular", size: determineFont("CARDS", Int(specs.maxX), 110)))
-                        .tracking(8)
+                    CText("CARDS PLAYGROUND", size: Int(determineFont("Playground", Int(specs.maxX), 115)))
                         .foregroundStyle(specs.theme.colorWay.title)
-                        .position(x: specs.maxX / 2, y: specs.maxY * 0.3)
-                        .offset(x: 5)
+                        .multilineTextAlignment(.center)
+                        .position(x: specs.maxX / 2, y: specs.maxY * 0.25)
 
                     VStack(spacing: 15) {
                         MainScreenButton(buttonType: .existingGame, submitFunction: {

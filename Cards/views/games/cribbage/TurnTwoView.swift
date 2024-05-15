@@ -36,7 +36,7 @@ struct TurnTwoView: View {
                             horizontalViewOfCards
                         } else {
                             stackedViewOfCards
-                                .frame(width: 60, height: 100)
+                                .frame(width: 60 * Double(specs.maxY / 852), height: 100 * Double(specs.maxY / 852))
                         }
                     }
                     .transition(.offset())
@@ -48,7 +48,7 @@ struct TurnTwoView: View {
                             }
                         }
                 }
-                .frame(width: 167, height: 100)
+                .frame(width: 167 * (specs.maxX / 393), height: 100 * (specs.maxY / 852))
             } else {
                 ZStack {
                     HStack {
@@ -56,43 +56,22 @@ struct TurnTwoView: View {
                             horizontalViewOfCards
                         } else {
                             stackedViewOfCards
-                                .frame(width: 60, height: 100)
+                                .frame(width: 60 * Double(specs.maxY / 852), height: 100 * Double(specs.maxY / 852))
                         }
                         
-                        VStack {
-                            Text("\(firebaseHelper.gameState?.running_sum ?? 14)")
-                                .foregroundStyle(specs.theme.colorWay.textColor)
-                                .font(.custom("LuckiestGuy-Regular", size: 16))
-                                .baselineOffset(-1.6)
+                        VStack(spacing: 8) {
+                            CText("\(firebaseHelper.gameState?.running_sum ?? 14)", size: 20)
                             
-                            Button {
-                                handleGoButton()
-                            } label: {
-                                Text("GO")
-                                    .font(.custom("LuckiestGuy-Regular", size: 16))
-                                    .baselineOffset(-5)
-                            }
-                            .frame(width: 68, height: 32)
-                            .background {
-                                VisualEffectView(effect: UIBlurEffect(style: .prominent))
-                                    .clipShape(RoundedRectangle(cornerRadius: 5.0))
-                            }
-                            .disabled(handleDisabledState())
+                            CustomButton(name: "GO", submitFunction: handleGoButton, size: Int(specs.maxY / 60.85))
+                                .disabled(handleDisabledState())
                             
-                            Button {
-                                withAnimation(.smooth(duration: 0.5)) {
-                                    showAllCards.toggle()
+                            CustomButton(name: "SHOW", submitFunction: {
+                                if cardsDragged.count > 1 {
+                                    withAnimation(.smooth(duration: 0.5)) {
+                                        showAllCards.toggle()
+                                    }
                                 }
-                            } label: {
-                                Text("Show")
-                                    .font(.custom("LuckiestGuy-Regular", size: 16))
-                                    .baselineOffset(-5)
-                            }
-                            .frame(width: 68, height: 32)
-                            .background {
-                                VisualEffectView(effect: UIBlurEffect(style: .prominent))
-                                    .clipShape(RoundedRectangle(cornerRadius: 5.0))
-                            }
+                            }, size: Int(specs.maxY / 60.85))
                         }
                     }
                     .transition(.offset())
@@ -105,34 +84,15 @@ struct TurnTwoView: View {
                         }
                 }
                 
-                Button {
+                CustomButton(name: "SUBMIT", submitFunction: {
                     Task {
                         await handleSubmitButton()
                     }
-                } label: {
-                    Text("Submit")
-                        .foregroundStyle(invalid ? .red : .green)
-                        .font(.custom("LuckiestGuy-Regular", size: 16))
-                        .baselineOffset(-5)
-                }
-                .frame(width: 80, height: 32)
-                .background {
-                    VisualEffectView(effect: UIBlurEffect(style: .prominent))
-                        .clipShape(RoundedRectangle(cornerRadius: 5.0))
-                }
-                .disabled(invalid)
+                }, size: Int(specs.maxY / 60.85), invertColors: true)
+                    .disabled(invalid)
             }
         }
-        .frame(height: 140)
-        .onAppear {
-            guard firebaseHelper.playerState != nil, firebaseHelper.gameState != nil, firebaseHelper.playerState!.is_lead else {
-                return
-            }
-            
-//            Task {
-//                await firebaseHelper.updateGame(["player_turn": (firebaseHelper.gameState!.dealer + 1) % firebaseHelper.gameState!.num_players])
-//            }
-        }
+        .frame(height: 140 * (specs.maxY / 852))
         .onChange(of: cardsDragged, { (old, new) in
             guard !cardsDragged.isEmpty else {
                 return
@@ -160,7 +120,7 @@ struct TurnTwoView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 5) {
                         ForEach(Array(cardsDragged.reversed().enumerated()), id: \.offset) { (index, cardId) in
-                            CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(true), backside: .constant(false), naturalOffset: true)
+                            CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(true), backside: .constant(false), scale: Double(specs.maxY / 852))
                                 .matchedGeometryEffect(id: cardId, in: namespace)
                                 .zIndex(Double(-index))
                                 .onTapGesture {
@@ -175,7 +135,7 @@ struct TurnTwoView: View {
             } else {
                 HStack(spacing: 5) {
                     ForEach(Array(cardsDragged.reversed().enumerated()), id: \.offset) { (index, cardId) in
-                        CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(true), backside: .constant(false), naturalOffset: true)
+                        CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(true), backside: .constant(false), scale: Double(specs.maxY / 852))
                             .matchedGeometryEffect(id: cardId, in: namespace)
                             .zIndex(Double(-index))
                             .onTapGesture {
@@ -191,7 +151,7 @@ struct TurnTwoView: View {
     var stackedViewOfCards: some View {
         ZStack {
             ForEach(Array(cardsDragged.reversed().enumerated()), id: \.offset) { (index, cardId) in
-                CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(true), backside: .constant(false), naturalOffset: true)
+                CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(true), backside: .constant(false), scale: Double(specs.maxY / 852))
                     .matchedGeometryEffect(id: cardId, in: namespace)
                     .zIndex(Double(-index))
                     .onTapGesture {

@@ -8,12 +8,12 @@
 import Foundation
 import UniformTypeIdentifiers
 import CoreGraphics
+import Combine
 import SwiftUI
 
 
 class ProfanityFilter: NSObject {
-  
-  /* Words from https://www.freewebheaders.com/full-list-of-bad-words-banned-by-google/ */
+    /* Words from https://www.freewebheaders.com/full-list-of-bad-words-banned-by-google/ */
   
   static func cleanUp(_ str: String) -> String {
       let string = str.lowercased()
@@ -124,6 +124,8 @@ enum ColorTheme: String, CaseIterable, Identifiable, Codable {
 protocol ColorWay: Identifiable {
     var id: String { get }
     
+    var cardsLogo: Image { get }
+    
     var background: Color { get }
     var title: Color { get }
     var textColor: Color { get }
@@ -138,6 +140,7 @@ protocol ColorWay: Identifiable {
 struct BananaColorWay: ColorWay {
     var id: String = "BananaColorWay"
     
+    var cardsLogo: Image = Image("Banana_Cards")
     var background: Color = Color("Banana_Background")
     var title: Color = Color("Banana_Title")
     var textColor: Color = Color("Banana_TextColor")
@@ -151,6 +154,7 @@ struct BananaColorWay: ColorWay {
 struct CardGameColorWay: ColorWay {
     var id: String = "CardGameColorWay"
     
+    var cardsLogo: Image = Image("CardGame_Cards")
     var background: Color = Color("CardGame_Background")
     var title: Color = Color("CardGame_Title")
     var textColor: Color = Color("CardGame_TextColor")
@@ -269,6 +273,10 @@ extension View {
         }
     }
     
+    func disableAnimations() -> some View {
+        modifier(DisableAnimationsViewModifier())
+    }
+    
     func getSize(onChange: @escaping (CGSize) -> Void) -> some View {
         background(
             GeometryReader { geometryProxy in
@@ -359,28 +367,36 @@ func endTextEditing() {
 struct CText: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @EnvironmentObject var specs: DeviceSpecs
+    @StateObject var gameObservable = GameObservable(game: .game)
+    @AppStorage(AppStorageConstants.filter) var applyFilter: Bool = false
     var string: String
     private var size: Int
     private var color: Color?
-//    private var font: Font
     
-    init(_ string: String, size: Int = 24, color: Color? = nil/*, font: Font = .custom("LuckiestGuy-Regular", size: 24.0)*/) {
+    init(_ string: String, size: Int = 24, color: Color? = nil) {
         self.string = string
         self.size = size
         self.color = color
-//        self.font = font
     }
     
     var body: some View {
-        CText(specs.applyFilter ? ProfanityFilter.cleanUp(string) : string)
+        Text(applyFilter ? ProfanityFilter.cleanUp(string).uppercased() : string.uppercased())
             .font(.custom("LuckiestGuy-Regular", size: Double(size)))
-            .baselineOffset(-6)
-            .foregroundStyle(color ?? specs.theme.colorWay.textColor)
+            .baselineOffset(-(Double(size) * 0.25))
+            .foregroundStyle(color ?? determineColor())
     }
     
     private func determineColor() -> Color {
         guard firebaseHelper.gameState != nil else {
+            #if DEBUG
+            if gameObservable.game.is_playing {
+                return specs.theme.colorWay.inGameTextColor
+            } else {
+                return specs.theme.colorWay.textColor
+            }
+            #else
             return specs.theme.colorWay.textColor
+            #endif
         }
         
         if firebaseHelper.gameState!.is_playing {
@@ -396,14 +412,24 @@ struct CText: View {
     /// CText("Hello, this is a test")
     ///         .foregroundStyle(.red)
     /// ```
+    /// 
     @ViewBuilder func `foregroundStyle`(_ color: Color) -> some View {
         CText(self.string, size: self.size, color: color)
     }
+    
+    @ViewBuilder func `foregroundStyle`(_ color: Color?) -> some View {
+        if color == nil {
+            CText(self.string, size: self.size, color: self.color)
+        } else {
+            CText(self.string, size: self.size, color: color!)
+        }
+    }
 }
 
-#Preview {
-    CText("Hello")
-        .background(Color.red)
+struct DisableAnimationsViewModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content.transaction { $0.animation = nil }
+    }
 }
 
 struct DisplayPlayersHandContainer: View {
@@ -541,6 +567,7 @@ struct StrokeText: View {
 }
 
 struct TimedTextContainer: View {
+    @EnvironmentObject var specs: DeviceSpecs
     @State private var string: String = ""
     @State private var idx: Int = 0
     @Binding var display: Bool
@@ -550,54 +577,50 @@ struct TimedTextContainer: View {
     var color: Color = .purple
     
     var body: some View {
-//        if display {
-            VStack {
-                CText(string)
-                    .foregroundStyle(color)
-                    .font(.custom("LuckiestGuy-Regular", size: 18))
-                    .baselineOffset(-4)
-                    .padding(.horizontal)
-                    .padding(.vertical, 10)
-                    .id(string)
-                    .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .opacity))
-                    .background {
-                        if !string.isEmpty {
-                            RoundedRectangle(cornerRadius: 5)
-                                .stroke(color, lineWidth: 3)
-                                .background { VisualEffectView(effect: UIBlurEffect(style: .systemThickMaterial)).clipShape(RoundedRectangle(cornerRadius: 5)) }
-                        }
+        VStack {
+            CText(string, size: 18 * Int((specs.maxY / 852.0)))
+                .foregroundStyle(color)
+                .padding(.horizontal)
+                .padding(.vertical, 10 * (specs.maxY / 852.0))
+                .id(string)
+                .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .opacity))
+                .background {
+                    if !string.isEmpty {
+                        RoundedRectangle(cornerRadius: 5)
+                            .stroke(color, lineWidth: 3)
+                            .background { VisualEffectView(effect: UIBlurEffect(style: .systemThickMaterial)).clipShape(RoundedRectangle(cornerRadius: 5)) }
                     }
-                Spacer()
-            }
-            .onChange(of: textArray, initial: true, {
-                if !textArray.isEmpty {
-                    for i in 0...textArray.count {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + (visibilityFor * Double(i))) {
-                            if i >= textArray.count {
-                                withAnimation {
-                                    display = false
-                                    string = ""
-                                    textArray.removeAll()
-                                }
-                            } else {
-                                withAnimation {
-                                    string = textArray[i]
-                                }
+                }
+            Spacer()
+        }
+        .onChange(of: textArray, initial: true, {
+            if !textArray.isEmpty {
+                for i in 0...textArray.count {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + (visibilityFor * Double(i))) {
+                        if i >= textArray.count {
+                            withAnimation {
+                                display = false
+                                string = ""
+                                textArray.removeAll()
+                            }
+                        } else {
+                            withAnimation {
+                                string = textArray[i]
                             }
                         }
                     }
                 }
-            })
-            .frame(height: 100)
-            .offset(y: 28)
-            .onTapGesture {
-                withAnimation {
-                    display = false
-                    string = ""
-                    textArray.removeAll()
-                }
             }
-//        }
+        })
+        .frame(height: 100 * (specs.maxY / 852.0))
+        .offset(y: 28 * (specs.maxY / 852.0))
+        .onTapGesture {
+            withAnimation {
+                display = false
+                string = ""
+                textArray.removeAll()
+            }
+        }
     }
 }
 
@@ -605,4 +628,37 @@ struct VisualEffectView: UIViewRepresentable {
     var effect: UIVisualEffect?
     func makeUIView(context: UIViewRepresentableContext<Self>) -> UIVisualEffectView { UIVisualEffectView() }
     func updateUIView(_ uiView: UIVisualEffectView, context: UIViewRepresentableContext<Self>) { uiView.effect = effect }
+}
+
+struct KeyboardAwareModifier: ViewModifier {
+    var paddingOffset: CGFloat
+    @State private var keyboardHeight: CGFloat = 0
+
+    private var keyboardHeightPublisher: AnyPublisher<CGFloat, Never> {
+        Publishers.Merge(
+            NotificationCenter.default
+                .publisher(for: UIResponder.keyboardWillShowNotification)
+                .compactMap { $0.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue }
+                .map { $0.cgRectValue.height + paddingOffset },
+            NotificationCenter.default
+                .publisher(for: UIResponder.keyboardWillHideNotification)
+                .map { _ in CGFloat(0) }
+       ).eraseToAnyPublisher()
+    }
+
+    func body(content: Content) -> some View {
+        content
+            .padding(.bottom, keyboardHeight)
+            .onReceive(keyboardHeightPublisher) { height in
+                withAnimation {
+                    self.keyboardHeight = height
+                }
+            }
+    }
+}
+
+extension View {
+    func KeyboardAwarePadding(offset: CGFloat = 0) -> some View {
+        ModifiedContent(content: self, modifier: KeyboardAwareModifier(paddingOffset: offset))
+    }
 }

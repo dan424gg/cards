@@ -44,17 +44,18 @@ enum SheetType: Identifiable, SheetEnum {
 
     @ViewBuilder
     func view(coordinator: SheetCoordinator<SheetType>) -> some View {
-        switch self {
-            case .gameSetUp(let type):
-                GameSetUpView(sheetCoordinator: coordinator, setUpType: type)
-            case .loadingScreen:
-                LoadingScreen()
-                    .interactiveDismissDisabled()
-                    .presentationBackgroundInteraction(.enabled(upThrough: .fraction(0.045)))
-            case .gameStats:
-                Text("this is the game stats!")
-                    .interactiveDismissDisabled()
-                    .presentationBackgroundInteraction(.enabled(upThrough: .fraction(0.045)))
-        }
+        Text("nothing")
+//        switch self {
+//            case .gameSetUp(let type):
+//                GameSetUpView(sheetCoordinator: coordinator, setUpType: type)
+//            case .loadingScreen:
+//                LoadingScreen(intro)
+//                    .interactiveDismissDisabled()
+//                    .presentationBackgroundInteraction(.enabled(upThrough: .fraction(0.045)))
+//            case .gameStats:
+//                CText("this is the game stats!")
+//                    .interactiveDismissDisabled()
+//                    .presentationBackgroundInteraction(.enabled(upThrough: .fraction(0.045)))
+//        }
     }
 }

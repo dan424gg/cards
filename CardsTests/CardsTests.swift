@@ -12,7 +12,7 @@ import FirebaseCore
 import FirebaseFirestore
 import FirebaseFirestoreSwift
 
-@testable import Cards
+@testable import CardsPlayground
 
 final class LoadingScreenTests: XCTestCase {
     @MainActor func testPlayerThreeChangesTeamWhenFourthJoins() async {

@@ -23,18 +23,14 @@ struct PlayerView: View {
 //        ZStack {
             switch (firebaseHelper.gameState?.game_name ?? "cribbage") {
                 case "cribbage":
-                    VStack{
+                    VStack {
                         ZStack {
                             if (firebaseHelper.gameState?.dealer ?? gameObservable.game.dealer) == player.player_num {
                                 CribMarker(scale: 0.45)
                                     .offset(x: (player.name.width(usingFont: UIFont.init(name: "LuckiestGuy-Regular", size: Double(fontSize))!) / 2) + 13)
                             }
                             
-                            Text(player.name)
-                                .font(.custom("LuckiestGuy-Regular", size: Double(fontSize)))
-                                .baselineOffset(-6)
-                                .foregroundStyle(.white)
-//                                .foregroundStyle(((firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn) == player.player_num && firebaseHelper.gameState?.turn == 2) ? Color("greenForPlayerPlaying") : defaultColor)
+                            CText(player.name, size: Int(fontSize))
                                 .zIndex(1.0)
 
                             if shown {
@@ -42,10 +38,15 @@ struct PlayerView: View {
                                     .geometryGroup()
                                     .offset(x: -(player.name.width(usingFont: UIFont.init(name: "LuckiestGuy-Regular", size: Double(fontSize))!) / 2) - 22)
                                     .zIndex(0.0)
+                                    .getSize { size in
+                                        print("pointcontainer size: \(size)")
+                                        print("pointcontainer offset: \(-(player.name.width(usingFont: UIFont.init(name: "LuckiestGuy-Regular", size: Double(fontSize))!) / 2) - 22)")
+                                    }
                             }
                         }
+                        .frame(width: 130)
                         .onAppear {
-                            if fontSize != 16 {
+                            if fontSize == 16 {
                                 fontSize = Int(determineFont(player.name, 45, fontSize))
                             }
                         }
@@ -66,7 +67,7 @@ struct PlayerView: View {
                     })
                     .transition(.offset().combined(with: .opacity))
                 default:
-                    Text("Shouldn't get here")
+                    CText("Shouldn't get here")
             }
 //        }
     }

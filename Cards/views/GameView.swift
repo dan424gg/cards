@@ -19,36 +19,16 @@ struct GameView: View {
 
     var body: some View {
         ZStack {
-//            ZStack {
-//                specs.theme.colorWay.background
-//                ForEach(Array(0...20), id: \.self) { i in
-//                    LineOfSuits(index: i)
-//                        .offset(y: CGFloat(-120 * Double(i)))
-//                }
-//                .position(x: specs.maxX / 2, y: specs.maxY * 1.5)
-//            }
-//            .zIndex(0.0)            
-            Button("incr turn") {
-                withAnimation {
-                    gameObservable.game.player_turn = (gameObservable.game.player_turn + 1) % 6
-                }
-            }
-            .buttonStyle(.bordered)
-            .offset(x: 150, y: 200)
-            
             if (firebaseHelper.gameState?.turn ?? gameObservable.game.turn) != 6 {
                 if playingGame {
                     Group {
                         PlayingTable(gameObservable: gameObservable)
-                            .frame(height: specs.maxY * 0.4)
+                            .frame(width: specs.maxX * 0.85)
                             .position(x: specs.maxX / 2, y: specs.maxY * 0.4)
                             .offset(y: -50)
-//                            .background {
-//                                specs.theme.colorWay.background
-//                            }
                         
                         PlayerIndicator(gameObservable: gameObservable)
-                            .frame(height: specs.maxY * 0.4)
+                            .frame(width: specs.maxX * 0.85)
                             .position(x: specs.maxX / 2, y: specs.maxY * 0.4)
                             .offset(y: -50)
                         
@@ -57,8 +37,8 @@ struct GameView: View {
                             .offset(y: -50)
                         
                         CribbageBoard()
-                            .scaleEffect(x: 0.8, y: 0.8)
-                            .position(x: specs.maxX / 2, y: specs.maxY * 0.4 )
+                            .scaleEffect(0.8 * (specs.maxY / 852))
+                            .position(x: specs.maxX / 2, y: specs.maxY * 0.37)
                             .offset(y: -50)
                         
                         CardsView(gameObservable: gameObservable)
@@ -72,7 +52,8 @@ struct GameView: View {
                         
                         if shown {
                             PointContainer(player: firebaseHelper.playerState ?? PlayerState.player_one, user: true)
-                                .position(x: specs.maxX / 2, y: specs.maxY * 0.68)
+                                .scaleEffect(specs.maxY / 852)
+                                .position(x: specs.maxX / 2, y: specs.maxY * 0.71)
                                 .transition(.opacity)
                         }
                         
@@ -99,7 +80,6 @@ struct GameView: View {
                     .transition(.opacity)
             }
         }
-        .disabled(firebaseHelper.gameOutcome != .undetermined)
         .onChange(of: firebaseHelper.playerState?.is_ready, {
             guard firebaseHelper.playerState != nil, firebaseHelper.gameState != nil, firebaseHelper.playerState!.is_lead else {
                 return
@@ -135,10 +115,11 @@ struct GameView: View {
                 return
             }
             
-            if firebaseHelper.teamState!.points >= 121 {
+            if firebaseHelper.teamState!.points >= 120 {
                 Task {
                     await firebaseHelper.updateGame(["who_won": firebaseHelper.teamState!.team_num])
                 }
+                
                 firebaseHelper.gameOutcome = .win
             }
         })
@@ -208,7 +189,7 @@ struct GameView: View {
                             }
                         } else if i == 0 {
                             // UPDATING GAMESTATE LOCALLY
-                            firebaseHelper.gameState!.player_turn = (firebaseHelper.gameState!.dealer + 1) % numPlayers
+                            firebaseHelper.gameState!.player_turn = firebaseHelper.gameState!.dealer
                             if firebaseHelper.playerState!.player_num == firebaseHelper.gameState!.player_turn {
                                 withAnimation {
                                     shown = true
@@ -263,7 +244,7 @@ struct GameView: View {
                     Circle()
                         .trim(from: 0.0, to: turn == 1 || turn == 4 ? 0.75 : 1.0)
                         .rotation(.degrees(135))
-                        .stroke(specs.theme.colorWay.primary, lineWidth: 3)
+                        .stroke(specs.theme.colorWay.primary, lineWidth: 5)
                         .fill(specs.theme.colorWay.background)
 //                } else {
 //                    Circle()
@@ -303,7 +284,7 @@ struct GameView: View {
                 Circle()
                     .trim(from: 0.0, to: 0.09375)
                     .rotation(.degrees(-16.875 + 90.0))
-                    .stroke(specs.theme.colorWay.secondary, lineWidth: 3)
+                    .stroke(specs.theme.colorWay.secondary, lineWidth: 5)
                     .rotationEffect(.degrees(Double(rotation)))
                     .transition(.opacity)
                     .onAppear {
@@ -348,40 +329,17 @@ struct GameView: View {
                         withAnimation {
                             rotation += Double(multiplier)
                         }
+                        
+                        guard firebaseHelper.playerState != nil else {
+                            return
+                        }
+                        
+                        if playerTurn == firebaseHelper.playerState!.player_num {
+                            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                        }
                     })
             }
         }
-        
-//        func setRotation(_ gameState: GameState) -> CGFloat {
-//            var playerState: PlayerState {
-//                if firebaseHelper.playerState != nil {
-//                    return firebaseHelper.playerState!
-//                } else {
-//                    return PlayerState.player_one
-//                }
-//            }
-//            
-//            switch gameState.num_teams {
-//                case 2:
-//                    if gameState.num_players == 2 {
-//                        if gameState.player_turn == playerState.player_num {
-//                            return 180
-//                        } else {
-//                            return 0
-//                        }
-//                    } else {
-//                        return 270
-//                    }
-//                case 3:
-//                    if gameState.num_players == 3 {
-//                        return 300
-//                    } else {
-//                        return 240
-//                    }
-//                default:
-//                    return 0
-//            }
-//        }
     }
 }
 

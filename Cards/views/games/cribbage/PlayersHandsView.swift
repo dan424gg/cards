@@ -17,9 +17,7 @@ struct PlayersHandsView: View {
 
     var body: some View {
         VStack(spacing: 56) {
-            Text("View Players Hands")
-                .font(.custom("LuckiestGuy-Regular", size: 32))
-                .foregroundStyle(.white)
+            CText("View Players Hands", size: 32)
 
             VStack(spacing: 15) {
                 if players != [] {
@@ -35,6 +33,7 @@ struct PlayersHandsView: View {
             .onChange(of: firebaseHelper.players, initial: true, {
                 guard firebaseHelper.players != [] else {
                     players = GameState.players
+                    players.append(PlayerState.player_one)
                     return
                 }
                 
@@ -57,91 +56,100 @@ struct PlayersHandsView: View {
                 }
             })
             
-            Button {
-                Task {
-                    await firebaseHelper.updatePlayer(["is_ready": true])
+            CustomButton(name: "Ready Up", submitFunction: {
+                guard firebaseHelper.playerState != nil else {
+                    return
                 }
-            } label: {
-                Text("Ready Up")
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 12)
-                    .font(.custom("LuckiestGuy-Regular", size: 24))
-                    .baselineOffset(-5)
-                    .foregroundStyle(specs.theme.colorWay.primary)
-                    .background(specs.theme.colorWay.white)
-                    .clipShape(Capsule())
-            }
+                
+                if firebaseHelper.playerState!.is_ready {
+                    Task {
+                        await firebaseHelper.updatePlayer(["is_ready": false])
+                    }
+                } else {
+                    Task {
+                        await firebaseHelper.updatePlayer(["is_ready": true])
+                    }
+                }
+            })
         }
         .frame(width: specs.maxX, height: specs.maxY)
         .sheet(isPresented: $showSheet, content: {
             PlayerHand(player: $expandedPlayer)
                 .presentationDetents([.fraction(0.69)])
                 .presentationBackground(content: {
-//                    if expandedPlayer.is_ready {
-//                        specs.theme.colorWay.primary
-//                    } else {
-                        VisualEffectView(effect: UIBlurEffect(style: .regular))
-//                    }
+//                    VisualEffectView(effect: UIBlurEffect(style: .regular))
+                    specs.theme.colorWay.background
                 })
                 .presentationCornerRadius(25.0)
                 .presentationDragIndicator(.visible)
         })
     }
-    
-    struct PlayerNameButton: View {
-        @EnvironmentObject var firebaseHelper: FirebaseHelper
-        @EnvironmentObject var specs: DeviceSpecs
-        @State var points = 0
-        @State var cribPoints = -1
-        @StateObject var gameObservable: GameObservable = GameObservable(game: .game)
+}
 
-        @Binding var player: PlayerState
-        
-        var body: some View {
+struct PlayerNameButton: View {
+    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var specs: DeviceSpecs
+    @State var points = 0
+    @State var cribPoints = -1
+    @StateObject var gameObservable: GameObservable = GameObservable(game: .game)
+
+    @Binding var player: PlayerState
+    
+    @State var bool: Bool = false
+    
+    var body: some View {
+        HStack {
+            if player.is_ready {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 50, weight: .regular))
+                    .foregroundStyle(specs.theme.colorWay.primary, specs.theme.colorWay.secondary)
+                Spacer()
+            }
+            
             HStack {
-                PlayerView(player: .constant(player), index: 0, playerTurn: 0, fontSize: 24)
+                CText(player.name)
+                if (firebaseHelper.gameState?.dealer ?? gameObservable.game.dealer) == player.player_num {
+                    CribMarker(scale: 0.6)
+                        .disabled(true)
+                }
                 
                 Spacer()
                 
                 HStack(spacing: 0) {
-                    Text("\(points)")
-                        .font(.custom("LuckiestGuy-Regular", size: 24))
-                        .baselineOffset(-6)
-                        .foregroundStyle(.white)
+                    CText("\(points)", size: 24)
                     
-                    Text("\(cribPoints != -1 ? " + \(cribPoints)" : "")")
-                        .baselineOffset(-6)
-                        .font(.custom("LuckiestGuy-Regular", size: 24))
+                    CText("\(cribPoints != -1 ? " + \(cribPoints)" : "")", size: 24)
                         .foregroundStyle(.yellow)
                 }
             }
             .padding(.horizontal)
-//            .padding(.vertical, 15)
-            .frame(width: specs.maxX * 0.7, height: 60)
+            .frame(height: 60)
             .background {
-                RoundedRectangle(cornerRadius: 25)
-                    .fill(player.is_ready ? specs.theme.colorWay.primary : .black.opacity(0.15))
+                specs.theme.colorWay.primary
+                    .clipShape(Capsule())
             }
-            .onAppear {
-                let playerScoringHands = firebaseHelper.checkCardsForPoints(playerCards: player.cards_in_hand, firebaseHelper.gameState?.starter_card ?? gameObservable.game.starter_card)
+        }
+        .transition(.offset())
+        .animation(.smooth, value: player.is_ready)
+        .frame(width: specs.maxX * 0.8, height: 60)
+        .onAppear {
+            let playerScoringHands = firebaseHelper.checkCardsForPoints(playerCards: player.cards_in_hand, firebaseHelper.gameState?.starter_card ?? gameObservable.game.starter_card)
+            
+            if let lastScoringHand = playerScoringHands.last {
+                points = lastScoringHand.cumlativePoints
+            } else {
+                points = 0
+            }
+            
+            if (firebaseHelper.gameState?.dealer ?? gameObservable.game.dealer) == player.player_num {
+                let cribScoringHands = firebaseHelper.checkCardsForPoints(crib: firebaseHelper.gameState?.crib ?? gameObservable.game.crib, firebaseHelper.gameState?.starter_card ?? gameObservable.game.starter_card)
                 
-                if let lastScoringHand = playerScoringHands.last {
-                    points = lastScoringHand.cumlativePoints
+                if let lastScoringHand = cribScoringHands.last {
+                    cribPoints = lastScoringHand.cumlativePoints
                 } else {
-                    points = 0
-                }
-                
-                if (firebaseHelper.gameState?.dealer ?? gameObservable.game.dealer) == player.player_num {
-                    let cribScoringHands = firebaseHelper.checkCardsForPoints(crib: firebaseHelper.gameState?.crib ?? gameObservable.game.crib, firebaseHelper.gameState?.starter_card ?? gameObservable.game.starter_card)
-                    
-                    if let lastScoringHand = cribScoringHands.last {
-                        cribPoints = lastScoringHand.cumlativePoints
-                    } else {
-                        cribPoints = 0
-                    }
+                    cribPoints = 0
                 }
             }
-
         }
     }
 }
@@ -157,8 +165,6 @@ struct PlayerHand: View {
     @State var cribPoints: Int = -1
     @State var cribScoringHands: [ScoringHand] = []
     @Binding var player: PlayerState
-
-//    var player: PlayerState
     
     var body: some View {
         VStack {
@@ -198,11 +204,11 @@ struct PlayerHand: View {
     
     var playerHandsArea: some View {
         VStack {
-            Text("\(player.name)'s Hand")
+            CText("\(player.name)'s Hand", size: 21)
                 .underline()
-                .font(.custom("LuckiestGuy-Regular", size: 21))
-                .baselineOffset(-6)
-                .foregroundStyle(.white)
+//                .font(.custom("LuckiestGuy-Regular", size: 21))
+//                .baselineOffset(-6)
+//                .foregroundStyle(.white)
             
             Spacer()
                 .frame(height: 10)
@@ -217,18 +223,16 @@ struct PlayerHand: View {
         .padding(.top, 10)
         .padding([.leading, .trailing, .bottom], 25)
         .background {
-            RoundedRectangle(cornerRadius: 20.0)
-                .fill(player.is_ready ? specs.theme.colorWay.primary.opacity(0.9) : .black.opacity(0.4))
+            specs.theme.colorWay.primary
+                .clipShape(RoundedRectangle(cornerRadius: 20.0))
         }
     }
 
     var cribHandArea: some View {
         VStack {
-            Text("\(player.name)'s Crib")
-                .underline()
-                .font(.custom("LuckiestGuy-Regular", size: 21))
-                .baselineOffset(-6)
+            CText("\(player.name)'s Crib", size: 21)
                 .foregroundStyle(.yellow)
+                .underline()
             
             Spacer()
                 .frame(height: 10)
@@ -243,8 +247,8 @@ struct PlayerHand: View {
         .padding(.top, 10)
         .padding([.leading, .trailing, .bottom], 25)
         .background {
-            RoundedRectangle(cornerRadius: 20.0)
-                .fill(player.is_ready ? specs.theme.colorWay.primary.opacity(0.9) : .black.opacity(0.4))
+            specs.theme.colorWay.primary
+                .clipShape(RoundedRectangle(cornerRadius: 20.0))
         }
     }
     
@@ -260,23 +264,26 @@ struct PlayerHand: View {
     
     func playerIndicator(expandedPlayer: Binding<PlayerState>) -> some View {
         VStack {
-            PlayerView(player: .constant(player), index: 0, playerTurn: 0, fontSize: 24)
-            
+            HStack {
+                CText(player.name)
+                if (firebaseHelper.gameState?.dealer ?? gameObservable.game.dealer) == player.player_num {
+                    CribMarker(scale: 0.6)
+                        .disabled(true)
+                }
+            }
+
             HStack(spacing: 0) {
-                Text("\(points)")
-                    .font(.custom("LuckiestGuy-Regular", size: 24))
-                    .foregroundStyle(.white)
+                CText("\(points)", size: 24)
                 
-                Text("\(cribPoints != -1 ? " + \(cribPoints)" : "")")
-                    .font(.custom("LuckiestGuy-Regular", size: 24))
+                CText("\(cribPoints != -1 ? " + \(cribPoints)" : "")", size: 24)
                     .foregroundStyle(.yellow)
             }
         }
         .padding(.horizontal)
         .padding(.vertical, 5)
         .background {
-            RoundedRectangle(cornerRadius: 25)
-                .fill(player.is_ready ? specs.theme.colorWay.primary.opacity(0.9) : .black.opacity(0.4))
+            specs.theme.colorWay.primary
+                .clipShape(RoundedRectangle(cornerRadius: 20.0))
         }
     }
 
@@ -314,10 +321,8 @@ struct PlayerHand: View {
             
             HStack {
                 Spacer()
-                Text("\(hand.pointsCallOut)")
-                    .font(.custom("LuckiestGuy-Regular", size: 21))
-                    .baselineOffset(-6)
-                    .foregroundStyle(crib ? .yellow : .white)
+                CText("\(hand.pointsCallOut)", size: 21)
+                    .foregroundStyle(crib ? .yellow : nil)
                     .multilineTextAlignment(.center)
                 Spacer()
             }
@@ -325,7 +330,6 @@ struct PlayerHand: View {
         }
         .frame(width: 280, alignment: .leading)
     }
-
 }
 
 #Preview {
@@ -339,7 +343,5 @@ struct PlayerHand: View {
             .environmentObject(FirebaseHelper())
             .position(x: geo.frame(in: .local).midX, y: geo.frame(in: .local).midY)
             .background(DeviceSpecs().theme.colorWay.background)
-        
     }
-//    .ignoresSafeArea()
 }

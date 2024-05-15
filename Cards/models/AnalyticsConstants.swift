@@ -7,12 +7,8 @@
 
 import Foundation
 
-struct AnalyticsEvents {
-    static let num_players = "num_players"
-    static let num_teams = "num_teams"
-    static let game_started = "game_started"
-    static let game_ended = "game_ended"
-    static let num_rounds = "num_rounds"
-    static let end_score = "end_score"
-    static let player_left_early = "player_left_early"
+enum AnalyticsConstants: String {
+    case color_picked, end_score, game_being_played, game_started, game_ended, name_length, num_players, num_rounds, num_teams, player_left_early, theme_picked
+    
+    var id: String { rawValue }
 }

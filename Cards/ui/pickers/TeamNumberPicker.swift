@@ -18,20 +18,20 @@ struct TeamPicker: View {
                 Picker("Team", selection: $teamNum) {
                     if (firebaseHelper.gameState?.num_teams ?? 2) == 3 {
                         ForEach(1...3, id:\.self) { num in
-                            Text("\(num)")
+                            CText("\(num)")
                         }
                     } else {
                         ForEach(1...2, id:\.self) { num in
-                            Text("\(num)")
+                            CText("\(num)")
                         }
                     }
                 }
             } label: {
                 HStack(spacing: 2) {
-                    Text("\(teamNum)")
+                    CText("\(teamNum)")
                         .foregroundStyle(specs.theme.colorWay.primary)
-                        .font(.custom("LuckiestGuy-Regular", size: 18))
-                        .baselineOffset(-1.8)
+//                        .font(.custom("LuckiestGuy-Regular", size: 18))
+//                        .baselineOffset(-1.8)
                 }
             }
         }

@@ -11,6 +11,7 @@ import SwiftUI
 struct LoadingScreen: View {
     @EnvironmentObject var specs: DeviceSpecs
     @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @Binding var introView: IntroViewType
     @FocusState private var isFocused: Bool
     @StateObject private var teamOne = TeamObservable(team: TeamState.team_one)
     @StateObject private var teamTwo = TeamObservable(team: TeamState.team_two)
@@ -18,64 +19,86 @@ struct LoadingScreen: View {
     @State var name: String = ""
     @State var isEditing: Bool = false
     
+    @State var keyboardBufferOffset: Double = 48.0
+    
     var body: some View {
         ZStack {
             VStack(spacing: 20) {
+                CText("Pre-Game", size: 40)
                 HStack {
-                    Text(String(firebaseHelper.gameState?.group_id ?? 12345))
+                    CText(String(firebaseHelper.gameState?.group_id ?? 12345))
                         .foregroundStyle(specs.theme.colorWay.primary)
-                        .font(.custom("LuckiestGuy-Regular", size: 18))
-                        .baselineOffset(-1.8)
                         .padding(10)
                         .background(
-                            RoundedRectangle(cornerRadius: 30)
-                                .fill(.white)
+                            Color.white
                         )
+                        .clipShape(Capsule())
                     
                     GamePicker()
                         .padding(10)
                         .background(
-                            RoundedRectangle(cornerRadius: 30)
-                                .fill(.white)
+                            Color.white
                         )
+                        .clipShape(Capsule())
                 }
                 
                 PlayerEditor
-                .frame(width: specs.maxX * 0.6, height: 22)
-                .background(
-                    RoundedRectangle(cornerRadius: 30)
-                        .fill(.white)
-                        .frame(width: specs.maxX * 0.66, height: 40)
-                )
+                    .frame(width: specs.maxX * 0.6, height: 24)
+                    .padding(10)
+                    .background(
+                        Color.white
+                    )
+                    .clipShape(Capsule())
             
                 playersList()
-                
-                if firebaseHelper.playerState?.is_lead ?? true {
-                    CustomButton(name: "Play", submitFunction: {
-                        Task {
-                            await firebaseHelper.reorderPlayerNumbers()
-                            await firebaseHelper.updateGame(["is_playing": true])
-                        }
-                        
-                        firebaseHelper.logAnalytics(AnalyticsEvents.game_started)
-                        firebaseHelper.logAnalytics(AnalyticsEvents.num_players, ["players": 5])
-                        firebaseHelper.logAnalytics(AnalyticsEvents.num_teams, ["teams": firebaseHelper.gameState!.num_teams])
+                    .getSize(onChange: { size in
+                        keyboardBufferOffset += size.width
                     })
-                    .disabled(!firebaseHelper.equalNumOfPlayersOnTeam())
-
-                } else {
-                    Text("Waiting to start game...")
-                        .foregroundStyle(specs.theme.colorWay.white)
-                        .font(.custom("LuckiestGuy-Regular", size: 18))
-                        .baselineOffset(-1.8)
+                
+                Group {
+                    if firebaseHelper.playerState?.is_lead ?? true {
+                        CustomButton(name: "Play", submitFunction: {
+                            Task {
+                                await firebaseHelper.reorderPlayerNumbers()
+                                await firebaseHelper.updateGame(["is_playing": true])
+                            }
+                            
+                            firebaseHelper.logAnalytics(.game_started)
+                            firebaseHelper.logAnalytics(.game_being_played, ["game": firebaseHelper.gameState!.game_name])
+                            firebaseHelper.logAnalytics(.num_players, ["players": 5])
+                            firebaseHelper.logAnalytics(.num_teams, ["teams": firebaseHelper.gameState!.num_teams])
+                            for team in firebaseHelper.teams {
+                                firebaseHelper.logAnalytics(.color_picked, ["color_picked": team.color])
+                            }
+                        })
+                        .disabled(!firebaseHelper.equalNumOfPlayersOnTeam())
+                    } else {
+                        CText("Waiting to start...")
+                            .foregroundStyle(specs.theme.colorWay.white)
+                    }
                 }
+                .frame(minHeight: 48)
             }
-            .padding(25)
+            .padding()
             .background {
                 RoundedRectangle(cornerRadius: 20.0)
                     .fill(specs.theme.colorWay.primary)
+                    .shadow(radius: 10)
             }
         }
+        .overlay(alignment: .topTrailing) {
+            ImageButton(image: Image(systemName: "x.circle.fill"), submitFunction: {
+                withAnimation(.snappy.speed(1.0)) {
+                    introView = .nothing
+                    endTextEditing()
+                }
+            })
+            .offset(x: 20.0, y: -20.0)
+            .font(.system(size: 45, weight: .heavy))
+            .foregroundStyle(specs.theme.colorWay.primary, specs.theme.colorWay.secondary)
+        }
+        .KeyboardAwarePadding(offset: -keyboardBufferOffset)
+        .frame(width: specs.maxX * 0.8)
         .onTapGesture {
             endTextEditing()
         }
@@ -85,12 +108,21 @@ struct LoadingScreen: View {
         HStack {
             TextField("", text: $name, prompt: Text("Name").foregroundStyle(.gray.opacity(0.5)))
                 .foregroundStyle(specs.theme.colorWay.primary)
-                .font(.custom("LuckiestGuy-Regular", size: 18))
-                .baselineOffset(-1.8)
+                .font(.custom("LuckiestGuy-Regular", size: 24))
+                .baselineOffset(-5)
                 .multilineTextAlignment(.center)
                 .focused($isFocused)
-                .onChange(of: firebaseHelper.playerState?.name, initial: true, {
-                    name = firebaseHelper.playerState?.name ?? "No Name"
+                .onChange(of: firebaseHelper.playerState?.name, initial: true, { (old, new) in
+                    guard old != nil, new != nil else {
+                        name = "No Name"
+                        return
+                    }
+                    
+                    name = new!
+                    
+                    if new! != old! {
+                        firebaseHelper.logAnalytics(.name_length, ["name_length": new!.count])
+                    }
                 })
                 .onChange(of: isFocused, { (old, new) in
                     if old && !new {
@@ -141,20 +173,9 @@ struct LoadingScreen: View {
                 VStack {
                     HStack (spacing: 20) {
                         ForEach(teams.sorted(by: { $0.team_num < $1.team_num }), id:\.self) { team in
-                            Text("Team \(team.team_num)")
-                                .font(.custom("LuckiestGuy-Regular", size: 20))
-                                .baselineOffset(-2)
-                                .shadow(color: .black, radius: team.color == "Red" ? 5 : 1)
-                                .padding(6)
+                            CText("Team \(team.team_num)", size: 19)
                                 .foregroundStyle(Color(team.color))
-                                .background {
-                                    RoundedRectangle(cornerRadius: 30)
-                                        .stroke(Color(team.color), lineWidth: 1.3)
-                                        .offset(y: -25)
-                                        .clipped()
-                                        .offset(y: 22)
-                                        .shadow(color: .black, radius: team.color == "Red" ? 5 : 1)
-                                }
+                                .frame(width: 75)
                         }
                     }
                     
@@ -162,17 +183,13 @@ struct LoadingScreen: View {
                         ForEach(teams.sorted(by: { $0.team_num < $1.team_num }), id:\.self) { team in
                             VStack {
                                 if user.team_num == team.team_num {
-                                    Text(user.name)
+                                    CText(user.name, size: Int(determineFont(user.name, 75, 18)))
                                         .foregroundStyle(specs.theme.colorWay.white)
-                                        .font(.custom("LuckiestGuy-Regular", size: determineFont(user.name, 75)))
-                                        .baselineOffset(-1.8)
                                 }
                                 
                                 ForEach(players.filter { $0.team_num == team.team_num }, id: \.self) { player in
-                                    Text(player.name)
+                                    CText(player.name, size: Int(determineFont(user.name, 75, 18)))
                                         .foregroundStyle(specs.theme.colorWay.white)
-                                        .font(.custom("LuckiestGuy-Regular", size: determineFont(player.name, 75)))
-                                        .baselineOffset(-1.8)
                                 }
                             }
                             .frame(width: 75, alignment: .top)
@@ -181,6 +198,7 @@ struct LoadingScreen: View {
                     .frame(alignment: .top)
                 }
             }
+            
         }
     }
 }
@@ -196,7 +214,7 @@ func determineFont(_ string: String, _ containerSize: Int, _ defaultFontSize: In
 
 #Preview {
     return GeometryReader { geo in
-        LoadingScreen()
+        LoadingScreen(introView: .constant(.loadingScreen))
             .environmentObject({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)

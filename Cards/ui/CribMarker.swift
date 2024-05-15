@@ -24,13 +24,10 @@ struct CribMarker: View {
                 .stroke(.white, lineWidth: 3 * scale)
                 .frame(width: 30 * scale)
             
-            Text("C")
-                .font(.custom("LuckiestGuy-Regular", size: 21 * scale))
-                .baselineOffset(-7 * scale)
+            CText("C", size: Int(21 * scale))
                 .foregroundStyle(.black)
         }
         .frame(width: 40 * scale)
-        .matchedGeometryEffect(id: "CribMarker", in: namespace)
         .scaleEffect(scaleEffect)
         .onLongPressGesture(minimumDuration: 100.0, perform: {
             withAnimation(.bouncy(duration: 0.3, extraBounce: 0.4)) {

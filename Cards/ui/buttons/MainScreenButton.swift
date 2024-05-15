@@ -15,13 +15,13 @@ struct MainScreenButton: View {
     var submitFunction: (() -> Void)
     
     var body: some View {
-        Text(buttonType == .newGame ? "New Game" : "Join Game")
+        CText(buttonType == .newGame ? "New Game" : "Join Game", size: 24)
+            .foregroundStyle(specs.theme.colorWay.textColor)
             .padding(.horizontal, 20)
             .padding(.vertical, 12)
-            .font(.custom("LuckiestGuy-Regular", size: 24))
-            .baselineOffset(-5)
+//            .font(.custom("LuckiestGuy-Regular", size: 24))
+//            .baselineOffset(-5)
 //            .foregroundStyle(buttonType == .newGame ? specs.theme.colorWay.secondary : specs.theme.colorWay.primary)
-            .foregroundStyle(specs.theme.colorWay.textColor)
             .frame(width: specs.maxX * 0.75)
             .background(/*buttonType == .newGame ? specs.theme.colorWay.secondary : */specs.theme.colorWay.primary)
             .clipShape(Capsule())
@@ -34,7 +34,8 @@ struct MainScreenButton: View {
             }, onPressingChanged: { change in
                 if change {
                     withAnimation(.bouncy(duration: 0.3)) {
-                        scale = 0.85
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        scale = 0.9
                     }
                 } else {
                     withAnimation(.bouncy(duration: 0.3, extraBounce: 0.4)) {

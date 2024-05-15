@@ -28,7 +28,7 @@ struct NamesAroundTable: View {
         ZStack {
             ForEach(Array($sortedPlayerList.enumerated()), id: \.offset) { (index, player) in
                 PlayerView(player: player, index: index, playerTurn: playerTurn)
-                    .offset(y: -185)
+                    .offset(y: -specs.maxX * 0.47)
                     .rotationEffect(applyRotation(index: index))
             }
         }
@@ -41,9 +41,12 @@ struct NamesAroundTable: View {
                 return
             }
             
-            if new.count > 2 {
-                let beforePlayer = new[0..<firebaseHelper.playerState!.player_num]
-                let afterPlayer = new[(firebaseHelper.playerState!.player_num + 1)..<new.count]
+            if firebaseHelper.gameState!.num_players > 2 && firebaseHelper.players.count == (firebaseHelper.gameState!.num_players - 1) {
+                var players: [PlayerState] = new
+                players.append(firebaseHelper.playerState!)
+                players.sort(by: { $0.player_num < $1.player_num})
+                let beforePlayer = players[0..<firebaseHelper.playerState!.player_num]
+                let afterPlayer = players[(firebaseHelper.playerState!.player_num + 1)..<players.count]
                 
                 sortedPlayerList = Array(afterPlayer + beforePlayer)
             } else {
@@ -91,7 +94,7 @@ struct NamesAroundTable: View {
             }() )
             .environmentObject(FirebaseHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
-            .background(Color("OffWhite").opacity(0.1))
+            .background(DeviceSpecs().theme.colorWay.background)
     }
     .ignoresSafeArea()
 }

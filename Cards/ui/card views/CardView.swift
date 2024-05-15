@@ -28,21 +28,21 @@ struct CardView: View {
                 ZStack {
                     RoundedRectangle(cornerRadius: 3.5)
                         .fill(.blue.gradient)
-                        .stroke(.black.opacity(0.7), lineWidth: 0.5)
+                        .stroke(.black.opacity(0.7), lineWidth: 0.5 * scale)
                     
                     Image(systemName: "seal.fill")
                         .resizable()
-                        .frame(width: 20, height: 25)
+                        .frame(width: 20 * scale, height: 25 * scale)
                         .foregroundColor(.blue.opacity(0.7))
                     
                     Image(systemName: "seal")
                         .resizable()
-                        .frame(width: 20, height: 25)
+                        .frame(width: 20 * scale, height: 25 * scale)
                         .foregroundColor(.black)
                     
                     Image(systemName: "seal")
                         .resizable()
-                        .frame(width: 38.46, height: 45)
+                        .frame(width: 38.46 * scale, height: 45 * scale)
                         .foregroundColor(.white.opacity(0.7))
                 }
                 .frame(width: Double(60 * scale), height: Double(100 * scale))
@@ -54,21 +54,18 @@ struct CardView: View {
                 ZStack {
                     RoundedRectangle(cornerRadius: 3.5)
                         .fill(Color.white)
-                        .fill(notUsable ? Color.gray.opacity(0.35) : Color.clear)
-                        .stroke(Color.black, lineWidth: 0.5)
+                        .stroke(Color.black, lineWidth: 0.5 * scale)
                     
                     ZStack {
-                        Text(cardItem.card.value)
-                            .font(.custom("LuckiestGuy-Regular", size: Double(18 * scale)))
-                            .baselineOffset(-2.2 * Double(scale))
+                        CText(cardItem.card.value, size: Int(18 * scale))
+                            .foregroundStyle(cardItem.card.suit == "spade" || cardItem.card.suit == "club" ? Color.black.opacity(0.8) : Color.red.opacity(0.8))
                             .position(x: cardItem.card.value == "10" ? 11 * scale : 9 * scale, y: 11 * scale)
                         Image(systemName: "suit.\(cardItem.card.suit).fill")
                             .font(.system(size: 11 * scale))
                             .position(x: 9 * scale, y: 26 * scale)
                         
-                        Text(cardItem.card.value)
-                            .font(.custom("LuckiestGuy-Regular", size: 18 * scale))
-                            .baselineOffset(-2.2 * scale)
+                        CText(cardItem.card.value, size: Int(18 * scale))
+                            .foregroundStyle(cardItem.card.suit == "spade" || cardItem.card.suit == "club" ? Color.black.opacity(0.8) : Color.red.opacity(0.8))
                             .position(x: cardItem.card.value == "10" ? 11 * scale : 9 * scale, y: 11 * scale)
                             .rotationEffect(.degrees(180.0))
                         Image(systemName: "suit.\(cardItem.card.suit).fill")
@@ -83,11 +80,11 @@ struct CardView: View {
                 }
                 .frame(width: Double(60 * scale), height: Double(100 * scale))
                 .draggable(cardItem)
-                .disabled(backside || cardIsDisabled)
                 .rotation3DEffect(
                     .degrees(backDegree), axis: (x: 0.0, y: 1.0, z: 0.0)
                 )
             }
+            .disabled(backside || cardIsDisabled)
             .onAppear {
                 if backside {
                     backDegree = -90.0
@@ -128,10 +125,23 @@ struct CardView: View {
             .offset(y: positionOffset)
             .rotationEffect(.degrees(rotationOffset))
         }
+        .disableAnimations()
     }
 }
 
 #Preview {
-    CardView(cardItem: CardItem(id: 51), cardIsDisabled: .constant(false), backside: .constant(false), scale: 2.0)
-        .environmentObject(FirebaseHelper())
+    return GeometryReader { geo in
+        CardView(cardItem: CardItem(id: 9), cardIsDisabled: .constant(false), backside: .constant(true), scale: 2.0)
+            .environmentObject({ () -> DeviceSpecs in
+                let envObj = DeviceSpecs()
+                envObj.setProperties(geo)
+                return envObj
+            }() )
+            .environmentObject(FirebaseHelper())
+            .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
+            .background {
+                DeviceSpecs().theme.colorWay.background
+            }
+    }
+    .ignoresSafeArea()
 }

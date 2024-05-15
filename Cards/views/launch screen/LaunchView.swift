@@ -17,8 +17,8 @@ struct LaunchView: View {
         ZStack {
             specs.theme.colorWay.background
             
-            // used for creating screenshot of Text
-//            Text("Cards")
+            // used for creating screenshot of CText
+//            CText("Cards")
 //                .font(.custom("LuckiestGuy-Regular", size: 70.0))
 //                .foregroundStyle(BananaColorWay().title)
             

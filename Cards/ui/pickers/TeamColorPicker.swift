@@ -33,7 +33,7 @@ struct TeamColorPicker: View {
                 Rectangle()
                     .fill(teamColor == "" ? .white : Color(teamColor))
                     .font(.system(size: 15, weight: .thin))
-                    .frame(width: 15, height: 15)
+                    .frame(width: 20, height: 20)
             }
         }
         .onChange(of: firebaseHelper.teamState, initial: true, {

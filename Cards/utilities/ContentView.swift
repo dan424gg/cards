@@ -36,21 +36,37 @@ struct ContentView: View {
     var body: some View {
 //        SwiftUIView()
 //            .position(x: specs.maxX / 2, y: specs.maxY / 2)
-        ZStack {
-            MainView()
-                .zIndex(1.0)
-                .namespace(namespace)
-
+        NavigationStack {
             ZStack {
-                specs.theme.colorWay.background
-                ForEach(Array(0...20), id: \.self) { i in
-                    LineOfSuits(index: i)
-                        .offset(y: CGFloat(-120 * Double(i)))
+                MainView()
+                    .zIndex(1.0)
+                    .namespace(namespace)
+                
+                ZStack {
+                    specs.theme.colorWay.background
+                    ForEach(Array(0...20), id: \.self) { i in
+                        LineOfSuits(index: i)
+                            .offset(y: CGFloat(-120 * Double(i)))
+                    }
+                    .position(x: specs.maxX / 2, y: specs.maxY * 1.5)
                 }
-                .position(x: specs.maxX / 2, y: specs.maxY * 1.5)
+                .zIndex(0.0)
             }
-            .zIndex(0.0)
+            .ignoresSafeArea()
         }
+        .background {
+            DeviceSpecs().theme.colorWay.background
+        }
+        .overlay {
+            #if DEBUG
+            Text("DEBUG MODE")
+                .font(.system(size: 50))
+                .opacity(0.5)
+                .position(x: specs.maxX / 2, y: specs.maxY * 0.95)
+                .allowsHitTesting(false)
+            #endif
+        }
+        .statusBarHidden(true)
     }
 }
 
@@ -63,7 +79,6 @@ struct ContentView: View {
                 return envObj
             }() )
             .environmentObject(FirebaseHelper())
-            .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
     }
     .ignoresSafeArea()
 }

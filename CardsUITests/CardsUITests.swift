@@ -10,7 +10,7 @@ import FirebaseCore
 import FirebaseFirestore
 import FirebaseFirestoreSwift
 
-@testable import Cards
+@testable import CardsPlayground
 
 final class NewGameUITests: XCTestCase {
     

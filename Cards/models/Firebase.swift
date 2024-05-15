@@ -764,10 +764,11 @@ import FirebaseFirestoreSwift
         teamsListener.remove()
     }
     
-    func logAnalytics(_ event: String, _ parameters: [String : Any]? = nil) {
-        if false {
-            Analytics.logEvent(event, parameters: parameters)
-        }
+    func logAnalytics(_ event: AnalyticsConstants, _ parameters: [String : Any]? = nil) {
+        #if DEBUG
+        #else
+        Analytics.logEvent(event.id, parameters: parameters)
+        #endif
     }
     
     func changeTeam(newTeamNum: Int) async {
@@ -825,7 +826,7 @@ import FirebaseFirestoreSwift
         #else
         repeat {
             groupId = Int.random(in: 10000..<99999)
-        } while (await checkValidId(id: groupId))
+        } while (await checkValidId(id: "\(groupId)"))
         #endif
         
         print("gameId = \(groupId)")
@@ -923,6 +924,7 @@ import FirebaseFirestoreSwift
         
         var allPlayers = players
         allPlayers.append(playerState!)
+        allPlayers.sort(by: { $0.player_num < $1.player_num })
         
 //        // ensure cards_in_hand is cleared for all players
 //        for player in allPlayers {
@@ -960,7 +962,6 @@ import FirebaseFirestoreSwift
                     do {
                         try await Task.sleep(nanoseconds: UInt64(0.3 * Double(NSEC_PER_SEC)))
                         await updateGame(["cards": [card]], arrayAction: .remove)
-                        print("dealing to player \(player.name)")
                         await updatePlayer(["cards_in_hand": [card]], uid: player.uid, arrayAction: .append)
                     } catch {
                         print("error when dealing card: \(error)")
@@ -1255,6 +1256,8 @@ import FirebaseFirestoreSwift
     }
     
     func resetGame() async {
+        removePlayersListener()
+        
         var allPlayers = players
         allPlayers.append(playerState!)
         
@@ -1263,9 +1266,11 @@ import FirebaseFirestoreSwift
         }
 
         // rotate dealer and team with crib
-        await updateGame(["dealer": ((gameState!.dealer + 1) % gameState!.num_players), "team_with_crib": (gameState!.team_with_crib + 1) % gameState!.num_teams])
+        await updateGame(["dealer": ((gameState!.dealer + 1) % gameState!.num_players), "team_with_crib": ((gameState!.team_with_crib + 1) % gameState!.num_teams) + 1])
 
         await updateGame(["crib": [Int](), "cards": Array(0...51).shuffled().shuffled(), "starter_card": -1, "player_turn": -1, "play_cards": [Int](), "num_cards_in_play": 0, "running_sum": 0, "num_go": 0], arrayAction: .replace)
+        
+        await addPlayersListener()
     }
 
     func unreadyAllPlayers() async {
@@ -1326,6 +1331,8 @@ import FirebaseFirestoreSwift
         #if DEBUG
         if (UITestingHelper.isUITesting) {
             return id == "10076"
+        } else if id == "" {
+            return false
         } else {
             do {
                 return try await db.collection("games").document(id).getDocument().exists && id != "10076"
@@ -1336,7 +1343,57 @@ import FirebaseFirestoreSwift
         }
         #else
         do {
-            return try await db.collection("games").document(id).getDocument().exists && id != 10076
+            if id == "" {
+                return false
+            } else {
+                return try await db.collection("games").document(id).getDocument().exists && id != "10076"
+            }
+        } catch {
+            // do something
+            return false
+        }
+        #endif
+    }
+    
+    func checkNumberOfPlayersInGame(id: String) async -> Int {
+        #if DEBUG
+        do {
+            if (UITestingHelper.isUITesting) {
+                return try await db.collection("games").document("10076").getDocument(as: GameState.self).num_players
+            } else {
+                return try await db.collection("games").document(id).getDocument(as: GameState.self).num_players
+            }
+        } catch {
+            // do something
+            return -1
+        }
+
+        #else
+        do {
+            return try await db.collection("games").document(id).getDocument(as: GameState.self).num_players
+        } catch {
+            // do something
+            return -1
+        }
+        #endif
+    }
+    
+    func checkGameInProgress(id: String) async -> Bool {
+        #if DEBUG
+        do {
+            if (UITestingHelper.isUITesting) {
+                return try await db.collection("games").document("10076").getDocument(as: GameState.self).is_playing
+            } else {
+                    return try await db.collection("games").document(id).getDocument(as: GameState.self).is_playing
+            }
+        } catch {
+            // do something
+            return false
+        }
+
+        #else
+        do {
+            return try await db.collection("games").document(id).getDocument(as: GameState.self).is_playing
         } catch {
             // do something
             return false

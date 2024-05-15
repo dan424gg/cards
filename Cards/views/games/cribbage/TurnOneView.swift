@@ -91,7 +91,7 @@ struct TurnOneView: View {
                 case 6:
                     if (firebaseHelper.playerState!.player_num == firebaseHelper.gameState?.dealer) ||
                         ((firebaseHelper.playerState!.player_num + 1) % (firebaseHelper.gameState!.num_players)) != (firebaseHelper.gameState?.dealer ?? 1) {
-                        Text("Waiting for players to discard...")
+                        CText("Waiting for players to discard...")
                     } else {
                         if cardsDragged.count == 0 {
                             CardPlaceHolder()
@@ -112,7 +112,7 @@ struct TurnOneView: View {
                         }
                     }
                 default:
-                    Text("don't get here")
+                    CText("don't get here")
             }
         }
         .frame(height: 100)

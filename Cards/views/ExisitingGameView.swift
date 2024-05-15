@@ -17,65 +17,87 @@ struct ExistingGameView: View {
     @State var size: CGSize = .zero
     
     @State var showErrorMessage: Bool = false
-    @State var error: Error? = nil
+    @State var alert: Alert?
     @State var timer: Timer?
     
-    func validateGroupId(groupId: String) {
-        Task {
-            if await firebaseHelper.checkValidId(id: groupId) {
-                if error != nil {
-                    withAnimation {
-                        error = Error(message: "Valid!", errorType: .success)
-                    }
-                }
-            } else {
+    func validateGroupId(groupId: String) async -> Bool  {
+        if await firebaseHelper.checkValidId(id: groupId) {
+            if await firebaseHelper.checkGameInProgress(id: groupId) {
                 withAnimation {
-                    error = Error(message: "Group Id is not valid!", errorType: .error)
+                    alert = Alert(title: "Game In Progress", message: "Game ID is already in progress!")
                 }
+                
+                return false
+            } else if await firebaseHelper.checkNumberOfPlayersInGame(id: groupId) >= 4 {
+                withAnimation {
+                    alert = Alert(title: "Too Many Players", message: "That game is at capacity already!")
+                }
+                
+                return false
             }
+            
+            
+        } else {
+            withAnimation {
+                print("Game ID is not valid! \(groupId)")
+                alert = Alert(title: "Game Id Error", message: "Game ID is not valid!")
+            }
+            
+            return false
         }
+        
+        return true
+    }
+    
+    func validateName(name: String) -> Bool {
+        if name.isEmpty {
+            withAnimation {
+                alert = Alert(title: "Error", message: "Your name can't be blank!")
+            }
+            
+            return false
+        } else if name == "" {
+            withAnimation {
+                alert = Alert(title: "Error", message: "Your name can't be blank!")
+            }
+            
+            return false
+        } else if name.count == 0 {
+            withAnimation {
+                alert = Alert(title: "Error", message: "Your name can't be blank!")
+            }
+            
+            return false
+        }
+        
+        return true
     }
     
     var body: some View {
         ZStack {
-            if error != nil {
-                ErrorMessage(error: error!)
-                    .geometryGroup()
-                    .onChange(of: error, initial: true, {
-                        timer?.invalidate()
-                        timer = nil
-                        timer = Timer.scheduledTimer(withTimeInterval: 4.0, repeats: false, block: { _ in
-                            withAnimation {
-                                error = nil
-                            }
-                        })
-                    })
-                    .frame(height: 150)
-                    .offset(y: -170)
-                    .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .opacity))
-            }
-            
             VStack(spacing: 20) {
-                Text("Join Game")
-                    .font(.custom("LuckiestGuy-Regular", size: 40))
-                    .baselineOffset(-5)
+                CText("Join Game", size: 40)
                     .foregroundStyle(specs.theme.colorWay.white)
                     .frame(height: 40)
                 
                 VStack(spacing: 5) {
-                    CustomTextField(textFieldHint: "Group ID", validationFunciton: validateGroupId, value: $groupId)
+                    CustomTextField(textFieldHint: "Game ID", asyncValidationFunciton: validateGroupId, value: $groupId)
                         .keyboardType(.numberPad)
-                    CustomTextField(textFieldHint: "Name", value: $fullName)
+                    
+                    CustomTextField(textFieldHint: "Name", validationFunciton: validateName, value: $fullName)
                 }
                 
                 CustomButton(name: "Submit", submitFunction: {
                     endTextEditing()
                     
                     Task {
-                        firebaseHelper.reinitialize()
-                        await firebaseHelper.joinGameCollection(fullName: fullName, id: groupId)
-                        withAnimation(.smooth(duration: 0.3)) {
-                            introView = .loadingScreen
+                        if await validateGroupId(groupId: groupId) && validateName(name: fullName) {
+                            firebaseHelper.reinitialize()
+                            firebaseHelper.logAnalytics(.name_length, ["name_length": fullName.count])
+                            await firebaseHelper.joinGameCollection(fullName: fullName, id: groupId)
+                            withAnimation(.smooth(duration: 0.3)) {
+                                introView = .loadingScreen
+                            }
                         }
                     }
                 })
@@ -85,22 +107,24 @@ struct ExistingGameView: View {
             .background {
                 RoundedRectangle(cornerRadius: 20.0)
                     .fill(specs.theme.colorWay.primary)
-//                    .frame(width: specs.maxX * 0.8)
+                    .shadow(radius: 10)
             }
-        }
-        .overlay(alignment: .topTrailing) {
-            ImageButton(image: Image(systemName: "x.circle.fill"), submitFunction: {
-                withAnimation(.snappy.speed(1.0)) {
-                    introView = .nothing
-                }
-            })
-            .offset(x: 20.0, y: -20.0)
-            .font(.system(size: 45, weight: .heavy))
-            .foregroundStyle(specs.theme.colorWay.primary, specs.theme.colorWay.secondary)
+            .overlay(alignment: .topTrailing) {
+                ImageButton(image: Image(systemName: "x.circle.fill"), submitFunction: {
+                    withAnimation(.snappy.speed(1.0)) {
+                        introView = .nothing
+                        endTextEditing()
+                    }
+                })
+                .offset(x: 20.0, y: -20.0)
+                .font(.system(size: 45, weight: .heavy))
+                .foregroundStyle(specs.theme.colorWay.primary, specs.theme.colorWay.secondary)
+            }
         }
         .onTapGesture {
             endTextEditing()
         }
+        .alertWindow($alert)
     }
 }
 

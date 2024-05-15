@@ -24,12 +24,11 @@ struct DeckOfCardsView: View {
                     ZStack {
                         ForEach(Array(cards.enumerated()), id: \.offset) { (index, cardId) in
                             CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(true), backside: .constant(true), naturalOffset: true)
-                                // .matchedGeometryEffect(id: cardId, in: namespace)
                                 .offset(x: -0.1 * Double(index), y: -0.1 * Double(index))
                         }
                     }
                 default:
-                    Text("shouldn't get here")
+                    CText("shouldn't get here")
             }
         }
         .onAppear {

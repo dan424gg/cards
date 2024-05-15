@@ -18,9 +18,7 @@ struct NewGameView: View {
     var body: some View {
         ZStack {
             VStack(spacing: 20) {
-                Text("New Game")
-                    .font(.custom("LuckiestGuy-Regular", size: 40))
-                    .baselineOffset(-10)
+                CText("New Game", size: 40)
                     .foregroundStyle(specs.theme.colorWay.textColor)
                     .frame(height: 40)
                 
@@ -43,6 +41,7 @@ struct NewGameView: View {
             .background {
                 RoundedRectangle(cornerRadius: 20.0)
                     .fill(specs.theme.colorWay.primary)
+                    .shadow(radius: 10)
             }
             .onChange(of: fullName, {
                 withAnimation {
@@ -62,6 +61,7 @@ struct NewGameView: View {
             ImageButton(image: Image(systemName: "x.circle.fill"), submitFunction: {
                 withAnimation(.snappy.speed(1.0)) {
                     introView = .nothing
+                    endTextEditing()
                 }
             })
             .offset(x: 20.0, y: -20.0)
