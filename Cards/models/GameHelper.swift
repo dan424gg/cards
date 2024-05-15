@@ -221,8 +221,7 @@ enum ArrayActionType {
             print("UPDATETEAM: \(error)")
         }
     }
-    
-    /* right here */
+    /* start here */
     func addPlayersListener() async {
         guard docRef != nil else {
             print("docRef is nil before adding game info listener")
@@ -422,7 +421,7 @@ enum ArrayActionType {
             print(error)
         }
     }
-    
+    /* end here */
     func startGameCollection(fullName: String, testGroupId: Int? = nil) async {
         var groupId = 0
         
@@ -446,20 +445,19 @@ enum ArrayActionType {
         #endif
         
         print("gameId = \(groupId)")
-        docRef = db.collection("games").document("\(groupId)")
+        database.setDocRef(groupId)
         
         do {
             gameState = GameState(group_id: groupId, num_teams: 1, num_players: 1)
             let color = gameState!.colors_available.randomElement()!
             gameState!.colors_available = gameState!.colors_available.filter { $0 != color }
-            try docRef!.setData(from: gameState)
+            try database.setInitGameState(gameState!)
             
             teamState = TeamState(team_num: 1, color: color)
-            try docRef!.collection("teams").document("\(1)").setData(from: teamState)
+            try database.setInitTeamState(teamState!)
             
             playerState = PlayerState(name: fullName, uid: UUID().uuidString, is_lead: true, team_num: 1, player_num: 0)
-            try docRef!.collection("players").document(playerState!.uid).setData(from: playerState!)
-            
+            try database.setInitPlayerState(playerState!)
         } catch {
             // do something
         }
@@ -470,10 +468,12 @@ enum ArrayActionType {
     }
     
     func joinGameCollection(fullName: String, id: String) async {
-        docRef = db.collection("games").document(id)
-
+        if let intId = Int(id) {
+            database.setDocRef(intId)
+        }
+        
         do {
-            gameState = try await docRef!.getDocument().data(as: GameState.self)
+            gameState = try await database.getGameState()
             
             let numPlayers = gameState!.num_players + 1
             // if the number of players are divisible by 3, or equal 5, then return 3 teams
@@ -503,9 +503,10 @@ enum ArrayActionType {
             }
             
             playerState = PlayerState(name: fullName, uid: UUID().uuidString, team_num: teamNum, player_num: numPlayers - 1)
-            try docRef!.collection("players").document(playerState!.uid).setData(from: playerState!)
+//            try docRef!.collection("players").document(playerState!.uid).setData(from: playerState!)
+            try database.setInitPlayerState(playerState!)
 
-            if await !checkTeamExists(teamNum: teamNum) {
+            if try await !checkTeamExists(teamNum: teamNum) {
                 var color = ""
 
                 // busy waiting for if a lot of people are trying to change team at once and colors are temporarily unavailble
@@ -517,9 +518,10 @@ enum ArrayActionType {
                 
                 await updateGame(["colors_available": [color]], arrayAction: .remove)
                 teamState = TeamState(team_num: teamNum, color: color)
-                try docRef!.collection("teams").document("\(teamNum)").setData(from: teamState)
+//                try docRef!.collection("teams").document("\(teamNum)").setData(from: teamState)
+                try database.setInitTeamState(teamState!)
             } else {
-                teamState = try await docRef!.collection("teams").document("\(teamNum)").getDocument().data(as: TeamState.self)
+                teamState = try await database.getTeamState(teamNum)
             }
 
             addTeamsListener()
@@ -951,7 +953,11 @@ enum ArrayActionType {
             return false
         } else {
             do {
-                return try await db.collection("games").document(id).getDocument().exists && id != "10076"
+                if let intId = Int(id) {
+                    return try await database.checkGameExists(groupId: intId) && intId != 10076
+                } else {
+                    return false
+                }
             } catch {
                 // do something
                 return false
@@ -962,7 +968,11 @@ enum ArrayActionType {
             if id == "" {
                 return false
             } else {
-                return try await db.collection("games").document(id).getDocument().exists && id != "10076"
+                if let intId = Int(id) {
+                    return try await database.checkGameExists(groupId: intId) && intId != 10076
+                } else {
+                    return false
+                }
             }
         } catch {
             // do something
@@ -975,9 +985,13 @@ enum ArrayActionType {
         #if DEBUG
         do {
             if (UITestingHelper.isUITesting) {
-                return try await db.collection("games").document("10076").getDocument(as: GameState.self).num_players
+                return try await database.getGameState(10076).num_players
             } else {
-                return try await db.collection("games").document(id).getDocument(as: GameState.self).num_players
+                if let intId = Int(id) {
+                    return try await database.getGameState(intId).num_players
+                } else {
+                    return -1
+                }
             }
         } catch {
             // do something
@@ -998,9 +1012,13 @@ enum ArrayActionType {
         #if DEBUG
         do {
             if (UITestingHelper.isUITesting) {
-                return try await db.collection("games").document("10076").getDocument(as: GameState.self).is_playing
+                return try await database.getGameState(10076).is_playing
             } else {
-                    return try await db.collection("games").document(id).getDocument(as: GameState.self).is_playing
+                if let intId = Int(id) {
+                    return try await database.getGameState(intId).is_playing
+                } else {
+                    return false
+                }
             }
         } catch {
             // do something
@@ -1017,13 +1035,7 @@ enum ArrayActionType {
         #endif
     }
     
-    func checkTeamExists(teamNum: Int) async -> Bool {
-        do {
-            return try await docRef.collection("teams").document("\(teamNum)").getDocument().exists
-        } catch {
-            print(error)
-            return false
-        }
-//        return teams.contains(where: { $0.team_num == teamNum })
+    func checkTeamExists(teamNum: Int) async throws -> Bool {
+        return try await database.checkTeamExists(teamNum: teamNum)
     }
 }

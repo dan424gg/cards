@@ -43,8 +43,8 @@ final class GameHelperTests: XCTestCase {
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
 
         // test normal join
-        XCTAssert(playerTwo.gameState!.num_players == 2)
-        XCTAssert(playerTwo.teams.count == 2)
+        XCTAssertEqual(playerTwo.gameState!.num_players, 2)
+        XCTAssertEqual(playerTwo.teams.count, 2)
         
         await playerOne.deleteGameCollection(id: randId)
     }
