@@ -106,10 +106,10 @@ struct LineOfSuits: View {
         
         var body: some View {
             Image(systemName: "suit.\(suit).fill")
-                .if(Color.theme.id == "CardGameColorTheme", {
-                    $0.foregroundStyle(suit == "spade" || suit == "club" ? .black.opacity(0.7) : Color.theme.primary.opacity(0.7))
+                .if(specs.theme.colorWay.id == "CardGameColorWay", {
+                    $0.foregroundStyle(suit == "spade" || suit == "club" ? .black.opacity(0.7) : specs.theme.colorWay.primary.opacity(0.7))
                 }, else: {
-                    $0.foregroundStyle(Color.theme.primary.opacity(0.4))
+                    $0.foregroundStyle(specs.theme.colorWay.primary.opacity(0.4))
                 })
                 .scaleEffect(1.2)
                 .position(pos)
@@ -121,14 +121,14 @@ struct LineOfSuits: View {
                     let y = (index * (maxY / Double(arrayLen))) - 20.0
                     
                     pos = CGPoint(x: x, y: y)
-                    withAnimation(.linear(duration: duration * (1.0 - (index / Double(arrayLen))))) {
-                        pos = CGPoint(x: -20.0, y: maxY)
-                    } completion: {
-                        pos = CGPoint(x: maxX, y: -20.0)
-                        withAnimation(.linear(duration: duration).repeatForever(autoreverses: false)) {
-                            pos = CGPoint(x: -20.0, y: maxY)
-                        }
-                    }
+//                    withAnimation(.linear(duration: duration * (1.0 - (index / Double(arrayLen))))) {
+//                        pos = CGPoint(x: -20.0, y: maxY)
+//                    } completion: {
+//                        pos = CGPoint(x: maxX, y: -20.0)
+//                        withAnimation(.linear(duration: duration).repeatForever(autoreverses: false)) {
+//                            pos = CGPoint(x: -20.0, y: maxY)
+//                        }
+//                    }
                 }
         }
     }

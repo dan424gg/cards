@@ -18,7 +18,7 @@ struct CardPlaceHolder: View {
                             .stroke(Color.black, style: StrokeStyle(lineWidth: 1, dash: [4]))
                     )
                     .overlay(
-                        Text("Place a card here!")
+                        CText("Place a card here!")
                             .font(.system(size: 7))
                             .multilineTextAlignment(.center)
                             .foregroundStyle(Color.black.opacity(0.9))

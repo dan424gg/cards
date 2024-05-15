@@ -19,14 +19,14 @@
 //            VStack {
 //                switch(firebaseHelper.gameState?.turn ?? gameObservable.game.turn) {
 //                    case 1:
-//                        Text("The Deal")
+//                        CText("The Deal")
 //                            .font(.title3)
 //                            .foregroundStyle(.gray.opacity(0.7))
 //                        TurnOneView(cardsDragged: $cardsDragged, cardsInHand: $cardsInHand)
 //                    case 2:
 //                        TurnTwoView(cardsDragged: $cardsDragged, cardsInHand: .constant([]), otherPlayer: false)
 //                    case 3:
-////                        Text("Turn Three!")
+////                        CText("Turn Three!")
 //                        VStack {
 //                            // used for testing preview
 //                            Button("increment player turn") {
@@ -37,9 +37,9 @@
 //                        }
 //                        .offset(y: -70)
 //                    case 4:
-//                        Text("")
+//                        CText("")
 //                    default:
-//                        Text("Won't get here")
+//                        CText("Won't get here")
 //                            .font(.title3)
 //                            .foregroundStyle(.gray.opacity(0.7))
 //                }

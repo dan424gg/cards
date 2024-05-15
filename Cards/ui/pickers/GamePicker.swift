@@ -9,6 +9,7 @@ import SwiftUI
 
 struct GamePicker: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var specs: DeviceSpecs
     @State var gameSelected: Games = .cribbage
     @State var preventCyclicalUpdate: Bool = false
     
@@ -31,20 +32,14 @@ struct GamePicker: View {
         Menu {
             Picker("Game", selection: $gameSelected) {
                 ForEach(Games.allCases, id: \.self) { game in
-                    Text(game.name.capitalized)
+                    CText(game.name.capitalized)
                 }
             }
             .disabled(!(firebaseHelper.playerState?.is_lead ?? false))
         } label: {
             HStack(spacing: 2) {
-                Text(gameSelected.id.capitalized)
-                    .foregroundStyle(Color.theme.primary)
-                    .font(.custom("LuckiestGuy-Regular", size: 18))
-                    .baselineOffset(-1.8)
-//                if firebaseHelper.playerState?.is_lead ?? false {
-//                    Image(systemName: "arrow.up.and.down")
-//                        .font(.system(size: 15, weight: .thin))
-//                }
+                CText(gameSelected.id.capitalized)
+                    .foregroundStyle(specs.theme.colorWay.primary)
             }
         }
         .onChange(of: firebaseHelper.gameState?.game_name, {

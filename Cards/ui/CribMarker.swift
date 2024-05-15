@@ -8,8 +8,11 @@
 import SwiftUI
 
 struct CribMarker: View {
+    @Environment(\.namespace) var namespace
     @EnvironmentObject var specs: DeviceSpecs
     var scale: Double = 1.0
+    
+    @State var scaleEffect: Double = 1.0
     
     var body: some View {
         ZStack {
@@ -21,12 +24,26 @@ struct CribMarker: View {
                 .stroke(.white, lineWidth: 3 * scale)
                 .frame(width: 30 * scale)
             
-            Text("C")
-                .font(.custom("LuckiestGuy-Regular", size: 21 * scale))
-                .baselineOffset(-7 * scale)
+            CText("C", size: Int(21 * scale))
                 .foregroundStyle(.black)
         }
         .frame(width: 40 * scale)
+        .scaleEffect(scaleEffect)
+        .onLongPressGesture(minimumDuration: 100.0, perform: {
+            withAnimation(.bouncy(duration: 0.3, extraBounce: 0.4)) {
+                scaleEffect = 1.0
+            }
+        }, onPressingChanged: { change in
+            if change {
+                withAnimation(.bouncy(duration: 0.3)) {
+                    scaleEffect = 0.85
+                }
+            } else {
+                withAnimation(.bouncy(duration: 0.3, extraBounce: 0.4)) {
+                    scaleEffect = 1.0
+                }
+            }
+        })
     }
 }
 

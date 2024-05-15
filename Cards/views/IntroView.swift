@@ -8,7 +8,7 @@
 import SwiftUI
 
 enum IntroViewType {
-    case newGame, existingGame, loadingScreen, nothing
+    case newGame, existingGame, loadingScreen, settings, nothing
 }
 
 struct IntroView: View {
@@ -25,82 +25,72 @@ struct IntroView: View {
             if introView == .newGame {
                 NewGameView(introView: $introView)
                     .geometryGroup()
+                    .KeyboardAwarePadding(offset: -48)
                     .transition(.move(edge: .leading).combined(with: .opacity))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .contentShape(Rectangle())
                     .onTapGesture {
                         endTextEditing()
-                        withAnimation(.snappy(duration: 0.3)) {
-                            introView = .nothing
-                        }
                     }
             } else if introView == .existingGame {
                 ExistingGameView(introView: $introView)
                     .geometryGroup()
-                    .transition(.move(edge: .leading).combined(with: .opacity))
+                    .KeyboardAwarePadding(offset: -48)
+                    .transition(.move(edge: .trailing).combined(with: .opacity))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .contentShape(Rectangle())
                     .onTapGesture {
                         endTextEditing()
-                        withAnimation(.snappy(duration: 0.3)) {
-                            introView = .nothing
-                        }
                     }
             } else if introView == .loadingScreen {
-                LoadingScreen()
+                LoadingScreen(introView: $introView)
                     .geometryGroup()
                     .transition(.move(edge: .trailing).combined(with: .opacity))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .contentShape(Rectangle())
                     .onTapGesture {
                         endTextEditing()
-                        withAnimation(.snappy(duration: 0.3)) {
-                            introView = .nothing
-                        }
                     }
+            } else if introView == .settings {
+                SettingsView(introView: $introView)
+                    .geometryGroup()
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        endTextEditing()
+                    }
+                
             } else {
                 ZStack {
-                    Text("CARDS")
-                        .font(.custom("LuckiestGuy-Regular", size: 120))
-                        .tracking(8)
-                        .foregroundStyle(Color.theme.white)
-                        .position(x: specs.maxX / 2, y: specs.maxY * 0.3)
-                        .offset(x: 5)
+                    CText("CARDS PLAYGROUND", size: Int(determineFont("Playground", Int(specs.maxX), 115)))
+                        .foregroundStyle(specs.theme.colorWay.title)
+                        .multilineTextAlignment(.center)
+                        .position(x: specs.maxX / 2, y: specs.maxY * 0.25)
 
                     VStack(spacing: 15) {
-                        Button {
-                            withAnimation(.smooth(duration: 0.3)) {
+                        MainScreenButton(buttonType: .existingGame, submitFunction: {
+                            withAnimation(.snappy.speed(1.0)) {
                                 introView = .existingGame
                             }
-                        } label: {
-                            Text("Join Game")
-                                .padding(.horizontal, 20)
-                                .padding(.vertical, 12)
-                                .font(.custom("LuckiestGuy-Regular", size: 24))
-                                .baselineOffset(-5)
-                                .foregroundStyle(Color.theme.primary)
-                                .frame(width: specs.maxX * 0.75)
-                        }
-                        .background(Color.theme.white)
-                        .clipShape(Capsule())
+                        })
                         
-                        Button {
-                            withAnimation(.smooth(duration: 0.3)) {
+                        MainScreenButton(buttonType: .newGame, submitFunction: {
+                            withAnimation(.snappy.speed(1.0)) {
                                 introView = .newGame
                             }
-                        } label: {
-                            Text("New Game")
-                                .padding(.horizontal, 20)
-                                .padding(.vertical, 12)
-                                .font(.custom("LuckiestGuy-Regular", size: 24))
-                                .baselineOffset(-5)
-                                .foregroundStyle(Color.theme.white)
-                                .frame(width: specs.maxX * 0.75)
-                        }
-                        .background(Color.theme.primary)
-                        .clipShape(Capsule())
+                        })
                     }
                     .position(x: specs.maxX / 2, y: specs.maxY * 0.75)
+                    
+                    ImageButton(image: Image(systemName: "gearshape.circle.fill"), submitFunction: {
+                        withAnimation(.snappy.speed(1.0)){
+                            introView = .settings
+                        }
+                    })
+                    .foregroundStyle(specs.theme.colorWay.primary, specs.theme.colorWay.secondary)
+                    .font(.system(size: 50, weight: .regular))
+                    .position(x: specs.maxX * 0.9, y: specs.maxY * 0.1)
                 }
                 .transition(.opacity)
             }
@@ -118,6 +108,9 @@ struct IntroView: View {
             }() )
             .environmentObject(FirebaseHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
+            .background {
+                DeviceSpecs().theme.colorWay.background
+            }
     }
     .ignoresSafeArea()
 }

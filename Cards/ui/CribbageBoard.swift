@@ -25,7 +25,7 @@ struct CribbageBoard: View {
 
     var body: some View {
         ZStack {
-            if teams != [] {
+            if teams.count > 1 {
                 Group {
                     TeamOnePath(team: $teams[0])
                         .zIndex(0.0)
@@ -44,9 +44,9 @@ struct CribbageBoard: View {
             HStack {
                 ForEach(Array(teams.enumerated()), id: \.offset) { (index, team) in
                     VStack {
-                        Text("\(team.team_num)")
+                        CText("\(team.team_num)")
                             .font(.headline)
-                        Text("\(team.points)")
+                        CText("\(team.points)")
                             .font(.subheadline)
                     }
                     
@@ -176,36 +176,79 @@ struct TeamOnePath: View {
                 points -= 45.0
                 
                 withAnimation(.normal()) {
-                    bigCurveTrimValue = 1.0
+                    firstLineTrimValue = 1.0
                 } completion: {
                     withAnimation(.normal()) {
-                        secondLineTrimValue = points / 35.0
+                        bigCurveTrimValue = 1.0
+                    } completion: {
+                        withAnimation(.normal()) {
+                            secondLineTrimValue = points / 35.0
+                        }
                     }
                 }
             } else if points <= 85.0 {
                 points -= 80.0
                 
                 withAnimation(.normal()) {
-                    secondLineTrimValue = 1.0
+                    firstLineTrimValue = 1.0
                 } completion: {
                     withAnimation(.normal()) {
-                        smallCurveTrimValue = points / 5.0
+                        bigCurveTrimValue = 1.0
+                    } completion: {
+                        withAnimation(.normal()) {
+                            secondLineTrimValue = 1.0
+                        } completion: {
+                            withAnimation(.normal()) {
+                                smallCurveTrimValue = points / 5.0
+                            }
+                        }
                     }
                 }
             } else if points <= 120.0 {
                 points -= 85.0
                 
                 withAnimation(.normal()) {
-                    smallCurveTrimValue = 1.0
-                } completion: {
                     withAnimation(.normal()) {
-                        thirdLineTrimValue = points / 35.0
+                        firstLineTrimValue = 1.0
+                    } completion: {
+                        withAnimation(.normal()) {
+                            bigCurveTrimValue = 1.0
+                        } completion: {
+                            withAnimation(.normal()) {
+                                secondLineTrimValue = 1.0
+                            } completion: {
+                                withAnimation(.normal()) {
+                                    smallCurveTrimValue = 1.0
+                                } completion: {
+                                    withAnimation(.normal()) {
+                                        thirdLineTrimValue = points / 35.0
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
-
             } else {
                 withAnimation(.normal()) {
-                    thirdLineTrimValue = 1.0
+                    withAnimation(.normal()) {
+                        firstLineTrimValue = 1.0
+                    } completion: {
+                        withAnimation(.normal()) {
+                            bigCurveTrimValue = 1.0
+                        } completion: {
+                            withAnimation(.normal()) {
+                                secondLineTrimValue = 1.0
+                            } completion: {
+                                withAnimation(.normal()) {
+                                    smallCurveTrimValue = 1.0
+                                } completion: {
+                                    withAnimation(.normal()) {
+                                        thirdLineTrimValue = 1.0
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         })
@@ -229,7 +272,7 @@ struct TeamOnePath: View {
                 path.addLine(to: CGPoint(x: 0, y: 0 + trackWidthAdjustment))
                 path.addLine(to: CGPoint(x: 0, y: 0))
             }
-            .fill(Color.white.opacity(0.5))
+            .fill(Color.white.opacity(0.7))
         }
     }
 }
@@ -321,36 +364,79 @@ struct TeamTwoPath: View {
                 points -= 45.0
                 
                 withAnimation(.normal()) {
-                    bigCurveTrimValue = 1.0
+                    firstLineTrimValue = 1.0
                 } completion: {
                     withAnimation(.normal()) {
-                        secondLineTrimValue = points / 35.0
+                        bigCurveTrimValue = 1.0
+                    } completion: {
+                        withAnimation(.normal()) {
+                            secondLineTrimValue = points / 35.0
+                        }
                     }
                 }
             } else if points <= 85.0 {
                 points -= 80.0
                 
                 withAnimation(.normal()) {
-                    secondLineTrimValue = 1.0
+                    firstLineTrimValue = 1.0
                 } completion: {
                     withAnimation(.normal()) {
-                        smallCurveTrimValue = points / 5.0
+                        bigCurveTrimValue = 1.0
+                    } completion: {
+                        withAnimation(.normal()) {
+                            secondLineTrimValue = 1.0
+                        } completion: {
+                            withAnimation(.normal()) {
+                                smallCurveTrimValue = points / 5.0
+                            }
+                        }
                     }
                 }
             } else if points <= 120.0 {
                 points -= 85.0
                 
                 withAnimation(.normal()) {
-                    smallCurveTrimValue = 1.0
-                } completion: {
                     withAnimation(.normal()) {
-                        thirdLineTrimValue = points / 35.0
+                        firstLineTrimValue = 1.0
+                    } completion: {
+                        withAnimation(.normal()) {
+                            bigCurveTrimValue = 1.0
+                        } completion: {
+                            withAnimation(.normal()) {
+                                secondLineTrimValue = 1.0
+                            } completion: {
+                                withAnimation(.normal()) {
+                                    smallCurveTrimValue = 1.0
+                                } completion: {
+                                    withAnimation(.normal()) {
+                                        thirdLineTrimValue = points / 35.0
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
-
             } else {
                 withAnimation(.normal()) {
-                    thirdLineTrimValue = 1.0
+                    withAnimation(.normal()) {
+                        firstLineTrimValue = 1.0
+                    } completion: {
+                        withAnimation(.normal()) {
+                            bigCurveTrimValue = 1.0
+                        } completion: {
+                            withAnimation(.normal()) {
+                                secondLineTrimValue = 1.0
+                            } completion: {
+                                withAnimation(.normal()) {
+                                    smallCurveTrimValue = 1.0
+                                } completion: {
+                                    withAnimation(.normal()) {
+                                        thirdLineTrimValue = 1.0
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         })
@@ -372,7 +458,7 @@ struct TeamTwoPath: View {
             path.addLine(to: CGPoint(x: 0, y: 0 + trackWidthAdjustment + trackPosAdjustment))
             path.addLine(to: CGPoint(x: 0, y: 0 + trackPosAdjustment))
         }
-        .fill(Color.white.opacity(0.5))
+        .fill(Color.white.opacity(0.7))
     }
 }
 
@@ -463,36 +549,79 @@ struct TeamThreePath: View {
                 points -= 45.0
                 
                 withAnimation(.normal()) {
-                    bigCurveTrimValue = 1.0
+                    firstLineTrimValue = 1.0
                 } completion: {
                     withAnimation(.normal()) {
-                        secondLineTrimValue = points / 35.0
+                        bigCurveTrimValue = 1.0
+                    } completion: {
+                        withAnimation(.normal()) {
+                            secondLineTrimValue = points / 35.0
+                        }
                     }
                 }
             } else if points <= 85.0 {
                 points -= 80.0
                 
                 withAnimation(.normal()) {
-                    secondLineTrimValue = 1.0
+                    firstLineTrimValue = 1.0
                 } completion: {
                     withAnimation(.normal()) {
-                        smallCurveTrimValue = points / 5.0
+                        bigCurveTrimValue = 1.0
+                    } completion: {
+                        withAnimation(.normal()) {
+                            secondLineTrimValue = 1.0
+                        } completion: {
+                            withAnimation(.normal()) {
+                                smallCurveTrimValue = points / 5.0
+                            }
+                        }
                     }
                 }
             } else if points <= 120.0 {
                 points -= 85.0
                 
                 withAnimation(.normal()) {
-                    smallCurveTrimValue = 1.0
-                } completion: {
                     withAnimation(.normal()) {
-                        thirdLineTrimValue = points / 35.0
+                        firstLineTrimValue = 1.0
+                    } completion: {
+                        withAnimation(.normal()) {
+                            bigCurveTrimValue = 1.0
+                        } completion: {
+                            withAnimation(.normal()) {
+                                secondLineTrimValue = 1.0
+                            } completion: {
+                                withAnimation(.normal()) {
+                                    smallCurveTrimValue = 1.0
+                                } completion: {
+                                    withAnimation(.normal()) {
+                                        thirdLineTrimValue = points / 35.0
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
-
             } else {
                 withAnimation(.normal()) {
-                    thirdLineTrimValue = 1.0
+                    withAnimation(.normal()) {
+                        firstLineTrimValue = 1.0
+                    } completion: {
+                        withAnimation(.normal()) {
+                            bigCurveTrimValue = 1.0
+                        } completion: {
+                            withAnimation(.normal()) {
+                                secondLineTrimValue = 1.0
+                            } completion: {
+                                withAnimation(.normal()) {
+                                    smallCurveTrimValue = 1.0
+                                } completion: {
+                                    withAnimation(.normal()) {
+                                        thirdLineTrimValue = 1.0
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         })
@@ -515,15 +644,24 @@ struct TeamThreePath: View {
             path.addLine(to: CGPoint(x: 0, y: 0 + trackWidthAdjustment + (2 * trackPosAdjustment)))
             path.addLine(to: CGPoint(x: 0, y: 0 + (2 * trackPosAdjustment)))
         }
-        .fill(Color.white.opacity(0.5))
+        .fill(Color.white.opacity(0.7))
     }
 }
 
+
+
+
 #Preview {
-    ZStack {
-        Color.theme.background
+    return GeometryReader { geo in
         CribbageBoard()
+            .environmentObject({ () -> DeviceSpecs in
+                let envObj = DeviceSpecs()
+                envObj.setProperties(geo)
+                return envObj
+            }() )
             .environmentObject(FirebaseHelper())
+            .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
+            .background(DeviceSpecs().theme.colorWay.background)
     }
     .ignoresSafeArea()
 }

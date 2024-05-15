@@ -14,45 +14,23 @@ struct CardInHandArea: View {
     @Binding var cards: [Int]
     @Binding var cardsDragged: [Int]
     @Binding var cardsInHand: [Int]
-    @State var shownCardsInHand: [Int] = []
     @StateObject var gameObservable: GameObservable = GameObservable(game: .game)
         
     var showBackside = false
 
     var body: some View {
         ZStack {
-            ForEach(Array(shownCardsInHand.enumerated()), id: \.offset) { (index, cardId) in
-                CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(false), backside: .constant(showBackside))
-                    .matchedGeometryEffect(id: cardId, in: namespace)
-                    .offset(y: -50)
-                    .scaleEffect(x: 2, y: 2)
-                    .rotationEffect(.degrees(-Double((shownCardsInHand.count - 1) * 6) + Double(index * 12)))
+            ForEach(Array(cardsInHand.enumerated()), id: \.offset) { (index, cardId) in
+                CardView(cardItem: CardItem(id: cardId), cardIsDisabled: .constant(false), backside: .constant(showBackside), scale: 2.0)
+                    .offset(y: -100)
+                    .rotationEffect(.degrees(-Double((cardsInHand.count - 1) * 6) + Double(index * 12)))
                     .onTapGesture {
                         determineTapGesture(cardId: cardId)
                     }
             }
         }
-        .onAppear {
-            shownCardsInHand = cardsInHand
-        }
-        .onChange(of: cardsInHand, { (old, new) in
-            if new.count >= old.count {
-                let newCards = new.filter { !old.contains($0) }
-                for indivCard in newCards {
-                    withAnimation {
-                        cards.removeAll(where: { $0 == indivCard })
-                        shownCardsInHand.append(indivCard)
-                    }
-                }
-            } else {
-                let removedCards = old.filter { !new.contains($0) }
-                for indivCard in removedCards {
-                    withAnimation {
-                        shownCardsInHand.removeAll(where: { $0 == indivCard })
-                    }
-                }
-            }
-        })
+        .animation(.smooth, value: cardsInHand)
+        .transition(.opacity)
     }
     
     func determineTapGesture(cardId: Int) {
@@ -88,33 +66,15 @@ struct CardInHandArea: View {
             default: print("no game")
         }
     }
-    
-    func dealCards(_ cardsArr: [Int]) {
-        guard cardsArr != [] else {
-            return
-        }
-        
-        for indivCard in cardsArr {
-            withAnimation {
-//                cards.removeAll(where: { $0 == indivCard })
-                shownCardsInHand.append(indivCard)
-            }
-        }
-    }
-    
-    func dealCards(_ card: Int) {
-        guard card <= 51 || card >= 0 else {
-            return
-        }
-        
-        withAnimation {
-//            cards.removeAll(where: { $0 == card })
-            shownCardsInHand.append(card)
-        }
-    }
 }
 
 #Preview {
-    CardInHandArea(cards: .constant(Array(5...51)), cardsDragged: .constant([]), cardsInHand: .constant(Array(0...4)))
-        .environmentObject(FirebaseHelper())
+    GeometryReader { geo in
+        CardInHandArea(cards: .constant(Array(5...51)), cardsDragged: .constant([]), cardsInHand: .constant(Array([10, 13, 4, 31])))
+            .environmentObject(FirebaseHelper())
+            .position(x: geo.frame(in: .local).midX, y: geo.frame(in: .local).midY)
+    }
+    .background {
+        DeviceSpecs().theme.colorWay.background
+    }
 }

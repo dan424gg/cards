@@ -22,17 +22,17 @@ struct GameSetUpView: View {
         VStack {
             switch setUpType {
                 case .newGame:
-                    Text("New Game")
+                    CText("New Game")
                         .font(.title2)
                     CustomTextField(textFieldHint: "Name", value: $fullName)
                 case .existingGame:
-                    Text("Join Game")
+                    CText("Join Game")
                         .font(.title2)
                     CustomTextField(textFieldHint: "Group ID", value: $groupId)
                     CustomTextField(textFieldHint: "Name", value: $fullName)
                 case .none:
                     #if DEBUG
-                    Text("Shouldn't have got here")
+                    CText("Shouldn't have got here")
                     #else
                     EmptyView()
                     #endif

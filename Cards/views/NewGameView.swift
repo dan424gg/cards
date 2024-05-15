@@ -18,15 +18,13 @@ struct NewGameView: View {
     var body: some View {
         ZStack {
             VStack(spacing: 20) {
-                Text("New Game")
-                    .font(.custom("LuckiestGuy-Regular", size: 40))
-                    .baselineOffset(-10)
-                    .foregroundStyle(Color.theme.white)
+                CText("New Game", size: 40)
+                    .foregroundStyle(specs.theme.colorWay.textColor)
                     .frame(height: 40)
                 
                 CustomTextField(textFieldHint: "Name", value: $fullName)
                 
-                Button {
+                CustomButton(name: "Submit", submitFunction: {
                     endTextEditing()
                     
                     Task {
@@ -36,23 +34,14 @@ struct NewGameView: View {
                             introView = .loadingScreen
                         }
                     }
-                } label: {
-                    Text("Submit")
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 12)
-                        .font(.custom("LuckiestGuy-Regular", size: 24))
-                        .baselineOffset(-5)
-                        .foregroundStyle(Color.theme.primary)
-                        .background(Color.theme.white)
-                        .clipShape(Capsule())
-                }
+                })
             }
             .padding()
+            .frame(width: specs.maxX * 0.8)
             .background {
                 RoundedRectangle(cornerRadius: 20.0)
-    //                .fill(.thinMaterial)
-                    .fill(Color.theme.primary)
-                    .frame(width: 300)
+                    .fill(specs.theme.colorWay.primary)
+                    .shadow(radius: 10)
             }
             .onChange(of: fullName, {
                 withAnimation {
@@ -63,10 +52,22 @@ struct NewGameView: View {
                     }
                 }
             })
+
         }
         .onTapGesture {
             endTextEditing()
-        }        
+        }
+        .overlay(alignment: .topTrailing) {
+            ImageButton(image: Image(systemName: "x.circle.fill"), submitFunction: {
+                withAnimation(.snappy.speed(1.0)) {
+                    introView = .nothing
+                    endTextEditing()
+                }
+            })
+            .offset(x: 20.0, y: -20.0)
+            .font(.system(size: 45, weight: .heavy))
+            .foregroundStyle(specs.theme.colorWay.primary, specs.theme.colorWay.secondary)
+        }
     }
     
     
@@ -82,6 +83,9 @@ struct NewGameView: View {
             }() )
             .environmentObject(FirebaseHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
+            .background {
+                DeviceSpecs().theme.colorWay.background
+            }
     }
     .ignoresSafeArea()
 }

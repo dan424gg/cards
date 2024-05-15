@@ -13,7 +13,8 @@ struct CustomTextField: View {
     @EnvironmentObject var specs: DeviceSpecs
     
     var textFieldHint: String
-    var validationFunciton: ((String) -> Void)? = nil
+    var validationFunciton: ((String) -> Any)? = nil
+    var asyncValidationFunciton: ((String) async -> Any)? = nil
     
     @FocusState private var hasFocus: Bool
     @Binding var value: String
@@ -25,50 +26,54 @@ struct CustomTextField: View {
             TextField(
                 "",
                 text: $value,
-                prompt: Text("\(textFieldHint)").foregroundStyle(.gray.opacity(0.4))
+                prompt: Text(textFieldHint).foregroundStyle(.gray.opacity(0.5))
             )
-            .onChange(of: hasFocus, {
-                guard validationFunciton != nil, !value.isEmpty else {
+            .autocorrectionDisabled()
+            .onChange(of: value, {
+                guard !value.isEmpty else {
                     return
                 }
                 
-                validationFunciton!(value)
+                if UserDefaults.standard.bool(forKey: AppStorageConstants.filter) {
+                    value = ProfanityFilter.cleanUp(value)
+                }
+            })
+            .onChange(of: hasFocus, { (old, new) in
+                guard !value.isEmpty, (asyncValidationFunciton != nil) ^ (validationFunciton != nil) else {
+                    return
+                }
+                
+                if asyncValidationFunciton != nil && old == true {
+                    Task {
+                        _ = await asyncValidationFunciton!(value)
+                    }
+                }
+                if validationFunciton != nil && old == true {
+                    _ = validationFunciton!(value)
+                }
             })
             .focused($hasFocus)
-            .frame(width: size)
+            .frame(width: specs.maxX * 0.5)
             .textFieldStyle(TextFieldBorder())
             .multilineTextAlignment(.center)
         }
-        .onAppear {
-            maxX = specs.maxX
-            size = maxX * 0.33
-        }
-        .onChange(of: hasFocus, { (old, new) in
-            withAnimation(.smooth(duration: 0.3)) {
-                if hasFocus {
-                    size = max(specs.maxX * 0.6, size > maxX ? maxX - 35 : size)
-                } else {
-                    size = value == "" ? maxX * 0.33 : value.width(usingFont: UIFont.init(name: "LuckiestGuy-Regular", size: 25)!) + 35
-                }
-            }
-        })
     }
 }
 
 struct TextFieldBorder: TextFieldStyle {
     func _body(configuration: TextField<Self._Label>) -> some View {
         configuration
+            .padding(.horizontal, 20)
+            .padding(.vertical, 12)
             .font(.custom("LuckiestGuy-Regular", size: 24))
-            .baselineOffset(-2)
-            .padding(.vertical, 18)
+            .foregroundStyle(.black)
+            .baselineOffset(-2.5)
             .background(Color.white)
             .clipShape(Capsule())
     }
 }
 
-#Preview {
-    let deviceSpecs = DeviceSpecs()
-    
+#Preview {    
     return GeometryReader { geo in
         CustomTextField(textFieldHint: "Name", value: .constant(""))
             .environmentObject({ () -> DeviceSpecs in
@@ -78,5 +83,8 @@ struct TextFieldBorder: TextFieldStyle {
             }() )
             .environmentObject(FirebaseHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
+            .background {
+                DeviceSpecs().theme.colorWay.background
+            }
     }
 }

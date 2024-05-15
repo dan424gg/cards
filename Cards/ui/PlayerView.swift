@@ -15,37 +15,40 @@ struct PlayerView: View {
     @Binding var player: PlayerState
     var index: Int
     var playerTurn: Int
-    var fontSize: Int = 16
-    var defaultColor: Color = Color.theme.textColor
+    @State var fontSize: Int = 16
+//    var defaultColor: Color = specs.theme.colorWay.textColor
     @State var shown: Bool = false
     
     var body: some View {
-        ZStack {
+//        ZStack {
             switch (firebaseHelper.gameState?.game_name ?? "cribbage") {
                 case "cribbage":
-                    ZStack {
-                        HStack(spacing: 5) {
-                            Text(player.name)
-                                .font(.custom("LuckiestGuy-Regular", size: Double(fontSize)))
-                                .baselineOffset(-6)
-                                .foregroundStyle(((firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn) == player.player_num && firebaseHelper.gameState?.turn == 2) ? Color("greenForPlayerPlaying") : defaultColor)
-                                .zIndex(1.0)
-                            
+                    VStack {
+                        ZStack {
                             if (firebaseHelper.gameState?.dealer ?? gameObservable.game.dealer) == player.player_num {
                                 CribMarker(scale: 0.45)
-                                    .offset(y: -1)
+                                    .offset(x: (player.name.width(usingFont: UIFont.init(name: "LuckiestGuy-Regular", size: Double(fontSize))!) / 2) + 13)
+                            }
+                            
+                            CText(player.name, size: Int(fontSize))
+                                .zIndex(1.0)
+
+                            if shown {
+                                PointContainer(player: player)
+                                    .geometryGroup()
+                                    .offset(x: -(player.name.width(usingFont: UIFont.init(name: "LuckiestGuy-Regular", size: Double(fontSize))!) / 2) - 22)
+                                    .zIndex(0.0)
+                                    .getSize { size in
+                                        print("pointcontainer size: \(size)")
+                                        print("pointcontainer offset: \(-(player.name.width(usingFont: UIFont.init(name: "LuckiestGuy-Regular", size: Double(fontSize))!) / 2) - 22)")
+                                    }
                             }
                         }
-                        .if((firebaseHelper.gameState?.dealer ?? gameObservable.game.dealer) == player.player_num) {
-                            $0.frame(width: player.name.width(usingFont: UIFont.init(name: "LuckiestGuy-Regular", size: Double(fontSize))!) + 23.0, alignment: .leading)
-                        }
-                        .offset(x: shown ? ((player.name.width(usingFont: UIFont.init(name: "LuckiestGuy-Regular", size: Double(fontSize))!)) / -2.0) - 5.0 : 0.0)
-
-                        if shown {
-                            PointContainer(player: player)
-                                .geometryGroup()
-                                .offset(x: shown ? (35.0 / 2.0) + 15.0 : 0.0)
-                                .zIndex(0.0)
+                        .frame(width: 130)
+                        .onAppear {
+                            if fontSize == 16 {
+                                fontSize = Int(determineFont(player.name, 45, fontSize))
+                            }
                         }
                     }
                     .onChange(of: firebaseHelper.gameState?.turn, { (_, new) in
@@ -63,11 +66,10 @@ struct PlayerView: View {
                         }
                     })
                     .transition(.offset().combined(with: .opacity))
-//                    .frame(height: 56)
                 default:
-                    Text("Shouldn't get here")
+                    CText("Shouldn't get here")
             }
-        }
+//        }
     }
 }
 
@@ -81,7 +83,7 @@ struct PlayerView: View {
             }() )
             .environmentObject(FirebaseHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
-            .background(Color("OffWhite").opacity(0.1))
+            .background(DeviceSpecs().theme.colorWay.background)
     }
     .ignoresSafeArea()
 }

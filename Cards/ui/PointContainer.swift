@@ -10,7 +10,7 @@ import SwiftUI
 struct PointContainer: View {
     @EnvironmentObject var firebaseHelper: FirebaseHelper
     @State var teamColor: Color = .purple
-    @State var playerPoints: Int = 0
+    @State var playerPoints: Int = -1
     @StateObject var gameObservable: GameObservable = GameObservable(game: .game)
     
     var player: PlayerState = PlayerState()
@@ -20,17 +20,17 @@ struct PointContainer: View {
     var body: some View {
         ZStack {
             if playerPoints != -1 {
-                Text("+ \(playerPoints)")
-                    .font(.custom("LuckiestGuy-Regular", size: user ? 56 : 16))
+                CText("+ \(playerPoints)", size: user ? 56 : 16)
+                    .foregroundStyle(teamColor)
+//                    .font(.custom("LuckiestGuy-Regular", size: user ? 56 : 16))
                     .frame(minWidth: user ? 94 : 31, minHeight: user ? 56 : 16)
-                    .offset(y: user ? 7 : 2)
+//                    .offset(y: user ? 7 : 2)
                     .padding(user ? 7.0 : 2.0)
                     .background(content: {
                         RoundedRectangle(cornerRadius: 5)
                             .stroke(teamColor, lineWidth: user ? 5.0 : 2.0)
                             .background { VisualEffectView(effect: UIBlurEffect(style: .systemThickMaterial)).clipShape(RoundedRectangle(cornerRadius: 5)) }
                     })
-                    .foregroundStyle(teamColor)
             }
         }
         .onAppear {
@@ -77,7 +77,6 @@ struct PointContainer: View {
                             return
                         }
                         
-                        print("sent points to team \(team.team_num)")
                         
                         Task {
                             await firebaseHelper.updateTeam(["points": playerPoints + team.points])
@@ -109,7 +108,7 @@ struct PointContainer: View {
             }() )
             .environmentObject(FirebaseHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
-            .background(Color.theme.background)
+            .background(DeviceSpecs().theme.colorWay.background)
     }
     .ignoresSafeArea()
 }

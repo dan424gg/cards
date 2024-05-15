@@ -8,7 +8,47 @@
 import Foundation
 import UniformTypeIdentifiers
 import CoreGraphics
+import Combine
 import SwiftUI
+
+
+class ProfanityFilter: NSObject {
+    /* Words from https://www.freewebheaders.com/full-list-of-bad-words-banned-by-google/ */
+  
+  static func cleanUp(_ str: String) -> String {
+      let string = str.lowercased()
+    let dirtyWords = "\\b(2g1c|2 girls 1 cup|acrotomophilia|alabama hot pocket|alaskan pipeline|anal|anilingus|anus|apeshit|arsehole|ass|asshole|assmunch|auto erotic|autoerotic|babeland|baby batter|baby juice|ball gag|ball gravy|ball kicking|ball licking|ball sack|ball sucking|bangbros|bareback|barely legal|barenaked|bastard|bastardo|bastinado|bbw|bdsm|beaner|beaners|beaver cleaver|beaver lips|bestiality|big black|big breasts|big knockers|big tits|bimbos|birdlock|bitch|bitches|black cock|blonde action|blonde on blonde action|blowjob|blow job|blow your load|blue waffle|blumpkin|bollocks|bondage|boner|boob|boobs|booty call|brown showers|brunette action|bukkake|bulldyke|bullet vibe|bullshit|bung hole|bunghole|busty|butt|buttcheeks|butthole|camel toe|camgirl|camslut|camwhore|carpet muncher|carpetmuncher|chocolate rosebuds|circlejerk|cleveland steamer|clit|clitoris|clover clamps|clusterfuck|cock|cocks|coprolagnia|coprophilia|cornhole|coon|coons|creampie|cum|cumming|cunnilingus|cunt|darkie|date rape|daterape|deep throat|deepthroat|dendrophilia|dick|dildo|dingleberry|dingleberries|dirty pillows|dirty sanchez|doggie style|doggiestyle|doggy style|doggystyle|dog style|dolcett|domination|dominatrix|dommes|donkey punch|double dong|double penetration|dp action|dry hump|dvda|eat my ass|ecchi|ejaculation|erotic|erotism|escort|eunuch|faggot|fecal|felch|fellatio|feltch|female squirting|femdom|figging|fingerbang|fingering|fisting|foot fetish|footjob|frotting|fuck|fuck buttons|fuckin|fucking|fucktards|fudge packer|fudgepacker|futanari|gang bang|gay sex|genitals|giant cock|girl on|girl on top|girls gone wild|goatcx|goatse|god damn|gokkun|golden shower|goodpoop|goo girl|goregasm|grope|group sex|g-spot|guro|hand job|handjob|hard core|hardcore|hentai|homoerotic|honkey|hooker|hot carl|hot chick|how to kill|how to murder|huge fat|humping|incest|intercourse|jack off|jail bait|jailbait|jelly donut|jerk off|jigaboo|jiggaboo|jiggerboo|jizz|juggs|kike|kinbaku|kinkster|kinky|knobbing|leather restraint|leather straight jacket|lemon party|lolita|lovemaking|make me come|male squirting|masturbate|menage a trois|mf|milf|missionary position|mofo|motherfucker|mound of venus|mr hands|muff diver|muffdiving|nambla|nawashi|negro|neonazi|nigga|nigger|nig nog|nimphomania|nipple|nipples|nsfw images|nude|nudity|nympho|nymphomania|octopussy|omorashi|one cup two girls|one guy one jar|orgasm|orgy|paedophile|paki|panties|panty|pedobear|pedophile|pegging|penis|phone sex|piece of shit|pissing|piss pig|pisspig|playboy|pleasure chest|pole smoker|ponyplay|poof|poon|poontang|punany|poop chute|poopchute|porn|porno|pornography|prince albert piercing|pthc|pubes|pussy|queaf|queef|quim|raghead|raging boner|rape|raping|rapist|rectum|reverse cowgirl|rimjob|rimming|rosy palm|rosy palm and her 5 sisters|rusty trombone|sadism|santorum|scat|schlong|scissoring|semen|sex|sexo|sexy|shaved beaver|shaved pussy|shemale|shibari|shit|shitblimp|shitty|shota|shrimping|skeet|slanteye|slut|s&m|smut|snatch|snowballing|sodomize|sodomy|spic|splooge|splooge moose|spooge|spread legs|spunk|strap on|strapon|strappado|strip club|style doggy|suck|sucks|suicide girls|sultry women|swastika|swinger|tainted love|taste my|tea bagging|threesome|throating|tied up|tight white|tit|tits|titties|titty|tongue in a|topless|tosser|towelhead|tranny|tribadism|tub girl|tubgirl|tushy|twat|twink|twinkie|two girls one cup|undressing|upskirt|urethra play|urophilia|vagina|venus mound|vibrator|violet wand|vorarephilia|voyeur|vulva|wank|wetback|wet dream|white power|wrapping men|wrinkled starfish|xx|xxx|yaoi|yellow showers|yiffy|zoophilia|🖕)\\b"
+    
+    func matches(for regex: String, in text: String) -> [String] {
+      do {
+        let regex = try NSRegularExpression(pattern: regex)
+        let results = regex.matches(in: text,
+                                    range: NSRange(text.startIndex..., in: text))
+        return results.compactMap {
+          Range($0.range, in: text).map { String(text[$0]) }
+        }
+      } catch let error {
+        print("invalid regex: \(error.localizedDescription)")
+        return []
+      }
+    }
+    
+    let dirtyWordMatches = matches(for: dirtyWords, in: string)
+    
+    if dirtyWordMatches.count == 0 {
+      return string
+    } else {
+      var newString = string
+      
+      dirtyWordMatches.forEach({ dirtyWord in
+        let newWord = String(repeating: "*", count: dirtyWord.count)
+        newString = newString.replacingOccurrences(of: dirtyWord, with: newWord, options: [.caseInsensitive])
+      })
+      
+      return newString
+    }
+  }
+}
 
 enum GameSetUpType: Hashable {
     case newGame
@@ -63,16 +103,33 @@ extension Bool {
 }
 
 extension Color {
-    static var theme: any ColorTheme = CardGameColorTheme()
     static var launch = LaunchTheme()
 }
 
-protocol ColorTheme: Identifiable {
+enum ColorTheme: String, CaseIterable, Identifiable, Codable {
+    case classic, banana
+    
+    var id: String { rawValue.capitalized }
+    
+    var colorWay: any ColorWay {
+        switch self {
+            case .classic:
+                CardGameColorWay()
+            case .banana:
+                BananaColorWay()
+        }
+    }
+}
+
+protocol ColorWay: Identifiable {
     var id: String { get }
+    
+    var cardsLogo: Image { get }
     
     var background: Color { get }
     var title: Color { get }
     var textColor: Color { get }
+    var inGameTextColor: Color { get }
     
     var primary: Color { get }
     var secondary: Color { get }
@@ -80,24 +137,28 @@ protocol ColorTheme: Identifiable {
     var white: Color { get }
 }
 
-struct BananaColorTheme: ColorTheme {
-    var id: String = "BananaColorTheme"
+struct BananaColorWay: ColorWay {
+    var id: String = "BananaColorWay"
     
+    var cardsLogo: Image = Image("Banana_Cards")
     var background: Color = Color("Banana_Background")
     var title: Color = Color("Banana_Title")
     var textColor: Color = Color("Banana_TextColor")
+    var inGameTextColor: Color = Color("Banana_InGame_TextColor")
     var primary: Color = Color("Banana_Primary")
     var secondary: Color = Color("Banana_Secondary")
     var tertriary: Color = Color("Banana_Tertriary")
     var white: Color = Color("Banana_White")
 }
 
-struct CardGameColorTheme: ColorTheme {
-    var id: String = "CardGameColorTheme"
+struct CardGameColorWay: ColorWay {
+    var id: String = "CardGameColorWay"
     
+    var cardsLogo: Image = Image("CardGame_Cards")
     var background: Color = Color("CardGame_Background")
     var title: Color = Color("CardGame_Title")
     var textColor: Color = Color("CardGame_TextColor")
+    var inGameTextColor: Color = Color("CardGame_InGame_TextColor")
     var primary: Color = Color("CardGame_Primary")
     var secondary: Color = Color("CardGame_Secondary")
     var tertriary: Color = Color("CardGame_Tertriary")
@@ -212,6 +273,10 @@ extension View {
         }
     }
     
+    func disableAnimations() -> some View {
+        modifier(DisableAnimationsViewModifier())
+    }
+    
     func getSize(onChange: @escaping (CGSize) -> Void) -> some View {
         background(
             GeometryReader { geometryProxy in
@@ -286,6 +351,87 @@ func endTextEditing() {
     UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
 }
 
+
+/// Custom Text view used throughout "Cards" App. Should be used just like normal ```CText(_: String)```
+///
+/// ```
+/// CText("Hello, this is a test")
+/// ```
+///
+/// ```
+/// CText("Hello, this is a test")
+///         .foregroundStyle(.red)
+///         .font(.custom("LuckiestGuy-Regular", size: 24))
+/// ```
+///
+struct CText: View {
+    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var specs: DeviceSpecs
+    @StateObject var gameObservable = GameObservable(game: .game)
+    @AppStorage(AppStorageConstants.filter) var applyFilter: Bool = false
+    var string: String
+    private var size: Int
+    private var color: Color?
+    
+    init(_ string: String, size: Int = 24, color: Color? = nil) {
+        self.string = string
+        self.size = size
+        self.color = color
+    }
+    
+    var body: some View {
+        Text(applyFilter ? ProfanityFilter.cleanUp(string).uppercased() : string.uppercased())
+            .font(.custom("LuckiestGuy-Regular", size: Double(size)))
+            .baselineOffset(-(Double(size) * 0.25))
+            .foregroundStyle(color ?? determineColor())
+    }
+    
+    private func determineColor() -> Color {
+        guard firebaseHelper.gameState != nil else {
+            #if DEBUG
+            if gameObservable.game.is_playing {
+                return specs.theme.colorWay.inGameTextColor
+            } else {
+                return specs.theme.colorWay.textColor
+            }
+            #else
+            return specs.theme.colorWay.textColor
+            #endif
+        }
+        
+        if firebaseHelper.gameState!.is_playing {
+            return specs.theme.colorWay.inGameTextColor
+        } else {
+            return specs.theme.colorWay.textColor
+        }
+    }
+    
+    /// Used to change color of ```CText(_:)```
+    ///
+    /// ```
+    /// CText("Hello, this is a test")
+    ///         .foregroundStyle(.red)
+    /// ```
+    /// 
+    @ViewBuilder func `foregroundStyle`(_ color: Color) -> some View {
+        CText(self.string, size: self.size, color: color)
+    }
+    
+    @ViewBuilder func `foregroundStyle`(_ color: Color?) -> some View {
+        if color == nil {
+            CText(self.string, size: self.size, color: self.color)
+        } else {
+            CText(self.string, size: self.size, color: color!)
+        }
+    }
+}
+
+struct DisableAnimationsViewModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content.transaction { $0.animation = nil }
+    }
+}
+
 struct DisplayPlayersHandContainer: View {
     @Environment(\.namespace) var namespace
     @EnvironmentObject var firebaseHelper: FirebaseHelper
@@ -298,13 +444,13 @@ struct DisplayPlayersHandContainer: View {
         
     var body: some View {
         VStack {
-            Text(play?.pointsCallOut ?? "")
+            CText(play?.pointsCallOut ?? "")
                 .font(.title2)
             HStack {
                 ForEach(player?.cards_in_hand ?? crib, id: \.self) { card in
                     CardView(cardItem: CardItem(id: card), cardIsDisabled: .constant(true), backside: .constant(false))
                         .offset(y: play != nil && play!.cardsInScoredHand.contains(card) ? -25 : 0)
-                        .matchedGeometryEffect(id: card, in: namespace)
+                        // .matchedGeometryEffect(id: card, in: namespace)
                 }
                 .onChange(of: player, initial: true, {
                     guard (player != nil) ^ (crib != []) else {
@@ -409,18 +555,19 @@ struct StrokeText: View {
     var body: some View {
         ZStack{
             ZStack{
-                Text(text).offset(x:  width, y:  width)
-                Text(text).offset(x: -width, y: -width)
-                Text(text).offset(x: -width, y:  width)
-                Text(text).offset(x:  width, y: -width)
+                CText(text).offset(x:  width, y:  width)
+                CText(text).offset(x: -width, y: -width)
+                CText(text).offset(x: -width, y:  width)
+                CText(text).offset(x:  width, y: -width)
             }
             .foregroundColor(color)
-            Text(text)
+            CText(text)
         }
     }
 }
 
 struct TimedTextContainer: View {
+    @EnvironmentObject var specs: DeviceSpecs
     @State private var string: String = ""
     @State private var idx: Int = 0
     @Binding var display: Bool
@@ -430,54 +577,50 @@ struct TimedTextContainer: View {
     var color: Color = .purple
     
     var body: some View {
-//        if display {
-            VStack {
-                Text(string)
-                    .foregroundStyle(color)
-                    .font(.custom("LuckiestGuy-Regular", size: 18))
-                    .baselineOffset(-4)
-                    .padding(.horizontal)
-                    .padding(.vertical, 10)
-                    .id(string)
-                    .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .opacity))
-                    .background {
-                        if !string.isEmpty {
-                            RoundedRectangle(cornerRadius: 5)
-                                .stroke(color, lineWidth: 3)
-                                .background { VisualEffectView(effect: UIBlurEffect(style: .systemThickMaterial)).clipShape(RoundedRectangle(cornerRadius: 5)) }
-                        }
+        VStack {
+            CText(string, size: 18 * Int((specs.maxY / 852.0)))
+                .foregroundStyle(color)
+                .padding(.horizontal)
+                .padding(.vertical, 10 * (specs.maxY / 852.0))
+                .id(string)
+                .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .opacity))
+                .background {
+                    if !string.isEmpty {
+                        RoundedRectangle(cornerRadius: 5)
+                            .stroke(color, lineWidth: 3)
+                            .background { VisualEffectView(effect: UIBlurEffect(style: .systemThickMaterial)).clipShape(RoundedRectangle(cornerRadius: 5)) }
                     }
-                Spacer()
-            }
-            .onChange(of: textArray, initial: true, {
-                if !textArray.isEmpty {
-                    for i in 0...textArray.count {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + (visibilityFor * Double(i))) {
-                            if i >= textArray.count {
-                                withAnimation {
-                                    display = false
-                                    string = ""
-                                    textArray.removeAll()
-                                }
-                            } else {
-                                withAnimation {
-                                    string = textArray[i]
-                                }
+                }
+            Spacer()
+        }
+        .onChange(of: textArray, initial: true, {
+            if !textArray.isEmpty {
+                for i in 0...textArray.count {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + (visibilityFor * Double(i))) {
+                        if i >= textArray.count {
+                            withAnimation {
+                                display = false
+                                string = ""
+                                textArray.removeAll()
+                            }
+                        } else {
+                            withAnimation {
+                                string = textArray[i]
                             }
                         }
                     }
                 }
-            })
-            .frame(height: 100)
-            .offset(y: 28)
-            .onTapGesture {
-                withAnimation {
-                    display = false
-                    string = ""
-                    textArray.removeAll()
-                }
             }
-//        }
+        })
+        .frame(height: 100 * (specs.maxY / 852.0))
+        .offset(y: 28 * (specs.maxY / 852.0))
+        .onTapGesture {
+            withAnimation {
+                display = false
+                string = ""
+                textArray.removeAll()
+            }
+        }
     }
 }
 
@@ -485,4 +628,37 @@ struct VisualEffectView: UIViewRepresentable {
     var effect: UIVisualEffect?
     func makeUIView(context: UIViewRepresentableContext<Self>) -> UIVisualEffectView { UIVisualEffectView() }
     func updateUIView(_ uiView: UIVisualEffectView, context: UIViewRepresentableContext<Self>) { uiView.effect = effect }
+}
+
+struct KeyboardAwareModifier: ViewModifier {
+    var paddingOffset: CGFloat
+    @State private var keyboardHeight: CGFloat = 0
+
+    private var keyboardHeightPublisher: AnyPublisher<CGFloat, Never> {
+        Publishers.Merge(
+            NotificationCenter.default
+                .publisher(for: UIResponder.keyboardWillShowNotification)
+                .compactMap { $0.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue }
+                .map { $0.cgRectValue.height + paddingOffset },
+            NotificationCenter.default
+                .publisher(for: UIResponder.keyboardWillHideNotification)
+                .map { _ in CGFloat(0) }
+       ).eraseToAnyPublisher()
+    }
+
+    func body(content: Content) -> some View {
+        content
+            .padding(.bottom, keyboardHeight)
+            .onReceive(keyboardHeightPublisher) { height in
+                withAnimation {
+                    self.keyboardHeight = height
+                }
+            }
+    }
+}
+
+extension View {
+    func KeyboardAwarePadding(offset: CGFloat = 0) -> some View {
+        ModifiedContent(content: self, modifier: KeyboardAwareModifier(paddingOffset: offset))
+    }
 }

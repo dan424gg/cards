@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1430"
+   LastUpgradeVersion = "1530"
    version = "2.2">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "1EBED9092AD7BBFF008B85EE"
-               BuildableName = "Cards.app"
+               BuildableName = "CardsPlayground.app"
                BlueprintName = "Cards"
                ReferencedContainer = "container:Cards.xcodeproj">
             </BuildableReference>
@@ -88,7 +88,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "1EBED9092AD7BBFF008B85EE"
-            BuildableName = "Cards.app"
+            BuildableName = "CardsPlayground.app"
             BlueprintName = "Cards"
             ReferencedContainer = "container:Cards.xcodeproj">
          </BuildableReference>
@@ -105,7 +105,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "1EBED9092AD7BBFF008B85EE"
-            BuildableName = "Cards.app"
+            BuildableName = "CardsPlayground.app"
             BlueprintName = "Cards"
             ReferencedContainer = "container:Cards.xcodeproj">
          </BuildableReference>

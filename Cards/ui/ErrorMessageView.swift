@@ -25,9 +25,7 @@ struct ErrorMessage: View {
                 .foregroundStyle(.white, determineColor())
                 .font(.headline)
             
-            Text(error.message)
-                .font(.custom("LuckiestGuy-Regular", size: 15))
-                .baselineOffset(-3)
+            CText(error.message, size: 20)
                 .foregroundStyle(.white)
         }
         .padding(.horizontal)
