@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ExistingGameView: View {
     @Binding var introView: IntroViewType
-    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var gameHelper: GameHelper
     @EnvironmentObject var specs: DeviceSpecs
     @State private var notValid: Bool = true
     @State var groupId: String = ""
@@ -21,14 +21,14 @@ struct ExistingGameView: View {
     @State var timer: Timer?
     
     func validateGroupId(groupId: String) async -> Bool  {
-        if await firebaseHelper.checkValidId(id: groupId) {
-            if await firebaseHelper.checkGameInProgress(id: groupId) {
+        if await gameHelper.checkValidId(id: groupId) {
+            if await gameHelper.checkGameInProgress(id: groupId) {
                 withAnimation {
                     alert = Alert(title: "Game In Progress", message: "Game ID is already in progress!")
                 }
                 
                 return false
-            } else if await firebaseHelper.checkNumberOfPlayersInGame(id: groupId) >= 4 {
+            } else if await gameHelper.checkNumberOfPlayersInGame(id: groupId) >= 4 {
                 withAnimation {
                     alert = Alert(title: "Too Many Players", message: "That game is at capacity already!")
                 }
@@ -92,9 +92,9 @@ struct ExistingGameView: View {
                     
                     Task {
                         if await validateGroupId(groupId: groupId) && validateName(name: fullName) {
-                            firebaseHelper.reinitialize()
-                            firebaseHelper.logAnalytics(.name_length, ["name_length": fullName.count])
-                            await firebaseHelper.joinGameCollection(fullName: fullName, id: groupId)
+                            gameHelper.reinitialize()
+                            gameHelper.logAnalytics(.name_length, ["name_length": fullName.count])
+                            await gameHelper.joinGameCollection(fullName: fullName, id: groupId)
                             withAnimation(.smooth(duration: 0.3)) {
                                 introView = .loadingScreen
                             }
@@ -136,7 +136,7 @@ struct ExistingGameView: View {
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(FirebaseHelper())
+            .environmentObject(GameHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
     }
     .background(DeviceSpecs().theme.colorWay.background)

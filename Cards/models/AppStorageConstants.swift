@@ -10,4 +10,5 @@ import Foundation
 struct AppStorageConstants {
     static let filter = "filter"
     static let theme = "theme"
+    static let database = "database"
 }

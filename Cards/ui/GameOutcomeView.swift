@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct GameOutcomeView: View {
-    @EnvironmentObject private var firebaseHelper: FirebaseHelper
+    @EnvironmentObject private var gameHelper: GameHelper
     @EnvironmentObject private var specs: DeviceSpecs
     @Binding var outcome: GameOutcome
     @State var endGameOpacity: Double = 1.0
@@ -46,7 +46,7 @@ struct GameOutcomeView: View {
             }
         }
         .onAppear {
-            firebaseHelper.logAnalytics(.game_ended)
+            gameHelper.logAnalytics(.game_ended)
         }
         .animation(.easeInOut.speed(0.5).delay(1.0), value: outcome)
     }
@@ -63,7 +63,7 @@ struct GameOutcomeView: View {
             envObj.setProperties(geo)
             return envObj
         }() )
-        .environmentObject(FirebaseHelper())
+        .environmentObject(GameHelper())
         .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
         .background(DeviceSpecs().theme.colorWay.background)
     }

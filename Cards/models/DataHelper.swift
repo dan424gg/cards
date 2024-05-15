@@ -12,12 +12,22 @@ import FirebaseCore
 import FirebaseFirestore
 import FirebaseFirestoreSwift
 
+enum DatabaseType: String {
+    case local, firebase
+}
 
-@MainActor class FirebaseHelper: ObservableObject {
+enum ArrayActionType {
+    case append
+    case remove
+    case replace
+}
+
+@MainActor class GameHelper: ObservableObject {
     private var gameStateListener: ListenerRegistration!
     private var teamsListener: ListenerRegistration!
     private var playersListener: ListenerRegistration!
         
+    @Published var database: Database = Firebase()
     @Published var gameOutcome: GameOutcome = .undetermined
     @Published private var db = Firestore.firestore()
     @Published var gameState: GameState?
@@ -34,9 +44,6 @@ import FirebaseFirestoreSwift
     
     func reinitialize() {
         if self.gameState != nil {
-//            teamListeners.removeAllListeners()
-//            playerListeners.removeAllListeners()
-            
             removeGameInfoListener()
             removeTeamPlayerNameListener()
             removePlayersListener()
@@ -51,188 +58,60 @@ import FirebaseFirestoreSwift
     }
     
     func deleteGameCollection(id: Int) async {
-        do {
-            // delete all player documents
-            for doc in try await db.collection("games").document("\(id)").collection("players").getDocuments().documents {
-                try await db.collection("games").document("\(id)").collection("players").document(doc.data(as: PlayerState.self).uid).delete()
-            }
-            
-            // delete all team documents
-            for doc in try await db.collection("games").document("\(id)").collection("teams").getDocuments().documents {
-                try await db.collection("games").document("\(id)").collection("teams").document("\(doc.data(as: TeamState.self).team_num)").delete()
-            }
-            
-            try await db.collection("games").document("\(id)").delete()
-        } catch {
-            print("error when deleting game collection: \(id)\n\(error)\n")
-        }
-    }
-    
-    func sendWarning(w: String) {
-        warning = w
-        showWarning = true
-    }
-    
-    func resetWarning() {
-        warning = ""
-        showWarning = false
-    }
-    
-    func sendError(e: String) {
-        error = e     
-        showError = true
-    }
-    
-    func resetError() {
-        error = ""
-        showError = false
+        await database.deleteGameCollection(id: id)
     }
     
     func updatePlayer(_ newState: [String: Any], uid: String? = nil, arrayAction: ArrayActionType? = nil) async {
-        guard docRef != nil else {
-            print("docRef was nil before updating player information")
-            return
-        }
-        guard playerState != nil else {
+        guard let playerState = playerState else {
             print("playerState is nil when trying to update player!")
             return
         }
-        
-        // type check updated states
+
+        func updatePlayerField<T>(key: String, value: T) async throws {
+            try await database.updatePlayerField(uid: uid ?? playerState.uid, key: key, value: value)
+        }
+
+        func updateArrayField<T>(key: String, value: [T], action: ArrayActionType?) async throws {
+            try await database.updatePlayerArrayField(uid: uid ?? playerState.uid, key: key, value: value, action: action!)
+        }
+
         do {
             for (key, value) in newState {
-                switch (key) {
+                switch key {
                     case "name":
-                        guard type(of: value) is String.Type else {
-                            print("\(key) needs to be String in updatePlayer()!")
+                        guard let stringValue = value as? String else {
+                            print("\(key): \(value) needs to be String in updatePlayer()!")
                             return
                         }
+                        try await updatePlayerField(key: key, value: stringValue)
                         
-                        try await docRef.collection("players").document("\(uid ?? playerState!.uid)").updateData([
-                            "\(key)": value
-                        ])
-
-                        break
-                        
-                    case "cards_in_hand":
-                        guard type(of: value) is [Int].Type else {
-                            print("\(key) needs to be [Int] in updatePlayer()!")
+                    case "cards_in_hand", "cards_dragged":
+                        guard let intArrayValue = value as? [Int] else {
+                            print("\(key): \(value) needs to be [Int] in updatePlayer()!")
                             return
                         }
+                        try await updateArrayField(key: key, value: intArrayValue, action: arrayAction)
                         
-                        switch (arrayAction) {
-                            case .append:
-                                try await docRef.collection("players").document("\(uid ?? playerState!.uid)").updateData([
-                                    "\(key)": FieldValue.arrayUnion(value as! [Int])
-                                ])
-                                break
-                            case .remove:
-                                try await docRef.collection("players").document("\(uid ?? playerState!.uid)").updateData([
-                                    "\(key)": FieldValue.arrayRemove(value as! [Int])
-                                ])
-                                break
-                            case .replace:
-                                try await docRef.collection("players").document("\(uid ?? playerState!.uid)").updateData([
-                                    "\(key)": value as! [Int]
-                                ])
-                                break
-                            default:
-                                print("UPDATEPLAYER: you have to have an action flag set to manipulate cards!")
-                                return
-                        }
-                        break
-                        
-                    case "cards_dragged":
-                        guard type(of: value) is [Int].Type else {
-                            print("\(key) needs to be [Int] in updatePlayer()!")
-                            return
-                        }
-                                                
-                        switch (arrayAction) {
-                            case .append:
-                                try await docRef.collection("players").document("\(uid ?? playerState!.uid)").updateData([
-                                    "\(key)": FieldValue.arrayUnion(value as! [Int])
-                                ])
-                                break
-                            case .remove:
-                                try await docRef.collection("players").document("\(uid ?? playerState!.uid)").updateData([
-                                    "\(key)": FieldValue.arrayRemove(value as! [Int])
-                                ])
-                                break
-                            case .replace:
-                                try await docRef.collection("players").document("\(uid ?? playerState!.uid)").updateData([
-                                    "\(key)": value as! [Int]
-                                ])
-                                break
-                            default:
-                                print("UPDATEPLAYER: you have to have an action flag set to manipulate cards!")
-                                return
-                        }
-                        break
-                    
                     case "is_ready":
-                        guard type(of: value) is Bool.Type else {
-                            print("\(key) needs to be Bool in updatePlayer()!")
+                        guard let boolValue = value as? Bool else {
+                            print("\(key): \(value) needs to be Bool in updatePlayer()!")
                             return
                         }
+                        try await updatePlayerField(key: key, value: boolValue)
                         
-                        try await docRef.collection("players").document("\(uid ?? playerState!.uid)").updateData([
-                            "\(key)": value
-                        ])
-
-                        break
-                    
-                    case "team_num":
-                        guard type(of: value) is Int.Type else {
-                            print("\(key) needs to be Int in updatePlayer()!")
+                    case "team_num", "player_num":
+                        guard let intValue = value as? Int else {
+                            print("\(key): \(value) needs to be Int in updatePlayer()!")
                             return
                         }
-                        
-                        try await docRef.collection("players").document("\(uid ?? playerState!.uid)").updateData([
-                            "\(key)": value
-                        ])
-
-                        break
-                        
-                    case "player_num":
-                        guard type(of: value) is Int.Type else {
-                            print("\(key) needs to be Int in updatePlayer()!")
-                            return
-                        }
-                        
-                        try await docRef.collection("players").document("\(uid ?? playerState!.uid)").updateData([
-                            "\(key)": value
-                        ])
-
-                        break
+                        try await updatePlayerField(key: key, value: intValue)
                         
                     case "callouts":
-                        guard type(of: value) is [String].Type else {
-                            print("\(key) needs to be [String] in updatePlayer()!")
+                        guard let stringArrayValue = value as? [String] else {
+                            print("\(key): \(value) needs to be [String] in updatePlayer()!")
                             return
                         }
-                                                
-                        switch (arrayAction) {
-                            case .append:
-                                try await docRef.collection("players").document("\(uid ?? playerState!.uid)").updateData([
-                                    "\(key)": FieldValue.arrayUnion(value as! [String])
-                                ])
-                                break
-                            case .remove:
-                                try await docRef.collection("players").document("\(uid ?? playerState!.uid)").updateData([
-                                    "\(key)": FieldValue.arrayRemove(value as! [String])
-                                ])
-                                break
-                            case .replace:
-                                try await docRef.collection("players").document("\(uid ?? playerState!.uid)").updateData([
-                                    "\(key)": value as! [String]
-                                ])
-                                break
-                            default:
-                                print("UPDATEPLAYER: you have to have an action flag set to manipulate callouts!")
-                                return
-                        }
-                        break
+                        try await updateArrayField(key: key, value: stringArrayValue, action: arrayAction)
                         
                     default:
                         print("UPDATEPLAYER: property: \(key) doesn't exist or can't be changed when trying to update player!")
@@ -245,297 +124,55 @@ import FirebaseFirestoreSwift
     }
    
     func updateGame(_ newState: [String: Any], arrayAction: ArrayActionType? = nil) async {
-        guard docRef != nil else {
-            print("docRef was nil before updating game information")
-            return
+        func updateGameField<T>(key: String, value: T) async throws {
+            try await database.updateGameField(key: key, value: value)
         }
-      
-        // type checked updated states
+
+        func updateArrayField<T>(key: String, value: [T], action: ArrayActionType?) async throws {
+            try await database.updateGameArrayField(key: key, value: value, action: action!)
+        }
+
         do {
             for (key, value) in newState {
-                switch (key) {
+                switch key {
                     case "is_playing":
-                        guard type(of: value) is Bool.Type else {
+                        guard let boolValue = value as? Bool else {
                             print("\(key): \(value) needs to be Bool in updateGame()!")
                             return
                         }
+                        try await updateGameField(key: key, value: boolValue)
                         
-                        try await docRef!.updateData([
-                            "\(key)": value
-                        ])
-                        
-                        break
-                        
-                    case "who_won":
-                        guard type(of: value) is Int.Type else {
+                    case "who_won", "num_teams", "turn", "num_players", "dealer", "team_with_crib", "starter_card", "running_sum", "num_go", "player_turn", "num_cards_in_play":
+                        guard let intValue = value as? Int else {
                             print("\(key): \(value) needs to be Int in updateGame()!")
                             return
                         }
-                        
-                        try await docRef!.updateData([
-                            "\(key)": value
-                        ])
-                        
-                        break
-                        
-                    case "num_teams":
-                        guard type(of: value) is Int.Type else {
-                            print("\(key): \(value) needs to be Int in updateGame()!")
-                            return
+                        if key == "num_cards_in_play" && arrayAction == .append {
+                            try await docRef.updateData([key: FieldValue.increment(Double(intValue))])
+                        } else {
+                            try await updateGameField(key: key, value: intValue)
                         }
-                        
-                        try await docRef!.updateData([
-                            "\(key)": value
-                        ])
-                        
-                        break
-                        
-                    case "turn":
-                        guard type(of: value) is Int.Type else {
-                            print("\(key): \(value) needs to be Int in updateGame()!")
-                            return
-                        }
-                        
-                        try await docRef!.updateData([
-                            "\(key)": value
-                        ])
-                        
-                        break
 
-                    case "num_players":
-                        guard type(of: value) is Int.Type else {
-                            print("\(key): \(value) needs to be Int in updateGame()!")
-                            return
-                        }
-                        
-                        try await docRef!.updateData([
-                            "\(key)": value
-                        ])
-                        
-                        break
-                        
-                    case "dealer":
-                        guard type(of: value) is Int.Type else {
-                            print("\(key): \(value) needs to be Int in updateGame()!")
-                            return
-                        }
-                        
-                        try await docRef!.updateData([
-                            "\(key)": value
-                        ])
-                        
-                        break
-                        
-                    case "team_with_crib":
-                        guard type(of: value) is Int.Type else {
-                            print("\(key): \(value) needs to be Int in updateGame()!")
-                            return
-                        }
-                        
-                        try await docRef!.updateData([
-                            "\(key)": value
-                        ])
-                        
-                        break
-                    
-                    case "crib":
-                        guard type(of: value) is [Int].Type else {
+                    case "crib", "cards", "play_cards":
+                        guard let intArrayValue = value as? [Int] else {
                             print("\(key): \(value) needs to be [Int] in updateGame()!")
                             return
                         }
-                        
-                        switch (arrayAction) {
-                            case .append:
-                                try await docRef!.updateData([
-                                    "\(key)": FieldValue.arrayUnion(value as! [Int])
-                                ])
-                                break
-                            case .remove:
-                                try await docRef!.updateData([
-                                    "\(key)": FieldValue.arrayRemove(value as! [Int])
-                                ])
-                                break
-                            case .replace:
-                                try await docRef!.updateData([
-                                    "\(key)": value as! [Int]
-                                ])
-                                break
-                            default:
-                                print("UPDATEGAME: you have to have a cardAction flag set to manipulate the crib!")
-                                return
-                        }
-                        break
-                        
-                    case "cards":
-                        guard type(of: value) is [Int].Type else {
-                            print("\(key): \(value) needs to be [Int] in updateGame()!")
-                            return
-                        }
-                        
-                        switch (arrayAction) {
-                            case .append:
-                                try await docRef!.updateData([
-                                    "\(key)": FieldValue.arrayUnion(value as! [Int])
-                                ])
-                                break
-                            case .remove:
-                                try await docRef!.updateData([
-                                    "\(key)": FieldValue.arrayRemove(value as! [Int])
-                                ])
-                                break
-                            case .replace:
-                                try await docRef!.updateData([
-                                    "\(key)": value as! [Int]
-                                ])
-                                break
-                            default:
-                                print("UDPATEGAME: you have to have a cardAction flag set to manipulate cards!")
-                                return
-                        }
-                        break
-                        
-                    case "starter_card":
-                        guard type(of: value) is Int.Type else {
-                            print("\(key): \(value) needs to be Int in updateGame()!")
-                            return
-                        }
-                        
-                        try await docRef!.updateData([
-                            "\(key)": value
-                        ])
-                        
-                        break
+                        try await updateArrayField(key: key, value: intArrayValue, action: arrayAction)
                         
                     case "colors_available":
-                        guard type(of: value) is [String].Type else {
-                            print("\(key): \(value) needs to be [String] for \"colors_available\" in updateGame()!")
+                        guard let stringArrayValue = value as? [String] else {
+                            print("\(key): \(value) needs to be [String] in updateGame()!")
                             return
                         }
-                        
-                        switch (arrayAction) {
-                            case .append:
-                                try await docRef!.updateData([
-                                    "\(key)": FieldValue.arrayUnion(value as! [String])
-                                ])
-                                break
-                            case .remove:
-                                try await docRef!.updateData([
-                                    "\(key)": FieldValue.arrayRemove(value as! [String])
-                                ])
-                                break
-                            case .replace:
-                                try await docRef!.updateData([
-                                    "\(key)": value as! [String]
-                                ])
-                                break
-                            default:
-                                print("UDPATEGAME: you have to have an action flag set to manipulate cards!")
-                                return
-                        }
-                        break
-                        
-                    case "play_cards":
-                        guard type(of: value) is [Int].Type else {
-                            print("\(key): \(value) needs to be [Int] in updateGame()!")
-                            return
-                        }
-                        
-                        switch (arrayAction) {
-                            case .append:
-                                try await docRef!.updateData([
-                                    "\(key)": FieldValue.arrayUnion(value as! [Int])
-                                ])
-                                break
-                            case .remove:
-                                try await docRef!.updateData([
-                                    "\(key)": FieldValue.arrayRemove(value as! [Int])
-                                ])
-                                break
-                            case .replace:
-                                try await docRef!.updateData([
-                                    "\(key)": value as! [Int]
-                                ])
-                                break
-                            default:
-                                print("UDPATEGAME: you have to have a cardAction flag set to manipulate cards!")
-                                return
-                        }
-                        break
-                        
-                    case "running_sum":
-                        guard type(of: value) is Int.Type else {
-                            print("\(key): \(value) needs to be Int in updateGame()!")
-                            return
-                        }
-                        
-                        try await docRef!.updateData([
-                            "\(key)": value
-                        ])
-                        
-                        break
-                        
-                    case "num_go":
-                        guard type(of: value) is Int.Type else {
-                            print("\(key): \(value) needs to be Int in updateGame()!")
-                            return
-                        }
-                        
-                        try await docRef!.updateData([
-                            "\(key)": value
-                        ])
-                        
-                        break
-                        
-                    case "player_turn":
-                        guard type(of: value) is Int.Type else {
-                            print("\(key): \(value) needs to be Int in updateGame()!")
-                            return
-                        }
-                        
-                        try await docRef!.updateData([
-                            "\(key)": value
-                        ])
-                        
-                        break
-                    
+                        try await updateArrayField(key: key, value: stringArrayValue, action: arrayAction)
+
                     case "game_name":
-                        guard type(of: value) is String.Type else {
+                        guard let stringValue = value as? String else {
                             print("\(key): \(value) needs to be String in updateGame()!")
                             return
                         }
-                        
-                        try await docRef!.updateData([
-                            "\(key)": value
-                        ])
-                        
-                        break
-                        
-                    case "num_cards_in_play":
-                        guard type(of: value) is Int.Type else {
-                            print("\(key): \(value) needs to be Int in updateGame()!")
-                            return
-                        }
-                        
-                        switch (arrayAction) {
-                            case .append:
-                                try await docRef!.updateData([
-                                    "\(key)": FieldValue.increment(Double(value as! Int))
-                                ])
-                                break
-                            case .remove:
-                                print("You can't use .remove with the \"num_cards_in_play\" field!")
-                                break
-                            case .replace:
-                                try await docRef!.updateData([
-                                    "\(key)": value
-                                ])
-                                break
-                            default:
-                                print("UDPATEGAME: you have to have a action flag set to manipulate cards!")
-                                return
-                        }
-                        
-                        break
+                        try await updateGameField(key: key, value: stringValue)
                         
                     default:
                         print("UPDATEGAME: key: \(key) doesn't exist when trying to update game!")
@@ -548,54 +185,32 @@ import FirebaseFirestoreSwift
     }
     
     func updateTeam(_ newState: [String: Any], _ teamNum: Int? = nil) async {
-        guard docRef != nil else {
-            print("docRef was nil before updating team information")
-            return
-        }
-        guard teamState != nil else {
+        guard let teamState = teamState else {
             print("teamState was nil before updating team information")
             return
         }
-        
-        // type check updated states
+
+        func updateTeamField<T>(key: String, value: T) async throws {
+            let teamNum = teamNum ?? teamState.team_num
+            try await database.updateTeamField(teamNum: teamNum, key: key, value: value)
+        }
+
         do {
             for (key, value) in newState {
-                switch (key) {
-                    case "team_num":
-                        guard type(of: value) is Int.Type else {
-                            print("\(key) needs to be Int in updateTeam()!")
+                switch key {
+                    case "team_num", "points":
+                        guard let intValue = value as? Int else {
+                            print("\(key): \(value) needs to be Int in updateTeam()!")
                             return
                         }
-                        
-                        try await docRef!.collection("teams").document("\(teamNum ?? teamState!.team_num)").updateData([
-                            "\(key)": value
-                        ])
-                        
-                        break
-                        
-                    case "points":
-                        guard type(of: value) is Int.Type else {
-                            print("\(key) needs to be Int in updateTeam()!")
-                            return
-                        }
-                        
-                        try await docRef!.collection("teams").document("\(teamNum ?? teamState!.team_num)").updateData([
-                            "\(key)": value
-                        ])
-                        
-                        break
+                        try await updateTeamField(key: key, value: intValue)
                         
                     case "color":
-                        guard type(of: value) is String.Type else {
-                            print("\(key) needs to be String in updateTeam()!")
+                        guard let stringValue = value as? String else {
+                            print("\(key): \(value) needs to be String in updateTeam()!")
                             return
                         }
-
-                        try await docRef!.collection("teams").document("\(teamNum ?? teamState!.team_num)").updateData([
-                            "\(key)": value
-                        ])
-                        
-                        break
+                        try await updateTeamField(key: key, value: stringValue)
                         
                     default:
                         print("UPDATETEAM: key: \(key) doesn't exist when trying to update team!")
@@ -607,6 +222,7 @@ import FirebaseFirestoreSwift
         }
     }
     
+    /* right here */
     func addPlayersListener() async {
         guard docRef != nil else {
             print("docRef is nil before adding game info listener")
@@ -1409,11 +1025,5 @@ import FirebaseFirestoreSwift
             return false
         }
 //        return teams.contains(where: { $0.team_num == teamNum })
-    }
-    
-    enum ArrayActionType {
-        case append
-        case remove
-        case replace
     }
 }

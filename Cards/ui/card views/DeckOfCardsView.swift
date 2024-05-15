@@ -9,7 +9,7 @@ import SwiftUI
 
 struct DeckOfCardsView: View {
     @Environment(\.namespace) var namespace
-    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var gameHelper: GameHelper
     @EnvironmentObject var specs: DeviceSpecs
     @Binding var cards: [Int]
     @StateObject private var gameObservable = GameObservable(game: GameState.game)
@@ -32,7 +32,7 @@ struct DeckOfCardsView: View {
             }
         }
         .onAppear {
-            if firebaseHelper.gameState == nil {
+            if gameHelper.gameState == nil {
                 cards = gameObservable.game.cards
             }
         }
@@ -47,7 +47,7 @@ struct DeckOfCardsView: View {
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(FirebaseHelper())
+            .environmentObject(GameHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
     }
     .ignoresSafeArea()

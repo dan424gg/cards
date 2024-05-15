@@ -10,7 +10,7 @@ import SwiftUI
 struct PlayerView: View {
     @Namespace var names
     @EnvironmentObject var specs: DeviceSpecs
-    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var gameHelper: GameHelper
     @StateObject private var gameObservable = GameObservable(game: GameState.game)
     @Binding var player: PlayerState
     var index: Int
@@ -21,11 +21,11 @@ struct PlayerView: View {
     
     var body: some View {
 //        ZStack {
-            switch (firebaseHelper.gameState?.game_name ?? "cribbage") {
+            switch (gameHelper.gameState?.game_name ?? "cribbage") {
                 case "cribbage":
                     VStack {
                         ZStack {
-                            if (firebaseHelper.gameState?.dealer ?? gameObservable.game.dealer) == player.player_num {
+                            if (gameHelper.gameState?.dealer ?? gameObservable.game.dealer) == player.player_num {
                                 CribMarker(scale: 0.45)
                                     .offset(x: (player.name.width(usingFont: UIFont.init(name: "LuckiestGuy-Regular", size: Double(fontSize))!) / 2) + 13)
                             }
@@ -51,15 +51,15 @@ struct PlayerView: View {
                             }
                         }
                     }
-                    .onChange(of: firebaseHelper.gameState?.turn, { (_, new) in
+                    .onChange(of: gameHelper.gameState?.turn, { (_, new) in
                         if new == 5 {
                             withAnimation {
                                 shown = false
                             }
                         }
                     })
-                    .onChange(of: firebaseHelper.gameState?.player_turn, {
-                        if (((firebaseHelper.gameState?.turn ?? gameObservable.game.turn) == 3) && ((firebaseHelper.gameState?.player_turn ?? gameObservable.game.player_turn) == player.player_num)) {
+                    .onChange(of: gameHelper.gameState?.player_turn, {
+                        if (((gameHelper.gameState?.turn ?? gameObservable.game.turn) == 3) && ((gameHelper.gameState?.player_turn ?? gameObservable.game.player_turn) == player.player_num)) {
                             withAnimation {
                                 shown = true
                             }
@@ -81,7 +81,7 @@ struct PlayerView: View {
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(FirebaseHelper())
+            .environmentObject(GameHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
             .background(DeviceSpecs().theme.colorWay.background)
     }

@@ -134,7 +134,7 @@
 		1EBED93B2AD7BC4E008B85EE /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 1EBED93A2AD7BC4E008B85EE /* FirebaseFirestore */; };
 		1EBED9452AD7BCFE008B85EE /* LoadingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED9442AD7BCFE008B85EE /* LoadingScreen.swift */; };
 		1EBED9492AD7BD88008B85EE /* CribbageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED9482AD7BD88008B85EE /* CribbageView.swift */; };
-		1EBED94C2AD7BF2C008B85EE /* Firebase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED94B2AD7BF2C008B85EE /* Firebase.swift */; };
+		1EBED94C2AD7BF2C008B85EE /* DataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED94B2AD7BF2C008B85EE /* DataHelper.swift */; };
 		1EBEF2C22AE4F579008A093B /* TeamState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBEF2C12AE4F579008A093B /* TeamState.swift */; };
 		1EC258EB2B9A5DD0001B78EB /* SideBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EC258EA2B9A5DD0001B78EB /* SideBar.swift */; };
 		1EC258ED2B9B820A001B78EB /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EC258EC2B9B820A001B78EB /* MainView.swift */; };
@@ -172,7 +172,7 @@
 		1ED85E792B718B3000807548 /* TurnOneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA2457F2AED6F71003B0943 /* TurnOneView.swift */; };
 		1ED85E7A2B718B3000807548 /* TeamNumberPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECCDABE2AE606A800EFF167 /* TeamNumberPicker.swift */; };
 		1ED85E7C2B718B3000807548 /* CribbageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED9482AD7BD88008B85EE /* CribbageView.swift */; };
-		1ED85E7D2B718B3000807548 /* Firebase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED94B2AD7BF2C008B85EE /* Firebase.swift */; };
+		1ED85E7D2B718B3000807548 /* DataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED94B2AD7BF2C008B85EE /* DataHelper.swift */; };
 		1ED85E7F2B718B3000807548 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4CC8F72AFB4A3500ECC77B /* GameView.swift */; };
 		1ED85E802B718B3000807548 /* PlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E87BC082B65A6170084BEAB /* PlayerView.swift */; };
 		1ED85E822B718B3000807548 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9C48F52AE7B3F3008C518D /* CardView.swift */; };
@@ -202,7 +202,7 @@
 		1ED85EB22B71904300807548 /* TurnOneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA2457F2AED6F71003B0943 /* TurnOneView.swift */; };
 		1ED85EB32B71904300807548 /* TeamNumberPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECCDABE2AE606A800EFF167 /* TeamNumberPicker.swift */; };
 		1ED85EB52B71904300807548 /* CribbageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED9482AD7BD88008B85EE /* CribbageView.swift */; };
-		1ED85EB62B71904300807548 /* Firebase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED94B2AD7BF2C008B85EE /* Firebase.swift */; };
+		1ED85EB62B71904300807548 /* DataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED94B2AD7BF2C008B85EE /* DataHelper.swift */; };
 		1ED85EB82B71904300807548 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4CC8F72AFB4A3500ECC77B /* GameView.swift */; };
 		1ED85EB92B71904300807548 /* PlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E87BC082B65A6170084BEAB /* PlayerView.swift */; };
 		1ED85EBB2B71904300807548 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9C48F52AE7B3F3008C518D /* CardView.swift */; };
@@ -232,7 +232,7 @@
 		1ED85F572B71904D00807548 /* TurnOneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA2457F2AED6F71003B0943 /* TurnOneView.swift */; };
 		1ED85F582B71904D00807548 /* TeamNumberPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECCDABE2AE606A800EFF167 /* TeamNumberPicker.swift */; };
 		1ED85F5A2B71904D00807548 /* CribbageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED9482AD7BD88008B85EE /* CribbageView.swift */; };
-		1ED85F5B2B71904D00807548 /* Firebase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED94B2AD7BF2C008B85EE /* Firebase.swift */; };
+		1ED85F5B2B71904D00807548 /* DataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED94B2AD7BF2C008B85EE /* DataHelper.swift */; };
 		1ED85F5D2B71904D00807548 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4CC8F72AFB4A3500ECC77B /* GameView.swift */; };
 		1ED85F5E2B71904D00807548 /* PlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E87BC082B65A6170084BEAB /* PlayerView.swift */; };
 		1ED85F602B71904D00807548 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9C48F52AE7B3F3008C518D /* CardView.swift */; };
@@ -262,7 +262,7 @@
 		1ED85F8E2B71904E00807548 /* TurnOneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA2457F2AED6F71003B0943 /* TurnOneView.swift */; };
 		1ED85F8F2B71904E00807548 /* TeamNumberPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECCDABE2AE606A800EFF167 /* TeamNumberPicker.swift */; };
 		1ED85F912B71904E00807548 /* CribbageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED9482AD7BD88008B85EE /* CribbageView.swift */; };
-		1ED85F922B71904E00807548 /* Firebase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED94B2AD7BF2C008B85EE /* Firebase.swift */; };
+		1ED85F922B71904E00807548 /* DataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED94B2AD7BF2C008B85EE /* DataHelper.swift */; };
 		1ED85F942B71904E00807548 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4CC8F72AFB4A3500ECC77B /* GameView.swift */; };
 		1ED85F952B71904E00807548 /* PlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E87BC082B65A6170084BEAB /* PlayerView.swift */; };
 		1ED85F972B71904E00807548 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9C48F52AE7B3F3008C518D /* CardView.swift */; };
@@ -292,7 +292,7 @@
 		1ED85FC52B71904F00807548 /* TurnOneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA2457F2AED6F71003B0943 /* TurnOneView.swift */; };
 		1ED85FC62B71904F00807548 /* TeamNumberPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECCDABE2AE606A800EFF167 /* TeamNumberPicker.swift */; };
 		1ED85FC82B71904F00807548 /* CribbageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED9482AD7BD88008B85EE /* CribbageView.swift */; };
-		1ED85FC92B71904F00807548 /* Firebase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED94B2AD7BF2C008B85EE /* Firebase.swift */; };
+		1ED85FC92B71904F00807548 /* DataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED94B2AD7BF2C008B85EE /* DataHelper.swift */; };
 		1ED85FCB2B71904F00807548 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4CC8F72AFB4A3500ECC77B /* GameView.swift */; };
 		1ED85FCC2B71904F00807548 /* PlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E87BC082B65A6170084BEAB /* PlayerView.swift */; };
 		1ED85FCE2B71904F00807548 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E9C48F52AE7B3F3008C518D /* CardView.swift */; };
@@ -359,6 +359,12 @@
 		1EF429612BBC5ADA00121C1A /* PointContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EF4295D2BBC59EB00121C1A /* PointContainer.swift */; };
 		1EF429622BBC5ADB00121C1A /* PointContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EF4295D2BBC59EB00121C1A /* PointContainer.swift */; };
 		1EF429632BBC5ADB00121C1A /* PointContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EF4295D2BBC59EB00121C1A /* PointContainer.swift */; };
+		1EF89CDE2BF54ACA000F2E4B /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EF89CDD2BF54ACA000F2E4B /* Database.swift */; };
+		1EF89CDF2BF55078000F2E4B /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EF89CDD2BF54ACA000F2E4B /* Database.swift */; };
+		1EF89CE02BF55078000F2E4B /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EF89CDD2BF54ACA000F2E4B /* Database.swift */; };
+		1EF89CE12BF55079000F2E4B /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EF89CDD2BF54ACA000F2E4B /* Database.swift */; };
+		1EF89CE22BF55079000F2E4B /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EF89CDD2BF54ACA000F2E4B /* Database.swift */; };
+		1EF89CE32BF5507A000F2E4B /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EF89CDD2BF54ACA000F2E4B /* Database.swift */; };
 		1EFA9F5B2AF584CC00FA092C /* TurnTwoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFA9F5A2AF584CC00FA092C /* TurnTwoView.swift */; };
 		1EFB1F8F2B59C56E001C0ADA /* SwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EFB1F8E2B59C56E001C0ADA /* SwiftUIView.swift */; };
 /* End PBXBuildFile section */
@@ -478,7 +484,7 @@
 		1EBED9282AD7BC01008B85EE /* CardsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsUITests.swift; sourceTree = "<group>"; };
 		1EBED9442AD7BCFE008B85EE /* LoadingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingScreen.swift; sourceTree = "<group>"; };
 		1EBED9482AD7BD88008B85EE /* CribbageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CribbageView.swift; sourceTree = "<group>"; };
-		1EBED94B2AD7BF2C008B85EE /* Firebase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Firebase.swift; sourceTree = "<group>"; };
+		1EBED94B2AD7BF2C008B85EE /* DataHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataHelper.swift; sourceTree = "<group>"; };
 		1EBEF2C12AE4F579008A093B /* TeamState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamState.swift; sourceTree = "<group>"; };
 		1EC258EA2B9A5DD0001B78EB /* SideBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideBar.swift; sourceTree = "<group>"; };
 		1EC258EC2B9B820A001B78EB /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
@@ -510,6 +516,7 @@
 		1EE63D9F2BC703DB006D2CDD /* CribMarker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CribMarker.swift; sourceTree = "<group>"; };
 		1EE63DAB2BCA33C1006D2CDD /* PlayersHandsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayersHandsView.swift; sourceTree = "<group>"; };
 		1EF4295D2BBC59EB00121C1A /* PointContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointContainer.swift; sourceTree = "<group>"; };
+		1EF89CDD2BF54ACA000F2E4B /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
 		1EFA9F5A2AF584CC00FA092C /* TurnTwoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnTwoView.swift; sourceTree = "<group>"; };
 		1EFB1F8E2B59C56E001C0ADA /* SwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -816,11 +823,12 @@
 			children = (
 				1E3C3EAE2B85473B000FCAE6 /* sheet items */,
 				1E3C3EAD2B85472C000FCAE6 /* document states */,
-				1EBED94B2AD7BF2C008B85EE /* Firebase.swift */,
+				1EBED94B2AD7BF2C008B85EE /* DataHelper.swift */,
 				1E4338E62B0D460900E212CD /* LinkedList.swift */,
 				1E8A2E5A2B87CF3200A40148 /* DeviceSpecs.swift */,
 				1EE63D9D2BC5A7CA006D2CDD /* AnalyticsConstants.swift */,
 				1E9ED2172BE68FB5008DBC28 /* AppStorageConstants.swift */,
+				1EF89CDD2BF54ACA000F2E4B /* Database.swift */,
 			);
 			path = models;
 			sourceTree = "<group>";
@@ -1228,7 +1236,7 @@
 				1EA245802AED6F71003B0943 /* TurnOneView.swift in Sources */,
 				1ECCDABF2AE606A800EFF167 /* TeamNumberPicker.swift in Sources */,
 				1EBED9492AD7BD88008B85EE /* CribbageView.swift in Sources */,
-				1EBED94C2AD7BF2C008B85EE /* Firebase.swift in Sources */,
+				1EBED94C2AD7BF2C008B85EE /* DataHelper.swift in Sources */,
 				1EE63DAC2BCA33C1006D2CDD /* PlayersHandsView.swift in Sources */,
 				1E68C2A82BAF38E800FAD83E /* CardsView.swift in Sources */,
 				1EDC51822BE53EA500535E2B /* SettingsView.swift in Sources */,
@@ -1257,6 +1265,7 @@
 				1E8A2E5B2B87CF3200A40148 /* DeviceSpecs.swift in Sources */,
 				1EE63DA02BC703DB006D2CDD /* CribMarker.swift in Sources */,
 				1EC258F52B9E3291001B78EB /* NewGameView.swift in Sources */,
+				1EF89CDE2BF54ACA000F2E4B /* Database.swift in Sources */,
 				1E8A2E6C2B8BADEF00A40148 /* GameSetUpView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1306,12 +1315,13 @@
 				1ED85E7A2B718B3000807548 /* TeamNumberPicker.swift in Sources */,
 				1EE63D982BC46A8B006D2CDD /* ErrorMessageView.swift in Sources */,
 				1ED85E7C2B718B3000807548 /* CribbageView.swift in Sources */,
-				1ED85E7D2B718B3000807548 /* Firebase.swift in Sources */,
+				1ED85E7D2B718B3000807548 /* DataHelper.swift in Sources */,
 				1ED85E7F2B718B3000807548 /* GameView.swift in Sources */,
 				1EE63DAD2BCF7006006D2CDD /* PlayersHandsView.swift in Sources */,
 				1EAE46902B833B2F00F7519B /* IntroView.swift in Sources */,
 				1ED85E802B718B3000807548 /* PlayerView.swift in Sources */,
 				1E8A2E662B89067000A40148 /* CustomTextField.swift in Sources */,
+				1EF89CDF2BF55078000F2E4B /* Database.swift in Sources */,
 				1ED85E822B718B3000807548 /* CardView.swift in Sources */,
 				1ED85E832B718B3000807548 /* CardInHandArea.swift in Sources */,
 				1ED85E842B718B3000807548 /* TeamColorPicker.swift in Sources */,
@@ -1363,12 +1373,13 @@
 				1ED85EB32B71904300807548 /* TeamNumberPicker.swift in Sources */,
 				1EE63D992BC46A8B006D2CDD /* ErrorMessageView.swift in Sources */,
 				1ED85EB52B71904300807548 /* CribbageView.swift in Sources */,
-				1ED85EB62B71904300807548 /* Firebase.swift in Sources */,
+				1ED85EB62B71904300807548 /* DataHelper.swift in Sources */,
 				1ED85EB82B71904300807548 /* GameView.swift in Sources */,
 				1EE63DAE2BCF7007006D2CDD /* PlayersHandsView.swift in Sources */,
 				1EAE46922B833B3000F7519B /* IntroView.swift in Sources */,
 				1ED85EB92B71904300807548 /* PlayerView.swift in Sources */,
 				1E8A2E672B89067000A40148 /* CustomTextField.swift in Sources */,
+				1EF89CE02BF55078000F2E4B /* Database.swift in Sources */,
 				1ED85EBB2B71904300807548 /* CardView.swift in Sources */,
 				1ED85EBC2B71904300807548 /* CardInHandArea.swift in Sources */,
 				1ED85EBD2B71904300807548 /* TeamColorPicker.swift in Sources */,
@@ -1420,12 +1431,13 @@
 				1ED85F582B71904D00807548 /* TeamNumberPicker.swift in Sources */,
 				1EE63D9A2BC46A8C006D2CDD /* ErrorMessageView.swift in Sources */,
 				1ED85F5A2B71904D00807548 /* CribbageView.swift in Sources */,
-				1ED85F5B2B71904D00807548 /* Firebase.swift in Sources */,
+				1ED85F5B2B71904D00807548 /* DataHelper.swift in Sources */,
 				1ED85F5D2B71904D00807548 /* GameView.swift in Sources */,
 				1EE63DAF2BCF7007006D2CDD /* PlayersHandsView.swift in Sources */,
 				1EAE46912B833B3000F7519B /* IntroView.swift in Sources */,
 				1ED85F5E2B71904D00807548 /* PlayerView.swift in Sources */,
 				1E8A2E682B89067100A40148 /* CustomTextField.swift in Sources */,
+				1EF89CE12BF55079000F2E4B /* Database.swift in Sources */,
 				1ED85F602B71904D00807548 /* CardView.swift in Sources */,
 				1ED85F612B71904D00807548 /* CardInHandArea.swift in Sources */,
 				1ED85F622B71904D00807548 /* TeamColorPicker.swift in Sources */,
@@ -1477,12 +1489,13 @@
 				1ED85F8F2B71904E00807548 /* TeamNumberPicker.swift in Sources */,
 				1EE63D9B2BC46A8C006D2CDD /* ErrorMessageView.swift in Sources */,
 				1ED85F912B71904E00807548 /* CribbageView.swift in Sources */,
-				1ED85F922B71904E00807548 /* Firebase.swift in Sources */,
+				1ED85F922B71904E00807548 /* DataHelper.swift in Sources */,
 				1ED85F942B71904E00807548 /* GameView.swift in Sources */,
 				1EE63DB02BCF7008006D2CDD /* PlayersHandsView.swift in Sources */,
 				1EAE46932B833B3100F7519B /* IntroView.swift in Sources */,
 				1ED85F952B71904E00807548 /* PlayerView.swift in Sources */,
 				1E8A2E692B89067100A40148 /* CustomTextField.swift in Sources */,
+				1EF89CE22BF55079000F2E4B /* Database.swift in Sources */,
 				1ED85F972B71904E00807548 /* CardView.swift in Sources */,
 				1ED85F982B71904E00807548 /* CardInHandArea.swift in Sources */,
 				1ED85F992B71904E00807548 /* TeamColorPicker.swift in Sources */,
@@ -1534,12 +1547,13 @@
 				1ED85FC62B71904F00807548 /* TeamNumberPicker.swift in Sources */,
 				1EE63D9C2BC46A8E006D2CDD /* ErrorMessageView.swift in Sources */,
 				1ED85FC82B71904F00807548 /* CribbageView.swift in Sources */,
-				1ED85FC92B71904F00807548 /* Firebase.swift in Sources */,
+				1ED85FC92B71904F00807548 /* DataHelper.swift in Sources */,
 				1ED85FCB2B71904F00807548 /* GameView.swift in Sources */,
 				1EE63DB12BCF7008006D2CDD /* PlayersHandsView.swift in Sources */,
 				1EAE46942B833B3200F7519B /* IntroView.swift in Sources */,
 				1ED85FCC2B71904F00807548 /* PlayerView.swift in Sources */,
 				1E8A2E6A2B89067200A40148 /* CustomTextField.swift in Sources */,
+				1EF89CE32BF5507A000F2E4B /* Database.swift in Sources */,
 				1ED85FCE2B71904F00807548 /* CardView.swift in Sources */,
 				1ED85FCF2B71904F00807548 /* CardInHandArea.swift in Sources */,
 				1ED85FD02B71904F00807548 /* TeamColorPicker.swift in Sources */,

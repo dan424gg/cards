@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CardView: View {
-    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var gameHelper: GameHelper
     var cardItem: CardItem
     @Binding var cardIsDisabled: Bool
     @Binding var backside: Bool
@@ -113,12 +113,12 @@ struct CardView: View {
                     }
                 }
             })
-            .onChange(of: [firebaseHelper.gameState?.play_cards, firebaseHelper.playerState?.cards_in_hand], initial: true, {
-                guard firebaseHelper.gameState != nil, firebaseHelper.playerState != nil, firebaseHelper.gameState!.turn == 2 else {
+            .onChange(of: [gameHelper.gameState?.play_cards, gameHelper.playerState?.cards_in_hand], initial: true, {
+                guard gameHelper.gameState != nil, gameHelper.playerState != nil, gameHelper.gameState!.turn == 2 else {
                     return
                 }
                 
-                if (firebaseHelper.gameState!.starter_card != cardItem.id && !firebaseHelper.playerState!.cards_in_hand.contains(cardItem.id) && !firebaseHelper.gameState!.play_cards.contains(cardItem.id)) {
+                if (gameHelper.gameState!.starter_card != cardItem.id && !gameHelper.playerState!.cards_in_hand.contains(cardItem.id) && !gameHelper.gameState!.play_cards.contains(cardItem.id)) {
                     notUsable = true
                 }
             })
@@ -137,7 +137,7 @@ struct CardView: View {
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(FirebaseHelper())
+            .environmentObject(GameHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
             .background {
                 DeviceSpecs().theme.colorWay.background

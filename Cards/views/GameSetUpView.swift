@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct GameSetUpView: View {
-    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var gameHelper: GameHelper
     @EnvironmentObject var specs: DeviceSpecs
     @StateObject var sheetCoordinator = SheetCoordinator<SheetType>()
     @State private var notValid: Bool = true
@@ -43,9 +43,9 @@ struct GameSetUpView: View {
                 Task {
                     switch setUpType {
                         case .newGame:
-                            await firebaseHelper.startGameCollection(fullName: fullName)
+                            await gameHelper.startGameCollection(fullName: fullName)
                         case .existingGame:
-                            await firebaseHelper.joinGameCollection(fullName: fullName, id: groupId)
+                            await gameHelper.joinGameCollection(fullName: fullName, id: groupId)
                         case .none:
                             print("tried to submit with a 'none' gameSetUpType")
                     }
@@ -65,7 +65,7 @@ struct GameSetUpView: View {
             } else {
                 if !groupId.isEmpty {
                     Task {
-                        if await firebaseHelper.checkValidId(id: groupId) {
+                        if await gameHelper.checkValidId(id: groupId) {
                             withAnimation {
                                 notValid = false
                             }
@@ -101,7 +101,7 @@ struct GameSetUpView: View {
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(FirebaseHelper())
+            .environmentObject(GameHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
     }
     .ignoresSafeArea()

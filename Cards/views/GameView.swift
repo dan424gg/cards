@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct GameView: View {
-    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var gameHelper: GameHelper
     @EnvironmentObject var specs: DeviceSpecs
     @Namespace var cardsNS
     @State var showSnackbar: Bool = true
@@ -19,7 +19,7 @@ struct GameView: View {
 
     var body: some View {
         ZStack {
-            if (firebaseHelper.gameState?.turn ?? gameObservable.game.turn) != 6 {
+            if (gameHelper.gameState?.turn ?? gameObservable.game.turn) != 6 {
                 if playingGame {
                     Group {
                         PlayingTable(gameObservable: gameObservable)
@@ -44,20 +44,20 @@ struct GameView: View {
                         CardsView(gameObservable: gameObservable)
                             .offset(y: -50)
                         
-                        if firebaseHelper.gameState?.dealer == firebaseHelper.playerState?.player_num {
+                        if gameHelper.gameState?.dealer == gameHelper.playerState?.player_num {
                             CribMarker()
                                 .position(x: specs.maxX * 0.90, y: specs.maxY * 0.95)
                                 .transition(.opacity)
                         }
                         
                         if shown {
-                            PointContainer(player: firebaseHelper.playerState ?? PlayerState.player_one, user: true)
+                            PointContainer(player: gameHelper.playerState ?? PlayerState.player_one, user: true)
                                 .scaleEffect(specs.maxY / 852)
                                 .position(x: specs.maxX / 2, y: specs.maxY * 0.71)
                                 .transition(.opacity)
                         }
                         
-                        GameOutcomeView(outcome: $firebaseHelper.gameOutcome)
+                        GameOutcomeView(outcome: $gameHelper.gameOutcome)
                     }
                     .geometryGroup()
                     .clipped()
@@ -80,125 +80,125 @@ struct GameView: View {
                     .transition(.opacity)
             }
         }
-        .onChange(of: firebaseHelper.playerState?.is_ready, {
-            guard firebaseHelper.playerState != nil, firebaseHelper.gameState != nil, firebaseHelper.playerState!.is_lead else {
+        .onChange(of: gameHelper.playerState?.is_ready, {
+            guard gameHelper.playerState != nil, gameHelper.gameState != nil, gameHelper.playerState!.is_lead else {
                 return
             }
             
-            if firebaseHelper.playersAreReady() {
+            if gameHelper.playersAreReady() {
                 Task {
-                    if firebaseHelper.gameState!.turn == 5 {
+                    if gameHelper.gameState!.turn == 5 {
                         do { try await Task.sleep(nanoseconds: UInt64(1500000000)) } catch { print(error) }
                     }
-                    await firebaseHelper.unreadyAllPlayers()
-                    await firebaseHelper.updateGame(["turn": (firebaseHelper.gameState!.turn + 1) % 7])
+                    await gameHelper.unreadyAllPlayers()
+                    await gameHelper.updateGame(["turn": (gameHelper.gameState!.turn + 1) % 7])
                 }
             }
         })
-        .onChange(of: firebaseHelper.players, {
-            guard firebaseHelper.playerState != nil, firebaseHelper.gameState != nil, firebaseHelper.playerState!.is_lead else {
+        .onChange(of: gameHelper.players, {
+            guard gameHelper.playerState != nil, gameHelper.gameState != nil, gameHelper.playerState!.is_lead else {
                 return
             }
             
-            if firebaseHelper.playersAreReady() {
+            if gameHelper.playersAreReady() {
                 Task {
-                    if firebaseHelper.gameState!.turn == 5 {
+                    if gameHelper.gameState!.turn == 5 {
                         do { try await Task.sleep(nanoseconds: UInt64(1500000000)) } catch { print(error) }
                     }
-                    await firebaseHelper.unreadyAllPlayers()
-                    await firebaseHelper.updateGame(["turn": (firebaseHelper.gameState!.turn + 1) % 7])
+                    await gameHelper.unreadyAllPlayers()
+                    await gameHelper.updateGame(["turn": (gameHelper.gameState!.turn + 1) % 7])
                 }
             }
         })
-        .onChange(of: firebaseHelper.teamState?.points, {
-            guard firebaseHelper.teamState != nil else {
+        .onChange(of: gameHelper.teamState?.points, {
+            guard gameHelper.teamState != nil else {
                 return
             }
             
-            if firebaseHelper.teamState!.points >= 120 {
+            if gameHelper.teamState!.points >= 120 {
                 Task {
-                    await firebaseHelper.updateGame(["who_won": firebaseHelper.teamState!.team_num])
+                    await gameHelper.updateGame(["who_won": gameHelper.teamState!.team_num])
                 }
                 
-                firebaseHelper.gameOutcome = .win
+                gameHelper.gameOutcome = .win
             }
         })
-        .onChange(of: firebaseHelper.gameState?.who_won,  {
-            guard firebaseHelper.gameState != nil, firebaseHelper.teamState != nil else {
+        .onChange(of: gameHelper.gameState?.who_won,  {
+            guard gameHelper.gameState != nil, gameHelper.teamState != nil else {
                 return
             }
             
-            if firebaseHelper.teamState!.team_num == firebaseHelper.gameState!.who_won {
-                firebaseHelper.gameOutcome = .win
+            if gameHelper.teamState!.team_num == gameHelper.gameState!.who_won {
+                gameHelper.gameOutcome = .win
             } else {
-                firebaseHelper.gameOutcome = .lose
+                gameHelper.gameOutcome = .lose
             }
         })
-        .onChange(of: firebaseHelper.gameState?.turn, initial: true, {
-            guard firebaseHelper.gameState != nil else {
+        .onChange(of: gameHelper.gameState?.turn, initial: true, {
+            guard gameHelper.gameState != nil else {
                 return
             }
             
-            if firebaseHelper.gameState!.turn == -1 {
-                guard firebaseHelper.playerState != nil, firebaseHelper.playerState!.is_lead else {
+            if gameHelper.gameState!.turn == -1 {
+                guard gameHelper.playerState != nil, gameHelper.playerState!.is_lead else {
                     return
                 }
                 
                 Task(priority: .userInitiated) {
-                    let randDealer = Int.random(in: 0..<(firebaseHelper.gameState!.num_players))
+                    let randDealer = Int.random(in: 0..<(gameHelper.gameState!.num_players))
                     
                     // determine dealer's team for crib
-                    if let teamWithCrib = firebaseHelper.players.first(where: { $0.player_num == randDealer })?.team_num {
-                        await firebaseHelper.updateGame(["dealer": randDealer, "team_with_crib": teamWithCrib])
+                    if let teamWithCrib = gameHelper.players.first(where: { $0.player_num == randDealer })?.team_num {
+                        await gameHelper.updateGame(["dealer": randDealer, "team_with_crib": teamWithCrib])
                     } else {
-                        let teamWithCrib = firebaseHelper.playerState!.team_num
-                        await firebaseHelper.updateGame(["dealer": randDealer, "team_with_crib": teamWithCrib])
+                        let teamWithCrib = gameHelper.playerState!.team_num
+                        await gameHelper.updateGame(["dealer": randDealer, "team_with_crib": teamWithCrib])
                     }
                     
-                    await firebaseHelper.updateGame(["turn": 0])
+                    await gameHelper.updateGame(["turn": 0])
                 }
-            } else if firebaseHelper.gameState!.turn == 0 {
+            } else if gameHelper.gameState!.turn == 0 {
                 withAnimation {
                     playingGame = true
                 }
                 
-                guard firebaseHelper.playerState!.player_num == firebaseHelper.gameState!.dealer else {
+                guard gameHelper.playerState!.player_num == gameHelper.gameState!.dealer else {
                     return
                 }
                 
                 Task {
-                    await firebaseHelper.shuffleAndDealCards()
-                    await firebaseHelper.updateGame(["turn": 1])
+                    await gameHelper.shuffleAndDealCards()
+                    await gameHelper.updateGame(["turn": 1])
                 }
                 
-            } else if firebaseHelper.gameState!.turn == 2 {
-                guard firebaseHelper.gameState != nil, firebaseHelper.playerState != nil, firebaseHelper.playerState!.is_lead else {
+            } else if gameHelper.gameState!.turn == 2 {
+                guard gameHelper.gameState != nil, gameHelper.playerState != nil, gameHelper.playerState!.is_lead else {
                     return
                 }
                 Task {
-                    await firebaseHelper.updateGame(["player_turn": (firebaseHelper.gameState!.dealer + 1) % firebaseHelper.gameState!.num_players])
+                    await gameHelper.updateGame(["player_turn": (gameHelper.gameState!.dealer + 1) % gameHelper.gameState!.num_players])
                 }
-            } else if firebaseHelper.gameState!.turn == 3 {
-                let numPlayers = firebaseHelper.gameState!.num_players
+            } else if gameHelper.gameState!.turn == 3 {
+                let numPlayers = gameHelper.gameState!.num_players
                 
                 for i in 0...numPlayers {
                     DispatchQueue.main.asyncAfter(deadline: .now() + (Double(i + 1) * 1.5), execute: {
                         if i == numPlayers {
                             Task {
-                                await firebaseHelper.updatePlayer(["is_ready": true])
+                                await gameHelper.updatePlayer(["is_ready": true])
                             }
                         } else if i == 0 {
                             // UPDATING GAMESTATE LOCALLY
-                            firebaseHelper.gameState!.player_turn = firebaseHelper.gameState!.dealer
-                            if firebaseHelper.playerState!.player_num == firebaseHelper.gameState!.player_turn {
+                            gameHelper.gameState!.player_turn = gameHelper.gameState!.dealer
+                            if gameHelper.playerState!.player_num == gameHelper.gameState!.player_turn {
                                 withAnimation {
                                     shown = true
                                 }
                             }
                         } else {
                             // UPDATING GAMESTATE LOCALLY
-                            firebaseHelper.gameState!.player_turn = (firebaseHelper.gameState!.player_turn + 1) % numPlayers
-                            if firebaseHelper.playerState!.player_num == firebaseHelper.gameState!.player_turn {
+                            gameHelper.gameState!.player_turn = (gameHelper.gameState!.player_turn + 1) % numPlayers
+                            if gameHelper.playerState!.player_num == gameHelper.gameState!.player_turn {
                                 withAnimation {
                                     shown = true
                                 }
@@ -206,33 +206,33 @@ struct GameView: View {
                         }
                     })
                 }
-            } else if firebaseHelper.gameState!.turn == 5 {
+            } else if gameHelper.gameState!.turn == 5 {
                 withAnimation {
                     shown = false
                     playingGame = false
                 }
-            } else if firebaseHelper.gameState!.turn == 6 {
-                guard firebaseHelper.playerState != nil, firebaseHelper.playerState!.is_lead else {
+            } else if gameHelper.gameState!.turn == 6 {
+                guard gameHelper.playerState != nil, gameHelper.playerState!.is_lead else {
                     return
                 }
                 
                 Task {
-                    await firebaseHelper.resetGame()
+                    await gameHelper.resetGame()
                     try await Task.sleep(nanoseconds: UInt64(2.0 * Double(NSEC_PER_SEC)))
-                    await firebaseHelper.updateGame(["turn": (firebaseHelper.gameState!.turn + 1) % 7])
+                    await gameHelper.updateGame(["turn": (gameHelper.gameState!.turn + 1) % 7])
                 }
             }
         })
     }
     
     struct PlayingTable: View {
-        @EnvironmentObject var firebaseHelper: FirebaseHelper
+        @EnvironmentObject var gameHelper: GameHelper
         @EnvironmentObject var specs: DeviceSpecs
         @StateObject var gameObservable: GameObservable
         
         var turn: Int {
-            if firebaseHelper.gameState != nil {
-                return firebaseHelper.gameState!.turn
+            if gameHelper.gameState != nil {
+                return gameHelper.gameState!.turn
             } else {
                 return gameObservable.game.turn
             }
@@ -255,7 +255,7 @@ struct GameView: View {
     }
     
     struct PlayerIndicator: View {
-        @EnvironmentObject var firebaseHelper: FirebaseHelper
+        @EnvironmentObject var gameHelper: GameHelper
         @EnvironmentObject var specs: DeviceSpecs
         @State var initialRotation: Int = 0
         @State var multiplier: Int = 0
@@ -264,16 +264,16 @@ struct GameView: View {
         @StateObject var gameObservable: GameObservable
         
         var turn: Int {
-            if firebaseHelper.gameState != nil {
-                return firebaseHelper.gameState!.turn
+            if gameHelper.gameState != nil {
+                return gameHelper.gameState!.turn
             } else {
                 return gameObservable.game.turn
             }
         }
         
         var playerTurn: Int {
-            if firebaseHelper.gameState != nil {
-                return firebaseHelper.gameState!.player_turn
+            if gameHelper.gameState != nil {
+                return gameHelper.gameState!.player_turn
             } else {
                 return gameObservable.game.player_turn
             }
@@ -288,21 +288,21 @@ struct GameView: View {
                     .rotationEffect(.degrees(Double(rotation)))
                     .transition(.opacity)
                     .onAppear {
-                        if firebaseHelper.gameState != nil {
+                        if gameHelper.gameState != nil {
                             // set multiplier based on number of players
-                            multiplier = 360 / firebaseHelper.gameState!.num_players
-                            var players = firebaseHelper.players
-                            players.append(firebaseHelper.playerState!)
+                            multiplier = 360 / gameHelper.gameState!.num_players
+                            var players = gameHelper.players
+                            players.append(gameHelper.playerState!)
                             players.sort(by: { $0.player_num < $1.player_num })
                             
                             // reorder player list to match playerViews
-                            let beforePlayer = players[0..<firebaseHelper.playerState!.player_num]
-                            let afterPlayer = players[firebaseHelper.playerState!.player_num..<players.count]
+                            let beforePlayer = players[0..<gameHelper.playerState!.player_num]
+                            let afterPlayer = players[gameHelper.playerState!.player_num..<players.count]
                             
                             sortedPlayerNumList = Array(afterPlayer + beforePlayer).map({ $0.player_num })
                             
                             // find index of player's turn
-                            if let idx = sortedPlayerNumList.firstIndex(where: { $0 == firebaseHelper.gameState!.player_turn }) {
+                            if let idx = sortedPlayerNumList.firstIndex(where: { $0 == gameHelper.gameState!.player_turn }) {
                                 rotation = Double(idx * multiplier)
                             }
                         } else {
@@ -330,11 +330,11 @@ struct GameView: View {
                             rotation += Double(multiplier)
                         }
                         
-                        guard firebaseHelper.playerState != nil else {
+                        guard gameHelper.playerState != nil else {
                             return
                         }
                         
-                        if playerTurn == firebaseHelper.playerState!.player_num {
+                        if playerTurn == gameHelper.playerState!.player_num {
                             UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                         }
                     })
@@ -351,7 +351,7 @@ struct GameView: View {
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(FirebaseHelper())
+            .environmentObject(GameHelper())
 //            .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
             .background(DeviceSpecs().theme.colorWay.background)
     }

@@ -56,7 +56,7 @@ struct CribMarker: View {
                 return envObj
             }() )
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
-            .environmentObject(FirebaseHelper())
+            .environmentObject(GameHelper())
     }
     .ignoresSafeArea()
 }

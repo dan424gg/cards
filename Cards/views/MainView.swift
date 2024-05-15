@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct MainView: View {
-    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var gameHelper: GameHelper
     @EnvironmentObject var specs: DeviceSpecs
     @StateObject var sheetCoordinator = SheetCoordinator<SheetType>()
 
     var body: some View {
         ZStack {
-            if (firebaseHelper.gameState?.is_playing ?? false) && specs.inGame {
+            if (gameHelper.gameState?.is_playing ?? false) && specs.inGame {
                     GameView()
                         .geometryGroup()
                         .ignoresSafeArea()
@@ -29,7 +29,7 @@ struct MainView: View {
                             }
                             
                             ToolbarItem(placement: .topBarTrailing) {
-                                CText(firebaseHelper.gameState!.game_name.capitalized, size: 17)
+                                CText(gameHelper.gameState!.game_name.capitalized, size: 17)
                             }
                         }
 //                }
@@ -38,7 +38,7 @@ struct MainView: View {
                     .geometryGroup()
             }
         }
-        .onChange(of: firebaseHelper.gameState?.is_playing, initial: true, { (_, new) in
+        .onChange(of: gameHelper.gameState?.is_playing, initial: true, { (_, new) in
             guard new != nil else {
                 specs.inGame = true
                 return
@@ -60,7 +60,7 @@ struct MainView: View {
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(FirebaseHelper())
+            .environmentObject(GameHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
             .background {
                 DeviceSpecs().theme.colorWay.background

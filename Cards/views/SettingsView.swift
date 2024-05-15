@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @Environment(\.openURL) private var openURL
-    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var gameHelper: GameHelper
     @EnvironmentObject var specs: DeviceSpecs
     @Binding var introView: IntroViewType
     @AppStorage(AppStorageConstants.theme) var theme: ColorTheme = .classic
@@ -33,7 +33,7 @@ struct SettingsView: View {
                         }
                         .id(hack)
                         .onChange(of: theme, {
-                            firebaseHelper.logAnalytics(.theme_picked, ["theme": theme.id])
+                            gameHelper.logAnalytics(.theme_picked, ["theme": theme.id])
                             withAnimation {
                                 hack += 1
                             }
@@ -111,7 +111,7 @@ struct SettingsView: View {
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(FirebaseHelper())
+            .environmentObject(GameHelper())
     }
     .ignoresSafeArea()
     .background {

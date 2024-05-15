@@ -9,7 +9,7 @@ import SwiftUI
 import FirebaseFirestore
 
 struct TurnOneView: View {
-    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var gameHelper: GameHelper
     @Binding var cardsDragged: [Int]
     @Binding var cardsInHand: [Int]
     @State var cardIsDisabled = false
@@ -21,7 +21,7 @@ struct TurnOneView: View {
     
     var body: some View {
         VStack {
-            switch (firebaseHelper.gameState?.num_players ?? 4) {
+            switch (gameHelper.gameState?.num_players ?? 4) {
                 case 2:
                     HStack {
                         if cardsDragged.count == 0 {
@@ -89,8 +89,8 @@ struct TurnOneView: View {
                         CardView(cardItem: CardItem(id: cardsDragged[0]), cardIsDisabled: .constant(true), backside: .constant(false))
                     }
                 case 6:
-                    if (firebaseHelper.playerState!.player_num == firebaseHelper.gameState?.dealer) ||
-                        ((firebaseHelper.playerState!.player_num + 1) % (firebaseHelper.gameState!.num_players)) != (firebaseHelper.gameState?.dealer ?? 1) {
+                    if (gameHelper.playerState!.player_num == gameHelper.gameState?.dealer) ||
+                        ((gameHelper.playerState!.player_num + 1) % (gameHelper.gameState!.num_players)) != (gameHelper.gameState?.dealer ?? 1) {
                         CText("Waiting for players to discard...")
                     } else {
                         if cardsDragged.count == 0 {
@@ -121,12 +121,12 @@ struct TurnOneView: View {
                 cardIsDisabled = true
 
                 Task {
-                    await firebaseHelper.updatePlayer([
+                    await gameHelper.updatePlayer([
                         "cards_in_hand": cardsDragged,
                         "is_ready": true
                     ], arrayAction: .remove)
                     
-                    await firebaseHelper.updateGame(["crib": cardsDragged], arrayAction: .append)
+                    await gameHelper.updateGame(["crib": cardsDragged], arrayAction: .append)
                 }
             }
         }
@@ -136,19 +136,19 @@ struct TurnOneView: View {
     }
     
     func playerReady() -> Bool {
-        guard firebaseHelper.gameState != nil, firebaseHelper.playerState != nil else {
+        guard gameHelper.gameState != nil, gameHelper.playerState != nil else {
             return false
         }
         
-        switch (firebaseHelper.gameState!.num_teams) {
-            case 2: return firebaseHelper.gameState!.num_players == 2 ? cardsDragged.count == 2 : cardsDragged.count == 1
+        switch (gameHelper.gameState!.num_teams) {
+            case 2: return gameHelper.gameState!.num_players == 2 ? cardsDragged.count == 2 : cardsDragged.count == 1
             case 3:
-                if firebaseHelper.gameState!.num_players == 3 {
+                if gameHelper.gameState!.num_players == 3 {
                     return cardsDragged.count == 1
                 } else {
                     // if player is dealer or to the left of the dealer
-                    if (firebaseHelper.playerState!.player_num == firebaseHelper.gameState!.dealer ||
-                        ((firebaseHelper.playerState!.player_num + 1) % firebaseHelper.gameState!.num_players) == firebaseHelper.gameState!.dealer) {
+                    if (gameHelper.playerState!.player_num == gameHelper.gameState!.dealer ||
+                        ((gameHelper.playerState!.player_num + 1) % gameHelper.gameState!.num_players) == gameHelper.gameState!.dealer) {
                         return true
                     } else {
                         return cardsDragged.count == 1
@@ -162,5 +162,5 @@ struct TurnOneView: View {
 
 #Preview {
     TurnOneView(cardsDragged: .constant([0]), cardsInHand: .constant([]))
-        .environmentObject(FirebaseHelper())
+        .environmentObject(GameHelper())
 }
