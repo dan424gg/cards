@@ -11,10 +11,35 @@ struct NewGameView: View {
     @Binding var introView: IntroViewType
     @EnvironmentObject var gameHelper: GameHelper
     @EnvironmentObject var specs: DeviceSpecs
+    @State var alert: Alert?
     @State private var notValid: Bool = true
     @State var fullName: String = ""
     @State var size: CGSize = .zero
 
+    func validateName(name: String) -> Bool {
+        if name.isEmpty {
+            withAnimation {
+                alert = Alert(title: "Error", message: "Your name can't be blank!")
+            }
+            
+            return false
+        } else if name == "" {
+            withAnimation {
+                alert = Alert(title: "Error", message: "Your name can't be blank!")
+            }
+            
+            return false
+        } else if name.count == 0 {
+            withAnimation {
+                alert = Alert(title: "Error", message: "Your name can't be blank!")
+            }
+            
+            return false
+        }
+        
+        return true
+    }
+    
     var body: some View {
         ZStack {
             VStack(spacing: 20) {
@@ -28,10 +53,12 @@ struct NewGameView: View {
                     endTextEditing()
                     
                     Task {
-                        gameHelper.reinitialize()
-                        await gameHelper.startGameCollection(fullName: fullName)
-                        withAnimation(.smooth(duration: 0.3)) {
-                            introView = .loadingScreen
+                        if validateName(name: fullName) {
+                            gameHelper.reinitialize()
+                            await gameHelper.startGameCollection(fullName: fullName)
+                            withAnimation(.smooth(duration: 0.3)) {
+                                introView = .loadingScreen
+                            }
                         }
                     }
                 })
@@ -68,9 +95,8 @@ struct NewGameView: View {
             .font(.system(size: 45, weight: .heavy))
             .foregroundStyle(specs.theme.colorWay.primary, specs.theme.colorWay.secondary)
         }
+        .alertWindow($alert)
     }
-    
-    
 }
 
 #Preview {

@@ -63,7 +63,7 @@ struct IntroView: View {
                 
             } else {
                 ZStack {
-                    CText("CARDS PLAYGROUND", size: Int(determineFont("Playground", Int(specs.maxX), 115)))
+                    CText("CARDS PLAYGROUND", size: Int(determineFont("PLAYGROUND", Int(specs.maxX - 40), 115)))
                         .foregroundStyle(specs.theme.colorWay.title)
                         .multilineTextAlignment(.center)
                         .position(x: specs.maxX / 2, y: specs.maxY * 0.25)
