@@ -14,9 +14,9 @@ import FirebaseFirestoreSwift
 
 @testable import CardsPlayground
 
-final class FirebaseHelperTests: XCTestCase {
+final class GameHelperTests: XCTestCase {
     @MainActor func testStartGameCollection() async {
-        let playerOne = FirebaseHelper()
+        let playerOne = GameHelper()
         var randId = 0
         repeat {
             randId = Int.random(in: 10000..<99999)
@@ -31,33 +31,33 @@ final class FirebaseHelperTests: XCTestCase {
     }
     
     @MainActor func testJoinGameCollection() async {
-        let playerOne = FirebaseHelper()
+        let playerOne = GameHelper()
         var randId = 0
         repeat {
             randId = Int.random(in: 10000..<99999)
         } while (await playerOne.checkValidId(id: "\(randId)"))
         await playerOne.startGameCollection(fullName: "1", testGroupId: randId)
         
-        let playerTwo = FirebaseHelper()
+        let playerTwo = GameHelper()
         await playerTwo.joinGameCollection(fullName: "2", id: "\(randId)")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
 
         // test normal join
-        XCTAssert(playerTwo.gameState!.num_players == 2)
-        XCTAssert(playerTwo.teams.count == 2)
+        XCTAssertEqual(playerTwo.gameState!.num_players, 2)
+        XCTAssertEqual(playerTwo.teams.count, 2)
         
         await playerOne.deleteGameCollection(id: randId)
     }
     
     @MainActor func testPlayersListener() async {
-        let playerOne = FirebaseHelper()
+        let playerOne = GameHelper()
         var randId = 0
         repeat {
             randId = Int.random(in: 10000..<99999)
         } while (await playerOne.checkValidId(id: "\(randId)"))
         await playerOne.startGameCollection(fullName: "1", testGroupId: randId)
         
-        let playerTwo = FirebaseHelper()
+        let playerTwo = GameHelper()
         await playerTwo.joinGameCollection(fullName: "2", id: "\(randId)")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         
@@ -73,14 +73,14 @@ final class FirebaseHelperTests: XCTestCase {
     }
     
     @MainActor func testTeamsListener() async {
-        let playerOne = FirebaseHelper()
+        let playerOne = GameHelper()
         var randId = 0
         repeat {
             randId = Int.random(in: 10000..<99999)
         } while (await playerOne.checkValidId(id: "\(randId)"))
         await playerOne.startGameCollection(fullName: "1", testGroupId: randId)
         
-        let playerTwo = FirebaseHelper()
+        let playerTwo = GameHelper()
         await playerTwo.joinGameCollection(fullName: "2", id: "\(randId)")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         
@@ -101,14 +101,14 @@ final class FirebaseHelperTests: XCTestCase {
     }
     
     @MainActor func testGameListener() async {
-        let playerOne = FirebaseHelper()
+        let playerOne = GameHelper()
         var randId = 0
         repeat {
             randId = Int.random(in: 10000..<99999)
         } while (await playerOne.checkValidId(id: "\(randId)"))
         await playerOne.startGameCollection(fullName: "1", testGroupId: randId)
         
-        let playerTwo = FirebaseHelper()
+        let playerTwo = GameHelper()
         await playerTwo.joinGameCollection(fullName: "2", id: "\(randId)")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         
@@ -122,14 +122,14 @@ final class FirebaseHelperTests: XCTestCase {
     }
     
     @MainActor func testChangeTeam() async {
-        let playerOne = FirebaseHelper()
+        let playerOne = GameHelper()
         var randId = 0
         repeat {
             randId = Int.random(in: 10000..<99999)
         } while (await playerOne.checkValidId(id: "\(randId)"))
         await playerOne.startGameCollection(fullName: "1", testGroupId: randId)
         
-        let playerTwo = FirebaseHelper()
+        let playerTwo = GameHelper()
         await playerTwo.joinGameCollection(fullName: "2", id: "\(randId)")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
 
@@ -158,19 +158,19 @@ final class FirebaseHelperTests: XCTestCase {
         XCTAssertTrue(playerTwo.teams.contains(where: { $0.team_num == 1 }))
         
         // flood changeTeam
-        let playerThree = FirebaseHelper()
+        let playerThree = GameHelper()
         await playerThree.joinGameCollection(fullName: "3", id: "\(randId)")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
 
-        let playerFour = FirebaseHelper()
+        let playerFour = GameHelper()
         await playerFour.joinGameCollection(fullName: "4", id: "\(randId)")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 1)
         
-        let playerFive = FirebaseHelper()
+        let playerFive = GameHelper()
         await playerFive.joinGameCollection(fullName: "5", id: "\(randId)")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 1)
         
-        let playerSix = FirebaseHelper()
+        let playerSix = GameHelper()
         await playerSix.joinGameCollection(fullName: "6", id: "\(randId)")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 1)
         
@@ -192,14 +192,14 @@ final class FirebaseHelperTests: XCTestCase {
     }
     
     @MainActor func testUpdateGame() async {
-        let playerOne = FirebaseHelper()
+        let playerOne = GameHelper()
         var randId = 0
         repeat {
             randId = Int.random(in: 10000..<99999)
         } while (await playerOne.checkValidId(id: "\(randId)"))
         await playerOne.startGameCollection(fullName: "1", testGroupId: randId)
         
-        let playerTwo = FirebaseHelper()
+        let playerTwo = GameHelper()
         await playerTwo.joinGameCollection(fullName: "2", id: "\(randId)")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         
@@ -245,14 +245,14 @@ final class FirebaseHelperTests: XCTestCase {
     }
     
     @MainActor func testUpdatePlayer() async {
-        let playerOne = FirebaseHelper()
+        let playerOne = GameHelper()
         var randId = 0
         repeat {
             randId = Int.random(in: 10000..<99999)
         } while (await playerOne.checkValidId(id: "\(randId)"))
         await playerOne.startGameCollection(fullName: "1", testGroupId: randId)
         
-        let playerTwo = FirebaseHelper()
+        let playerTwo = GameHelper()
         await playerTwo.joinGameCollection(fullName: "2", id: "\(randId)")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         
@@ -304,14 +304,14 @@ final class FirebaseHelperTests: XCTestCase {
     }
     
     @MainActor func testUpdateTeam() async {
-        let playerOne = FirebaseHelper()
+        let playerOne = GameHelper()
         var randId = 0
         repeat {
             randId = Int.random(in: 10000..<99999)
         } while (await playerOne.checkValidId(id: "\(randId)"))
         await playerOne.startGameCollection(fullName: "1", testGroupId: randId)
         
-        let playerTwo = FirebaseHelper()
+        let playerTwo = GameHelper()
         await playerTwo.joinGameCollection(fullName: "2", id: "\(randId)")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         
@@ -324,14 +324,14 @@ final class FirebaseHelperTests: XCTestCase {
     }
     
     @MainActor func testShuffleAndDeal() async {
-        let playerOne = FirebaseHelper()
+        let playerOne = GameHelper()
         var randId = 0
         repeat {
             randId = Int.random(in: 10000..<99999)
         } while (await playerOne.checkValidId(id: "\(randId)"))
         await playerOne.startGameCollection(fullName: "1", testGroupId: randId)
         
-        let playerTwo = FirebaseHelper()
+        let playerTwo = GameHelper()
         await playerTwo.joinGameCollection(fullName: "2", id: "\(randId)")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         
@@ -349,7 +349,7 @@ final class FirebaseHelperTests: XCTestCase {
         // add another player (3)
         await playerOne.resetGame()
         await playerOne.updateGame(["dealer": 0])
-        let playerThree = FirebaseHelper()
+        let playerThree = GameHelper()
         await playerThree.joinGameCollection(fullName: "3", id: "\(randId)")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         
@@ -363,7 +363,7 @@ final class FirebaseHelperTests: XCTestCase {
         // add another player (4)
         await playerOne.resetGame()
         await playerOne.updateGame(["dealer": 0])
-        let playerFour = FirebaseHelper()
+        let playerFour = GameHelper()
         await playerFour.joinGameCollection(fullName: "4", id: "\(randId)")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         
@@ -378,10 +378,10 @@ final class FirebaseHelperTests: XCTestCase {
         // add another two players (6)
         await playerOne.resetGame()
         await playerOne.updateGame(["dealer": 0])
-        let playerFive = FirebaseHelper()
+        let playerFive = GameHelper()
         await playerFive.joinGameCollection(fullName: "5", id: "\(randId)")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
-        let playerSix = FirebaseHelper()
+        let playerSix = GameHelper()
         await playerSix.joinGameCollection(fullName: "6", id: "\(randId)")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         
@@ -399,58 +399,8 @@ final class FirebaseHelperTests: XCTestCase {
         await playerOne.deleteGameCollection(id: randId)
     }
     
-//    @MainActor func testCheckHandForPoints() async {
-//        let playerOne = FirebaseHelper()
-//        var randId = 0
-//        repeat {
-//            randId = Int.random(in: 10000..<99999)
-//        } while (await playerOne.checkValidId(id: "\(randId)"))
-//        await playerOne.startGameCollection(fullName: "1", testGroupId: randId)
-//        
-//        // test normal runs
-//        XCTAssertEqual(playerOne.checkForRun([2, 4, 16]), 3)
-//        XCTAssert(playerOne.checkForRun([0, 1, 51]) == 0)
-//        XCTAssert(playerOne.checkForRun([11, 12, 13]) == 0)
-//        XCTAssert(playerOne.checkForRun([2, 0, 1, 3]) == 4)
-//        XCTAssert(playerOne.checkForRun([13, 11, 12]) == 0)
-//        XCTAssert(playerOne.checkForRun([11, 12]) == 0)
-//        XCTAssert(playerOne.checkForRun([0, 12]) == 0)
-//        XCTAssertEqual(playerOne.checkForRun([2, 1, 39]), 3)
-//        XCTAssertEqual(playerOne.checkForRun([2,4,5,0,1,6,3]), 7)
-//        
-//        // test runs with pairs inside (in show)
-//        var scoringCards: [ScoringHand] = []
-//        var points = 0
-//
-//        // Modify the XCTAssert line and keep the playerOne.checkForRun command
-//        playerOne.checkForRun([0,1,1,2], &scoringCards, &points)
-//        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .run && $0.cardsInScoredHand == [0,1,1,2] && $0.cumlativePoints == 6 }))
-//        
-//        points = 0
-//        scoringCards = []
-//        playerOne.checkForRun([13,41,27,15], &scoringCards, &points)
-//        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .run && $0.cardsInScoredHand == [13,27,41,15] && $0.cumlativePoints == 6 }))
-//        
-//        points = 0
-//        scoringCards = []
-//        playerOne.checkForRun([0,1,1,2,2], &scoringCards, &points)
-//        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .run && $0.cardsInScoredHand == [0,1,1,2,2] && $0.cumlativePoints == 12 }))
-//        
-//        points = 0
-//        scoringCards = []
-//        playerOne.checkForRun([4,4,5,6,6], &scoringCards, &points)
-//        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .run && $0.cardsInScoredHand == [4,4,5,6,6] && $0.cumlativePoints == 12 }))
-//        
-//        points = 0
-//        scoringCards = []
-//        playerOne.checkForRun([17,30,18,45,6], &scoringCards, &points)
-//        XCTAssertTrue(scoringCards.contains(where: { $0.scoreType == .run && $0.cardsInScoredHand == [17,30,18,45,6] && $0.cumlativePoints == 12 }))
-//        
-//        await playerOne.deleteGameCollection(id: randId)
-//    }
-    
     @MainActor func testCheckForRun() async {
-        let playerOne = FirebaseHelper()
+        let playerOne = GameHelper()
         var randId = 0
         repeat {
             randId = Int.random(in: 10000..<99999)
@@ -504,7 +454,7 @@ final class FirebaseHelperTests: XCTestCase {
     }
 
     @MainActor func testCheckForFifteens() async {
-        let playerOne = FirebaseHelper()
+        let playerOne = GameHelper()
         var randId = 0
         repeat {
             randId = Int.random(in: 10000..<99999)
@@ -551,7 +501,7 @@ final class FirebaseHelperTests: XCTestCase {
     }
 
     @MainActor func testCheckForSets() async {
-        let playerOne = FirebaseHelper()
+        let playerOne = GameHelper()
         var randId = 0
         repeat {
             randId = Int.random(in: 10000..<99999)
@@ -597,7 +547,7 @@ final class FirebaseHelperTests: XCTestCase {
     }
     
     @MainActor func testCheckForFlush() async {
-        let playerOne = FirebaseHelper()
+        let playerOne = GameHelper()
         var randId = 0
         repeat {
             randId = Int.random(in: 10000..<99999)
@@ -625,7 +575,7 @@ final class FirebaseHelperTests: XCTestCase {
     }
 
     @MainActor func testCheckForNobs() async {
-        let playerOne = FirebaseHelper()
+        let playerOne = GameHelper()
         var randId = 0
         repeat {
             randId = Int.random(in: 10000..<99999)
@@ -665,14 +615,14 @@ final class FirebaseHelperTests: XCTestCase {
     
     @MainActor func testManagePlayTurn() async {
         var result = 0
-        let playerOne = FirebaseHelper()
+        let playerOne = GameHelper()
         var randId = 0
         repeat {
             randId = Int.random(in: 10000..<99999)
         } while (await playerOne.checkValidId(id: "\(randId)"))
         await playerOne.startGameCollection(fullName: "1", testGroupId: randId)
         
-        let playerTwo = FirebaseHelper()
+        let playerTwo = GameHelper()
         await playerTwo.joinGameCollection(fullName: "2", id: "\(randId)")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         
@@ -763,7 +713,7 @@ final class FirebaseHelperTests: XCTestCase {
     }
     
     @MainActor func testCheckPlayerHandForPoints() async {
-        let playerOne = FirebaseHelper()
+        let playerOne = GameHelper()
         var randId = 0
         repeat {
             randId = Int.random(in: 10000..<99999)
@@ -843,14 +793,14 @@ final class FirebaseHelperTests: XCTestCase {
     }
     
     @MainActor func testUpdatePlayerNums() async {
-        let playerOne = FirebaseHelper()
+        let playerOne = GameHelper()
         var randId = 0
         repeat {
             randId = Int.random(in: 10000..<99999)
         } while (await playerOne.checkValidId(id: "\(randId)"))
         await playerOne.startGameCollection(fullName: "1", testGroupId: randId)
         
-        let playerTwo = FirebaseHelper()
+        let playerTwo = GameHelper()
         await playerTwo.joinGameCollection(fullName: "2", id: "\(randId)")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         
@@ -864,7 +814,7 @@ final class FirebaseHelperTests: XCTestCase {
         XCTAssertTrue(playerTwo.playerState!.player_num == 1)
         
         // game simulation check
-        let playerThree = FirebaseHelper()
+        let playerThree = GameHelper()
         await playerThree.joinGameCollection(fullName: "3", id: "\(randId)")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         
@@ -877,15 +827,15 @@ final class FirebaseHelperTests: XCTestCase {
         XCTAssertTrue(playerThree.playerState!.player_num == 1)
         
         // more players
-        let playerFour = FirebaseHelper()
+        let playerFour = GameHelper()
         await playerFour.joinGameCollection(fullName: "4", id: "\(randId)")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 1)
         
-        let playerFive = FirebaseHelper()
+        let playerFive = GameHelper()
         await playerFive.joinGameCollection(fullName: "5", id: "\(randId)")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 1)
         
-        let playerSix = FirebaseHelper()
+        let playerSix = GameHelper()
         await playerSix.joinGameCollection(fullName: "6", id: "\(randId)")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 1)
         
@@ -909,7 +859,7 @@ final class FirebaseHelperTests: XCTestCase {
     }
     
     @MainActor func testCheckGameInProgress() async {
-        let playerOne = FirebaseHelper()
+        let playerOne = GameHelper()
         var randId = 0
         repeat {
             randId = Int.random(in: 10000..<99999)
@@ -920,10 +870,25 @@ final class FirebaseHelperTests: XCTestCase {
         XCTAssertFalse(result)
         
         await playerOne.updateGame(["is_playing": true])
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 1)
+
         result = await playerOne.checkGameInProgress(id: "\(randId)")
         XCTAssertTrue(result)
                 
         await playerOne.deleteGameCollection(id: randId)
+    }
+    
+    @MainActor func testDeleteGame() async {
+        let playerOne = GameHelper()
+        var randId = 0
+        repeat {
+            randId = Int.random(in: 10000..<99999)
+        } while (await playerOne.checkValidId(id: "\(randId)"))
+        await playerOne.startGameCollection(fullName: "1", testGroupId: randId)
+        
+        await playerOne.deleteGameCollection(id: randId)
+        let validity = await playerOne.checkValidId(id: "\(randId)")
+        XCTAssertFalse(validity)
     }
 }
 

@@ -14,7 +14,7 @@ struct TurnTwoView: View {
     @Binding var cardsInHand: [Int]
     @State var invalid: Bool = true
     @Environment(\.namespace) var namespace
-    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var gameHelper: GameHelper
     @EnvironmentObject var specs: DeviceSpecs
     @State private var pointsCallOut: [String] = []
     @State private var showAllCards: Bool = false
@@ -43,7 +43,7 @@ struct TurnTwoView: View {
                     
                     TimedTextContainer(display: $displayTimedTextContainer, textArray: .constant(otherPlayerPointCallOut), visibilityFor: 2.0, color: color)
                         .onAppear {
-                            if let team = firebaseHelper.teams.first(where: { $0.team_num == otherPlayerTeamNumber }) {
+                            if let team = gameHelper.teams.first(where: { $0.team_num == otherPlayerTeamNumber }) {
                                 color = Color("\(team.color)")
                             }
                         }
@@ -60,7 +60,7 @@ struct TurnTwoView: View {
                         }
                         
                         VStack(spacing: 8) {
-                            CText("\(firebaseHelper.gameState?.running_sum ?? 14)", size: 20)
+                            CText("\(gameHelper.gameState?.running_sum ?? 14)", size: 20)
                             
                             CustomButton(name: "GO", submitFunction: handleGoButton, size: Int(specs.maxY / 60.85))
                                 .disabled(handleDisabledState())
@@ -78,7 +78,7 @@ struct TurnTwoView: View {
                     
                     TimedTextContainer(display: $displayTimedTextContainer, textArray: $pointsCallOut, visibilityFor: 2.0, color: color)
                         .onAppear {
-                            if let team = firebaseHelper.teamState {
+                            if let team = gameHelper.teamState {
                                 color = Color("\(team.color)")
                             }
                         }
@@ -99,9 +99,9 @@ struct TurnTwoView: View {
             }
 
             var callouts: [String] = []
-            if checkForValidityOfPlay(cardsDragged.last ?? -1, runningSum: firebaseHelper.gameState?.running_sum ?? 32, pointsCallOut: &callouts) {
+            if checkForValidityOfPlay(cardsDragged.last ?? -1, runningSum: gameHelper.gameState?.running_sum ?? 32, pointsCallOut: &callouts) {
                 invalid = false
-            } else if (cardsDragged.count - (firebaseHelper.playerState?.cards_dragged.count ?? 0) == 1) {
+            } else if (cardsDragged.count - (gameHelper.playerState?.cards_dragged.count ?? 0) == 1) {
                 pointsCallOut = callouts
                 displayTimedTextContainer = true
                 invalid = true
@@ -162,33 +162,33 @@ struct TurnTwoView: View {
     }
     
     private func handleGoButton() {
-        guard firebaseHelper.gameState != nil else {
+        guard gameHelper.gameState != nil else {
             return
         }
 
         if !checkIfPlayIsPossible() {
             Task {
-                if let teamState = firebaseHelper.teamState {
+                if let teamState = gameHelper.teamState {
                     withAnimation(.smooth(duration: 0.5)) {
                         showAllCards = false
                     }
                     var callouts: [String] = []
-                    let points = await firebaseHelper.managePlayTurn(cardInPlay: nil, pointsCallOut: &callouts)
+                    let points = await gameHelper.managePlayTurn(cardInPlay: nil, pointsCallOut: &callouts)
                     pointsCallOut = callouts
                     
-                    await firebaseHelper.updatePlayer(["callouts": pointsCallOut], arrayAction: .replace)
-                    await firebaseHelper.updateTeam(["points": points + teamState.points])
-                    await firebaseHelper.updateGame(["player_turn": (firebaseHelper.gameState!.player_turn + 1) % firebaseHelper.gameState!.num_players])
+                    await gameHelper.updatePlayer(["callouts": pointsCallOut], arrayAction: .replace)
+                    await gameHelper.updateTeam(["points": points + teamState.points])
+                    await gameHelper.updateGame(["player_turn": (gameHelper.gameState!.player_turn + 1) % gameHelper.gameState!.num_players])
                     
                     if cardsInHand.isEmpty {
                         Task {
                             do { try await Task.sleep(nanoseconds: 2500000000) } catch { print(error) }
                             
-                            if firebaseHelper.gameState!.num_cards_in_play == (firebaseHelper.gameState!.num_players * 4) {
-                                await firebaseHelper.updateGame(["player_turn": -1])
+                            if gameHelper.gameState!.num_cards_in_play == (gameHelper.gameState!.num_players * 4) {
+                                await gameHelper.updateGame(["player_turn": -1])
                             }
                             
-                            await firebaseHelper.updatePlayer(["is_ready": true])
+                            await gameHelper.updatePlayer(["is_ready": true])
                         }
                     }
                 }
@@ -199,12 +199,12 @@ struct TurnTwoView: View {
     }
     
     private func checkIfPlayIsPossible() -> Bool {
-        guard firebaseHelper.gameState != nil else {
+        guard gameHelper.gameState != nil else {
             return false
         }
         
         for card in cardsInHand {
-            if checkForValidityOfPlay(card, runningSum: firebaseHelper.gameState!.running_sum) {
+            if checkForValidityOfPlay(card, runningSum: gameHelper.gameState!.running_sum) {
                 return true
             }
         }
@@ -235,7 +235,7 @@ struct TurnTwoView: View {
     private func handleCardTapGesture(_ cardId: Int) {
         if otherPlayer {
             handleOtherPlayerCardTapGesture()
-        } else if (firebaseHelper.playerState?.cards_dragged.last ?? -1) != cardId {
+        } else if (gameHelper.playerState?.cards_dragged.last ?? -1) != cardId {
             withAnimation {
                 cardsInHand.append(cardId)
                 cardsDragged.removeAll(where: { $0 == cardId })
@@ -244,12 +244,12 @@ struct TurnTwoView: View {
     }
     
     private func handleSubmitButton() async {
-        guard firebaseHelper.gameState != nil, firebaseHelper.teamState != nil else {
+        guard gameHelper.gameState != nil, gameHelper.teamState != nil else {
             return
         }
         
         var callouts: [String] = []
-        points = await firebaseHelper.managePlayTurn(cardInPlay: cardsDragged.last, pointsCallOut: &callouts)
+        points = await gameHelper.managePlayTurn(cardInPlay: cardsDragged.last, pointsCallOut: &callouts)
         pointsCallOut = callouts
         
         withAnimation {
@@ -261,26 +261,26 @@ struct TurnTwoView: View {
         }
         
         invalid = true
-        await firebaseHelper.updatePlayer(["callouts": pointsCallOut], arrayAction: .replace)
-        await firebaseHelper.updateTeam(["points": points + firebaseHelper.teamState!.points])
-        await firebaseHelper.updatePlayer(["cards_dragged": cardsDragged], arrayAction: .append)
-        await firebaseHelper.updateGame(["player_turn": (firebaseHelper.gameState!.player_turn + 1) % firebaseHelper.gameState!.num_players])
+        await gameHelper.updatePlayer(["callouts": pointsCallOut], arrayAction: .replace)
+        await gameHelper.updateTeam(["points": points + gameHelper.teamState!.points])
+        await gameHelper.updatePlayer(["cards_dragged": cardsDragged], arrayAction: .append)
+        await gameHelper.updateGame(["player_turn": (gameHelper.gameState!.player_turn + 1) % gameHelper.gameState!.num_players])
         
         if cardsInHand.isEmpty {
             Task {
                 do { try await Task.sleep(nanoseconds: UInt64(pointsCallOut.count * 2500000000)) } catch { print(error) }
 //
-//                if firebaseHelper.gameState!.num_cards_in_play == (firebaseHelper.gameState!.num_players * 4) {
-//                    await firebaseHelper.updateGame(["player_turn": -1])
+//                if gameHelper.gameState!.num_cards_in_play == (gameHelper.gameState!.num_players * 4) {
+//                    await gameHelper.updateGame(["player_turn": -1])
 //                }
                 
-                await firebaseHelper.updatePlayer(["is_ready": true])
+                await gameHelper.updatePlayer(["is_ready": true])
             }
         }
     }
     
     private func handleDisabledState() -> Bool {
-        guard let gameState = firebaseHelper.gameState, let playerState = firebaseHelper.playerState else {
+        guard let gameState = gameHelper.gameState, let playerState = gameHelper.playerState else {
             return false
         }
         
@@ -296,7 +296,7 @@ struct TurnTwoView: View {
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(FirebaseHelper())
+            .environmentObject(GameHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
             .background(DeviceSpecs().theme.colorWay.background)
     }

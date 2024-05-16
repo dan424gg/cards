@@ -12,7 +12,7 @@ enum IntroViewType {
 }
 
 struct IntroView: View {
-    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var gameHelper: GameHelper
     @EnvironmentObject var specs: DeviceSpecs
     @State var introView: IntroViewType = .nothing
     @State var showNewGameView: Bool = false
@@ -106,7 +106,7 @@ struct IntroView: View {
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(FirebaseHelper())
+            .environmentObject(GameHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
             .background {
                 DeviceSpecs().theme.colorWay.background

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PlayersHandsView: View {
-    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var gameHelper: GameHelper
     @EnvironmentObject var specs: DeviceSpecs
     @StateObject var gameObservable: GameObservable = GameObservable(game: .game)
     @State var expandedPlayer: PlayerState = PlayerState()
@@ -30,44 +30,46 @@ struct PlayersHandsView: View {
                     }
                 }
             }
-            .onChange(of: firebaseHelper.players, initial: true, {
-                guard firebaseHelper.players != [] else {
+            .onChange(of: gameHelper.players, initial: true, {
+                guard gameHelper.players != [] else {
                     players = GameState.players
                     players.append(PlayerState.player_one)
                     return
                 }
                 
                 withAnimation {
-                    players = firebaseHelper.players
-                    players.append(firebaseHelper.playerState!)
+                    players = gameHelper.players
+                    players.append(gameHelper.playerState!)
                     players.sort(by: { $0.player_num < $1.player_num })
                 }
             })
             
-            .onChange(of: firebaseHelper.playerState, {
-                guard firebaseHelper.playerState != nil else {
+            .onChange(of: gameHelper.playerState, {
+                guard gameHelper.playerState != nil else {
                     return
                 }
                 
                 withAnimation {
-                    players = firebaseHelper.players
-                    players.append(firebaseHelper.playerState!)
+                    players = gameHelper.players
+                    players.append(gameHelper.playerState!)
                     players.sort(by: { $0.player_num < $1.player_num })
                 }
             })
             
             CustomButton(name: "Ready Up", submitFunction: {
-                guard firebaseHelper.playerState != nil else {
+                guard gameHelper.playerState != nil else {
                     return
                 }
                 
-                if firebaseHelper.playerState!.is_ready {
-                    Task {
-                        await firebaseHelper.updatePlayer(["is_ready": false])
-                    }
-                } else {
-                    Task {
-                        await firebaseHelper.updatePlayer(["is_ready": true])
+                if !gameHelper.playersAreReady() {
+                    if gameHelper.playerState!.is_ready {
+                        Task {
+                            await gameHelper.updatePlayer(["is_ready": false])
+                        }
+                    } else {
+                        Task {
+                            await gameHelper.updatePlayer(["is_ready": true])
+                        }
                     }
                 }
             })
@@ -87,7 +89,7 @@ struct PlayersHandsView: View {
 }
 
 struct PlayerNameButton: View {
-    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var gameHelper: GameHelper
     @EnvironmentObject var specs: DeviceSpecs
     @State var points = 0
     @State var cribPoints = -1
@@ -108,7 +110,7 @@ struct PlayerNameButton: View {
             
             HStack {
                 CText(player.name)
-                if (firebaseHelper.gameState?.dealer ?? gameObservable.game.dealer) == player.player_num {
+                if (gameHelper.gameState?.dealer ?? gameObservable.game.dealer) == player.player_num {
                     CribMarker(scale: 0.6)
                         .disabled(true)
                 }
@@ -133,7 +135,7 @@ struct PlayerNameButton: View {
         .animation(.smooth, value: player.is_ready)
         .frame(width: specs.maxX * 0.8, height: 60)
         .onAppear {
-            let playerScoringHands = firebaseHelper.checkCardsForPoints(playerCards: player.cards_in_hand, firebaseHelper.gameState?.starter_card ?? gameObservable.game.starter_card)
+            let playerScoringHands = gameHelper.checkCardsForPoints(playerCards: player.cards_in_hand, gameHelper.gameState?.starter_card ?? gameObservable.game.starter_card)
             
             if let lastScoringHand = playerScoringHands.last {
                 points = lastScoringHand.cumlativePoints
@@ -141,8 +143,8 @@ struct PlayerNameButton: View {
                 points = 0
             }
             
-            if (firebaseHelper.gameState?.dealer ?? gameObservable.game.dealer) == player.player_num {
-                let cribScoringHands = firebaseHelper.checkCardsForPoints(crib: firebaseHelper.gameState?.crib ?? gameObservable.game.crib, firebaseHelper.gameState?.starter_card ?? gameObservable.game.starter_card)
+            if (gameHelper.gameState?.dealer ?? gameObservable.game.dealer) == player.player_num {
+                let cribScoringHands = gameHelper.checkCardsForPoints(crib: gameHelper.gameState?.crib ?? gameObservable.game.crib, gameHelper.gameState?.starter_card ?? gameObservable.game.starter_card)
                 
                 if let lastScoringHand = cribScoringHands.last {
                     cribPoints = lastScoringHand.cumlativePoints
@@ -155,7 +157,7 @@ struct PlayerNameButton: View {
 }
 
 struct PlayerHand: View {
-    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var gameHelper: GameHelper
     @EnvironmentObject var specs: DeviceSpecs
     @Namespace var playerHandViewNS
     @StateObject var gameObservable: GameObservable = GameObservable(game: .game)
@@ -173,7 +175,7 @@ struct PlayerHand: View {
             ScrollView(.vertical, showsIndicators: false) {
                 playerHandsArea
                 
-                if (firebaseHelper.gameState?.dealer ?? gameObservable.game.dealer) == player.player_num {
+                if (gameHelper.gameState?.dealer ?? gameObservable.game.dealer) == player.player_num {
                     cribHandArea
                 }
             }
@@ -182,7 +184,7 @@ struct PlayerHand: View {
         .padding(.vertical, 20)
         .ignoresSafeArea(edges: .bottom)
         .onAppear {
-            playerScoringHands = firebaseHelper.checkCardsForPoints(playerCards: player.cards_in_hand, firebaseHelper.gameState?.starter_card ?? gameObservable.game.starter_card)
+            playerScoringHands = gameHelper.checkCardsForPoints(playerCards: player.cards_in_hand, gameHelper.gameState?.starter_card ?? gameObservable.game.starter_card)
             
             if let lastScoringHand = playerScoringHands.last {
                 points = lastScoringHand.cumlativePoints
@@ -190,8 +192,8 @@ struct PlayerHand: View {
                 points = 0
             }
             
-            if (firebaseHelper.gameState?.dealer ?? gameObservable.game.dealer) == player.player_num {
-                cribScoringHands = firebaseHelper.checkCardsForPoints(crib: firebaseHelper.gameState?.crib ?? gameObservable.game.crib, firebaseHelper.gameState?.starter_card ?? gameObservable.game.starter_card)
+            if (gameHelper.gameState?.dealer ?? gameObservable.game.dealer) == player.player_num {
+                cribScoringHands = gameHelper.checkCardsForPoints(crib: gameHelper.gameState?.crib ?? gameObservable.game.crib, gameHelper.gameState?.starter_card ?? gameObservable.game.starter_card)
                 
                 if let lastScoringHand = cribScoringHands.last {
                     cribPoints = lastScoringHand.cumlativePoints
@@ -237,7 +239,7 @@ struct PlayerHand: View {
             Spacer()
                 .frame(height: 10)
             
-            handAndStarter(cards: firebaseHelper.gameState?.crib ?? gameObservable.game.crib)
+            handAndStarter(cards: gameHelper.gameState?.crib ?? gameObservable.game.crib)
             
             Spacer()
                 .frame(height: 25)
@@ -266,7 +268,7 @@ struct PlayerHand: View {
         VStack {
             HStack {
                 CText(player.name)
-                if (firebaseHelper.gameState?.dealer ?? gameObservable.game.dealer) == player.player_num {
+                if (gameHelper.gameState?.dealer ?? gameObservable.game.dealer) == player.player_num {
                     CribMarker(scale: 0.6)
                         .disabled(true)
                 }
@@ -295,7 +297,7 @@ struct PlayerHand: View {
                 }
             }
             Spacer()
-            CardView(cardItem: CardItem(id: firebaseHelper.gameState?.starter_card ?? gameObservable.game.starter_card), cardIsDisabled: .constant(true), backside: .constant(false))
+            CardView(cardItem: CardItem(id: gameHelper.gameState?.starter_card ?? gameObservable.game.starter_card), cardIsDisabled: .constant(true), backside: .constant(false))
         }
         .frame(width: 280)  // same width as playerScoringHands
     }
@@ -340,7 +342,7 @@ struct PlayerHand: View {
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(FirebaseHelper())
+            .environmentObject(GameHelper())
             .position(x: geo.frame(in: .local).midX, y: geo.frame(in: .local).midY)
             .background(DeviceSpecs().theme.colorWay.background)
     }

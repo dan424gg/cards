@@ -365,7 +365,7 @@ func endTextEditing() {
 /// ```
 ///
 struct CText: View {
-    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var gameHelper: GameHelper
     @EnvironmentObject var specs: DeviceSpecs
     @StateObject var gameObservable = GameObservable(game: .game)
     @AppStorage(AppStorageConstants.filter) var applyFilter: Bool = false
@@ -387,7 +387,7 @@ struct CText: View {
     }
     
     private func determineColor() -> Color {
-        guard firebaseHelper.gameState != nil else {
+        guard gameHelper.gameState != nil else {
             #if DEBUG
             if gameObservable.game.is_playing {
                 return specs.theme.colorWay.inGameTextColor
@@ -399,7 +399,7 @@ struct CText: View {
             #endif
         }
         
-        if firebaseHelper.gameState!.is_playing {
+        if gameHelper.gameState!.is_playing {
             return specs.theme.colorWay.inGameTextColor
         } else {
             return specs.theme.colorWay.textColor
@@ -434,7 +434,7 @@ struct DisableAnimationsViewModifier: ViewModifier {
 
 struct DisplayPlayersHandContainer: View {
     @Environment(\.namespace) var namespace
-    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var gameHelper: GameHelper
     var player: PlayerState? = nil
     var crib: [Int] = []
     var visibilityFor: TimeInterval
@@ -457,15 +457,15 @@ struct DisplayPlayersHandContainer: View {
                         return
                     }
                     
-                    guard firebaseHelper.gameState != nil else {
+                    guard gameHelper.gameState != nil else {
                         return
                     }
 
                     if scoringPlays == [] {
                         if player != nil {                            
-                            scoringPlays = firebaseHelper.checkCardsForPoints(playerCards: player!.cards_in_hand, firebaseHelper.gameState!.starter_card)
+                            scoringPlays = gameHelper.checkCardsForPoints(playerCards: player!.cards_in_hand, gameHelper.gameState!.starter_card)
                         } else {
-                            scoringPlays = firebaseHelper.checkCardsForPoints(crib: crib, firebaseHelper.gameState!.starter_card)
+                            scoringPlays = gameHelper.checkCardsForPoints(crib: crib, gameHelper.gameState!.starter_card)
                         }
                     }
                 })
@@ -482,26 +482,26 @@ struct DisplayPlayersHandContainer: View {
                                 } completion: {
                                     if (crib != []) {
                                         Task {
-                                            if (firebaseHelper.playerState!.is_lead) {
+                                            if (gameHelper.playerState!.is_lead) {
                                                 guard scoringPlays != [] else {
                                                     return
                                                 }
                                                 
                                                 Task {
-                                                    await firebaseHelper.updateTeam(["points": scoringPlays.last!.cumlativePoints + firebaseHelper.teamState!.points], firebaseHelper.gameState!.team_with_crib)
+                                                    await gameHelper.updateTeam(["points": scoringPlays.last!.cumlativePoints + gameHelper.teamState!.points], gameHelper.gameState!.team_with_crib)
                                                 }
                                             }
-                                            await firebaseHelper.updatePlayer(["is_ready": true])
+                                            await gameHelper.updatePlayer(["is_ready": true])
                                         }
                                     } else {
                                         Task {
-                                            guard firebaseHelper.gameState != nil, firebaseHelper.playerState != nil, firebaseHelper.playerState != nil, firebaseHelper.playerState!.player_num == player?.player_num, scoringPlays != [] else {
+                                            guard gameHelper.gameState != nil, gameHelper.playerState != nil, gameHelper.playerState != nil, gameHelper.playerState!.player_num == player?.player_num, scoringPlays != [] else {
                                                 return
                                             }
                                             
-                                            await firebaseHelper.updateTeam(["points": scoringPlays.last!.cumlativePoints + firebaseHelper.teamState!.points])
-                                            await firebaseHelper.updateGame(["player_turn": (firebaseHelper.gameState!.player_turn + 1) % firebaseHelper.gameState!.num_players])
-                                            await firebaseHelper.updatePlayer(["is_ready": true])
+                                            await gameHelper.updateTeam(["points": scoringPlays.last!.cumlativePoints + gameHelper.teamState!.points])
+                                            await gameHelper.updateGame(["player_turn": (gameHelper.gameState!.player_turn + 1) % gameHelper.gameState!.num_players])
+                                            await gameHelper.updatePlayer(["is_ready": true])
                                         }
                                     }
                                 }

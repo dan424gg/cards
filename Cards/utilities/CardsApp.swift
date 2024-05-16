@@ -40,7 +40,7 @@ struct CardsApp: App {
                     }
                     .zIndex(2.0)
                 }
-                .environmentObject(FirebaseHelper())
+                .environmentObject(GameHelper())
                 .environmentObject({ () -> DeviceSpecs in
                     let envObj = DeviceSpecs()
                     envObj.setProperties(geo)

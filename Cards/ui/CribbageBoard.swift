@@ -16,7 +16,7 @@ extension Animation {
 }
 
 struct CribbageBoard: View {
-    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var gameHelper: GameHelper
     @State var teams: [TeamState] = []
     @State var showPoints = false
     @State var timer: Timer?
@@ -33,7 +33,7 @@ struct CribbageBoard: View {
                     TeamTwoPath(team: $teams[1])
                         .zIndex(0.0)
                     
-                    if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
+                    if (gameHelper.gameState?.num_teams ?? numPlayers) == 3 {
                         TeamThreePath(team: $teams[2])
                             .zIndex(0.0)
                     }
@@ -76,13 +76,13 @@ struct CribbageBoard: View {
                 }
             }
         })
-        .onChange(of: firebaseHelper.teams, initial: true, {
-            guard firebaseHelper.teams != [] else {
+        .onChange(of: gameHelper.teams, initial: true, {
+            guard gameHelper.teams != [] else {
                 teams = [TeamState(team_num: 1, points: 63, color: "Red"), TeamState(team_num: 2, points: 70, color: "Blue"), TeamState(team_num: 3, points: 50, color: "Green")]
                 return
             }
             
-            teams = firebaseHelper.teams.sorted(by: {
+            teams = gameHelper.teams.sorted(by: {
                 $0.team_num < $1.team_num
             })
         })
@@ -91,7 +91,7 @@ struct CribbageBoard: View {
 
 struct TeamOnePath: View {
     @Binding var team: TeamState
-    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var gameHelper: GameHelper
     @State var firstLineTrimValue: Double = 0.0
     @State var secondLineTrimValue: Double = 0.0
     @State var thirdLineTrimValue: Double = 0.0
@@ -101,14 +101,14 @@ struct TeamOnePath: View {
     var numPlayers = 3
     var midYAdjustment = 7.5
     var trackWidthAdjustment: Double {
-        if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
+        if (gameHelper.gameState?.num_teams ?? numPlayers) == 3 {
             return 5.0
         } else {
             return 7.5
         }
     }
     var trackPosAdjustment: Double {
-        if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
+        if (gameHelper.gameState?.num_teams ?? numPlayers) == 3 {
             return 5.0
         } else {
             return 7.5
@@ -279,7 +279,7 @@ struct TeamOnePath: View {
 
 struct TeamTwoPath: View {
     @Binding var team: TeamState
-    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var gameHelper: GameHelper
     @State var firstLineTrimValue: Double = 0.0
     @State var secondLineTrimValue: Double = 0.0
     @State var thirdLineTrimValue: Double = 0.0
@@ -289,14 +289,14 @@ struct TeamTwoPath: View {
     var numPlayers = 3
     var midYAdjustment = 7.5
     var trackWidthAdjustment: Double {
-        if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
+        if (gameHelper.gameState?.num_teams ?? numPlayers) == 3 {
             return 5.0
         } else {
             return 7.5
         }
     }
     var trackPosAdjustment: Double {
-        if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
+        if (gameHelper.gameState?.num_teams ?? numPlayers) == 3 {
             return 5.0
         } else {
             return 7.5
@@ -464,7 +464,7 @@ struct TeamTwoPath: View {
 
 struct TeamThreePath: View {
     @Binding var team: TeamState
-    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var gameHelper: GameHelper
     @State var firstLineTrimValue: Double = 0.0
     @State var secondLineTrimValue: Double = 0.0
     @State var thirdLineTrimValue: Double = 0.0
@@ -474,14 +474,14 @@ struct TeamThreePath: View {
     var numPlayers = 3
     var midYAdjustment = 7.5
     var trackWidthAdjustment: Double {
-        if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
+        if (gameHelper.gameState?.num_teams ?? numPlayers) == 3 {
             return 5.0
         } else {
             return 7.5
         }
     }
     var trackPosAdjustment: Double {
-        if (firebaseHelper.gameState?.num_teams ?? numPlayers) == 3 {
+        if (gameHelper.gameState?.num_teams ?? numPlayers) == 3 {
             return 5.0
         } else {
             return 7.5
@@ -659,7 +659,7 @@ struct TeamThreePath: View {
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(FirebaseHelper())
+            .environmentObject(GameHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
             .background(DeviceSpecs().theme.colorWay.background)
     }

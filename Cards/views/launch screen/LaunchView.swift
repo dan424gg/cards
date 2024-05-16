@@ -55,7 +55,7 @@ struct LaunchView: View {
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(FirebaseHelper())
+            .environmentObject(GameHelper())
     }
     .ignoresSafeArea()
     .background {

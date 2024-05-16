@@ -13,7 +13,7 @@ import SwiftUI
 struct NamesAroundTable: View {
     @Environment(\.namespace) var namespace
     @EnvironmentObject var specs: DeviceSpecs
-    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var gameHelper: GameHelper
     @StateObject var gameObservable: GameObservable
     @State var sortedPlayerList: [PlayerState] = []
     @State var startingRotation = 0
@@ -33,20 +33,20 @@ struct NamesAroundTable: View {
             }
         }
         .onAppear {
-            updateMultiplierAndRotation(firebaseHelper.gameState ?? gameObservable.game)
+            updateMultiplierAndRotation(gameHelper.gameState ?? gameObservable.game)
         }
-        .onChange(of: firebaseHelper.players, initial: true, { (_, new) in
-            guard firebaseHelper.playerState != nil, firebaseHelper.gameState != nil else {
+        .onChange(of: gameHelper.players, initial: true, { (_, new) in
+            guard gameHelper.playerState != nil, gameHelper.gameState != nil else {
                 sortedPlayerList = GameState.players
                 return
             }
             
-            if firebaseHelper.gameState!.num_players > 2 && firebaseHelper.players.count == (firebaseHelper.gameState!.num_players - 1) {
+            if gameHelper.gameState!.num_players > 2 && gameHelper.players.count == (gameHelper.gameState!.num_players - 1) {
                 var players: [PlayerState] = new
-                players.append(firebaseHelper.playerState!)
+                players.append(gameHelper.playerState!)
                 players.sort(by: { $0.player_num < $1.player_num})
-                let beforePlayer = players[0..<firebaseHelper.playerState!.player_num]
-                let afterPlayer = players[(firebaseHelper.playerState!.player_num + 1)..<players.count]
+                let beforePlayer = players[0..<gameHelper.playerState!.player_num]
+                let afterPlayer = players[(gameHelper.playerState!.player_num + 1)..<players.count]
                 
                 sortedPlayerList = Array(afterPlayer + beforePlayer)
             } else {
@@ -92,7 +92,7 @@ struct NamesAroundTable: View {
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(FirebaseHelper())
+            .environmentObject(GameHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
             .background(DeviceSpecs().theme.colorWay.background)
     }

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct NewGameView: View {
     @Binding var introView: IntroViewType
-    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var gameHelper: GameHelper
     @EnvironmentObject var specs: DeviceSpecs
     @State private var notValid: Bool = true
     @State var fullName: String = ""
@@ -28,8 +28,8 @@ struct NewGameView: View {
                     endTextEditing()
                     
                     Task {
-                        firebaseHelper.reinitialize()
-                        await firebaseHelper.startGameCollection(fullName: fullName)
+                        gameHelper.reinitialize()
+                        await gameHelper.startGameCollection(fullName: fullName)
                         withAnimation(.smooth(duration: 0.3)) {
                             introView = .loadingScreen
                         }
@@ -81,7 +81,7 @@ struct NewGameView: View {
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(FirebaseHelper())
+            .environmentObject(GameHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
             .background {
                 DeviceSpecs().theme.colorWay.background

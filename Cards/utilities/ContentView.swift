@@ -26,7 +26,7 @@ extension View {
 }
 
 struct ContentView: View {
-    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var gameHelper: GameHelper
     @EnvironmentObject var specs: DeviceSpecs
     @StateObject var sheetCoordinator = SheetCoordinator<SheetType>()
     @State var blur: Bool = false
@@ -78,7 +78,7 @@ struct ContentView: View {
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(FirebaseHelper())
+            .environmentObject(GameHelper())
     }
     .ignoresSafeArea()
 }

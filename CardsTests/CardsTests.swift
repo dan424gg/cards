@@ -16,22 +16,22 @@ import FirebaseFirestoreSwift
 
 final class LoadingScreenTests: XCTestCase {
     @MainActor func testPlayerThreeChangesTeamWhenFourthJoins() async {
-        let playerOne = FirebaseHelper()
+        let playerOne = GameHelper()
         var randId = 0
         repeat {
             randId = Int.random(in: 10000..<99999)
         } while (await playerOne.checkValidId(id: "\(randId)"))
         await playerOne.startGameCollection(fullName: "1",  testGroupId: randId)
         
-        let playerTwo = FirebaseHelper()
+        let playerTwo = GameHelper()
         await playerTwo.joinGameCollection(fullName: "2", id: "\(randId)")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
         
-        let playerThree = FirebaseHelper()
+        let playerThree = GameHelper()
         await playerThree.joinGameCollection(fullName: "3", id: "\(randId)")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.25)
 
-        let playerFour = FirebaseHelper()
+        let playerFour = GameHelper()
         await playerFour.joinGameCollection(fullName: "4", id: "\(randId)")
         _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 0.5)
         
@@ -43,7 +43,7 @@ final class LoadingScreenTests: XCTestCase {
     }
     
     @MainActor func testEqualNumOfPlayersOnTeam() async {
-        let firebaseHelper = FirebaseHelper()
+        let firebaseHelper = GameHelper()
 //        var playerList: [PlayerState] = []
         
         firebaseHelper.playerState = PlayerState(uid: "1", team_num: 1)

@@ -8,7 +8,7 @@
 //import SwiftUI
 //
 //struct Cribbage: View {    
-//    @EnvironmentObject var firebaseHelper: FirebaseHelper
+//    @EnvironmentObject var gameHelper: GameHelper
 //    @StateObject private var gameObservable = GameObservable(game: GameState.game)
 //    @State private var insideTurnChange: Bool = false
 //    @Binding var cardsDragged: [Int]
@@ -17,7 +17,7 @@
 //    var body: some View {
 //        ZStack {
 //            VStack {
-//                switch(firebaseHelper.gameState?.turn ?? gameObservable.game.turn) {
+//                switch(gameHelper.gameState?.turn ?? gameObservable.game.turn) {
 //                    case 1:
 //                        CText("The Deal")
 //                            .font(.title3)
@@ -31,7 +31,7 @@
 //                            // used for testing preview
 //                            Button("increment player turn") {
 //                                Task {
-//                                    await firebaseHelper.updateGame(["player_turn": (firebaseHelper.gameState!.player_turn + 1) % firebaseHelper.gameState!.num_players])
+//                                    await gameHelper.updateGame(["player_turn": (gameHelper.gameState!.player_turn + 1) % gameHelper.gameState!.num_players])
 //                                }
 //                            }
 //                        }
@@ -45,16 +45,16 @@
 //                }
 //            }
 //        }
-//        .onChange(of: firebaseHelper.players) {
-//            if firebaseHelper.playerState!.is_lead && firebaseHelper.playersAreReady() && !insideTurnChange {
+//        .onChange(of: gameHelper.players) {
+//            if gameHelper.playerState!.is_lead && gameHelper.playersAreReady() && !insideTurnChange {
 //                insideTurnChange.toggle()
 //                Task {
-//                    if (firebaseHelper.gameState!.turn == 2) {
-//                        await firebaseHelper.updateGame(["play_cards": [] as! [Int], "running_sum": 0, "num_go": 0, "player_turn": 0], arrayAction: .replace)
+//                    if (gameHelper.gameState!.turn == 2) {
+//                        await gameHelper.updateGame(["play_cards": [] as! [Int], "running_sum": 0, "num_go": 0, "player_turn": 0], arrayAction: .replace)
 //                    }
 //                    
-//                    await firebaseHelper.unreadyAllPlayers()
-//                    await firebaseHelper.updateGame(["turn": ((firebaseHelper.gameState!.turn % 4) + 1)])
+//                    await gameHelper.unreadyAllPlayers()
+//                    await gameHelper.updateGame(["turn": ((gameHelper.gameState!.turn % 4) + 1)])
 //
 //                    insideTurnChange.toggle()
 //                }
@@ -66,6 +66,6 @@
 //struct Cribbage_Previews: PreviewProvider {
 //    static var previews: some View {
 //        Cribbage(cardsDragged: .constant([]), cardsInHand: .constant([]))
-//            .environmentObject(FirebaseHelper())
+//            .environmentObject(GameHelper())
 //    }
 //}

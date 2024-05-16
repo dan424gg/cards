@@ -10,7 +10,7 @@ import SwiftUI
 
 struct LoadingScreen: View {
     @EnvironmentObject var specs: DeviceSpecs
-    @EnvironmentObject var firebaseHelper: FirebaseHelper
+    @EnvironmentObject var gameHelper: GameHelper
     @Binding var introView: IntroViewType
     @FocusState private var isFocused: Bool
     @StateObject private var teamOne = TeamObservable(team: TeamState.team_one)
@@ -26,7 +26,7 @@ struct LoadingScreen: View {
             VStack(spacing: 20) {
                 CText("Pre-Game", size: 40)
                 HStack {
-                    CText(String(firebaseHelper.gameState?.group_id ?? 12345))
+                    CText(String(gameHelper.gameState?.group_id ?? 12345))
                         .foregroundStyle(specs.theme.colorWay.primary)
                         .padding(10)
                         .background(
@@ -56,22 +56,22 @@ struct LoadingScreen: View {
                     })
                 
                 Group {
-                    if firebaseHelper.playerState?.is_lead ?? true {
+                    if gameHelper.playerState?.is_lead ?? true {
                         CustomButton(name: "Play", submitFunction: {
                             Task {
-                                await firebaseHelper.reorderPlayerNumbers()
-                                await firebaseHelper.updateGame(["is_playing": true])
+                                await gameHelper.reorderPlayerNumbers()
+                                await gameHelper.updateGame(["is_playing": true])
                             }
                             
-                            firebaseHelper.logAnalytics(.game_started)
-                            firebaseHelper.logAnalytics(.game_being_played, ["game": firebaseHelper.gameState!.game_name])
-                            firebaseHelper.logAnalytics(.num_players, ["players": 5])
-                            firebaseHelper.logAnalytics(.num_teams, ["teams": firebaseHelper.gameState!.num_teams])
-                            for team in firebaseHelper.teams {
-                                firebaseHelper.logAnalytics(.color_picked, ["color_picked": team.color])
+                            gameHelper.logAnalytics(.game_started)
+                            gameHelper.logAnalytics(.game_being_played, ["game": gameHelper.gameState!.game_name])
+                            gameHelper.logAnalytics(.num_players, ["players": 5])
+                            gameHelper.logAnalytics(.num_teams, ["teams": gameHelper.gameState!.num_teams])
+                            for team in gameHelper.teams {
+                                gameHelper.logAnalytics(.color_picked, ["color_picked": team.color])
                             }
                         })
-                        .disabled(!firebaseHelper.equalNumOfPlayersOnTeam())
+                        .disabled(!gameHelper.equalNumOfPlayersOnTeam())
                     } else {
                         CText("Waiting to start...")
                             .foregroundStyle(specs.theme.colorWay.white)
@@ -112,7 +112,7 @@ struct LoadingScreen: View {
                 .baselineOffset(-5)
                 .multilineTextAlignment(.center)
                 .focused($isFocused)
-                .onChange(of: firebaseHelper.playerState?.name, initial: true, { (old, new) in
+                .onChange(of: gameHelper.playerState?.name, initial: true, { (old, new) in
                     guard old != nil, new != nil else {
                         name = "No Name"
                         return
@@ -121,13 +121,13 @@ struct LoadingScreen: View {
                     name = new!
                     
                     if new! != old! {
-                        firebaseHelper.logAnalytics(.name_length, ["name_length": new!.count])
+                        gameHelper.logAnalytics(.name_length, ["name_length": new!.count])
                     }
                 })
                 .onChange(of: isFocused, { (old, new) in
                     if old && !new {
                         Task {
-                            await firebaseHelper.updatePlayer(["name": name])
+                            await gameHelper.updatePlayer(["name": name])
                         }
                     }
                 })
@@ -142,27 +142,27 @@ struct LoadingScreen: View {
     
     struct playersList: View {
         @EnvironmentObject var specs: DeviceSpecs
-        @EnvironmentObject var firebaseHelper: FirebaseHelper
+        @EnvironmentObject var gameHelper: GameHelper
         
         var teams: [TeamState] {
-            if firebaseHelper.gameState != nil {
-                return firebaseHelper.teams
+            if gameHelper.gameState != nil {
+                return gameHelper.teams
             } else {
                 return GameState.teams
             }
         }
         
         var players: [PlayerState] {
-            if firebaseHelper.gameState != nil {
-                return firebaseHelper.players
+            if gameHelper.gameState != nil {
+                return gameHelper.players
             } else {
                 return GameState.players
             }
         }
         
         var user: PlayerState {
-            if firebaseHelper.playerState != nil {
-                return firebaseHelper.playerState!
+            if gameHelper.playerState != nil {
+                return gameHelper.playerState!
             } else {
                 return PlayerState.player_one
             }
@@ -220,7 +220,7 @@ func determineFont(_ string: String, _ containerSize: Int, _ defaultFontSize: In
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(FirebaseHelper())
+            .environmentObject(GameHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
             .background(Color("OffWhite").opacity(0.1))
 
