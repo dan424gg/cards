@@ -14,9 +14,9 @@ import FirebaseFirestore
 import FirebaseFirestoreSwift
 
 protocol Database {
-    internal var playersListener: ListenerRegistration! { get set }
-    internal var gameListener: ListenerRegistration! { get set }
-    internal var teamsListener: ListenerRegistration! { get set }
+    var playersListener: ListenerRegistration! { get set }
+    var gameListener: ListenerRegistration! { get set }
+    var teamsListener: ListenerRegistration! { get set }
     
     func updatePlayerField<T>(uid: String, key: String, value: T) async throws
     func updatePlayerArrayField<T>(uid: String, key: String, value: [T], action: ArrayActionType) async throws
