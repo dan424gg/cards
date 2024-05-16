@@ -61,16 +61,8 @@ struct PlayersHandsView: View {
                     return
                 }
                 
-                if !gameHelper.playersAreReady() {
-                    if gameHelper.playerState!.is_ready {
-                        Task {
-                            await gameHelper.updatePlayer(["is_ready": false])
-                        }
-                    } else {
-                        Task {
-                            await gameHelper.updatePlayer(["is_ready": true])
-                        }
-                    }
+                Task {
+                    await gameHelper.updatePlayer(["is_ready": true])
                 }
             })
         }
