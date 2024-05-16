@@ -578,10 +578,10 @@ struct TimedTextContainer: View {
     
     var body: some View {
         VStack {
-            CText(string, size: 18 * Int((specs.maxY / 852.0)))
+            CText(string, size: 18)
                 .foregroundStyle(color)
                 .padding(.horizontal)
-                .padding(.vertical, 10 * (specs.maxY / 852.0))
+                .padding(.vertical, 10)
                 .id(string)
                 .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .opacity))
                 .background {
@@ -612,8 +612,8 @@ struct TimedTextContainer: View {
                 }
             }
         })
-        .frame(height: 100 * (specs.maxY / 852.0))
-        .offset(y: 28 * (specs.maxY / 852.0))
+        .frame(height: 100)
+        .offset(y: 28)
         .onTapGesture {
             withAnimation {
                 display = false
