@@ -28,7 +28,7 @@ struct TurnTwoView: View {
     var otherPlayerTeamNumber: Int = -1
     
     var body: some View {
-        VStack {
+        VStack(spacing: 6 * (specs.maxY / 852)) {
             if otherPlayer {
                 ZStack {
                     HStack {
@@ -59,10 +59,10 @@ struct TurnTwoView: View {
                                 .frame(width: 60 * Double(specs.maxY / 852), height: 100 * Double(specs.maxY / 852))
                         }
                         
-                        VStack(spacing: 8) {
+                        VStack(spacing: 6 * (specs.maxY / 852)) {
                             CText("\(gameHelper.gameState?.running_sum ?? 14)", size: 20)
                             
-                            CustomButton(name: "GO", submitFunction: handleGoButton, size: Int(specs.maxY / 60.85))
+                            CustomButton(name: "GO", submitFunction: handleGoButton, size: Int(specs.maxY / 53.25))
                                 .disabled(handleDisabledState())
                             
                             CustomButton(name: "SHOW", submitFunction: {
@@ -71,7 +71,7 @@ struct TurnTwoView: View {
                                         showAllCards.toggle()
                                     }
                                 }
-                            }, size: Int(specs.maxY / 60.85))
+                            }, size: Int(specs.maxY / 53.25))
                         }
                     }
                     .transition(.offset())
@@ -88,7 +88,7 @@ struct TurnTwoView: View {
                     Task {
                         await handleSubmitButton()
                     }
-                }, size: Int(specs.maxY / 60.85), invertColors: true)
+                }, size: Int(specs.maxY / 53.25), invertColors: true)
                     .disabled(invalid)
             }
         }
