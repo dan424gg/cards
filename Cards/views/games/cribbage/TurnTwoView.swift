@@ -83,6 +83,7 @@ struct TurnTwoView: View {
                             }
                         }
                 }
+                .frame(width: 167 * (specs.maxX / 393), height: 100 * (specs.maxY / 852))
                 
                 CustomButton(name: "SUBMIT", submitFunction: {
                     Task {
