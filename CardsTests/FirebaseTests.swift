@@ -870,6 +870,8 @@ final class GameHelperTests: XCTestCase {
         XCTAssertFalse(result)
         
         await playerOne.updateGame(["is_playing": true])
+        _ = await XCTWaiter.fulfillment(of: [expectation(description: "wait for firestore to update")], timeout: 1)
+
         result = await playerOne.checkGameInProgress(id: "\(randId)")
         XCTAssertTrue(result)
                 

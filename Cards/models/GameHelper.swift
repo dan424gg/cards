@@ -5,6 +5,7 @@
 //  Created by Daniel Wells on 10/11/23.
 //
 
+import Combine
 import Foundation
 import SwiftUI
 import Firebase
@@ -20,6 +21,20 @@ enum ArrayActionType {
     case append
     case remove
     case replace
+}
+
+class Reference<T> {
+    var value: T {
+        didSet {
+            updateCallback?(value)
+        }
+    }
+    
+    var updateCallback: ((T) -> Void)?
+    
+    init(_ value: T) {
+        self.value = value
+    }
 }
 
 @MainActor class GameHelper: ObservableObject {
@@ -45,7 +60,7 @@ enum ArrayActionType {
     func reinitialize() {
         if self.gameState != nil {
             removeGameInfoListener()
-            removeTeamPlayerNameListener()
+            removeTeamsListener()
             removePlayersListener()
         }
         
@@ -147,8 +162,10 @@ enum ArrayActionType {
                             print("\(key): \(value) needs to be Int in updateGame()!")
                             return
                         }
+                        
                         if key == "num_cards_in_play" && arrayAction == .append {
-                            try await docRef.updateData([key: FieldValue.increment(Double(intValue))])
+                            try await updateGameField(key: key, value: FieldValue.increment(Double(intValue)))
+//                            try await docRef.updateData([key: FieldValue.increment(Double(intValue))])
                         } else {
                             try await updateGameField(key: key, value: intValue)
                         }
@@ -221,162 +238,87 @@ enum ArrayActionType {
             print("UPDATETEAM: \(error)")
         }
     }
-    /* start here */
+
     func addPlayersListener() async {
-        guard docRef != nil else {
-            print("docRef is nil before adding game info listener")
+        guard playerState != nil else {
             return
         }
         
-        playersListener = self.docRef!.collection("players")
-            .addSnapshotListener { [self] (snapshot, e) in
-                guard snapshot != nil else {
-                    print("snapshot is nil")
-                    return
-                }
-                
-                do {
-                    try snapshot!.documentChanges.forEach { change in
-                        if change.type == .added {
-                            let newPlayerData = try change.document.data(as: PlayerState.self)
-                            
-                            if (self.playerState!.player_num != newPlayerData.player_num)
-                                && (!self.players.contains(where: { $0.uid == newPlayerData.uid })) {
-                                self.players.append(newPlayerData)
-                            }
-                        }
-                        
-                        if change.type == .modified {
-                                let modifiedPlayerData = try change.document.data(as: PlayerState.self)
-                                
-                                if modifiedPlayerData.uid == playerState!.uid {
-                                    playerState! = modifiedPlayerData
-                                } else if let loc = self.players.firstIndex(where: { $0.uid == modifiedPlayerData.uid }) {
-                                    self.players[loc] = modifiedPlayerData
-                                }
-                        }
-                        
-                        if change.type == .removed {
-                            let removedPlayerData = try change.document.data(as: PlayerState.self)
-                            
-                            if let loc = self.players.firstIndex(where: { $0.uid == removedPlayerData.uid }) {
-                                self.players.remove(at: loc)
-                            }
-                        }
-                    }
-                } catch {
-                    print("error in player listener \(error)")
-                }
+        let playerStateRef = Reference(playerState!)
+        let playersRef = Reference(players)
+        
+        playerStateRef.updateCallback = { newValue in
+            DispatchQueue.main.async {
+                self.playerState! = newValue
             }
+        }
+        playersRef.updateCallback = { newValue in
+            DispatchQueue.main.async {
+                self.players = newValue
+            }
+        }
+        
+        await database.addPlayersListener(playerStateRef, playersRef)
     }
     
     func removePlayersListener() {
-        guard playersListener != nil else {
-            print("playersListener is nil before trying to remove listener")
-            return
-        }
-        
-        playersListener.remove()
+        database.removePlayersListener()
     }
     
     func addGameInfoListener() async {
-        guard docRef != nil else {
-            print("docRef is nil before adding game info listener")
+        guard gameState != nil else {
             return
         }
         
-        gameStateListener = docRef!
-            .addSnapshotListener { (snapshot, error) in
-                guard snapshot != nil else {
-                    print("snapshot is nil when adding a gameState listener")
-                    return
-                }
-                
-                do {
-                    try withAnimation(.linear(duration: 0.2)) {
-                        self.gameState = try snapshot!.data(as: GameState.self)
-                        if self.gameState!.num_players == 4 {
-                            if self.playerState!.team_num == 3 {
-                                Task {
-                                    await self.changeTeam(newTeamNum: 1)
-                                }
-                            }
+        let gameStateRef = Reference(gameState!)
+        
+        gameStateRef.updateCallback = { newValue in
+            DispatchQueue.main.async {
+                if newValue.num_players == 4 {
+                    if self.playerState!.team_num == 3 {
+                        Task {
+                            await self.changeTeam(newTeamNum: 1)
                         }
                     }
-                } catch {
-                    print("couldn't add a gameState listener")
-                    print(error)
+                }
+                
+                withAnimation(.smooth(duration: 0.2)) {
+                    self.gameState = newValue
                 }
             }
+        }
+        
+        await database.addGameStateListener(gameStateRef)
     }
     
     func removeGameInfoListener() {
-        guard gameStateListener != nil else {
-            print("gameStateListener is nil before trying to remove listener")
+        database.removeGameStateListener()
+    }
+    
+    func addTeamsListener() async {
+        guard teamState != nil else {
             return
         }
         
-        gameStateListener.remove()
+        let teamStateRef = Reference(teamState!)
+        let teamsRef = Reference(teams)
+        
+        teamStateRef.updateCallback = { newValue in
+            DispatchQueue.main.async {
+                self.teamState! = newValue
+            }
+        }
+        teamsRef.updateCallback = { newValue in
+            DispatchQueue.main.async {
+                self.teams = newValue
+            }
+        }
+        
+        await database.addTeamsListener(teamStateRef, teamsRef)
     }
     
-    func addTeamsListener() {
-        guard docRef != nil else {
-            print("docRef is nil before adding player listener")
-            return
-        }
-
-        teamsListener = docRef!.collection("teams")
-                .addSnapshotListener { (snapshot, e) in
-                    guard snapshot != nil else {
-                        print("snapshot is nil")
-                        return
-                    }
-                    do {
-                        try snapshot?.documentChanges.forEach { change in
-                            if change.type == .added {
-                                let newTeam = try change.document.data(as: TeamState.self)
-                                if !self.teams.contains(where: {
-                                    $0.team_num == newTeam.team_num
-                                }) {
-                                    self.teams.append(newTeam)
-                                }
-                            }
-                            
-                            if change.type == .modified {
-                                let modifiedTeamData = try change.document.data(as: TeamState.self)
-                                if modifiedTeamData.team_num == self.teamState!.team_num {
-                                    self.teamState! = modifiedTeamData
-                                } 
-                                
-                                let loc = self.teams.firstIndex { team in
-                                    team.team_num == modifiedTeamData.team_num
-                                }
-                                
-                                self.teams[loc!] = modifiedTeamData
-                            }
-                            
-                            if change.type == .removed {
-                                let removedTeamData = try change.document.data(as: TeamState.self)
-                                let loc = self.teams.firstIndex { team in
-                                    team.team_num == removedTeamData.team_num
-                                }
-                                
-                                self.teams.remove(at: loc!)
-                            }
-                        }
-                    } catch {
-                        print("from team listener: \(error)")
-                    }
-                }
-    }
-    
-    func removeTeamPlayerNameListener() {
-        guard teamsListener != nil else {
-            print("removeTeamPlayerNameListener is nil before trying to remove listener")
-            return
-        }
-
-        teamsListener.remove()
+    func removeTeamsListener() {
+        database.removeTeamsListener()
     }
     
     func logAnalytics(_ event: AnalyticsConstants, _ parameters: [String : Any]? = nil) {
@@ -402,7 +344,7 @@ enum ArrayActionType {
             // check if there are any players still on the team
             if (allPlayers.filter { $0.team_num == playerState!.team_num }.count <= 1) {
                 await updateGame(["colors_available": [teamState!.color]], arrayAction: .append)
-                try await docRef!.collection("teams").document("\(playerState!.team_num)").delete()
+                try await database.deleteTeamCollection(teamNum: playerState!.team_num)
             }
             
             await updatePlayer(["team_num": newTeamNum])
@@ -415,13 +357,13 @@ enum ArrayActionType {
                 let color = gameState!.colors_available.randomElement()!
                 teamState = TeamState(team_num: newTeamNum, color: color)
                 await updateGame(["colors_available": [color]], arrayAction: .remove)
-                try docRef!.collection("teams").document("\(newTeamNum)").setData(from: teamState)
+                try database.setTeamState(teamState!, newTeamNum)
             }
         } catch {
             print(error)
         }
     }
-    /* end here */
+
     func startGameCollection(fullName: String, testGroupId: Int? = nil) async {
         var groupId = 0
         
@@ -454,15 +396,15 @@ enum ArrayActionType {
             try database.setInitGameState(gameState!)
             
             teamState = TeamState(team_num: 1, color: color)
-            try database.setInitTeamState(teamState!)
+            try database.setTeamState(teamState!, 1)
             
             playerState = PlayerState(name: fullName, uid: UUID().uuidString, is_lead: true, team_num: 1, player_num: 0)
-            try database.setInitPlayerState(playerState!)
+            try database.setPlayerState(playerState!, playerState!.uid)
         } catch {
             // do something
         }
         
-        addTeamsListener()
+        await addTeamsListener()
         await addPlayersListener()
         await addGameInfoListener()
     }
@@ -504,7 +446,7 @@ enum ArrayActionType {
             
             playerState = PlayerState(name: fullName, uid: UUID().uuidString, team_num: teamNum, player_num: numPlayers - 1)
 //            try docRef!.collection("players").document(playerState!.uid).setData(from: playerState!)
-            try database.setInitPlayerState(playerState!)
+            try database.setPlayerState(playerState!, playerState!.uid)
 
             if try await !checkTeamExists(teamNum: teamNum) {
                 var color = ""
@@ -518,13 +460,12 @@ enum ArrayActionType {
                 
                 await updateGame(["colors_available": [color]], arrayAction: .remove)
                 teamState = TeamState(team_num: teamNum, color: color)
-//                try docRef!.collection("teams").document("\(teamNum)").setData(from: teamState)
-                try database.setInitTeamState(teamState!)
+                try database.setTeamState(teamState!, teamNum)
             } else {
                 teamState = try await database.getTeamState(teamNum)
             }
 
-            addTeamsListener()
+            await addTeamsListener()
             await addPlayersListener()
             await addGameInfoListener()
         } catch {
