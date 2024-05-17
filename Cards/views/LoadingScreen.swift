@@ -9,8 +9,8 @@
 import SwiftUI
 
 struct LoadingScreen: View {
-    @EnvironmentObject var specs: DeviceSpecs
-    @EnvironmentObject var gameHelper: GameHelper
+    @Environment(DeviceSpecs.self) private var specs
+    @Environment(GameHelper.self) private var gameHelper
     @Binding var introView: IntroViewType
     @FocusState private var isFocused: Bool
     @StateObject private var teamOne = TeamObservable(team: TeamState.team_one)
@@ -141,8 +141,8 @@ struct LoadingScreen: View {
     }
     
     struct playersList: View {
-        @EnvironmentObject var specs: DeviceSpecs
-        @EnvironmentObject var gameHelper: GameHelper
+        @Environment(DeviceSpecs.self) private var specs
+        @Environment(GameHelper.self) private var gameHelper
         
         var teams: [TeamState] {
             if gameHelper.gameState != nil {
@@ -215,12 +215,12 @@ func determineFont(_ string: String, _ containerSize: Int, _ defaultFontSize: In
 #Preview {
     return GeometryReader { geo in
         LoadingScreen(introView: .constant(.loadingScreen))
-            .environmentObject({ () -> DeviceSpecs in
+            .environment({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(GameHelper())
+            .environment(GameHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
             .background(Color("OffWhite").opacity(0.1))
 

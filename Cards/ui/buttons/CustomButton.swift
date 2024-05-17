@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CustomButton: View {
-    @EnvironmentObject var specs: DeviceSpecs
+    @Environment(DeviceSpecs.self) private var specs
     var name: String
     var submitFunction: (() -> Void)
     var size: Int?

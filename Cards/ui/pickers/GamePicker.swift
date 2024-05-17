@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct GamePicker: View {
-    @EnvironmentObject var gameHelper: GameHelper
-    @EnvironmentObject var specs: DeviceSpecs
+    @Environment(GameHelper.self) private var gameHelper
+    @Environment(DeviceSpecs.self) private var specs
     @State var gameSelected: Games = .cribbage
     @State var preventCyclicalUpdate: Bool = false
     
@@ -69,5 +69,5 @@ struct GamePicker: View {
 
 #Preview {
     return GamePicker()
-            .environmentObject(GameHelper())
+            .environment(GameHelper())
 }

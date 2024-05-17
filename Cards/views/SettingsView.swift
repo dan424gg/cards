@@ -9,8 +9,8 @@ import SwiftUI
 
 struct SettingsView: View {
     @Environment(\.openURL) private var openURL
-    @EnvironmentObject var gameHelper: GameHelper
-    @EnvironmentObject var specs: DeviceSpecs
+    @Environment(GameHelper.self) private var gameHelper
+    @Environment(DeviceSpecs.self) private var specs
     @Binding var introView: IntroViewType
     @AppStorage(AppStorageConstants.theme) var theme: ColorTheme = .classic
     @AppStorage(AppStorageConstants.filter) var filter: Bool = false
@@ -106,12 +106,12 @@ struct SettingsView: View {
     GeometryReader { geo in
         SettingsView(introView: .constant(.settings))
             .position(x: geo.frame(in: .local).midX, y: geo.frame(in: .local).midY)
-            .environmentObject({ () -> DeviceSpecs in
+            .environment({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(GameHelper())
+            .environment(GameHelper())
     }
     .ignoresSafeArea()
     .background {

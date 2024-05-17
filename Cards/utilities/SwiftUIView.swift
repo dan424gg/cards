@@ -30,6 +30,6 @@ struct SwiftUIView: View {
 struct SwiftUIView_Previews: PreviewProvider {
     static var previews: some View {
         SwiftUIView()
-            .environmentObject(DeviceSpecs())
+            .environment(DeviceSpecs())
     }
 }

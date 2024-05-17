@@ -20,7 +20,7 @@ extension View {
 
 struct AlertWindow: ViewModifier {
     
-    @EnvironmentObject private var specs: DeviceSpecs
+    @Environment(DeviceSpecs.self) private var specs
     @Binding var alert: Alert?
     
     func body(content: Content) -> some View {
@@ -71,12 +71,12 @@ struct AlertWindow: ViewModifier {
     return GeometryReader { geo in
         Text("")
             .alertWindow(.constant(alert))
-            .environmentObject({ () -> DeviceSpecs in
+            .environment({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(GameHelper())
+            .environment(GameHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
     }
     .background(DeviceSpecs().theme.colorWay.background)

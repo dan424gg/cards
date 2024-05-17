@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CribMarker: View {
     @Environment(\.namespace) var namespace
-    @EnvironmentObject var specs: DeviceSpecs
+    @Environment(DeviceSpecs.self) private var specs
     var scale: Double = 1.0
     
     @State var scaleEffect: Double = 1.0
@@ -50,13 +50,13 @@ struct CribMarker: View {
 #Preview {
     return GeometryReader { geo in
         CribMarker()
-            .environmentObject({ () -> DeviceSpecs in
+            .environment({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)
                 return envObj
             }() )
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
-            .environmentObject(GameHelper())
+            .environment(GameHelper())
     }
     .ignoresSafeArea()
 }

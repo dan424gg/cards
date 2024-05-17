@@ -12,8 +12,8 @@ enum IntroViewType {
 }
 
 struct IntroView: View {
-    @EnvironmentObject var gameHelper: GameHelper
-    @EnvironmentObject var specs: DeviceSpecs
+    @Environment(GameHelper.self) private var gameHelper
+    @Environment(DeviceSpecs.self) private var specs
     @State var introView: IntroViewType = .nothing
     @State var showNewGameView: Bool = false
     @State var showExistingGameView: Bool = false
@@ -101,12 +101,12 @@ struct IntroView: View {
 #Preview {
     return GeometryReader { geo in
         IntroView()
-            .environmentObject({ () -> DeviceSpecs in
+            .environment({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(GameHelper())
+            .environment(GameHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
             .background {
                 DeviceSpecs().theme.colorWay.background

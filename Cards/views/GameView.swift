@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct GameView: View {
-    @EnvironmentObject var gameHelper: GameHelper
-    @EnvironmentObject var specs: DeviceSpecs
+    @Environment(GameHelper.self) private var gameHelper
+    @Environment(DeviceSpecs.self) private var specs
     @Namespace var cardsNS
     @State var showSnackbar: Bool = true
     @StateObject private var gameObservable = GameObservable(game: GameState.game)
@@ -19,9 +19,8 @@ struct GameView: View {
 
     var body: some View {
         ZStack {
-            if (gameHelper.gameState?.turn ?? gameObservable.game.turn) != 6 {
-                if playingGame {
-                    Group {
+            if playingGame {
+                    ZStack {
                         PlayingTable(gameObservable: gameObservable)
                             .frame(width: specs.maxX * 0.85)
                             .position(x: specs.maxX / 2, y: specs.maxY * 0.4)
@@ -57,28 +56,27 @@ struct GameView: View {
                                 .transition(.opacity)
                         }
                         
-                        GameOutcomeView(outcome: $gameHelper.gameOutcome)
+                        GameOutcomeView(outcome: gameHelper.gameOutcome)
                     }
                     .geometryGroup()
                     .clipped()
                     .transition(.move(edge: .top))
+                } else if (gameHelper.gameState?.turn ?? gameObservable.game.turn) == 6 {
+                    ProgressView()
+                        .padding()
+                        .background {
+                            VisualEffectView(effect: UIBlurEffect(style: .regular))
+                                .clipShape(RoundedRectangle(cornerRadius: 5.0))
+                        }
+                        .tint(.white)
+                        .scaleEffect(2.0)
+                        .position(x: specs.maxX / 2, y: specs.maxY / 2)
+                        .transition(.opacity)
                 } else {
                     PlayersHandsView()
                         .geometryGroup()
                         .transition(.move(edge: .bottom))
                 }
-            } else {
-                ProgressView()
-                    .padding()
-                    .background {
-                        VisualEffectView(effect: UIBlurEffect(style: .regular))
-                            .clipShape(RoundedRectangle(cornerRadius: 5.0))
-                    }
-                    .tint(.white)
-                    .scaleEffect(2.0)
-                    .position(x: specs.maxX / 2, y: specs.maxY / 2)
-                    .transition(.opacity)
-            }
         }
         .onChange(of: gameHelper.playerState?.is_ready, {
             guard gameHelper.playerState != nil, gameHelper.gameState != nil, gameHelper.playerState!.is_lead else {
@@ -139,95 +137,123 @@ struct GameView: View {
                 return
             }
             
-            if gameHelper.gameState!.turn == -1 {
-                guard gameHelper.playerState != nil, gameHelper.playerState!.is_lead else {
-                    return
-                }
-                
-                Task(priority: .userInitiated) {
-                    let randDealer = Int.random(in: 0..<(gameHelper.gameState!.num_players))
-                    
-                    // determine dealer's team for crib
-                    if let teamWithCrib = gameHelper.players.first(where: { $0.player_num == randDealer })?.team_num {
-                        await gameHelper.updateGame(["dealer": randDealer, "team_with_crib": teamWithCrib])
-                    } else {
-                        let teamWithCrib = gameHelper.playerState!.team_num
-                        await gameHelper.updateGame(["dealer": randDealer, "team_with_crib": teamWithCrib])
-                    }
-                    
-                    await gameHelper.updateGame(["turn": 0])
-                }
-            } else if gameHelper.gameState!.turn == 0 {
-                withAnimation {
-                    playingGame = true
-                }
-                
-                guard gameHelper.playerState!.player_num == gameHelper.gameState!.dealer else {
-                    return
-                }
-                
-                Task {
-                    await gameHelper.shuffleAndDealCards()
-                    await gameHelper.updateGame(["turn": 1])
-                }
-                
-            } else if gameHelper.gameState!.turn == 2 {
-                guard gameHelper.gameState != nil, gameHelper.playerState != nil, gameHelper.playerState!.is_lead else {
-                    return
-                }
-                Task {
-                    await gameHelper.updateGame(["player_turn": (gameHelper.gameState!.dealer + 1) % gameHelper.gameState!.num_players])
-                }
-            } else if gameHelper.gameState!.turn == 3 {
-                let numPlayers = gameHelper.gameState!.num_players
-                
-                for i in 0...numPlayers {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + (Double(i + 1) * 1.5), execute: {
-                        if i == numPlayers {
-                            Task {
-                                await gameHelper.updatePlayer(["is_ready": true])
-                            }
-                        } else if i == 0 {
-                            // UPDATING GAMESTATE LOCALLY
-                            gameHelper.gameState!.player_turn = gameHelper.gameState!.dealer
-                            if gameHelper.playerState!.player_num == gameHelper.gameState!.player_turn {
-                                withAnimation {
-                                    shown = true
-                                }
-                            }
-                        } else {
-                            // UPDATING GAMESTATE LOCALLY
-                            gameHelper.gameState!.player_turn = (gameHelper.gameState!.player_turn + 1) % numPlayers
-                            if gameHelper.playerState!.player_num == gameHelper.gameState!.player_turn {
-                                withAnimation {
-                                    shown = true
-                                }
-                            }
-                        }
-                    })
-                }
-            } else if gameHelper.gameState!.turn == 5 {
-                withAnimation {
-                    shown = false
-                    playingGame = false
-                }
-            } else if gameHelper.gameState!.turn == 6 {
-                guard gameHelper.playerState != nil, gameHelper.playerState!.is_lead else {
-                    return
-                }
-                
-                Task {
-                    await gameHelper.resetGame()
-                    try await Task.sleep(nanoseconds: UInt64(2.0 * Double(NSEC_PER_SEC)))
-                    await gameHelper.updateGame(["turn": (gameHelper.gameState!.turn + 1) % 7])
-                }
-            }
+            handleTurn(gameHelper.gameState!.turn)
         })
     }
     
+    func handleTurn(_ turn: Int) {
+        if turn == -1 {
+            handleInitialTurn()
+        } else if turn == 0 {
+            handleDealerTurn()
+        } else if turn == 2 {
+            handleSecondTurn()
+        } else if turn == 3 {
+            handleThirdTurn()
+        } else if turn == 5 {
+            handleFifthTurn()
+        } else if turn == 6 {
+            handleSixthTurn()
+        }
+
+        func handleInitialTurn() {
+            guard gameHelper.playerState != nil, gameHelper.playerState!.is_lead else {
+                return
+            }
+            
+            Task(priority: .userInitiated) {
+                let randDealer = Int.random(in: 0..<(gameHelper.gameState!.num_players))
+                
+                // determine dealer's team for crib
+                if let teamWithCrib = gameHelper.players.first(where: { $0.player_num == randDealer })?.team_num {
+                    await gameHelper.updateGame(["dealer": randDealer, "team_with_crib": teamWithCrib])
+                } else {
+                    let teamWithCrib = gameHelper.playerState!.team_num
+                    await gameHelper.updateGame(["dealer": randDealer, "team_with_crib": teamWithCrib])
+                }
+                
+                await gameHelper.updateGame(["turn": 0])
+            }
+        }
+
+        func handleDealerTurn() {
+            withAnimation {
+                playingGame = true
+            }
+            
+            guard gameHelper.playerState!.player_num == gameHelper.gameState!.dealer else {
+                return
+            }
+            
+            Task {
+                await gameHelper.shuffleAndDealCards()
+                await gameHelper.updateGame(["turn": 1])
+            }
+        }
+
+        func handleSecondTurn() {
+            guard gameHelper.gameState != nil, gameHelper.playerState != nil, gameHelper.playerState!.is_lead else {
+                return
+            }
+            Task {
+                await gameHelper.updateGame(["player_turn": (gameHelper.gameState!.dealer + 1) % gameHelper.gameState!.num_players])
+            }
+        }
+
+        func handleThirdTurn() {
+            let numPlayers = gameHelper.gameState!.num_players
+            
+            for i in 0...numPlayers {
+                DispatchQueue.main.asyncAfter(deadline: .now() + (Double(i + 1) * 1.5), execute: {
+                    if i == numPlayers {
+                        Task {
+                            await gameHelper.updatePlayer(["is_ready": true])
+                        }
+                    } else if i == 0 {
+                        // UPDATING GAMESTATE LOCALLY
+                        gameHelper.gameState!.player_turn = gameHelper.gameState!.dealer
+                        if gameHelper.playerState!.player_num == gameHelper.gameState!.player_turn {
+                            withAnimation {
+                                shown = true
+                            }
+                        }
+                    } else {
+                        // UPDATING GAMESTATE LOCALLY
+                        gameHelper.gameState!.player_turn = (gameHelper.gameState!.player_turn + 1) % numPlayers
+                        if gameHelper.playerState!.player_num == gameHelper.gameState!.player_turn {
+                            withAnimation {
+                                shown = true
+                            }
+                        }
+                    }
+                })
+            }
+        }
+
+        func handleFifthTurn() {
+            withAnimation {
+                shown = false
+                playingGame = false
+            }
+        }
+
+        func handleSixthTurn() {
+            guard gameHelper.playerState != nil, gameHelper.playerState!.is_lead else {
+                return
+            }
+            
+            Task {
+                await gameHelper.resetGame()
+                try await Task.sleep(nanoseconds: UInt64(2.0 * Double(NSEC_PER_SEC)))
+                await gameHelper.updateGame(["turn": (gameHelper.gameState!.turn + 1) % 7])
+            }
+        }
+
+    }
+    
     struct PlayingTable: View {
-        @EnvironmentObject var gameHelper: GameHelper
-        @EnvironmentObject var specs: DeviceSpecs
+        @Environment(GameHelper.self) private var gameHelper
+        @Environment(DeviceSpecs.self) private var specs
         @StateObject var gameObservable: GameObservable
         
         var turn: Int {
@@ -238,25 +264,19 @@ struct GameView: View {
             }
         }
         
+        @ViewBuilder
         var body: some View {
-//            ZStack {
-//                if turn == 1 || turn == 4 {
-                    Circle()
-                        .trim(from: 0.0, to: turn == 1 || turn == 4 ? 0.75 : 1.0)
-                        .rotation(.degrees(135))
-                        .stroke(specs.theme.colorWay.primary, lineWidth: 5)
-                        .fill(specs.theme.colorWay.background)
-//                } else {
-//                    Circle()
-//                        .stroke(specs.theme.colorWay.white, lineWidth: 3)
-//                }
-//            }
+            Circle()
+                .trim(from: 0.0, to: turn == 1 || turn == 4 ? 0.75 : 1.0)
+                .rotation(.degrees(135))
+                .stroke(specs.theme.colorWay.primary, lineWidth: 5)
+                .fill(specs.theme.colorWay.background)
         }
     }
     
     struct PlayerIndicator: View {
-        @EnvironmentObject var gameHelper: GameHelper
-        @EnvironmentObject var specs: DeviceSpecs
+        @Environment(GameHelper.self) private var gameHelper
+        @Environment(DeviceSpecs.self) private var specs
         @State var initialRotation: Int = 0
         @State var multiplier: Int = 0
         @State var rotation: Double = 90.0
@@ -279,6 +299,45 @@ struct GameView: View {
             }
         }
         
+        func handleOnAppear() {
+            if gameHelper.gameState != nil {
+                // set multiplier based on number of players
+                multiplier = 360 / gameHelper.gameState!.num_players
+                var players = gameHelper.players
+                players.append(gameHelper.playerState!)
+                players.sort(by: { $0.player_num < $1.player_num })
+                
+                // reorder player list to match playerViews
+                let beforePlayer = players[0..<gameHelper.playerState!.player_num]
+                let afterPlayer = players[gameHelper.playerState!.player_num..<players.count]
+                
+                sortedPlayerNumList = Array(afterPlayer + beforePlayer).map({ $0.player_num })
+                
+                // find index of player's turn
+                if let idx = sortedPlayerNumList.firstIndex(where: { $0 == gameHelper.gameState!.player_turn }) {
+                    rotation = Double(idx * multiplier)
+                }
+            } else {
+                // set multiplier based on number of players
+                multiplier = 360 / gameObservable.game.num_players
+                var players = GameState.players
+                players.append(PlayerState.player_one)
+                players.sort(by: { $0.player_num < $1.player_num })
+                
+                // reorder player list to match playerViews
+                let beforePlayer = players[0..<1]
+                let afterPlayer = players[1..<players.count]
+                
+                sortedPlayerNumList = Array(afterPlayer + beforePlayer).map({ $0.player_num })
+//                            sortedPlayerNumList = players.map({ $0.player_num })
+                
+                // find index of player's turn
+                if let idx = sortedPlayerNumList.firstIndex(where: { $0 == gameObservable.game.player_turn }) {
+                    rotation = Double(idx * multiplier)
+                }
+            }
+        }
+        
         var body: some View {
             if turn == 2 && playerTurn != -1 {
                 Circle()
@@ -288,42 +347,7 @@ struct GameView: View {
                     .rotationEffect(.degrees(Double(rotation)))
                     .transition(.opacity)
                     .onAppear {
-                        if gameHelper.gameState != nil {
-                            // set multiplier based on number of players
-                            multiplier = 360 / gameHelper.gameState!.num_players
-                            var players = gameHelper.players
-                            players.append(gameHelper.playerState!)
-                            players.sort(by: { $0.player_num < $1.player_num })
-                            
-                            // reorder player list to match playerViews
-                            let beforePlayer = players[0..<gameHelper.playerState!.player_num]
-                            let afterPlayer = players[gameHelper.playerState!.player_num..<players.count]
-                            
-                            sortedPlayerNumList = Array(afterPlayer + beforePlayer).map({ $0.player_num })
-                            
-                            // find index of player's turn
-                            if let idx = sortedPlayerNumList.firstIndex(where: { $0 == gameHelper.gameState!.player_turn }) {
-                                rotation = Double(idx * multiplier)
-                            }
-                        } else {
-                            // set multiplier based on number of players
-                            multiplier = 360 / gameObservable.game.num_players
-                            var players = GameState.players
-                            players.append(PlayerState.player_one)
-                            players.sort(by: { $0.player_num < $1.player_num })
-                            
-                            // reorder player list to match playerViews
-                            let beforePlayer = players[0..<1]
-                            let afterPlayer = players[1..<players.count]
-                            
-                            sortedPlayerNumList = Array(afterPlayer + beforePlayer).map({ $0.player_num })
-//                            sortedPlayerNumList = players.map({ $0.player_num })
-                            
-                            // find index of player's turn
-                            if let idx = sortedPlayerNumList.firstIndex(where: { $0 == gameObservable.game.player_turn }) {
-                                rotation = Double(idx * multiplier)
-                            }
-                        }
+                        handleOnAppear()
                     }
                     .onChange(of: playerTurn, {
                         withAnimation {
@@ -346,13 +370,12 @@ struct GameView: View {
 #Preview {
     return GeometryReader { geo in
         GameView()
-            .environmentObject({ () -> DeviceSpecs in
+            .environment({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(GameHelper())
-//            .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
+            .environment(GameHelper())
             .background(DeviceSpecs().theme.colorWay.background)
     }
     .ignoresSafeArea()

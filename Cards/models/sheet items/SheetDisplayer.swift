@@ -55,12 +55,12 @@ struct SheetDisplayer<Sheet: SheetEnum>: ViewModifier {
 #Preview {
     return GeometryReader { geo in
         ContentView()
-            .environmentObject({ () -> DeviceSpecs in
+            .environment({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(GameHelper())
+            .environment(GameHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
     }
     .ignoresSafeArea()

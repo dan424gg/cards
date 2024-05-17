@@ -26,8 +26,8 @@ extension View {
 }
 
 struct ContentView: View {
-    @EnvironmentObject var gameHelper: GameHelper
-    @EnvironmentObject var specs: DeviceSpecs
+    @Environment(GameHelper.self) private var gameHelper
+    @Environment(DeviceSpecs.self) private var specs
     @StateObject var sheetCoordinator = SheetCoordinator<SheetType>()
     @State var blur: Bool = false
     
@@ -73,12 +73,12 @@ struct ContentView: View {
 #Preview {
     return GeometryReader { geo in
         ContentView()
-            .environmentObject({ () -> DeviceSpecs in
+            .environment({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(GameHelper())
+            .environment(GameHelper())
     }
     .ignoresSafeArea()
 }

@@ -9,8 +9,8 @@ import SwiftUI
 
 struct DeckOfCardsView: View {
     @Environment(\.namespace) var namespace
-    @EnvironmentObject var gameHelper: GameHelper
-    @EnvironmentObject var specs: DeviceSpecs
+    @Environment(GameHelper.self) private var gameHelper
+    @Environment(DeviceSpecs.self) private var specs
     @Binding var cards: [Int]
     @StateObject private var gameObservable = GameObservable(game: GameState.game)
     
@@ -42,12 +42,12 @@ struct DeckOfCardsView: View {
 #Preview {
     return GeometryReader { geo in
         DeckOfCardsView(cards: .constant(Array(0...51)))
-            .environmentObject({ () -> DeviceSpecs in
+            .environment({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(GameHelper())
+            .environment(GameHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
     }
     .ignoresSafeArea()

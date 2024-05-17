@@ -10,7 +10,7 @@ import Combine
 
 struct LaunchView: View {
     @Binding var showLaunch: Bool
-    @EnvironmentObject var specs: DeviceSpecs
+    @Environment(DeviceSpecs.self) private var specs
     @State var timer: Timer?
     
     var body: some View {
@@ -50,12 +50,12 @@ struct LaunchView: View {
     GeometryReader { geo in
         LaunchView(showLaunch: .constant(false))
             .position(x: geo.frame(in: .local).midX, y: geo.frame(in: .local).midY)
-            .environmentObject({ () -> DeviceSpecs in
+            .environment({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(GameHelper())
+            .environment(GameHelper())
     }
     .ignoresSafeArea()
     .background {

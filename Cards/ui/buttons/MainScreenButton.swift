@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MainScreenButton: View {
-    @EnvironmentObject var specs: DeviceSpecs
+    @Environment(DeviceSpecs.self) private var specs
     @State var scale: Double = 1.0
 
     var buttonType: IntroViewType
@@ -50,12 +50,12 @@ struct MainScreenButton: View {
 #Preview {
     GeometryReader { geo in
         MainScreenButton(buttonType: .newGame, submitFunction: { print("hello") })
-            .environmentObject({ () -> DeviceSpecs in
+            .environment({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(GameHelper())
+            .environment(GameHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
             .background(DeviceSpecs().theme.colorWay.background)
     }

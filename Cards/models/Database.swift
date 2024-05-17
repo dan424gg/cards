@@ -8,15 +8,16 @@
 import Combine
 import Foundation
 import SwiftUI
+import SwiftData
 import Firebase
 import FirebaseCore
 import FirebaseFirestore
 import FirebaseFirestoreSwift
 
-protocol Database {
-    var playersListener: ListenerRegistration! { get set }
-    var gameListener: ListenerRegistration! { get set }
-    var teamsListener: ListenerRegistration! { get set }
+protocol Database: Codable {
+//    var playersListener: ListenerRegistration! { get set }
+//    var gameListener: ListenerRegistration! { get set }
+//    var teamsListener: ListenerRegistration! { get set }
     
     func updatePlayerField<T>(uid: String, key: String, value: T) async throws
     func updatePlayerArrayField<T>(uid: String, key: String, value: [T], action: ArrayActionType) async throws
@@ -45,12 +46,43 @@ protocol Database {
     func deleteTeamCollection(teamNum: Int) async throws
 }
 
+
 struct Firebase: Database {
-    internal var playersListener: (any ListenerRegistration)!
-    internal var gameListener: (any ListenerRegistration)!
-    internal var teamsListener: (any ListenerRegistration)!
+    var playersListener: ListenerRegistration!
+    var gameListener: ListenerRegistration!
+    var teamsListener: ListenerRegistration!
     private var db = Firestore.firestore()
     private var docRef: DocumentReference?
+    
+    // Properties to store data needed for encoding/decoding
+    private var docRefId: String?
+
+    enum CodingKeys: String, CodingKey {
+        case docRefId
+    }
+
+    init() {
+        // Default initialization
+    }
+
+    // Custom initializer to support decoding
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        docRefId = try container.decodeIfPresent(String.self, forKey: .docRefId)
+        if let docRefId = docRefId {
+            docRef = db.collection("games").document(docRefId)
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(docRef?.documentID, forKey: .docRefId)
+    }
+
+    mutating func setDocRef(_ groupId: Int) {
+        docRef = db.collection("games").document("\(groupId)")
+        docRefId = "\(groupId)"
+    }
     
     func updatePlayerField<T>(uid: String, key: String, value: T) async throws {
         try await docRef!.collection("players").document(uid).updateData([key: value])
@@ -92,9 +124,9 @@ struct Firebase: Database {
         try await docRef!.collection("teams").document("\(teamNum)").updateData([key: value])
     }
     
-    mutating func setDocRef(_ groupId: Int) {
-        docRef = db.collection("games").document("\(groupId)")
-    }
+//    mutating func setDocRef(_ groupId: Int) {
+//        docRef = db.collection("games").document("\(groupId)")
+//    }
     
     func setInitGameState(_ gameState: GameState) throws {
         try docRef!.setData(from: gameState)
@@ -311,3 +343,99 @@ struct Firebase: Database {
         try await docRef.collection("teams").document("\(teamNum)").delete()
     }
 }
+
+//class Local: Database {
+//    @Environment(\.modelContext) private var context
+//    
+//    init() {}
+//    
+//    func updatePlayerField<T>(uid: String, key: String, value: T) async throws {
+//        <#code#>
+//    }
+//    
+//    func updatePlayerArrayField<T>(uid: String, key: String, value: [T], action: ArrayActionType) async throws {
+//        <#code#>
+//    }
+//    
+//    func updateGameField<T>(key: String, value: T) async throws {
+//        <#code#>
+//    }
+//    
+//    func updateGameArrayField<T>(key: String, value: [T], action: ArrayActionType) async throws {
+//        <#code#>
+//    }
+//    
+//    func updateTeamField<T>(teamNum: Int, key: String, value: T) async throws {
+//        <#code#>
+//    }
+//    
+//    func setDocRef(_ groupId: Int) {
+//        <#code#>
+//    }
+//    
+//    func setInitGameState(_ gameState: GameState) throws {
+//        <#code#>
+//    }
+//    
+//    func getGameState() async throws -> GameState {
+//        <#code#>
+//    }
+//    
+//    func getGameState(_ groupId: Int) async throws -> GameState {
+//        <#code#>
+//    }
+//    
+//    func setTeamState(_ teamState: TeamState, _ teamNum: Int) throws {
+//        <#code#>
+//    }
+//    
+//    func getTeamState(_ teamNum: Int) async throws -> TeamState {
+//        <#code#>
+//    }
+//    
+//    func setPlayerState(_ playerState: PlayerState, _ playerUid: String) throws {
+//        <#code#>
+//    }
+//    
+//    func addPlayersListener(_ playerStateRef: Reference<PlayerState>, _ playersRef: Reference<[PlayerState]>) async {
+//        <#code#>
+//    }
+//    
+//    func removePlayersListener() {
+//        <#code#>
+//    }
+//    
+//    func addGameStateListener(_ gameStateRef: Reference<GameState>) async {
+//        <#code#>
+//    }
+//    
+//    func removeGameStateListener() {
+//        <#code#>
+//    }
+//    
+//    func addTeamsListener(_ teamStateRef: Reference<TeamState>, _ teamsRef: Reference<[TeamState]>) async {
+//        <#code#>
+//    }
+//    
+//    func removeTeamsListener() {
+//        <#code#>
+//    }
+//    
+//    func checkGameExists(groupId: Int) async throws -> Bool {
+//        <#code#>
+//    }
+//    
+//    func checkTeamExists(teamNum: Int) async throws -> Bool {
+//        <#code#>
+//    }
+//    
+//    func deleteGameCollection(id: Int) async {
+//        <#code#>
+//    }
+//    
+//    func deleteTeamCollection(teamNum: Int) async throws {
+//        <#code#>
+//    }
+//    
+//    
+//}

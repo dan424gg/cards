@@ -8,12 +8,12 @@
 import Foundation
 import SwiftUI
 
-class DeviceSpecs: ObservableObject {
-    @Published var size: CGSize = .zero
-    @Published var maxX: Double = 0.0
-    @Published var maxY: Double = 0.0
-    @Published var inGame: Bool = false
-    @AppStorage(AppStorageConstants.theme) var theme: ColorTheme = .classic
+@Observable class DeviceSpecs {
+    var size: CGSize = .zero
+    var maxX: Double = 0.0
+    var maxY: Double = 0.0
+    var inGame: Bool = false
+    var theme: ColorTheme = .classic
     
     func setProperties(_ geo: GeometryProxy) {
         size = geo.frame(in: .global).size

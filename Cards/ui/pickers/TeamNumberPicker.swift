@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct TeamPicker: View {
-    @EnvironmentObject var gameHelper: GameHelper
-    @EnvironmentObject var specs: DeviceSpecs
+    @Environment(GameHelper.self) private var gameHelper
+    @Environment(DeviceSpecs.self) private var specs
     @State var teamNum = 0
     
     var body: some View {
@@ -61,6 +61,6 @@ struct TeamPicker: View {
 struct TeamPicker_Previews: PreviewProvider {
     static var previews: some View {
         TeamPicker()
-            .environmentObject(GameHelper())
+            .environment(GameHelper())
     }
 }

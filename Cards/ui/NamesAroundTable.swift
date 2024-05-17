@@ -12,8 +12,8 @@ import SwiftUI
 
 struct NamesAroundTable: View {
     @Environment(\.namespace) var namespace
-    @EnvironmentObject var specs: DeviceSpecs
-    @EnvironmentObject var gameHelper: GameHelper
+    @Environment(DeviceSpecs.self) private var specs
+    @Environment(GameHelper.self) private var gameHelper
     @StateObject var gameObservable: GameObservable
     @State var sortedPlayerList: [PlayerState] = []
     @State var startingRotation = 0
@@ -87,12 +87,12 @@ struct NamesAroundTable: View {
 #Preview {
     return GeometryReader { geo in
         NamesAroundTable(gameObservable: GameObservable(game: .game))
-            .environmentObject({ () -> DeviceSpecs in
+            .environment({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(GameHelper())
+            .environment(GameHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
             .background(DeviceSpecs().theme.colorWay.background)
     }

@@ -8,6 +8,7 @@
 import Combine
 import Foundation
 import SwiftUI
+import SwiftData
 import Firebase
 import FirebaseCore
 import FirebaseFirestore
@@ -37,28 +38,28 @@ class Reference<T> {
     }
 }
 
-@MainActor class GameHelper: ObservableObject {
-    private var gameStateListener: ListenerRegistration!
-    private var teamsListener: ListenerRegistration!
-    private var playersListener: ListenerRegistration!
+@Observable
+class GameHelper {
+    var database: Database
+    var gameState: GameState?
+    var teamState: TeamState?
+    var playerState: PlayerState?
+    var players: [PlayerState]
+    var teams: [TeamState]
+    var gameOutcome: GameOutcome
+    
+    init(database: Database = Firebase(), gameState: GameState? = nil, teamState: TeamState? = nil, playerState: PlayerState? = nil, players: [PlayerState] = [], teams: [TeamState] = [], gameOutcome: GameOutcome = .undetermined) {
+        self.database = database
+        self.gameState = gameState
+        self.teamState = teamState
+        self.playerState = playerState
+        self.players = players
+        self.teams = teams
+        self.gameOutcome = gameOutcome
+    }
         
-    @Published var database: Database = Firebase()
-    @Published var gameOutcome: GameOutcome = .undetermined
-    @Published private var db = Firestore.firestore()
-    @Published var gameState: GameState?
-    @Published var teamState: TeamState?
-    @Published var playerState: PlayerState?
-    @Published var players: [PlayerState] = []
-    @Published var teams: [TeamState] = []
-    @Published var showWarning: Bool = false
-    @Published var warning: String = ""
-    @Published var showError: Bool = false
-    @Published var error: String = ""
-    
-    var docRef: DocumentReference!
-    
     func reinitialize() {
-        if self.gameState != nil {
+        if type(of: database) == Firebase.self {
             removeGameInfoListener()
             removeTeamsListener()
             removePlayersListener()

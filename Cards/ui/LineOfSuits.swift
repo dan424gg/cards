@@ -10,7 +10,7 @@ import UIKit
 import Combine
 
 struct LineOfSuits: View {
-    @EnvironmentObject var specs: DeviceSpecs
+    @Environment(DeviceSpecs.self) private var specs
 
     var index: Int
     @State var array: [Int] = []
@@ -100,7 +100,7 @@ struct LineOfSuits: View {
         var suit: String
         var index: CGFloat
         var arrayLen: Int
-        @EnvironmentObject var specs: DeviceSpecs
+        @Environment(DeviceSpecs.self) private var specs
         @State var duration: Double = 100.0
         @State var pos = CGPoint(x: 0.0, y: 0.0)
         
@@ -138,12 +138,12 @@ struct LineOfSuits: View {
 #Preview {
     return GeometryReader { geo in
         LineOfSuits(index: 0)
-            .environmentObject({ () -> DeviceSpecs in
+            .environment({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(GameHelper())
+            .environment(GameHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
     }
     .ignoresSafeArea()

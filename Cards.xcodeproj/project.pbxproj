@@ -628,6 +628,15 @@
 			path = "sheet items";
 			sourceTree = "<group>";
 		};
+		1E4BD2662BF6FDC300FC78A3 /* constants */ = {
+			isa = PBXGroup;
+			children = (
+				1EE63D9D2BC5A7CA006D2CDD /* AnalyticsConstants.swift */,
+				1E9ED2172BE68FB5008DBC28 /* AppStorageConstants.swift */,
+			);
+			path = constants;
+			sourceTree = "<group>";
+		};
 		1E78D1652B72A9A7005639ED /* Copy Targets Info */ = {
 			isa = PBXGroup;
 			children = (
@@ -656,6 +665,7 @@
 		1E9ED21E2BE806CD008DBC28 /* utilities */ = {
 			isa = PBXGroup;
 			children = (
+				1E4BD2662BF6FDC300FC78A3 /* constants */,
 				1EBED90D2AD7BBFF008B85EE /* CardsApp.swift */,
 				1EBED90F2AD7BBFF008B85EE /* ContentView.swift */,
 				1E8D45ED2B585EE5007543BC /* Utils.swift */,
@@ -826,8 +836,6 @@
 				1EBED94B2AD7BF2C008B85EE /* GameHelper.swift */,
 				1E4338E62B0D460900E212CD /* LinkedList.swift */,
 				1E8A2E5A2B87CF3200A40148 /* DeviceSpecs.swift */,
-				1EE63D9D2BC5A7CA006D2CDD /* AnalyticsConstants.swift */,
-				1E9ED2172BE68FB5008DBC28 /* AppStorageConstants.swift */,
 				1EF89CDD2BF54ACA000F2E4B /* Database.swift */,
 			);
 			path = models;

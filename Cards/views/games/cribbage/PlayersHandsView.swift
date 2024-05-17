@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct PlayersHandsView: View {
-    @EnvironmentObject var gameHelper: GameHelper
-    @EnvironmentObject var specs: DeviceSpecs
+    @Environment(GameHelper.self) private var gameHelper
+    @Environment(DeviceSpecs.self) private var specs
     @StateObject var gameObservable: GameObservable = GameObservable(game: .game)
     @State var expandedPlayer: PlayerState = PlayerState()
     @State var showSheet: Bool = false
@@ -81,8 +81,8 @@ struct PlayersHandsView: View {
 }
 
 struct PlayerNameButton: View {
-    @EnvironmentObject var gameHelper: GameHelper
-    @EnvironmentObject var specs: DeviceSpecs
+    @Environment(GameHelper.self) private var gameHelper
+    @Environment(DeviceSpecs.self) private var specs
     @State var points = 0
     @State var cribPoints = -1
     @StateObject var gameObservable: GameObservable = GameObservable(game: .game)
@@ -149,8 +149,8 @@ struct PlayerNameButton: View {
 }
 
 struct PlayerHand: View {
-    @EnvironmentObject var gameHelper: GameHelper
-    @EnvironmentObject var specs: DeviceSpecs
+    @Environment(GameHelper.self) private var gameHelper
+    @Environment(DeviceSpecs.self) private var specs
     @Namespace var playerHandViewNS
     @StateObject var gameObservable: GameObservable = GameObservable(game: .game)
 
@@ -329,12 +329,12 @@ struct PlayerHand: View {
 #Preview {
     return GeometryReader { geo in
         PlayersHandsView()
-            .environmentObject({ () -> DeviceSpecs in
+            .environment({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(GameHelper())
+            .environment(GameHelper())
             .position(x: geo.frame(in: .local).midX, y: geo.frame(in: .local).midY)
             .background(DeviceSpecs().theme.colorWay.background)
     }

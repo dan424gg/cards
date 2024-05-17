@@ -9,7 +9,7 @@ import SwiftUI
 import Combine
 
 struct SideBar: View {
-    @EnvironmentObject var specs: DeviceSpecs
+    @Environment(DeviceSpecs.self) private var specs
     @State var size: CGSize = CGSize(width: 1.0, height: 1.0)
     @State var timer: Timer?
     @State var opacity: Double = 1.0
@@ -55,12 +55,12 @@ struct SideBar: View {
 #Preview {
     return GeometryReader { geo in
         SideBar()
-            .environmentObject({ () -> DeviceSpecs in
+            .environment({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(GameHelper())
+            .environment(GameHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
     }
     .ignoresSafeArea()

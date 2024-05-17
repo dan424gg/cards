@@ -10,7 +10,7 @@ import SwiftUI
 
 struct CardInHandArea: View {
     @Environment(\.namespace) var namespace
-    @EnvironmentObject var gameHelper: GameHelper
+    @Environment(GameHelper.self) private var gameHelper
     @Binding var cards: [Int]
     @Binding var cardsDragged: [Int]
     @Binding var cardsInHand: [Int]
@@ -71,7 +71,7 @@ struct CardInHandArea: View {
 #Preview {
     GeometryReader { geo in
         CardInHandArea(cards: .constant(Array(5...51)), cardsDragged: .constant([]), cardsInHand: .constant(Array([10, 13, 4, 31])))
-            .environmentObject(GameHelper())
+            .environment(GameHelper())
             .position(x: geo.frame(in: .local).midX, y: geo.frame(in: .local).midY)
     }
     .background {

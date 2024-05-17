@@ -9,8 +9,8 @@ import SwiftUI
 
 struct PlayerView: View {
     @Namespace var names
-    @EnvironmentObject var specs: DeviceSpecs
-    @EnvironmentObject var gameHelper: GameHelper
+    @Environment(DeviceSpecs.self) private var specs
+    @Environment(GameHelper.self) private var gameHelper
     @StateObject private var gameObservable = GameObservable(game: GameState.game)
     @Binding var player: PlayerState
     var index: Int
@@ -76,12 +76,12 @@ struct PlayerView: View {
 #Preview {
     return GeometryReader { geo in
         PlayerView(player: .constant(PlayerState.player_one), index: 0, playerTurn: 0)
-            .environmentObject({ () -> DeviceSpecs in
+            .environment({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(GameHelper())
+            .environment(GameHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
             .background(DeviceSpecs().theme.colorWay.background)
     }

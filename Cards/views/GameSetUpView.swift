@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct GameSetUpView: View {
-    @EnvironmentObject var gameHelper: GameHelper
-    @EnvironmentObject var specs: DeviceSpecs
+    @Environment(GameHelper.self) private var gameHelper
+    @Environment(DeviceSpecs.self) private var specs
     @StateObject var sheetCoordinator = SheetCoordinator<SheetType>()
     @State private var notValid: Bool = true
     @State var groupId: String = ""
@@ -96,12 +96,12 @@ struct GameSetUpView: View {
 #Preview {
     return GeometryReader { geo in
         GameSetUpView(setUpType: .existingGame)
-            .environmentObject({ () -> DeviceSpecs in
+            .environment({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(GameHelper())
+            .environment(GameHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
     }
     .ignoresSafeArea()

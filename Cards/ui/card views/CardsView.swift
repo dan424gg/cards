@@ -10,8 +10,8 @@ import Combine
 
 struct CardsView: View {
     @Environment(\.namespace) var namespace
-    @EnvironmentObject var gameHelper: GameHelper
-    @EnvironmentObject var specs: DeviceSpecs
+    @Environment(GameHelper.self) private var gameHelper
+    @Environment(DeviceSpecs.self) private var specs
     @State var multiplier = 0
     @State var startingRotation = 0
     @StateObject var gameObservable: GameObservable/* = GameObservable(game: .game)*/
@@ -155,8 +155,8 @@ struct CardsView: View {
                             setMultiplierAndRotation(gameObservable.game.num_teams, gameObservable.game.num_players)
                         })
                     } else {
-                        ForEach(Array($gameHelper.players.enumerated()), id: \.offset) { (index, player) in
-                            CardInHandArea(cards: $cards, cardsDragged: .constant([]), cardsInHand: player.cards_in_hand, showBackside: true)
+                        ForEach(Array(gameHelper.players.enumerated()), id: \.offset) { (index, player) in
+                            CardInHandArea(cards: $cards, cardsDragged: .constant([]), cardsInHand: Binding(get: { player.cards_in_hand }, set: { _ in }), showBackside: true)
                                 .scaleEffect(0.3 * (specs.maxX / 393))
                                 .offset(y: specs.maxX * 0.4)
                                 .rotationEffect(.degrees(-180.0))
@@ -180,8 +180,8 @@ struct CardsView: View {
                             setMultiplierAndRotation(gameObservable.game.num_teams, gameObservable.game.num_players)
                         })
                     } else {
-                        ForEach(Array($gameHelper.players.enumerated()), id: \.offset) { (index, player) in
-                            TurnTwoView(cardsDragged: player.cards_dragged, cardsInHand: .constant([]), otherPlayer: true, otherPlayerPointCallOut: player.callouts.wrappedValue, otherPlayerTeamNumber: player.team_num.wrappedValue)
+                        ForEach(Array(gameHelper.players.enumerated()), id: \.offset) { (index, player) in
+                            TurnTwoView(cardsDragged: Binding (get: { player.cards_dragged }, set: { _ in }), cardsInHand: .constant([]), otherPlayer: true, otherPlayerPointCallOut: player.callouts, otherPlayerTeamNumber: player.team_num)
                                 .scaleEffect(min(0.7 * (specs.maxX / 393), 0.7))
                                 .rotationEffect(.degrees(-180.0))
                                 .offset(y: -specs.maxX * 0.32)
@@ -205,8 +205,8 @@ struct CardsView: View {
                             setMultiplierAndRotation(gameObservable.game.num_teams, gameObservable.game.num_players)
                         }
                     } else {
-                        ForEach(Array($gameHelper.players.enumerated()), id: \.offset) { (index, player) in
-                            CardInHandArea(cards: $cards, cardsDragged: .constant([]), cardsInHand: player.cards_in_hand, showBackside: false)
+                        ForEach(Array(gameHelper.players.enumerated()), id: \.offset) { (index, player) in
+                            CardInHandArea(cards: $cards, cardsDragged: .constant([]), cardsInHand: Binding( get: { player.cards_in_hand }, set: { _ in }), showBackside: false)
                                 .scaleEffect(0.3 * (specs.maxX / 393))
                                 .rotationEffect(.degrees(-180.0))
                                 .offset(y: -specs.maxX * 0.4)
@@ -488,12 +488,12 @@ struct CardsView: View {
 #Preview {
     return GeometryReader { geo in
         CardsView(gameObservable: GameObservable(game: .game))
-            .environmentObject({ () -> DeviceSpecs in
+            .environment({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(GameHelper())
+            .environment(GameHelper())
 //            .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
             .background(Color("OffWhite").opacity(0.1))
         

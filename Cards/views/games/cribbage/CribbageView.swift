@@ -8,7 +8,7 @@
 //import SwiftUI
 //
 //struct Cribbage: View {    
-//    @EnvironmentObject var gameHelper: GameHelper
+//    @Environment(GameHelper.self) private var gameHelper
 //    @StateObject private var gameObservable = GameObservable(game: GameState.game)
 //    @State private var insideTurnChange: Bool = false
 //    @Binding var cardsDragged: [Int]
@@ -66,6 +66,6 @@
 //struct Cribbage_Previews: PreviewProvider {
 //    static var previews: some View {
 //        Cribbage(cardsDragged: .constant([]), cardsInHand: .constant([]))
-//            .environmentObject(GameHelper())
+//            .environment(GameHelper())
 //    }
 //}

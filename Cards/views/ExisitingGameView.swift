@@ -9,8 +9,8 @@ import SwiftUI
 
 struct ExistingGameView: View {
     @Binding var introView: IntroViewType
-    @EnvironmentObject var gameHelper: GameHelper
-    @EnvironmentObject var specs: DeviceSpecs
+    @Environment(GameHelper.self) private var gameHelper
+    @Environment(DeviceSpecs.self) private var specs
     @State private var notValid: Bool = true
     @State var groupId: String = ""
     @State var fullName: String = ""
@@ -131,12 +131,12 @@ struct ExistingGameView: View {
 #Preview {
     return GeometryReader { geo in
         ExistingGameView(introView: .constant(.nothing))
-            .environmentObject({ () -> DeviceSpecs in
+            .environment({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(GameHelper())
+            .environment(GameHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
     }
     .background(DeviceSpecs().theme.colorWay.background)

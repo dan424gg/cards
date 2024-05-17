@@ -19,6 +19,10 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         
         return true
     }
+    
+    func applicationWillTerminate(_ application: UIApplication) {
+        print("terminated")
+    }
 }
 
 @main
@@ -40,10 +44,11 @@ struct CardsApp: App {
                     }
                     .zIndex(2.0)
                 }
-                .environmentObject(GameHelper())
-                .environmentObject({ () -> DeviceSpecs in
+                .environment(GameHelper())
+                .environment({ () -> DeviceSpecs in
                     let envObj = DeviceSpecs()
                     envObj.setProperties(geo)
+                    envObj.theme = UserDefaults.standard.object(forKey: AppStorageConstants.theme) as? ColorTheme ?? .classic
                     return envObj
                 }() )
             }

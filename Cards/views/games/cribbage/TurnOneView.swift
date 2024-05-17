@@ -9,7 +9,7 @@ import SwiftUI
 import FirebaseFirestore
 
 struct TurnOneView: View {
-    @EnvironmentObject var gameHelper: GameHelper
+    @Environment(GameHelper.self) private var gameHelper
     @Binding var cardsDragged: [Int]
     @Binding var cardsInHand: [Int]
     @State var cardIsDisabled = false
@@ -162,5 +162,5 @@ struct TurnOneView: View {
 
 #Preview {
     TurnOneView(cardsDragged: .constant([0]), cardsInHand: .constant([]))
-        .environmentObject(GameHelper())
+        .environment(GameHelper())
 }

@@ -16,7 +16,7 @@ extension Animation {
 }
 
 struct CribbageBoard: View {
-    @EnvironmentObject var gameHelper: GameHelper
+    @Environment(GameHelper.self) private var gameHelper
     @State var teams: [TeamState] = []
     @State var showPoints = false
     @State var timer: Timer?
@@ -91,7 +91,7 @@ struct CribbageBoard: View {
 
 struct TeamOnePath: View {
     @Binding var team: TeamState
-    @EnvironmentObject var gameHelper: GameHelper
+    @Environment(GameHelper.self) private var gameHelper
     @State var firstLineTrimValue: Double = 0.0
     @State var secondLineTrimValue: Double = 0.0
     @State var thirdLineTrimValue: Double = 0.0
@@ -279,7 +279,7 @@ struct TeamOnePath: View {
 
 struct TeamTwoPath: View {
     @Binding var team: TeamState
-    @EnvironmentObject var gameHelper: GameHelper
+    @Environment(GameHelper.self) private var gameHelper
     @State var firstLineTrimValue: Double = 0.0
     @State var secondLineTrimValue: Double = 0.0
     @State var thirdLineTrimValue: Double = 0.0
@@ -464,7 +464,7 @@ struct TeamTwoPath: View {
 
 struct TeamThreePath: View {
     @Binding var team: TeamState
-    @EnvironmentObject var gameHelper: GameHelper
+    @Environment(GameHelper.self) private var gameHelper
     @State var firstLineTrimValue: Double = 0.0
     @State var secondLineTrimValue: Double = 0.0
     @State var thirdLineTrimValue: Double = 0.0
@@ -654,12 +654,12 @@ struct TeamThreePath: View {
 #Preview {
     return GeometryReader { geo in
         CribbageBoard()
-            .environmentObject({ () -> DeviceSpecs in
+            .environment({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)
                 return envObj
             }() )
-            .environmentObject(GameHelper())
+            .environment(GameHelper())
             .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
             .background(DeviceSpecs().theme.colorWay.background)
     }
