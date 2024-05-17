@@ -20,9 +20,9 @@ protocol Database: Codable {
 //    var teamsListener: ListenerRegistration! { get set }
     
     func updatePlayerField<T>(uid: String, key: String, value: T) async throws
-    func updatePlayerArrayField<T>(uid: String, key: String, value: [T], action: ArrayActionType) async throws
+    func updatePlayerArrayField<T: Equatable>(uid: String, key: String, value: [T], action: ArrayActionType) async throws
     func updateGameField<T>(key: String, value: T) async throws
-    func updateGameArrayField<T>(key: String, value: [T], action: ArrayActionType) async throws
+    func updateGameArrayField<T: Equatable>(key: String, value: [T], action: ArrayActionType) async throws
     func updateTeamField<T>(teamNum: Int, key: String, value: T) async throws
 
     mutating func setDocRef(_ groupId: Int)
@@ -88,7 +88,7 @@ struct Firebase: Database {
         try await docRef!.collection("players").document(uid).updateData([key: value])
     }
     
-    func updatePlayerArrayField<T>(uid: String, key: String, value: [T], action: ArrayActionType) async throws {
+    func updatePlayerArrayField<T: Equatable>(uid: String, key: String, value: [T], action: ArrayActionType) async throws {
         let fieldValue: FieldValue
         switch action {
             case .append:
@@ -106,7 +106,7 @@ struct Firebase: Database {
         try await docRef!.updateData([key: value])
     }
     
-    func updateGameArrayField<T>(key: String, value: [T], action: ArrayActionType) async throws {
+    func updateGameArrayField<T: Equatable>(key: String, value: [T], action: ArrayActionType) async throws {
         let fieldValue: FieldValue
         switch action {
             case .append:
@@ -344,98 +344,256 @@ struct Firebase: Database {
     }
 }
 
-//class Local: Database {
-//    @Environment(\.modelContext) private var context
-//    
-//    init() {}
-//    
-//    func updatePlayerField<T>(uid: String, key: String, value: T) async throws {
-//        <#code#>
-//    }
-//    
-//    func updatePlayerArrayField<T>(uid: String, key: String, value: [T], action: ArrayActionType) async throws {
-//        <#code#>
-//    }
-//    
-//    func updateGameField<T>(key: String, value: T) async throws {
-//        <#code#>
-//    }
-//    
-//    func updateGameArrayField<T>(key: String, value: [T], action: ArrayActionType) async throws {
-//        <#code#>
-//    }
-//    
-//    func updateTeamField<T>(teamNum: Int, key: String, value: T) async throws {
-//        <#code#>
-//    }
-//    
-//    func setDocRef(_ groupId: Int) {
-//        <#code#>
-//    }
-//    
-//    func setInitGameState(_ gameState: GameState) throws {
-//        <#code#>
-//    }
-//    
-//    func getGameState() async throws -> GameState {
-//        <#code#>
-//    }
-//    
-//    func getGameState(_ groupId: Int) async throws -> GameState {
-//        <#code#>
-//    }
-//    
-//    func setTeamState(_ teamState: TeamState, _ teamNum: Int) throws {
-//        <#code#>
-//    }
-//    
-//    func getTeamState(_ teamNum: Int) async throws -> TeamState {
-//        <#code#>
-//    }
-//    
-//    func setPlayerState(_ playerState: PlayerState, _ playerUid: String) throws {
-//        <#code#>
-//    }
-//    
-//    func addPlayersListener(_ playerStateRef: Reference<PlayerState>, _ playersRef: Reference<[PlayerState]>) async {
-//        <#code#>
-//    }
-//    
-//    func removePlayersListener() {
-//        <#code#>
-//    }
-//    
-//    func addGameStateListener(_ gameStateRef: Reference<GameState>) async {
-//        <#code#>
-//    }
-//    
-//    func removeGameStateListener() {
-//        <#code#>
-//    }
-//    
-//    func addTeamsListener(_ teamStateRef: Reference<TeamState>, _ teamsRef: Reference<[TeamState]>) async {
-//        <#code#>
-//    }
-//    
-//    func removeTeamsListener() {
-//        <#code#>
-//    }
-//    
-//    func checkGameExists(groupId: Int) async throws -> Bool {
-//        <#code#>
-//    }
-//    
-//    func checkTeamExists(teamNum: Int) async throws -> Bool {
-//        <#code#>
-//    }
-//    
-//    func deleteGameCollection(id: Int) async {
-//        <#code#>
-//    }
-//    
-//    func deleteTeamCollection(teamNum: Int) async throws {
-//        <#code#>
-//    }
-//    
-//    
-//}
+struct Local: Database {
+    @Query(filter: #Predicate<GameModel> { model in
+        model.inProgress == true
+    }) var models: [GameModel]
+    var model: GameModel? { models.first }
+    
+    enum CodingKeys: String, CodingKey {
+        case models
+    }
+    
+    init() {
+    }
+    
+    // Decodable conformance
+    init(from decoder: Decoder) throws {
+//        let container = try decoder.container(keyedBy: CodingKeys.self)
+//        self.models = try container.decode([GameModel].self, forKey: .models)
+    }
+    
+    // Encodable conformance
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(models, forKey: .models)
+    }
+    
+    func updatePlayerField<T>(uid: String, key: String, value: T) async throws {
+        guard let model = model, let playerState = model.playerState else {
+            return
+        }
+
+        if playerState.uid == uid {
+            model.playerState![key] = value
+        } else if let idx = model.players.firstIndex(where: { $0.uid == uid }) {
+            model.players[idx][key] = value
+        }
+    }
+    
+    func updatePlayerArrayField<T: Equatable>(uid: String, key: String, value: [T], action: ArrayActionType) async throws {
+        guard let model = model, let playerState = model.playerState else {
+            return
+        }
+
+        if playerState.uid == uid {
+            switch action {
+                case .append:
+                    if var lookUp = model.playerState![key] as? [T] {
+                        lookUp.append(contentsOf: value)
+                    }
+                case .remove:
+                    if var lookUp = model.playerState![key] as? [T] {
+                        for val in value {
+                            lookUp.removeAll(where: {
+                                $0 == val
+                            })
+                        }
+                    }
+                case .replace:
+                    model.playerState![key] = value
+            }
+        } else if let idx = model.players.firstIndex(where: { $0.uid == uid }) {
+            switch action {
+                case .append:
+                    if var lookUp = model.players[idx][key] as? [T] {
+                        lookUp.append(contentsOf: value)
+                    }
+                case .remove:
+                    if var lookUp = model.players[idx][key] as? [T] {
+                        for val in value {
+                            lookUp.removeAll(where: {
+                                $0 == val
+                            })
+                        }
+                    }
+                case .replace:
+                    model.players[idx][key] = value
+            }
+        }
+    }
+    
+    func updateGameField<T>(key: String, value: T) async throws {
+        guard let model = model, model.gameState != nil else {
+            return
+        }
+        
+        model.gameState![key] = value
+    }
+    
+    func updateGameArrayField<T: Equatable>(key: String, value: [T], action: ArrayActionType) async throws {
+        guard let model = model, model.gameState != nil else {
+            return
+        }
+        
+        switch action {
+            case .append:
+                if var lookUp = model.gameState![key] as? [T] {
+                    lookUp.append(contentsOf: value)
+                }
+            case .remove:
+                if var lookUp = model.gameState![key] as? [T] {
+                    for val in value {
+                        lookUp.removeAll(where: {
+                            $0 == val
+                        })
+                    }
+                }
+            case .replace:
+                model.gameState![key] = value
+        }
+    }
+    
+    func updateTeamField<T>(teamNum: Int, key: String, value: T) async throws {
+        guard let model = model, var teamState = model.teamState else {
+            return
+        }
+
+        if teamState.team_num == teamNum {
+            teamState[key] = value
+        } else if let idx = model.teams.firstIndex(where: { $0.team_num == teamNum }) {
+            model.teams[idx][key] = value
+        }
+    }
+    
+    func setDocRef(_ groupId: Int) { /* don't need this function */ }
+    
+    func setInitGameState(_ gameState: GameState) throws {
+        guard let model = model else {
+            return
+        }
+        
+        model.gameState = gameState
+    }
+    
+    func getGameState() async throws -> GameState {
+        guard let model = model, let gameState = model.gameState else {
+            return GameState()
+        }
+        
+        return gameState
+    }
+    
+    func getGameState(_ groupId: Int) async throws -> GameState {
+        /* don't need this function */
+        return GameState()
+    }
+    
+    func setTeamState(_ teamState: TeamState, _ teamNum: Int) throws {
+        guard let model = model else {
+            return
+        }
+        
+        model.teams.append(teamState)
+    }
+    
+    func getTeamState(_ teamNum: Int) async throws -> TeamState {
+        guard let model = model else {
+            return TeamState()
+        }
+        
+        if let idx = model.teams.firstIndex(where: { $0.team_num == teamNum }) {
+            return model.teams[idx]
+        } else {
+            return TeamState()
+        }
+    }
+    
+    func setPlayerState(_ playerState: PlayerState, _ playerUid: String) throws {
+        guard let model = model else {
+            return
+        }
+        
+        model.players.append(playerState)
+    }
+    
+    func addPlayersListener(_ playerStateRef: Reference<PlayerState>, _ playersRef: Reference<[PlayerState]>) async {
+        // POSSIBLE SOLUTIONS
+//        @MainActor
+//        private func logIn(applicationState: OrdoApplication) {
+//            if applicationState.loginState == .loggedIn {
+//                runTests(applicationState: applicationState)
+//            } else {
+//                withObservationTracking {
+//                    _ = applicationState.loginState
+//                } onChange: {
+//                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+//                        self.logIn(applicationState: applicationState)
+//                    }
+//                }
+//            }
+//        }
+        
+        /* import Observation
+         
+         @Observable class SourceOfTruth {
+             var data: Int = 0
+         }
+
+         let sourceOfTruth = SourceOfTruth()
+
+         func test() {
+             withObservationTracking {
+                 _ = sourceOfTruth.data
+             } onChange: {
+                 print("changed: ", sourceOfTruth.data)
+                 test()
+             }
+         }
+
+         func foo() {
+             Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
+                 sourceOfTruth.data += 1
+             }
+             test()
+         } */
+    }
+    
+    func removePlayersListener() {
+        /* don't need this function */
+    }
+    
+    func addGameStateListener(_ gameStateRef: Reference<GameState>) async {
+        /* don't need this function */
+    }
+    
+    func removeGameStateListener() {
+        /* don't need this function */
+    }
+    
+    func addTeamsListener(_ teamStateRef: Reference<TeamState>, _ teamsRef: Reference<[TeamState]>) async {
+        /* don't need this function */
+    }
+    
+    func removeTeamsListener() {
+        /* don't need this function */
+    }
+    
+    func checkGameExists(groupId: Int) async throws -> Bool {
+        /* don't need this function */
+        return false
+    }
+    
+    func checkTeamExists(teamNum: Int) async throws -> Bool {
+        /* don't need this function */
+        return false
+    }
+    
+    func deleteGameCollection(id: Int) async {
+        /* don't need this function */
+    }
+    
+    func deleteTeamCollection(teamNum: Int) async throws {
+        /* don't need this function */
+    }
+}

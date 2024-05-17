@@ -87,7 +87,7 @@ class GameHelper {
             try await database.updatePlayerField(uid: uid ?? playerState.uid, key: key, value: value)
         }
 
-        func updateArrayField<T>(key: String, value: [T], action: ArrayActionType?) async throws {
+        func updateArrayField<T: Equatable>(key: String, value: [T], action: ArrayActionType?) async throws {
             try await database.updatePlayerArrayField(uid: uid ?? playerState.uid, key: key, value: value, action: action!)
         }
 
@@ -144,7 +144,7 @@ class GameHelper {
             try await database.updateGameField(key: key, value: value)
         }
 
-        func updateArrayField<T>(key: String, value: [T], action: ArrayActionType?) async throws {
+        func updateArrayField<T: Equatable>(key: String, value: [T], action: ArrayActionType?) async throws {
             try await database.updateGameArrayField(key: key, value: value, action: action!)
         }
 

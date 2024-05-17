@@ -13,6 +13,7 @@ import SwiftUI
     var maxX: Double = 0.0
     var maxY: Double = 0.0
     var inGame: Bool = false
+    var singlePlayerModelUid: UUID? = nil
     var theme: ColorTheme = .classic
     
     func setProperties(_ geo: GeometryProxy) {

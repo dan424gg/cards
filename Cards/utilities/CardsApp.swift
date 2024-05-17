@@ -44,6 +44,7 @@ struct CardsApp: App {
                     }
                     .zIndex(2.0)
                 }
+                .modelContainer(for: GameModel.self)
                 .environment(GameHelper())
                 .environment({ () -> DeviceSpecs in
                     let envObj = DeviceSpecs()

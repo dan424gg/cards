@@ -58,6 +58,29 @@ public struct GameState: Hashable, Codable {
     }
 }
 
+extension GameState {
+    subscript(_ keyPath: String) -> Any? {
+        get {
+            if let data = try? JSONEncoder().encode(self)
+                , var dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] { //Any of this could fail silently at any time
+                return dict[keyPath]
+            } else {
+                return nil
+            }
+        }
+        set {
+            if let data = try? JSONEncoder().encode(self)
+                , var dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] { //Any of this could fail silently at any time
+                dict[keyPath] = newValue
+                
+                if let newData = try? JSONSerialization.data(withJSONObject: dict), let newObj = try? JSONDecoder().decode(Self.self, from: newData) { //Any of this could fail silently at any time
+                    self = newObj
+                }
+            }
+        }
+    }
+}
+
 public class GameObservable: ObservableObject {
     @Published var game: GameState
 
