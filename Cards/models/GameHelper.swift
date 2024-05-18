@@ -140,6 +140,10 @@ class GameHelper {
     }
    
     func updateGame(_ newState: [String: Any], arrayAction: ArrayActionType? = nil) async {
+        guard gameState != nil else {
+            return
+        }
+        
         func updateGameField<T>(key: String, value: T) async throws {
             try await database.updateGameField(key: key, value: value)
         }

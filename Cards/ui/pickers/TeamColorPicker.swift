@@ -30,10 +30,10 @@ struct TeamColorPicker: View {
             }
         } label: {
             HStack {
-                Rectangle()
+                RoundedRectangle(cornerRadius: 5.0)
                     .fill(teamColor == "" ? .white : Color(teamColor))
                     .font(.system(size: 15, weight: .thin))
-                    .frame(width: 20, height: 20)
+                    .frame(width: 25, height: 25)
             }
         }
         .onChange(of: gameHelper.teamState, initial: true, {

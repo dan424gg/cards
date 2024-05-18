@@ -8,10 +8,11 @@
 import SwiftUI
 
 struct GamePicker: View {
-    @Environment(GameHelper.self) private var gameHelper
-    @Environment(DeviceSpecs.self) private var specs
+    @Environment(GameHelper.self) var gameHelper
+    @Environment(DeviceSpecs.self) var specs
     @State var gameSelected: Games = .cribbage
     @State var preventCyclicalUpdate: Bool = false
+    var color: Color?
     
     enum Games: String, CaseIterable, Identifiable {
         case cribbage, goFish, rummy
@@ -26,7 +27,6 @@ struct GamePicker: View {
             }
         }
     }
-
     
     var body: some View {
         Menu {
@@ -39,7 +39,8 @@ struct GamePicker: View {
         } label: {
             HStack(spacing: 2) {
                 CText(gameSelected.id.capitalized)
-                    .foregroundStyle(specs.theme.colorWay.primary)
+                    .foregroundStyle(color ?? specs.theme.colorWay.primary)
+                    .underline()
             }
         }
         .onChange(of: gameHelper.gameState?.game_name, {
@@ -52,10 +53,6 @@ struct GamePicker: View {
             }
         })
         .onChange(of: gameSelected, initial: true, {
-//            guard gameHelper.playerState!.is_lead else {
-//                return
-//            }
-            
             if !preventCyclicalUpdate {
                 Task {
                     await gameHelper.updateGame(["game_name": gameSelected.id])
@@ -68,6 +65,18 @@ struct GamePicker: View {
 }
 
 #Preview {
-    return GamePicker()
+    return GeometryReader { geo in
+        GamePicker()
+            .environment({ () -> DeviceSpecs in
+                let envObj = DeviceSpecs()
+                envObj.setProperties(geo)
+                return envObj
+            }() )
             .environment(GameHelper())
+            .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
+            .background {
+                DeviceSpecs().theme.colorWay.background
+            }
+    }
+    .ignoresSafeArea()
 }

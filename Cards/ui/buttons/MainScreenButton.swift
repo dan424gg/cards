@@ -15,15 +15,12 @@ struct MainScreenButton: View {
     var submitFunction: (() -> Void)
     
     var body: some View {
-        CText(buttonType == .newGame ? "New Game" : "Join Game", size: 24)
+        CText(determineText(buttonType), size: 24)
             .foregroundStyle(specs.theme.colorWay.textColor)
             .padding(.horizontal, 20)
             .padding(.vertical, 12)
-//            .font(.custom("LuckiestGuy-Regular", size: 24))
-//            .baselineOffset(-5)
-//            .foregroundStyle(buttonType == .newGame ? specs.theme.colorWay.secondary : specs.theme.colorWay.primary)
             .frame(width: specs.maxX * 0.75)
-            .background(/*buttonType == .newGame ? specs.theme.colorWay.secondary : */specs.theme.colorWay.primary)
+            .background(specs.theme.colorWay.primary)
             .clipShape(Capsule())
             .scaleEffect(scale)
             .onLongPressGesture(minimumDuration: 100.0, perform: {
@@ -44,6 +41,21 @@ struct MainScreenButton: View {
                     }
                 }
             })
+    }
+    
+    func determineText(_ introView: IntroViewType) -> String {
+        switch introView {
+            case .newGame:
+                return "NEW GAME"
+            case .existingGame:
+                return "JOIN GAME"
+            case .singlePlayer:
+                return "SINGLE PLAYER"
+            case .multiPlayer:
+                return "MULTIPLAYER"
+            default:
+                return "Nothing"
+        }
     }
 }
 
