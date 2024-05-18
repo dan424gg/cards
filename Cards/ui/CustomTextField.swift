@@ -16,7 +16,7 @@ struct CustomTextField: View {
     var validationFunciton: ((String) -> Any)? = nil
     var asyncValidationFunciton: ((String) async -> Any)? = nil
     var widthMultiplier: Double = 0.5
-    var alignment: Alignment = .center
+    var alignment: TextAlignment = .center
     
     @FocusState private var hasFocus: Bool
     @Binding var value: String
@@ -55,8 +55,8 @@ struct CustomTextField: View {
                 }
             })
             .focused($hasFocus)
-            .frame(width: specs.maxX * widthMultiplier, alignment: alignment)
-            .multilineTextAlignment(.center)
+            .frame(width: specs.maxX * widthMultiplier)
+            .multilineTextAlignment(alignment)
         }
     }
 }

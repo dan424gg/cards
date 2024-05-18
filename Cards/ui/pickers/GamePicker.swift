@@ -40,7 +40,6 @@ struct GamePicker: View {
             HStack(spacing: 2) {
                 CText(gameSelected.id.capitalized)
                     .foregroundStyle(color ?? specs.theme.colorWay.primary)
-                    .underline()
             }
         }
         .onChange(of: gameHelper.gameState?.game_name, {

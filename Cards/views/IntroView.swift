@@ -61,7 +61,7 @@ struct IntroView: View {
                         .onTapGesture {
                             endTextEditing()
                         }
-                case .nothing:
+                case .nothing, .multiPlayer:
                     ZStack {
                         CText("CARDS PLAYGROUND", size: Int(determineFont("PLAYGROUND", Int(specs.maxX - 40), 115)))
                             .foregroundStyle(specs.theme.colorWay.title)
@@ -69,9 +69,17 @@ struct IntroView: View {
                             .position(x: specs.maxX / 2, y: specs.maxY * 0.25)
 
                         VStack(spacing: 15) {
+                            if introView == .multiPlayer {
+                                MultiplayerSubView(introView: $introView)
+                            }
+                            
                             MainScreenButton(buttonType: .multiPlayer, submitFunction: {
                                 withAnimation(.snappy.speed(1.0)) {
-                                    introView = .multiPlayer
+                                    if introView == .multiPlayer {
+                                        introView = .nothing
+                                    } else {
+                                        introView = .multiPlayer
+                                    }
                                 }
                             })
                             
@@ -94,9 +102,55 @@ struct IntroView: View {
                     }
                     .transition(.opacity)
                 case .singlePlayer:
-                    EmptyView()
-                case .multiPlayer:
-                    EmptyView()
+                    SinglePlayerView(introView: $introView)
+                        .geometryGroup()
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            endTextEditing()
+                        }
+            }
+        }
+    }
+    
+    struct MultiplayerSubView: View {
+        @Environment(GameHelper.self) var gameHelper
+        @Environment(DeviceSpecs.self) var specs
+        @Binding var introView: IntroViewType
+        
+        var body: some View {
+            HStack(spacing: -10) {
+                TextButton(text: "new game", submitFunction: {
+                    withAnimation(.snappy.speed(1.0)){
+                        introView = .newGame
+                    }
+                })
+                
+                TextButton(text: "join game", submitFunction: {
+                    withAnimation(.snappy.speed(1.0)){
+                        introView = .existingGame
+                    }
+                })
+//                Group {
+//                    VisualEffectView(effect: UIBlurEffect(style: .systemThinMaterialDark))
+//                        .overlay {
+//                            CText("New Game", size: 35)
+//                                .multilineTextAlignment(.center)
+//                        }
+//                    VisualEffectView(effect: UIBlurEffect(style: .systemThinMaterialDark))
+//                        .overlay {
+//                            CText("Join Game", size: 35)
+//                                .multilineTextAlignment(.center)
+//                        }
+//                }
+//                .clipShape(RoundedRectangle(cornerRadius: 25.0))
+//                .scaleEffect(0.8)
+            }
+            .frame(width: specs.maxX * 0.75, height: 125)
+            .background {
+                RoundedRectangle(cornerRadius: 25.0)
+                    .fill(specs.theme.colorWay.primary)
             }
         }
     }

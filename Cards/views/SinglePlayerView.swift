@@ -38,7 +38,7 @@ struct SinglePlayerView: View {
                     CText("Name")
                     Spacer()
                     CustomTextField(textFieldHint: "Name", widthMultiplier: 0.3, alignment: .trailing, value: $name)
-                        .textFieldStyle(ClearTextFieldBorder())
+                        .textFieldStyle(ClearTextFieldBorder(color: specs.theme.colorWay.secondary))
                 }
                 .padding(.vertical, 15)
                 .padding(.horizontal, 20)
@@ -59,7 +59,6 @@ struct SinglePlayerView: View {
                     } label: {
                         CText("\(numberOfBots)")
                             .foregroundStyle(specs.theme.colorWay.secondary)
-                            .underline()
                     }
                     
                 }
