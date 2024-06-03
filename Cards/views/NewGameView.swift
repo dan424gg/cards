@@ -48,6 +48,7 @@ struct NewGameView: View {
                     .frame(height: 40)
                 
                 CustomTextField(textFieldHint: "Name", value: $fullName)
+                    .textFieldStyle(TextFieldBorder())
                 
                 CustomButton(name: "Submit", submitFunction: {
                     endTextEditing()

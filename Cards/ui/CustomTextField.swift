@@ -15,6 +15,8 @@ struct CustomTextField: View {
     var textFieldHint: String
     var validationFunciton: ((String) -> Any)? = nil
     var asyncValidationFunciton: ((String) async -> Any)? = nil
+    var widthMultiplier: Double = 0.5
+    var alignment: TextAlignment = .center
     
     @FocusState private var hasFocus: Bool
     @Binding var value: String
@@ -53,29 +55,43 @@ struct CustomTextField: View {
                 }
             })
             .focused($hasFocus)
-            .frame(width: specs.maxX * 0.5)
-            .textFieldStyle(TextFieldBorder())
-            .multilineTextAlignment(.center)
+            .frame(width: specs.maxX * widthMultiplier)
+            .multilineTextAlignment(alignment)
         }
     }
 }
 
 struct TextFieldBorder: TextFieldStyle {
+    var color: Color = .black
+
     func _body(configuration: TextField<Self._Label>) -> some View {
         configuration
             .padding(.horizontal, 20)
             .padding(.vertical, 12)
             .font(.custom("LuckiestGuy-Regular", size: 24))
-            .foregroundStyle(.black)
+            .foregroundStyle(color)
             .baselineOffset(-2.5)
             .background(Color.white)
             .clipShape(Capsule())
     }
 }
 
+struct ClearTextFieldBorder: TextFieldStyle {
+    var color: Color = .white
+
+    func _body(configuration: TextField<Self._Label>) -> some View {
+        configuration
+            .font(.custom("LuckiestGuy-Regular", size: 24))
+            .foregroundStyle(color)
+            .baselineOffset(-2.5)
+            .background(Color.clear)
+    }
+}
+
 #Preview {    
     return GeometryReader { geo in
         CustomTextField(textFieldHint: "Name", value: .constant(""))
+            .textFieldStyle(TextFieldBorder())
             .environment({ () -> DeviceSpecs in
                 let envObj = DeviceSpecs()
                 envObj.setProperties(geo)

@@ -83,8 +83,10 @@ struct ExistingGameView: View {
                 VStack(spacing: 5) {
                     CustomTextField(textFieldHint: "Game ID", asyncValidationFunciton: validateGroupId, value: $groupId)
                         .keyboardType(.numberPad)
+                        .textFieldStyle(TextFieldBorder())
                     
                     CustomTextField(textFieldHint: "Name", validationFunciton: validateName, value: $fullName)
+                        .textFieldStyle(TextFieldBorder())
                 }
                 
                 CustomButton(name: "Submit", submitFunction: {

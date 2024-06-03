@@ -436,7 +436,7 @@ struct CardsView: View {
                         CText("Send \(gameHelper.gameState?.num_players ?? gameObservable.game.num_players == 2 ? "two cards" : "one card") to the crib!", size: Int(determineFont("Send \(gameHelper.gameState?.num_players ?? gameObservable.game.num_players == 2 ? "two cards" : "one card") to the crib!", Int(specs.maxX / 1.31), 16)))
                     }
                 default:
-                    CText("Shouldn't have got here")
+                    CText("Shouldn't have got here for text of turn one")
             }
         }
     }

@@ -46,6 +46,10 @@ struct GameOutcomeView: View {
             }
         }
         .onAppear {
+            Task {
+                await gameHelper.updateGame(["completed": true])
+            }
+            
             gameHelper.logAnalytics(.game_ended)
         }
         .animation(.easeInOut.speed(0.5).delay(1.0), value: outcome)
