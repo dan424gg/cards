@@ -74,6 +74,7 @@
 		1E68C2AB2BAF392C00FAD83E /* CardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E68C2A72BAF38E800FAD83E /* CardsView.swift */; };
 		1E68C2AC2BAF392D00FAD83E /* CardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E68C2A72BAF38E800FAD83E /* CardsView.swift */; };
 		1E68C2AD2BAF392E00FAD83E /* CardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E68C2A72BAF38E800FAD83E /* CardsView.swift */; };
+		1E79BE772BFB08D40065A17E /* MigrationPlans.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E79BE762BFB08D40065A17E /* MigrationPlans.swift */; };
 		1E7E89232B9107F100E3626E /* LineOfSuits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7E89222B9107F100E3626E /* LineOfSuits.swift */; };
 		1E7E89242B91089000E3626E /* LineOfSuits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7E89222B9107F100E3626E /* LineOfSuits.swift */; };
 		1E7E89252B91089000E3626E /* LineOfSuits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7E89222B9107F100E3626E /* LineOfSuits.swift */; };
@@ -99,6 +100,11 @@
 		1E8A2E6F2B8D1E4F00A40148 /* GameSetUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8A2E6B2B8BADEF00A40148 /* GameSetUpView.swift */; };
 		1E8A2E702B8D1E5000A40148 /* GameSetUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8A2E6B2B8BADEF00A40148 /* GameSetUpView.swift */; };
 		1E8A2E712B8D1E5000A40148 /* GameSetUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8A2E6B2B8BADEF00A40148 /* GameSetUpView.swift */; };
+		1E8C0A132C059CAF00751D41 /* MigrationPlans.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E79BE762BFB08D40065A17E /* MigrationPlans.swift */; };
+		1E8C0A142C059CAF00751D41 /* MigrationPlans.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E79BE762BFB08D40065A17E /* MigrationPlans.swift */; };
+		1E8C0A152C059CB000751D41 /* MigrationPlans.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E79BE762BFB08D40065A17E /* MigrationPlans.swift */; };
+		1E8C0A162C059CB000751D41 /* MigrationPlans.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E79BE762BFB08D40065A17E /* MigrationPlans.swift */; };
+		1E8C0A172C059CB100751D41 /* MigrationPlans.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E79BE762BFB08D40065A17E /* MigrationPlans.swift */; };
 		1E8D31A82B05644300FC9C68 /* DeckOfCardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8D31A72B05644300FC9C68 /* DeckOfCardsView.swift */; };
 		1E8D45EE2B585EE5007543BC /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8D45ED2B585EE5007543BC /* Utils.swift */; };
 		1E939CFD2AE3606D00D64551 /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E939CFC2AE3606D00D64551 /* GameState.swift */; };
@@ -484,6 +490,7 @@
 		1E4BD26D2BF8159800FC78A3 /* LocalStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageTests.swift; sourceTree = "<group>"; };
 		1E4CC8F72AFB4A3500ECC77B /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		1E68C2A72BAF38E800FAD83E /* CardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsView.swift; sourceTree = "<group>"; };
+		1E79BE762BFB08D40065A17E /* MigrationPlans.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationPlans.swift; sourceTree = "<group>"; };
 		1E7E89222B9107F100E3626E /* LineOfSuits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineOfSuits.swift; sourceTree = "<group>"; };
 		1E87BC082B65A6170084BEAB /* PlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerView.swift; sourceTree = "<group>"; };
 		1E8A2E5A2B87CF3200A40148 /* DeviceSpecs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceSpecs.swift; sourceTree = "<group>"; };
@@ -682,6 +689,15 @@
 			path = "Copy Targets Info";
 			sourceTree = "<group>";
 		};
+		1E79BE752BFB08BE0065A17E /* swift data */ = {
+			isa = PBXGroup;
+			children = (
+				1E4BD26B2BF7F2DA00FC78A3 /* GameModel.swift */,
+				1E79BE762BFB08D40065A17E /* MigrationPlans.swift */,
+			);
+			path = "swift data";
+			sourceTree = "<group>";
+		};
 		1E8A2E612B89050A00A40148 /* pickers */ = {
 			isa = PBXGroup;
 			children = (
@@ -865,13 +881,13 @@
 		1EBED94A2AD7BF15008B85EE /* models */ = {
 			isa = PBXGroup;
 			children = (
+				1E79BE752BFB08BE0065A17E /* swift data */,
 				1E3C3EAE2B85473B000FCAE6 /* sheet items */,
 				1E3C3EAD2B85472C000FCAE6 /* document states */,
 				1EBED94B2AD7BF2C008B85EE /* GameHelper.swift */,
 				1E4338E62B0D460900E212CD /* LinkedList.swift */,
 				1E8A2E5A2B87CF3200A40148 /* DeviceSpecs.swift */,
 				1EF89CDD2BF54ACA000F2E4B /* Database.swift */,
-				1E4BD26B2BF7F2DA00FC78A3 /* GameModel.swift */,
 			);
 			path = models;
 			sourceTree = "<group>";
@@ -1303,6 +1319,7 @@
 				1E7E89232B9107F100E3626E /* LineOfSuits.swift in Sources */,
 				1EC258ED2B9B820A001B78EB /* MainView.swift in Sources */,
 				1E3FAE4F2BF882C400B71422 /* TextButton.swift in Sources */,
+				1E79BE772BFB08D40065A17E /* MigrationPlans.swift in Sources */,
 				1E3480652BE15B45006C290E /* MainScreenButton.swift in Sources */,
 				1E4722AE2B8E4BBE0067A890 /* GamePicker.swift in Sources */,
 				1E3C3EB22B8547B4000FCAE6 /* SheetCordinator.swift in Sources */,
@@ -1346,6 +1363,7 @@
 				1E3FAE492BF87D1200B71422 /* MultiplayerSubView.swift in Sources */,
 				1EF4295F2BBC5AD900121C1A /* PointContainer.swift in Sources */,
 				1ED85E702B718B3000807548 /* GameState.swift in Sources */,
+				1E8C0A132C059CAF00751D41 /* MigrationPlans.swift in Sources */,
 				1ED85E712B718B3000807548 /* CardPlaceHolder.swift in Sources */,
 				1EC258FE2B9E38CE001B78EB /* ExisitingGameView.swift in Sources */,
 				1ED85E722B718B3000807548 /* Utils.swift in Sources */,
@@ -1408,6 +1426,7 @@
 				1E3FAE4A2BF87D1200B71422 /* MultiplayerSubView.swift in Sources */,
 				1EF429602BBC5ADA00121C1A /* PointContainer.swift in Sources */,
 				1ED85EA92B71904300807548 /* GameState.swift in Sources */,
+				1E8C0A142C059CAF00751D41 /* MigrationPlans.swift in Sources */,
 				1ED85EAA2B71904300807548 /* CardPlaceHolder.swift in Sources */,
 				1EC258FF2B9E38CF001B78EB /* ExisitingGameView.swift in Sources */,
 				1ED85EAB2B71904300807548 /* Utils.swift in Sources */,
@@ -1470,6 +1489,7 @@
 				1E3FAE4B2BF87D1200B71422 /* MultiplayerSubView.swift in Sources */,
 				1EF429612BBC5ADA00121C1A /* PointContainer.swift in Sources */,
 				1ED85F4E2B71904D00807548 /* GameState.swift in Sources */,
+				1E8C0A152C059CB000751D41 /* MigrationPlans.swift in Sources */,
 				1ED85F4F2B71904D00807548 /* CardPlaceHolder.swift in Sources */,
 				1EC259002B9E38CF001B78EB /* ExisitingGameView.swift in Sources */,
 				1ED85F502B71904D00807548 /* Utils.swift in Sources */,
@@ -1532,6 +1552,7 @@
 				1E3FAE4C2BF87D1200B71422 /* MultiplayerSubView.swift in Sources */,
 				1EF429622BBC5ADB00121C1A /* PointContainer.swift in Sources */,
 				1ED85F852B71904E00807548 /* GameState.swift in Sources */,
+				1E8C0A162C059CB000751D41 /* MigrationPlans.swift in Sources */,
 				1ED85F862B71904E00807548 /* CardPlaceHolder.swift in Sources */,
 				1EC259012B9E38D0001B78EB /* ExisitingGameView.swift in Sources */,
 				1ED85F872B71904E00807548 /* Utils.swift in Sources */,
@@ -1594,6 +1615,7 @@
 				1E3FAE4D2BF87D1200B71422 /* MultiplayerSubView.swift in Sources */,
 				1EF429632BBC5ADB00121C1A /* PointContainer.swift in Sources */,
 				1ED85FBC2B71904F00807548 /* GameState.swift in Sources */,
+				1E8C0A172C059CB100751D41 /* MigrationPlans.swift in Sources */,
 				1ED85FBD2B71904F00807548 /* CardPlaceHolder.swift in Sources */,
 				1EC259022B9E38D0001B78EB /* ExisitingGameView.swift in Sources */,
 				1ED85FBE2B71904F00807548 /* Utils.swift in Sources */,
@@ -1863,7 +1885,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Cards/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Cards Playground";
+				INFOPLIST_KEY_CFBundleDisplayName = "Cards!";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.card-games";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -1901,7 +1923,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Cards/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Cards Playground";
+				INFOPLIST_KEY_CFBundleDisplayName = "Cards!";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.card-games";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

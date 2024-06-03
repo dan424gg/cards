@@ -25,6 +25,7 @@ public struct GameState: Hashable, Codable {
     var starter_card: Int = -1
     var colors_available: [String] = ["Red", "Blue", "Teal", "Green", "Yellow", "Orange"]
     var player_turn: Int = -1
+    var completed: Bool = false
     
     // used during "The Play"
     var play_cards: [Int] = []
@@ -55,6 +56,7 @@ public struct GameState: Hashable, Codable {
         case running_sum
         case num_go
         case num_cards_in_play
+        case completed
     }
 }
 

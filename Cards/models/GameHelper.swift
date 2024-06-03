@@ -48,22 +48,20 @@ class GameHelper {
     var teams: [TeamState]
     var gameOutcome: GameOutcome
     
-    init(database: Database = Firebase(), gameState: GameState? = nil, teamState: TeamState? = nil, playerState: PlayerState? = nil, players: [PlayerState] = [], teams: [TeamState] = [], gameOutcome: GameOutcome = .undetermined) {
-        self.database = database
-        self.gameState = gameState
-        self.teamState = teamState
-        self.playerState = playerState
-        self.players = players
-        self.teams = teams
-        self.gameOutcome = gameOutcome
+    init() {
+        self.database = NilDB()
+        self.gameState = GameState()
+        self.teamState = TeamState()
+        self.playerState = PlayerState()
+        self.players = [PlayerState]()
+        self.teams = [TeamState]()
+        self.gameOutcome = .undetermined
     }
         
     func reinitialize() {
-        if type(of: database) == Firebase.self {
-            removeGameInfoListener()
-            removeTeamsListener()
-            removePlayersListener()
-        }
+        removeGameInfoListener()
+        removeTeamsListener()
+        removePlayersListener()
         
         self.gameOutcome = .undetermined
         self.gameState = nil
@@ -78,17 +76,77 @@ class GameHelper {
     }
     
     func updatePlayer(_ newState: [String: Any], uid: String? = nil, arrayAction: ArrayActionType? = nil) async {
-        guard let playerState = playerState else {
+        guard playerState != nil else {
             print("playerState is nil when trying to update player!")
             return
         }
 
         func updatePlayerField<T>(key: String, value: T) async throws {
-            try await database.updatePlayerField(uid: uid ?? playerState.uid, key: key, value: value)
+            // single-player
+            if type(of: database) == Local.self {
+                if uid != nil && playerState!.uid != uid {
+                    if let idx = players.firstIndex(where: {
+                        $0.uid == uid!
+                    }) {
+                        players[idx][key] = value
+                    } else {
+                        print("error        player doesn't exist in 'players'\n\(uid!)")
+                    }
+                } else {
+                    playerState![key] = value
+                }
+            }
+            
+            try await database.updatePlayerField(uid: uid ?? playerState!.uid, key: key, value: value)
         }
 
         func updateArrayField<T: Equatable>(key: String, value: [T], action: ArrayActionType?) async throws {
-            try await database.updatePlayerArrayField(uid: uid ?? playerState.uid, key: key, value: value, action: action!)
+            guard let arrayAction = action else {
+                print("error        you need an action flag to manipulate an array field! (updatePlayerArrayField key: \(key) value: \(value)")
+                return
+            }
+            
+            if type(of: database) == Local.self {
+                if uid != nil && playerState!.uid != uid {
+                    if let idx = players.firstIndex(where: {
+                        $0.uid == uid!
+                    }) {
+                        var tempArray: [T] = players[idx][key] as! [T]
+                        
+                        switch arrayAction {
+                            case .append:
+                                tempArray.append(contentsOf: value)
+                            case .remove:
+                                for val in value {
+                                    tempArray.removeAll(where: { $0 == val })
+                                }
+                            case .replace:
+                                tempArray = value
+                        }
+                        
+                        players[idx][key] = tempArray
+                    } else {
+                        print("error        player doesn't exist in 'players'\n\(uid!)")
+                    }
+                } else {
+                    var tempArray: [T] = playerState![key] as! [T]
+                    
+                    switch arrayAction {
+                        case .append:
+                            tempArray.append(contentsOf: value)
+                        case .remove:
+                            for val in value {
+                                tempArray.removeAll(where: { $0 == val })
+                            }
+                        case .replace:
+                            tempArray = value
+                    }
+                    
+                    playerState![key] = tempArray
+                }
+            }
+            
+            try await database.updatePlayerArrayField(uid: uid ?? playerState!.uid, key: key, value: value, action: action!)
         }
 
         do {
@@ -141,21 +199,48 @@ class GameHelper {
    
     func updateGame(_ newState: [String: Any], arrayAction: ArrayActionType? = nil) async {
         guard gameState != nil else {
+            print("error        gameState is nil when trying to update!\nnewState: \(newState)\n")
             return
         }
         
         func updateGameField<T>(key: String, value: T) async throws {
+            if type(of: database) == Local.self {
+                gameState![key] = value
+            }
+            
             try await database.updateGameField(key: key, value: value)
         }
 
         func updateArrayField<T: Equatable>(key: String, value: [T], action: ArrayActionType?) async throws {
+            guard let arrayAction = action else {
+                print("error        you need an action flag to manipulate an array field! (updateGame key: \(key) value: \(value)")
+                return
+            }
+            
+            if type(of: database) == Local.self {
+                var tempArray: [T] = gameState![key] as! [T]
+                
+                switch arrayAction {
+                    case .append:
+                        tempArray.append(contentsOf: value)
+                    case .remove:
+                        for val in value {
+                            tempArray.removeAll(where: { $0 == val })
+                        }
+                    case .replace:
+                        tempArray = value
+                }
+                
+                gameState![key] = tempArray
+            }
+            
             try await database.updateGameArrayField(key: key, value: value, action: action!)
         }
 
         do {
             for (key, value) in newState {
                 switch key {
-                    case "is_playing":
+                    case "is_playing", "completed":
                         guard let boolValue = value as? Bool else {
                             print("\(key): \(value) needs to be Bool in updateGame()!")
                             return
@@ -207,13 +292,25 @@ class GameHelper {
     }
     
     func updateTeam(_ newState: [String: Any], _ teamNum: Int? = nil) async {
-        guard let teamState = teamState else {
+        guard teamState != nil else {
             print("teamState was nil before updating team information")
             return
         }
 
         func updateTeamField<T>(key: String, value: T) async throws {
-            let teamNum = teamNum ?? teamState.team_num
+            let teamNum = teamNum ?? teamState!.team_num
+            
+            if type(of: database) == Local.self {
+                guard let idx = teams.firstIndex(where: {
+                    $0.team_num == teamNum
+                }) else {
+                    print("error        couldn't find team for updateTeamField(key: \(key), value: \(value))")
+                    return
+                }
+                
+                teams[idx][key] = value
+            }
+            
             try await database.updateTeamField(teamNum: teamNum, key: key, value: value)
         }
 
@@ -274,7 +371,7 @@ class GameHelper {
         guard gameState != nil else {
             return
         }
-        
+                
         let gameStateRef = Reference(gameState!)
         
         gameStateRef.updateCallback = { newValue in
@@ -362,7 +459,7 @@ class GameHelper {
                 let color = gameState!.colors_available.randomElement()!
                 teamState = TeamState(team_num: newTeamNum, color: color)
                 await updateGame(["colors_available": [color]], arrayAction: .remove)
-                try database.setTeamState(teamState!, newTeamNum)
+                try database.setInitTeamState(teamState!, newTeamNum)
             }
         } catch {
             print(error)
@@ -372,27 +469,29 @@ class GameHelper {
     func startGameCollection(fullName: String, testGroupId: Int? = nil) async {
         var groupId = 0
         
-        #if DEBUG
-        if (UITestingHelper.isUITesting) {
-            await deleteGameCollection(id: 10076)
-            groupId = 10076
-        } else {
-            if (testGroupId != nil) {
-                groupId = testGroupId!
+        if type(of: database) != Local.self {
+            #if DEBUG
+            if (UITestingHelper.isUITesting) {
+                await deleteGameCollection(id: 10076)
+                groupId = 10076
             } else {
-                repeat {
-                    groupId = Int.random(in: 10000..<99999)
-                } while (await checkValidId(id: "\(groupId)"))
+                if (testGroupId != nil) {
+                    groupId = testGroupId!
+                } else {
+                    repeat {
+                        groupId = Int.random(in: 10000..<99999)
+                    } while (await checkValidId(id: "\(groupId)"))
+                }
             }
+            #else
+            repeat {
+                groupId = Int.random(in: 10000..<99999)
+            } while (await checkValidId(id: "\(groupId)"))
+            #endif
+            
+            print("gameId = \(groupId)")
+            database.setDocRef(groupId)
         }
-        #else
-        repeat {
-            groupId = Int.random(in: 10000..<99999)
-        } while (await checkValidId(id: "\(groupId)"))
-        #endif
-        
-        print("gameId = \(groupId)")
-        database.setDocRef(groupId)
         
         do {
             gameState = GameState(group_id: groupId, num_teams: 1, num_players: 1)
@@ -400,11 +499,11 @@ class GameHelper {
             gameState!.colors_available = gameState!.colors_available.filter { $0 != color }
             try database.setInitGameState(gameState!)
             
-            teamState = TeamState(team_num: 1, color: color)
-            try database.setTeamState(teamState!, 1)
-            
             playerState = PlayerState(name: fullName, uid: UUID().uuidString, is_lead: true, team_num: 1, player_num: 0)
-            try database.setPlayerState(playerState!, playerState!.uid)
+            try database.setInitPlayerState(playerState!, playerState!.uid)
+            
+            teamState = TeamState(team_num: 1, color: color)
+            try database.setInitTeamState(teamState!, 1)
         } catch {
             // do something
         }
@@ -451,7 +550,7 @@ class GameHelper {
             
             playerState = PlayerState(name: fullName, uid: UUID().uuidString, team_num: teamNum, player_num: numPlayers - 1)
 //            try docRef!.collection("players").document(playerState!.uid).setData(from: playerState!)
-            try database.setPlayerState(playerState!, playerState!.uid)
+            try database.setInitPlayerState(playerState!, playerState!.uid)
 
             if try await !checkTeamExists(teamNum: teamNum) {
                 var color = ""
@@ -465,7 +564,7 @@ class GameHelper {
                 
                 await updateGame(["colors_available": [color]], arrayAction: .remove)
                 teamState = TeamState(team_num: teamNum, color: color)
-                try database.setTeamState(teamState!, teamNum)
+                try database.setInitTeamState(teamState!, teamNum)
             } else {
                 teamState = try await database.getTeamState(teamNum)
             }

@@ -13,11 +13,10 @@ import Firebase
 import FirebaseCore
 import FirebaseFirestore
 import FirebaseFirestoreSwift
+import Observation
 
-protocol Database: Codable {
-//    var playersListener: ListenerRegistration! { get set }
-//    var gameListener: ListenerRegistration! { get set }
-//    var teamsListener: ListenerRegistration! { get set }
+protocol Database {
+    var modelContainer: ModelContainer? { get }
     
     func updatePlayerField<T>(uid: String, key: String, value: T) async throws
     func updatePlayerArrayField<T: Equatable>(uid: String, key: String, value: [T], action: ArrayActionType) async throws
@@ -29,9 +28,9 @@ protocol Database: Codable {
     func setInitGameState(_ gameState: GameState) throws
     func getGameState() async throws -> GameState
     func getGameState(_ groupId: Int) async throws -> GameState
-    func setTeamState(_ teamState: TeamState, _ teamNum: Int) throws
+    func setInitTeamState(_ teamState: TeamState, _ teamNum: Int) throws
     func getTeamState(_ teamNum: Int) async throws -> TeamState
-    func setPlayerState(_ playerState: PlayerState, _ playerUid: String) throws
+    func setInitPlayerState(_ playerState: PlayerState, _ playerUid: String) throws
     
     mutating func addPlayersListener(_ playerStateRef: Reference<PlayerState>, _ playersRef: Reference<[PlayerState]>) async
     mutating func removePlayersListener()
@@ -46,42 +45,107 @@ protocol Database: Codable {
     func deleteTeamCollection(teamNum: Int) async throws
 }
 
+extension Database {
+    
+    func create<T: PersistentModel>(_ items: [T]) throws {
+        guard let modelContainer = modelContainer else {
+            print("modelContainer is nil when trying to upsert a model")
+            return
+        }
+        
+        let context = ModelContext(modelContainer)
+        for item in items {
+            context.insert(item)
+        }
+        try context.save()
+    }
+    
+    func create<T: PersistentModel>(_ item: T) throws {
+        guard let modelContainer = modelContainer else {
+            print("modelContainer is nil when trying to create a model")
+            return
+        }
+        
+        let context = ModelContext(modelContainer)
+        context.insert(item)
+        try context.save()
+    }
+    
+    func read<T: PersistentModel>(_ predicate: Predicate<T>) throws -> [T] {
+        guard let modelContainer = modelContainer else {
+            print("modelContainer is nil when trying to read a model")
+            return []
+        }
+        
+        let context = ModelContext(modelContainer)
+        let fetchDescriptor = FetchDescriptor<T>(
+            predicate: predicate
+        )
+        return try context.fetch(fetchDescriptor)
+    }
+    
+    func read<T: PersistentModel>(_ predicate: Predicate<T>, sortBy sortDescriptors: SortDescriptor<T>...) throws -> [T] {
+        guard let modelContainer = modelContainer else {
+            print("modelContainer is nil when trying to read a model")
+            return []
+        }
+        
+        let context = ModelContext(modelContainer)
+        let fetchDescriptor = FetchDescriptor<T>(
+            predicate: predicate,
+            sortBy: sortDescriptors
+        )
+        return try context.fetch(fetchDescriptor)
+    }
+    
+    /// Same as ```create(_ item: T)``` becuase SwiftData does an 'upsert' by default
+    func update<T: PersistentModel>(_ item: T) throws {
+        try create(item)
+    }
+
+    func delete<T: PersistentModel>(_ type: T.Type) throws {
+        guard let modelContainer = modelContainer else {
+            print("modelContainer is nil when trying to delete a model")
+            return
+        }
+        
+        let context = ModelContext(modelContainer)
+        try context.delete(model: type)
+        try context.save()
+    }
+    
+    func delete<T: PersistentModel>(_ type: T.Type, for deletionPredicate: Predicate<T>) throws {
+        guard let modelContainer = modelContainer else {
+            print("modelContainer is nil when trying to delete a model")
+            return
+        }
+        
+        let context = ModelContext(modelContainer)
+        try context.delete(model: type, where: deletionPredicate)
+        try context.save()
+    }
+}
 
 struct Firebase: Database {
     var playersListener: ListenerRegistration!
     var gameListener: ListenerRegistration!
     var teamsListener: ListenerRegistration!
+    var modelContainer: ModelContainer?
     private var db = Firestore.firestore()
     private var docRef: DocumentReference?
     
-    // Properties to store data needed for encoding/decoding
-    private var docRefId: String?
-
-    enum CodingKeys: String, CodingKey {
-        case docRefId
-    }
-
-    init() {
-        // Default initialization
-    }
-
-    // Custom initializer to support decoding
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        docRefId = try container.decodeIfPresent(String.self, forKey: .docRefId)
-        if let docRefId = docRefId {
-            docRef = db.collection("games").document(docRefId)
+    var startTime: Date
+    
+    init(useInMemoryStore: Bool = false) {
+        do {
+            startTime = .now
+            let configuration = ModelConfiguration(for: GameModel.self, isStoredInMemoryOnly: useInMemoryStore)
+            modelContainer = try ModelContainer(for: GameModel.self, migrationPlan: GameModelsMigrationPlan.self, configurations: configuration)
+            
+            try create(GameModel(startTime: startTime))
+        } catch {
+            print("error        tried to initialize Firebase() \n\(error)\n")
         }
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(docRef?.documentID, forKey: .docRefId)
-    }
-
-    mutating func setDocRef(_ groupId: Int) {
-        docRef = db.collection("games").document("\(groupId)")
-        docRefId = "\(groupId)"
     }
     
     func updatePlayerField<T>(uid: String, key: String, value: T) async throws {
@@ -124,9 +188,9 @@ struct Firebase: Database {
         try await docRef!.collection("teams").document("\(teamNum)").updateData([key: value])
     }
     
-//    mutating func setDocRef(_ groupId: Int) {
-//        docRef = db.collection("games").document("\(groupId)")
-//    }
+    mutating func setDocRef(_ groupId: Int) {
+        docRef = db.collection("games").document("\(groupId)")
+    }
     
     func setInitGameState(_ gameState: GameState) throws {
         try docRef!.setData(from: gameState)
@@ -144,7 +208,7 @@ struct Firebase: Database {
         return try await db.collection("games").document("\(groupId)").getDocument(as: GameState.self)
     }
     
-    func setTeamState(_ teamState: TeamState, _ teamNum: Int) throws {
+    func setInitTeamState(_ teamState: TeamState, _ teamNum: Int) throws {
         try docRef!.collection("teams").document("\(teamNum)").setData(from: teamState)
     }
     
@@ -156,7 +220,7 @@ struct Firebase: Database {
         return try await docRef.collection("teams").document("\(teamNum)").getDocument().data(as: TeamState.self)
     }
     
-    func setPlayerState(_ playerState: PlayerState, _ playerUid: String) throws {
+    func setInitPlayerState(_ playerState: PlayerState, _ playerUid: String) throws {
         try docRef!.collection("players").document(playerState.uid).setData(from: playerState)
     }
     
@@ -345,143 +409,147 @@ struct Firebase: Database {
 }
 
 struct Local: Database {
-    @Query(filter: #Predicate<GameModel> { model in
-        model.inProgress == true
-    }) var models: [GameModel]
-    var model: GameModel? { models.first }
+    var modelContainer: ModelContainer?
+    var startTime: Date
     
-    enum CodingKeys: String, CodingKey {
-        case models
-    }
-    
-    init() {
-    }
-    
-    // Decodable conformance
-    init(from decoder: Decoder) throws {
-//        let container = try decoder.container(keyedBy: CodingKeys.self)
-//        self.models = try container.decode([GameModel].self, forKey: .models)
-    }
-    
-    // Encodable conformance
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(models, forKey: .models)
+    init(useInMemoryStore: Bool = true) {
+        do {
+            startTime = .now
+            
+            let configuration = ModelConfiguration(for: GameModel.self, isStoredInMemoryOnly: useInMemoryStore)
+            modelContainer = try ModelContainer(for: GameModel.self, configurations: configuration)
+            
+            try create(GameModel(startTime: startTime))
+        } catch {
+            print("error        tried to initialize Local() \n\(error)\n")
+        }
     }
     
     func updatePlayerField<T>(uid: String, key: String, value: T) async throws {
-        guard let model = model, let playerState = model.playerState else {
-            return
+        let tempGameModel = GameModel(startTime: self.startTime)
+        
+        if tempGameModel.playerState != nil && tempGameModel.playerState!.uid == uid {
+            tempGameModel.playerState![key] = value
+        } else if let idx = tempGameModel.players.firstIndex(where: { $0.uid == uid }) {
+            tempGameModel.players[idx][key] = value
         }
-
-        if playerState.uid == uid {
-            model.playerState![key] = value
-        } else if let idx = model.players.firstIndex(where: { $0.uid == uid }) {
-            model.players[idx][key] = value
-        }
+        
+        try update(tempGameModel)
     }
     
     func updatePlayerArrayField<T: Equatable>(uid: String, key: String, value: [T], action: ArrayActionType) async throws {
-        guard let model = model, let playerState = model.playerState else {
-            return
-        }
+        let tempGameModel = GameModel(startTime: self.startTime)
 
-        if playerState.uid == uid {
+        if tempGameModel.playerState != nil && tempGameModel.playerState!.uid == uid {
             switch action {
                 case .append:
-                    if var lookUp = model.playerState![key] as? [T] {
-                        lookUp.append(contentsOf: value)
-                    }
+                    var tempAttribute: [T] = tempGameModel.playerState![key] as! [T]
+                    
+                    tempAttribute.append(contentsOf: value)
+                    tempGameModel.playerState![key] = tempAttribute
                 case .remove:
-                    if var lookUp = model.playerState![key] as? [T] {
-                        for val in value {
-                            lookUp.removeAll(where: {
-                                $0 == val
-                            })
-                        }
-                    }
-                case .replace:
-                    model.playerState![key] = value
-            }
-        } else if let idx = model.players.firstIndex(where: { $0.uid == uid }) {
-            switch action {
-                case .append:
-                    if var lookUp = model.players[idx][key] as? [T] {
-                        lookUp.append(contentsOf: value)
-                    }
-                case .remove:
-                    if var lookUp = model.players[idx][key] as? [T] {
-                        for val in value {
-                            lookUp.removeAll(where: {
-                                $0 == val
-                            })
-                        }
-                    }
-                case .replace:
-                    model.players[idx][key] = value
-            }
-        }
-    }
-    
-    func updateGameField<T>(key: String, value: T) async throws {
-        guard let model = model, model.gameState != nil else {
-            return
-        }
-        
-        model.gameState![key] = value
-    }
-    
-    func updateGameArrayField<T: Equatable>(key: String, value: [T], action: ArrayActionType) async throws {
-        guard let model = model, model.gameState != nil else {
-            return
-        }
-        
-        switch action {
-            case .append:
-                if var lookUp = model.gameState![key] as? [T] {
-                    lookUp.append(contentsOf: value)
-                }
-            case .remove:
-                if var lookUp = model.gameState![key] as? [T] {
+                    var tempAttribute: [T] = tempGameModel.playerState![key] as! [T]
+                    
                     for val in value {
-                        lookUp.removeAll(where: {
+                        tempAttribute.removeAll(where: {
                             $0 == val
                         })
                     }
-                }
-            case .replace:
-                model.gameState![key] = value
+                    tempGameModel.playerState![key] = tempAttribute
+                case .replace:
+                    tempGameModel.playerState![key] = value
+            }
+        } else if let idx = tempGameModel.players.firstIndex(where: { $0.uid == uid }) {
+            switch action {
+                case .append:
+                    var tempAttribute: [T] = tempGameModel.players[idx][key] as! [T]
+                    
+                    tempAttribute.append(contentsOf: value)
+                    tempGameModel.players[idx][key] = tempAttribute
+                case .remove:
+                    var tempAttribute: [T] = tempGameModel.players[idx][key] as! [T]
+                    
+                    for val in value {
+                        tempAttribute.removeAll(where: {
+                            $0 == val
+                        })
+                    }
+                    tempGameModel.players[idx][key] = tempAttribute
+                case .replace:
+                    tempGameModel.players[idx][key] = value
+            }
         }
+        
+        try update(tempGameModel)
+    }
+    
+    func updateGameField<T>(key: String, value: T) async throws {
+        let tempGameModel = GameModel(startTime: self.startTime)
+        tempGameModel.gameState![key] = value
+        try update(tempGameModel)
+    }
+    
+    func updateGameArrayField<T: Equatable>(key: String, value: [T], action: ArrayActionType) async throws {
+        let tempGameModel = GameModel(startTime: self.startTime)
+        
+        if tempGameModel.gameState != nil {
+            switch action {
+                case .append:
+                    var tempAttribute: [T] = tempGameModel.gameState![key] as! [T]
+                    
+                    tempAttribute.append(contentsOf: value)
+                    tempGameModel.gameState![key] = tempAttribute
+                case .remove:
+                    var tempAttribute: [T] = tempGameModel.gameState![key] as! [T]
+                    
+                    for val in value {
+                        tempAttribute.removeAll(where: {
+                            $0 == val
+                        })
+                    }
+                    tempGameModel.gameState![key] = tempAttribute
+                case .replace:
+                    tempGameModel.gameState![key] = value
+            }
+        }
+        
+        try update(tempGameModel)
     }
     
     func updateTeamField<T>(teamNum: Int, key: String, value: T) async throws {
-        guard let model = model, var teamState = model.teamState else {
-            return
+        let tempGameModel = GameModel(startTime: self.startTime)
+
+        if tempGameModel.teamState != nil && tempGameModel.teamState!.team_num == teamNum {
+            tempGameModel.teamState![key] = value
+        } else if let idx = tempGameModel.teams.firstIndex(where: { $0.team_num == teamNum }) {
+            tempGameModel.teams[idx][key] = value
         }
 
-        if teamState.team_num == teamNum {
-            teamState[key] = value
-        } else if let idx = model.teams.firstIndex(where: { $0.team_num == teamNum }) {
-            model.teams[idx][key] = value
-        }
+        try update(tempGameModel)
     }
     
     func setDocRef(_ groupId: Int) { /* don't need this function */ }
     
     func setInitGameState(_ gameState: GameState) throws {
-        guard let model = model else {
-            return
-        }
-        
-        model.gameState = gameState
+        let tempGameModel = GameModel(startTime: self.startTime)
+        tempGameModel.gameState = gameState
+        try update(tempGameModel)
     }
     
     func getGameState() async throws -> GameState {
-        guard let model = model, let gameState = model.gameState else {
+        if let gameModel = try read( #Predicate<GameModel> { model in
+            model.startTime == startTime
+        }).first {
+            if let gameState = gameModel.gameState {
+                return gameState
+            } else {
+                print("error        couldn't find gameState in getGameState()")
+                return GameState()
+            }
+        } else {
+            print("error        couldn't find gameModel in getGameState()")
             return GameState()
         }
-        
-        return gameState
     }
     
     func getGameState(_ groupId: Int) async throws -> GameState {
@@ -489,74 +557,40 @@ struct Local: Database {
         return GameState()
     }
     
-    func setTeamState(_ teamState: TeamState, _ teamNum: Int) throws {
-        guard let model = model else {
-            return
-        }
-        
-        model.teams.append(teamState)
+    func setInitTeamState(_ teamState: TeamState, _ teamNum: Int) throws {
+        let tempGameModel = GameModel(startTime: self.startTime)
+        tempGameModel.teamState = teamState
+        try update(tempGameModel)
     }
     
     func getTeamState(_ teamNum: Int) async throws -> TeamState {
-        guard let model = model else {
+        guard let gameModel = try read( #Predicate<GameModel> { model in
+            model.startTime == startTime
+        }).first else {
             return TeamState()
         }
         
-        if let idx = model.teams.firstIndex(where: { $0.team_num == teamNum }) {
-            return model.teams[idx]
+        guard let teamState = gameModel.teamState else {
+            return TeamState()
+        }
+        
+        if teamState.team_num == teamNum {
+            return teamState
+        } else if let idx = gameModel.teams.firstIndex(where: { $0.team_num == teamNum }) {
+            return gameModel.teams[idx]
         } else {
             return TeamState()
         }
     }
     
-    func setPlayerState(_ playerState: PlayerState, _ playerUid: String) throws {
-        guard let model = model else {
-            return
-        }
-        
-        model.players.append(playerState)
+    func setInitPlayerState(_ playerState: PlayerState, _ playerUid: String) throws {
+        let tempGameModel = GameModel(startTime: self.startTime)
+        tempGameModel.playerState = playerState
+        try update(tempGameModel)
     }
     
     func addPlayersListener(_ playerStateRef: Reference<PlayerState>, _ playersRef: Reference<[PlayerState]>) async {
-        // POSSIBLE SOLUTIONS
-//        @MainActor
-//        private func logIn(applicationState: OrdoApplication) {
-//            if applicationState.loginState == .loggedIn {
-//                runTests(applicationState: applicationState)
-//            } else {
-//                withObservationTracking {
-//                    _ = applicationState.loginState
-//                } onChange: {
-//                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-//                        self.logIn(applicationState: applicationState)
-//                    }
-//                }
-//            }
-//        }
-        
-        /* import Observation
-         
-         @Observable class SourceOfTruth {
-             var data: Int = 0
-         }
-
-         let sourceOfTruth = SourceOfTruth()
-
-         func test() {
-             withObservationTracking {
-                 _ = sourceOfTruth.data
-             } onChange: {
-                 print("changed: ", sourceOfTruth.data)
-                 test()
-             }
-         }
-
-         func foo() {
-             Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
-                 sourceOfTruth.data += 1
-             }
-             test()
-         } */
+        /* don't need this function */
     }
     
     func removePlayersListener() {
@@ -564,7 +598,11 @@ struct Local: Database {
     }
     
     func addGameStateListener(_ gameStateRef: Reference<GameState>) async {
-        /* don't need this function */
+        
+    }
+    
+    func updateGameStateRef(_ gameStateRef: Reference<GameState>) async {
+        
     }
     
     func removeGameStateListener() {
@@ -595,5 +633,102 @@ struct Local: Database {
     
     func deleteTeamCollection(teamNum: Int) async throws {
         /* don't need this function */
+    }
+}
+
+struct NilDB: Database {
+    var modelContainer: ModelContainer?
+
+    func updatePlayerField<T>(uid: String, key: String, value: T) async throws {
+        // not needed
+    }
+    
+    func updatePlayerArrayField<T>(uid: String, key: String, value: [T], action: ArrayActionType) async throws where T: Equatable {
+        // not needed
+    }
+    
+    func updateGameField<T>(key: String, value: T) async throws {
+        // not needed
+    }
+    
+    func updateGameArrayField<T>(key: String, value: [T], action: ArrayActionType) async throws where T: Equatable {
+        // not needed
+    }
+    
+    func updateTeamField<T>(teamNum: Int, key: String, value: T) async throws {
+        // not needed
+    }
+    
+    mutating func setDocRef(_ groupId: Int) {
+        // not needed
+    }
+    
+    func setInitGameState(_ gameState: GameState) throws {
+        // not needed
+    }
+    
+    func getGameState() async throws -> GameState {
+        // not needed
+        return GameState() // Assuming GameState has a default initializer
+    }
+    
+    func getGameState(_ groupId: Int) async throws -> GameState {
+        // not needed
+        return GameState() // Assuming GameState has a default initializer
+    }
+    
+    func setInitTeamState(_ teamState: TeamState, _ teamNum: Int) throws {
+        // not needed
+    }
+    
+    func getTeamState(_ teamNum: Int) async throws -> TeamState {
+        // not needed
+        return TeamState() // Assuming TeamState has a default initializer
+    }
+    
+    func setInitPlayerState(_ playerState: PlayerState, _ playerUid: String) throws {
+        // not needed
+    }
+    
+    mutating func addPlayersListener(_ playerStateRef: Reference<PlayerState>, _ playersRef: Reference<[PlayerState]>) async {
+        // not needed
+    }
+    
+    mutating func removePlayersListener() {
+        // not needed
+    }
+    
+    mutating func addGameStateListener(_ gameStateRef: Reference<GameState>) async {
+        // not needed
+    }
+    
+    mutating func removeGameStateListener() {
+        // not needed
+    }
+    
+    mutating func addTeamsListener(_ teamStateRef: Reference<TeamState>, _ teamsRef: Reference<[TeamState]>) async {
+        // not needed
+    }
+    
+    mutating func removeTeamsListener() {
+        // not needed
+    }
+    
+    func checkGameExists(groupId: Int) async throws -> Bool {
+        // not needed
+        return false
+    }
+    
+    func checkTeamExists(teamNum: Int) async throws -> Bool {
+        // not needed
+        return false
+    }
+    
+    func deleteGameCollection(id: Int) async {
+        // not needed
+    }
+    
+    func deleteTeamCollection(teamNum: Int) async throws {
+        // not needed
     }
 }
