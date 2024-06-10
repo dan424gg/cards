@@ -37,8 +37,8 @@ struct GameView: View {
                             .offset(y: -50)
                         
                         CribbageBoard()
-                            .scaleEffect(0.8 * (specs.maxY / 852))
-                            .position(x: specs.maxX / 2, y: specs.maxY * 0.37)
+                            .scaleEffect(0.65 * (specs.maxY / 852))
+                            .position(x: specs.maxX / 2, y: specs.maxY * 0.36)
                             .offset(y: -50)
                         
                         CardsView(gameObservable: gameObservable)

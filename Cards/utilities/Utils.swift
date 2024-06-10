@@ -572,6 +572,7 @@ struct TimedTextContainer: View {
     @State private var idx: Int = 0
     @Binding var display: Bool
     @Binding var textArray: [String]
+    @State var manip_textArray: [String] = []
     
     var visibilityFor: TimeInterval
     var color: Color = .purple
@@ -583,7 +584,8 @@ struct TimedTextContainer: View {
                 .padding(.horizontal)
                 .padding(.vertical, 10)
                 .id(string)
-                .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .opacity))
+                .transition(.opacity)
+//                .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .slide))
                 .background {
                     if !string.isEmpty {
                         RoundedRectangle(cornerRadius: 5)
@@ -593,32 +595,40 @@ struct TimedTextContainer: View {
                 }
             Spacer()
         }
-        .onChange(of: textArray, initial: true, {
-            if !textArray.isEmpty {
-                for i in 0...textArray.count {
+        .frame(minWidth: 300, maxHeight: 100)
+        .offset(y: 25)
+        .geometryGroup()
+//        .border(.purple)
+        .onChange(of: manip_textArray, initial: true, {
+            if !manip_textArray.isEmpty {
+                for i in 0...manip_textArray.count {
                     DispatchQueue.main.asyncAfter(deadline: .now() + (visibilityFor * Double(i))) {
-                        if i >= textArray.count {
+                        if i >= manip_textArray.count {
                             withAnimation {
                                 display = false
                                 string = ""
-                                textArray.removeAll()
+                                manip_textArray.removeAll()
                             }
                         } else {
                             withAnimation {
-                                string = textArray[i]
+                                string = manip_textArray[i]
                             }
                         }
                     }
                 }
             }
         })
-        .frame(height: 100)
-        .offset(y: 28)
+        .onChange(of: textArray, initial: true, {
+            let newCallouts = textArray.filter({
+                !manip_textArray.contains($0)
+            })
+                        
+            manip_textArray.append(contentsOf: newCallouts)
+        })
         .onTapGesture {
             withAnimation {
-                display = false
                 string = ""
-                textArray.removeAll()
+                manip_textArray.removeAll()
             }
         }
     }

@@ -17,7 +17,8 @@ struct CardsView: View {
     @StateObject var gameObservable: GameObservable/* = GameObservable(game: .game)*/
     @State var cards: [Int] = []
     @State var cardsInHand: [Int] = []
-    @State var cardsDragged: [Int] = [53,54]
+    @State var cardsDragged: [Int] = []
+    @State var otherPlayers: [PlayerState] = []
     
     @State var disableCardsDragged: Bool = false
     
@@ -39,10 +40,20 @@ struct CardsView: View {
                         .position(x: specs.maxX / 2, y: specs.maxY * 0.4)
                         .zIndex(1.0)
                     
+                    if (gameHelper.gameState?.turn ?? gameObservable.game.turn) == 2 {
+                        TableTurnTwoView(player: gameHelper.playerState ?? .player_one)
+                            .rotationEffect(.degrees(180))
+                            .scaleEffect(min(0.7 * (specs.maxX / 393), 0.7))
+                            .offset(y: -specs.maxX * 0.3)
+                            .rotationEffect(.degrees(180))
+                            .position(x: specs.maxX / 2, y: specs.maxY * 0.4)
+                            .geometryGroup()
+                    }
+                    
                     cribbage_commonCardArea
                         .onAppear {
                             cribSpacing = -33
-                            cribYPosition = specs.maxY * 0.47
+                            cribYPosition = specs.maxY * 0.44
                         }
                         .onChange(of: gameHelper.gameState?.turn, initial: true, { (_, new) in
                             guard new != nil else {
@@ -114,7 +125,6 @@ struct CardsView: View {
             
             if new! == 0 {
                 cardsDragged = []
-//                cards = Array(0...51)
 
                 withAnimation {
                     dontShowCrib = true
@@ -142,85 +152,58 @@ struct CardsView: View {
         ZStack {
             switch (gameHelper.gameState?.turn ?? gameObservable.game.turn) {
                 case 0, 1:
-                    if gameHelper.players == [] {
-                        ForEach(Array(GameState.players.enumerated()), id: \.offset) { (index, player) in
-                            CardInHandArea(cards: $cards, cardsDragged: .constant([]), cardsInHand: .constant(player.cards_in_hand), showBackside: true)
-                                .scaleEffect(0.3 * (specs.maxX / 393))
-                                .offset(y: specs.maxX * 0.4)
-                                .rotationEffect(.degrees(-180.0))
-                                .rotationEffect(.degrees(Double(startingRotation + (multiplier * index))))
-                                .disabled(true)
-                        }
-                        .onChange(of: GameState.players, initial: true, {
-                            setMultiplierAndRotation(gameObservable.game.num_teams, gameObservable.game.num_players)
-                        })
-                    } else {
-                        ForEach(Array($gameHelper.players.enumerated()), id: \.offset) { (index, player) in
-                            CardInHandArea(cards: $cards, cardsDragged: .constant([]), cardsInHand: player.cards_in_hand, showBackside: true)
-                                .scaleEffect(0.3 * (specs.maxX / 393))
-                                .offset(y: specs.maxX * 0.4)
-                                .rotationEffect(.degrees(-180.0))
-                                .rotationEffect(.degrees(Double(startingRotation + (multiplier * index))))
-                                .disabled(true)
-                        }
-                        .onAppear {
-                            setMultiplierAndRotation(gameHelper.gameState!.num_teams, gameHelper.gameState!.num_players)
-                        }
+                    ForEach(Array(otherPlayers.enumerated()), id: \.offset) { (index, player) in
+                        CardInHandArea(cards: $cards, cardsDragged: .constant([]), cardsInHand: .constant(player.cards_in_hand), showBackside: true)
+                            .scaleEffect(0.3 * (specs.maxX / 393))
+                            .offset(y: specs.maxX * 0.4)
+                            .rotationEffect(.degrees(180.0 + Double(startingRotation + (multiplier * index))))
+                            .disabled(true)
                     }
                 case 2:
-                    if gameHelper.players == [] {
-                        ForEach(Array(GameState.players.enumerated()), id: \.offset) { (index, player) in
-                            TurnTwoView(cardsDragged: .constant(player.cards_dragged), cardsInHand: .constant([]), otherPlayer: true, otherPlayerPointCallOut: player.callouts, otherPlayerTeamNumber: player.team_num)
-                                .scaleEffect(min(0.7 * (specs.maxX / 393), 0.7))
-                                .rotationEffect(.degrees(-180.0))
-                                .offset(y: -specs.maxX * 0.32)
-                                .rotationEffect(.degrees(Double(startingRotation + (multiplier * index))))
-                        }
-                        .onChange(of: GameState.players, initial: true, {
-                            setMultiplierAndRotation(gameObservable.game.num_teams, gameObservable.game.num_players)
-                        })
-                    } else {
-                        ForEach(Array($gameHelper.players.enumerated()), id: \.offset) { (index, player) in
-                            TurnTwoView(cardsDragged: player.cards_dragged, cardsInHand: .constant([]), otherPlayer: true, otherPlayerPointCallOut: player.callouts.wrappedValue, otherPlayerTeamNumber: player.team_num.wrappedValue)
-                                .scaleEffect(min(0.7 * (specs.maxX / 393), 0.7))
-                                .rotationEffect(.degrees(-180.0))
-                                .offset(y: -specs.maxX * 0.32)
-                                .rotationEffect(.degrees(Double(startingRotation + (multiplier * index))))
-                        }
-                        .onAppear {
-                            setMultiplierAndRotation(gameHelper.gameState!.num_teams, gameHelper.gameState!.num_players)
-                        }
+                    ForEach(Array(otherPlayers.enumerated()), id: \.offset) { (index, player) in
+                        TableTurnTwoView(player: player)
+                            .scaleEffect(min(0.7 * (specs.maxX / 393), 0.7))
+                            .offset(y: -specs.maxX * 0.3)
+                            .rotationEffect(.degrees(Double(startingRotation + (multiplier * index))))
                     }
                 case 3, 4:
-                    if gameHelper.players == [] {
-                        ForEach(Array([PlayerState.player_two, PlayerState.player_three, PlayerState.player_four, PlayerState.player_five, PlayerState.player_six].enumerated()), id: \.offset) { (index, player) in
-                            CardInHandArea(cards: $cards, cardsDragged: .constant([]), cardsInHand: .constant(player.cards_in_hand), showBackside: false)
-                                .scaleEffect(0.3 * (specs.maxX / 393))
-                                .rotationEffect(.degrees(-180.0))
-                                .offset(y: -specs.maxX * 0.4)
-                                .rotationEffect(.degrees(Double(startingRotation + (multiplier * index))))
-                                .disabled(true)
-                        }
-                        .onAppear {
-                            setMultiplierAndRotation(gameObservable.game.num_teams, gameObservable.game.num_players)
-                        }
-                    } else {
-                        ForEach(Array($gameHelper.players.enumerated()), id: \.offset) { (index, player) in
-                            CardInHandArea(cards: $cards, cardsDragged: .constant([]), cardsInHand: player.cards_in_hand, showBackside: false)
-                                .scaleEffect(0.3 * (specs.maxX / 393))
-                                .rotationEffect(.degrees(-180.0))
-                                .offset(y: -specs.maxX * 0.4)
-                                .rotationEffect(.degrees(Double(startingRotation + (multiplier * index))))
-                                .disabled(true)
-                        }
-                        .onAppear {
-                            setMultiplierAndRotation(gameHelper.gameState!.num_teams, gameHelper.gameState!.num_players)
-                        }
+                    ForEach(Array(otherPlayers.enumerated()), id: \.offset) { (index, player) in
+                        CardInHandArea(cards: $cards, cardsDragged: .constant([]), cardsInHand: .constant(player.cards_in_hand), showBackside: false)
+                            .scaleEffect(0.3 * (specs.maxX / 393))
+                            .offset(y: -specs.maxX * 0.4)
+                            .rotationEffect(.degrees(180.0 + Double(startingRotation + (multiplier * index))))
+                            .disabled(true)
                     }
                 default:
                     EmptyView()
             }
         }
+        .onAppear {
+            guard gameHelper.gameState != nil else {
+                setMultiplierAndRotation(gameObservable.game.num_teams, gameObservable.game.num_players)
+                return
+            }
+            
+            setMultiplierAndRotation(gameHelper.gameState!.num_teams, gameHelper.gameState!.num_players)
+        }
+        .onChange(of: gameHelper.players, initial: true, { (old, new) in
+            guard gameHelper.playerState != nil, gameHelper.gameState != nil else {
+                otherPlayers = GameState.players
+                return
+            }
+            
+            if gameHelper.gameState!.num_players > 2 && gameHelper.players.count == (gameHelper.gameState!.num_players - 1) {
+                var players: [PlayerState] = new
+                players.append(gameHelper.playerState!)
+                players.sort(by: { $0.player_num < $1.player_num})
+                let beforePlayer = players[0..<gameHelper.playerState!.player_num]
+                let afterPlayer = players[(gameHelper.playerState!.player_num + 1)..<players.count]
+                
+                otherPlayers = Array(afterPlayer + beforePlayer)
+            } else {
+                otherPlayers = new
+            }
+        })
     }
     
     var cribbage_userDraggedCards: some View {
@@ -253,7 +236,6 @@ struct CardsView: View {
                                 Task {
                                     disableCardsDragged = true
                                     let tempCardsDragged = cardsDragged
-//                                    cardsDragged.removeAll()
                                     await gameHelper.updateGame(["crib": tempCardsDragged], arrayAction: .append)
                                     await gameHelper.updatePlayer(["cards_in_hand": tempCardsDragged], arrayAction: .remove)
                                     await gameHelper.updatePlayer(["is_ready": true], arrayAction: .replace)
@@ -265,7 +247,7 @@ struct CardsView: View {
                 case 2:
                     VStack {
                         if gameHelper.gameState?.player_turn ?? gameObservable.game.player_turn == gameHelper.playerState?.player_num ?? 0 {
-                            CText("Play a card!", size: Int(determineFont("Play a card!", Int(specs.maxX / 1.31), 16)))
+                            CText("Play a card!", size: Int(determineFont("Play a card!", Int(specs.maxX / 1.31), 20)))
                         } else {
                             CText("Waiting for other players...", size: Int(determineFont("Waiting for other players...", Int(specs.maxX / 1.31), 16)))
                         }
@@ -291,6 +273,7 @@ struct CardsView: View {
                             .onDisappear {
                                 cardsInHand = cardsDragged
                             }
+                            .offset(y: -5.0)
                     }
                 case 3, 4:
                     ZStack {
@@ -300,24 +283,25 @@ struct CardsView: View {
                             Spacer()
                         }
                     }
-//                case 4:
-//                    ZStack {
-//                        VStack {
-//                            CText("and the crib!", size: Int(determineFont("and the crib!", Int(specs.maxX / 1.31), 16)))
-//                                .foregroundStyle(specs.theme.colorWay.textColor)
-//                            Spacer()
-//                        }
-//                    }
                 default: EmptyView()
             }
         }
         .padding()
-        .frame(/*width: specs.maxX / 1.31, */height: specs.maxY / 4.26)
+        .frame(height: specs.maxY / 4.26)
         .background {
             if (gameHelper.gameState?.turn ?? gameObservable.game.turn) > 0 {
                 RoundedRectangle(cornerRadius: 25.0)
                     .stroke(specs.theme.colorWay.primary, lineWidth: 5.0)
                     .fill(specs.theme.colorWay.background)
+                    .background {
+                        if (gameHelper.playerState?.player_num ?? PlayerState.player_one.player_num) == (gameHelper.gameState?.player_turn ?? gameObservable.game.player_turn) {
+                            RoundedRectangle(cornerRadius: 25)
+                                .fill(.white)
+                                .shadow(color: specs.theme.colorWay.secondary, radius: 15)
+                                .shadow(color: specs.theme.colorWay.secondary, radius: 15)
+                        }
+                    }
+                    .geometryGroup()
             }
         }
     }
@@ -363,7 +347,7 @@ struct CardsView: View {
                     .disabled(true)
             }
         }
-        .scaleEffect(0.75 * (specs.maxY / 852))
+        .scaleEffect(0.65 * (specs.maxY / 852))
         .frame(width: 150, height: 100)
     }
     
@@ -371,7 +355,7 @@ struct CardsView: View {
         if turn == 1 || turn == 4 {
             return specs.maxY * 0.57
         } else {
-            return specs.maxY * 0.47
+            return specs.maxY * 0.44
         }
     }
     
@@ -495,7 +479,7 @@ struct CardsView: View {
             }() )
             .environmentObject(GameHelper())
 //            .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
-            .background(Color("OffWhite").opacity(0.1))
+            .background(DeviceSpecs().theme.colorWay.background)
         
     }
     .ignoresSafeArea()
