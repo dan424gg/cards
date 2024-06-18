@@ -50,15 +50,34 @@ struct GameView: View {
                                 .transition(.opacity)
                         }
                         
-                        if shown {
-                            PointContainer(player: gameHelper.playerState ?? PlayerState.player_one, user: true)
-                                .scaleEffect(specs.maxY / 852)
-                                .position(x: specs.maxX / 2, y: specs.maxY * 0.71)
-                                .transition(.opacity)
-                        }
+                        PointContainer(player: gameHelper.playerState ?? PlayerState.player_one, user: true)
+                            .scaleEffect(specs.maxY / 852)
+                            .position(x: specs.maxX / 2, y: specs.maxY * 0.71)
+                            .transition(.opacity)
+                            .opacity(shown ? 1.0 : 0.001)
                         
                         GameOutcomeView(outcome: $gameHelper.gameOutcome)
                     }
+                    .onChange(of: shown, initial: true, {
+                        if shown {
+                            guard let player = gameHelper.playerState, let gameState = gameHelper.gameState else {
+                                return
+                            }
+                            
+                            if let team = gameHelper.teams.first(where: { $0.team_num == player.team_num }) {
+                                let scoringHands = gameHelper.checkCardsForPoints(playerCards: player.cards_in_hand, gameState.starter_card)
+                                var playerPoints = 0
+                                
+                                if let lastScoringHand = scoringHands.last {
+                                    playerPoints = lastScoringHand.cumlativePoints
+                                }
+                                
+                                Task {
+                                    await gameHelper.updateTeam(["points": playerPoints + team.points])
+                                }
+                            }
+                        }
+                    })
                     .geometryGroup()
                     .clipped()
                     .transition(.move(edge: .top))
@@ -239,18 +258,15 @@ struct GameView: View {
         }
         
         var body: some View {
-//            ZStack {
-//                if turn == 1 || turn == 4 {
+            Circle()
+                .fill(specs.theme.colorWay.background)
+                .overlay {
                     Circle()
                         .trim(from: 0.0, to: turn == 1 || turn == 4 ? 0.75 : 1.0)
                         .rotation(.degrees(135))
                         .stroke(specs.theme.colorWay.primary, lineWidth: 5)
                         .fill(specs.theme.colorWay.background)
-//                } else {
-//                    Circle()
-//                        .stroke(specs.theme.colorWay.white, lineWidth: 3)
-//                }
-//            }
+                }
         }
     }
     

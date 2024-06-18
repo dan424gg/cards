@@ -27,21 +27,23 @@ struct PlayerView: View {
                         ZStack {
                             if (gameHelper.gameState?.dealer ?? gameObservable.game.dealer) == player.player_num {
                                 CribMarker(scale: 0.45)
-                                    .offset(x: (player.name.width(usingFont: UIFont.init(name: "LuckiestGuy-Regular", size: Double(fontSize))!) / 2) + 13)
+                                    .offset(x: -(player.name.width(usingFont: UIFont.init(name: "LuckiestGuy-Regular", size: Double(fontSize))!) / 2) - 13)
                             }
                             
                             CText(player.name, size: Int(fontSize))
                                 .zIndex(1.0)
+                            
+                            PointContainer(player: player)
+                                .geometryGroup()
+                                .offset(x: (player.name.width(usingFont: UIFont.init(name: "LuckiestGuy-Regular", size: Double(fontSize))!) / 2) + 22)
+                                .zIndex(0.0)
+                                .opacity(shown ? 1.0 : 0.001)
 
-                            if shown {
-                                PointContainer(player: player)
-                                    .geometryGroup()
-                                    .offset(x: -(player.name.width(usingFont: UIFont.init(name: "LuckiestGuy-Regular", size: Double(fontSize))!) / 2) - 22)
-                                    .zIndex(0.0)
-                                    .getSize { size in
-                                        print("pointcontainer size: \(size)")
-                                        print("pointcontainer offset: \(-(player.name.width(usingFont: UIFont.init(name: "LuckiestGuy-Regular", size: Double(fontSize))!) / 2) - 22)")
-                                    }
+                            if (gameHelper.gameState?.turn ?? gameObservable.game.turn) == 2 {
+                                CardInHandArea(cards: .constant([]), cardsDragged: .constant([]), cardsInHand: Binding (get: { player.cards_in_hand }, set: { _ in }), showBackside: true)
+                                    .offset(y: 90)
+                                    .scaleEffect(0.1)
+                                    .offset(x: (player.name.width(usingFont: UIFont.init(name: "LuckiestGuy-Regular", size: Double(fontSize))!) / 2) + 20)
                             }
                         }
                         .frame(width: 130)

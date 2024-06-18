@@ -105,10 +105,12 @@ struct TurnTwoView: View {
                     await gameHelper.updateTeam(["points": points + teamState.points])
                     await gameHelper.updateGame(["player_turn": (gameHelper.gameState!.player_turn + 1) % gameHelper.gameState!.num_players])
                     
+                    print("stuff:       before num cards in play: \(gameHelper.gameState!.num_cards_in_play)")
                     if cardsInHand.isEmpty {
                         Task {
                             do { try await Task.sleep(nanoseconds: 2500000000) } catch { print(error) }
                             
+                            print("stuff:       after num cards in play: \(gameHelper.gameState!.num_cards_in_play)")
                             if gameHelper.gameState!.num_cards_in_play == (gameHelper.gameState!.num_players * 4) {
                                 await gameHelper.updateGame(["player_turn": -1])
                             }
@@ -161,14 +163,21 @@ struct TurnTwoView: View {
             
             await gameHelper.updatePlayer(["callouts": callouts], arrayAction: .replace)
             await gameHelper.updateTeam(["points": points + gameHelper.teamState!.points])
+            await gameHelper.updatePlayer(["cards_in_hand": cardsDragged], arrayAction: .remove)
             await gameHelper.updatePlayer(["cards_dragged": cardsDragged], arrayAction: .append)
             await gameHelper.updateGame(["player_turn": (gameHelper.gameState!.player_turn + 1) % gameHelper.gameState!.num_players])
             
             cardsDragged.removeAll()
             
+            print("stuff:       before num cards in play: \(gameHelper.gameState!.num_cards_in_play)")
             if cardsInHand.isEmpty {
                 Task {
-                    do { try await Task.sleep(nanoseconds: UInt64(callouts.count * 2500000000)) } catch { print(error) }
+                    do { try await Task.sleep(nanoseconds: 2500000000) } catch { print(error) }
+                    
+                    print("stuff:       after num cards in play: \(gameHelper.gameState!.num_cards_in_play)")
+                    if gameHelper.gameState!.num_cards_in_play == (gameHelper.gameState!.num_players * 4) {
+                        await gameHelper.updateGame(["player_turn": -1])
+                    }
                     
                     await gameHelper.updatePlayer(["is_ready": true])
                 }

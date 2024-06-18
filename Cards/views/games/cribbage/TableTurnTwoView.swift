@@ -26,8 +26,8 @@ struct TableTurnTwoView: View {
             if player.player_num == (gameHelper.gameState?.player_turn ?? gameObservable.game.player_turn) {
                 RoundedRectangle(cornerRadius: 3.5)
                     .fill(specs.theme.colorWay.background)
-                    .shadow(color: specs.theme.colorWay.secondary, radius:  15)
-                    .shadow(color: specs.theme.colorWay.secondary, radius:  15)
+                    .shadow(color: determineShadowColor(), radius:  15)
+                    .shadow(color: determineShadowColor(), radius:  15)
                     .frame(width: 60 * Double(specs.maxY / 852), height: 100 * Double(specs.maxY / 852))
             }
             
@@ -100,6 +100,14 @@ struct TableTurnTwoView: View {
             }
         }
         
+    }
+    
+    func determineShadowColor() -> Color {
+        if specs.theme == .banana {
+            return specs.theme.colorWay.primary
+        } else {
+            return specs.theme.colorWay.secondary
+        }
     }
     
     private func handleOtherPlayerCardTapGesture() {

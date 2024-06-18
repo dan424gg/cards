@@ -55,7 +55,7 @@ struct CardInHandArea: View {
                         }
                     case 2:
                         if gameHelper.gameState?.player_turn ?? gameObservable.game.player_turn == gameHelper.playerState?.player_num ?? 0
-                            && (cardsDragged.count - (gameHelper.playerState?.cards_dragged.count ?? 0) != 1) {
+                            && (cardsDragged.count < 1) {
                             withAnimation {
                                 cardsInHand.removeAll(where: { $0 == cardId })
                                 cardsDragged.append(cardId)

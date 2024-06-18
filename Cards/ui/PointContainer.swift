@@ -22,9 +22,7 @@ struct PointContainer: View {
             if playerPoints != -1 {
                 CText("+ \(playerPoints)", size: user ? 56 : 16)
                     .foregroundStyle(teamColor)
-//                    .font(.custom("LuckiestGuy-Regular", size: user ? 56 : 16))
                     .frame(minWidth: user ? 94 : 31, minHeight: user ? 56 : 16)
-//                    .offset(y: user ? 7 : 2)
                     .padding(user ? 7.0 : 2.0)
                     .background(content: {
                         RoundedRectangle(cornerRadius: 5)
@@ -33,68 +31,61 @@ struct PointContainer: View {
                     })
             }
         }
-        .onAppear {
-            guard (player != PlayerState()) ^ (crib != false) else {
-                return
-            }
-            
-            if crib {
-                if let gameState = gameHelper.gameState {
-                    if let team = gameHelper.teams.first(where: { $0.team_num == gameState.team_with_crib }) {
-                        teamColor = Color("\(team.color)")
-                    
-                        let scoringHands = gameHelper.checkCardsForPoints(crib: gameState.crib, gameState.starter_card)
-                        if let lastScoringHand = scoringHands.last {
-                            playerPoints = lastScoringHand.cumlativePoints
-                        } else {
-                            playerPoints = 0
-                        }
-                        
-                        // add points to team with crib, ensure it only happens once with lead player check
-                        guard gameHelper.playerState != nil, gameHelper.playerState!.is_lead else {
-                            return
-                        }
-                        
-                        Task {
-                            await gameHelper.updateTeam(["points": playerPoints + team.points], team.team_num)
-                        }
-                    }
+        .onChange(of: gameHelper.gameState?.turn, initial: true, { (old, new) in
+            if new == 2 {
+                guard (player != PlayerState()) ^ (crib != false) else {
+                    return
                 }
-            } else {
-                if let gameState = gameHelper.gameState {
-                    if let team = gameHelper.teams.first(where: { $0.team_num == player.team_num }) {
-                        teamColor = Color("\(team.color)")
-                        
-                        let scoringHands = gameHelper.checkCardsForPoints(playerCards: player.cards_in_hand, gameState.starter_card)
-                        
-                        if let lastScoringHand = scoringHands.last {
-                            playerPoints = lastScoringHand.cumlativePoints
-                        } else {
-                            playerPoints = 0
-                        }
-                        
-                        guard gameHelper.playerState != nil, gameHelper.playerState!.player_num == player.player_num else {
-                            return
-                        }
-                        
-                        
-                        Task {
-                            await gameHelper.updateTeam(["points": playerPoints + team.points])
+                
+                if crib {
+                    if let gameState = gameHelper.gameState {
+                        if let team = gameHelper.teams.first(where: { $0.team_num == gameState.team_with_crib }) {
+                            teamColor = Color("\(team.color)")
+                            
+                            let scoringHands = gameHelper.checkCardsForPoints(crib: gameState.crib, gameState.starter_card)
+                            if let lastScoringHand = scoringHands.last {
+                                playerPoints = lastScoringHand.cumlativePoints
+                            } else {
+                                playerPoints = 0
+                            }
+                            
+//                            // add points to team with crib, ensure it only happens once with lead player check
+//                            guard gameHelper.playerState != nil, gameHelper.playerState!.is_lead else {
+//                                return
+//                            }
+//                            
+//                            Task {
+//                                await gameHelper.updateTeam(["points": playerPoints + team.points], team.team_num)
+//                            }
                         }
                     }
                 } else {
-                    if let team = [TeamState.team_one, TeamState.team_two, TeamState.team_three].first(where: { $0.team_num == player.team_num }) {
-                        teamColor = Color("\(team.color)")
-                    }
-                    
-                    let scoringHands = gameHelper.checkCardsForPoints(playerCards: player.cards_in_hand, gameObservable.game.starter_card)
-                    
-                    if let lastScoringHand = scoringHands.last {
-                        playerPoints = lastScoringHand.cumlativePoints
+                    if let gameState = gameHelper.gameState {
+                        if let team = gameHelper.teams.first(where: { $0.team_num == player.team_num }) {
+                            teamColor = Color("\(team.color)")
+                            
+                            let scoringHands = gameHelper.checkCardsForPoints(playerCards: player.cards_in_hand, gameState.starter_card)
+                            
+                            if let lastScoringHand = scoringHands.last {
+                                playerPoints = lastScoringHand.cumlativePoints
+                            } else {
+                                playerPoints = 0
+                            }
+                        }
+                    } else {
+                        if let team = [TeamState.team_one, TeamState.team_two, TeamState.team_three].first(where: { $0.team_num == player.team_num }) {
+                            teamColor = Color("\(team.color)")
+                        }
+                        
+                        let scoringHands = gameHelper.checkCardsForPoints(playerCards: player.cards_in_hand, gameObservable.game.starter_card)
+                        
+                        if let lastScoringHand = scoringHands.last {
+                            playerPoints = lastScoringHand.cumlativePoints
+                        }
                     }
                 }
             }
-        }
+        })
     }
 }
 

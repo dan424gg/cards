@@ -44,10 +44,16 @@ struct CribbageBoard: View {
             HStack {
                 ForEach(Array(teams.enumerated()), id: \.offset) { (index, team) in
                     VStack {
-                        CText("\(team.team_num)")
-                            .font(.headline)
-                        CText("\(team.points)")
-                            .font(.subheadline)
+                        CText("\(team.team_num)", size: 28)
+                            .foregroundStyle(Color("\(team.color)"))
+                            .shadow(color: .black, radius: 1)
+                            .shadow(color: .black, radius: 1)
+
+                        CText("\(team.points)", size: 28)
+                            .foregroundStyle(Color("\(team.color)"))
+                            .shadow(color: .black, radius: 1)
+                            .shadow(color: .black, radius: 1)
+
                     }
                     
                     if index != teams.endIndex - 1 {
@@ -55,6 +61,7 @@ struct CribbageBoard: View {
                     }
                 }
             }
+            .geometryGroup()
             .zIndex(0.0)
             .opacity(showPoints ? 1.0 : 0.0)
             .frame(width: 155)

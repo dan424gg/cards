@@ -2,27 +2,29 @@ import SwiftUI
 
 struct SwiftUIView: View {
     @State var counter: Int = 0
-    @State var isProcessing: Bool = false
+    @State var lastPressTime: Date?
     
     var body: some View {
         VStack {
             Text("\(counter)")
             CustomButton(name: "incr", submitFunction: {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                    counter += 1
-                }
+                counter += 1
             })
             
-//            Button("incr") {
-//                guard !isProcessing else { return } // Check if already processing
-//                isProcessing = true // Set processing flag
-//                
-//                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-//                    counter += 1
-//                }
-//                
-//                isProcessing = false // Release lock
-//            }
+            Button("incr") {
+                let currentTime = Date()
+                
+                // Check if the button was pressed recently
+                if let lastPress = lastPressTime, currentTime.timeIntervalSince(lastPress) < 2 {
+                    print("Button press ignored, too soon after last press \(lastPress).")
+                    return
+                }
+
+                // Update the last press time
+                lastPressTime = currentTime
+                
+                counter += 1
+            }
         }
     }
 }

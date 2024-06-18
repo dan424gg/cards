@@ -170,7 +170,7 @@ struct CardsView: View {
                     ForEach(Array(otherPlayers.enumerated()), id: \.offset) { (index, player) in
                         CardInHandArea(cards: $cards, cardsDragged: .constant([]), cardsInHand: .constant(player.cards_in_hand), showBackside: false)
                             .scaleEffect(0.3 * (specs.maxX / 393))
-                            .offset(y: -specs.maxX * 0.4)
+                            .offset(y: specs.maxX * 0.4)
                             .rotationEffect(.degrees(180.0 + Double(startingRotation + (multiplier * index))))
                             .disabled(true)
                     }
@@ -270,17 +270,23 @@ struct CardsView: View {
                                     ], arrayAction: .replace)
                                 }
                             }
-                            .onDisappear {
-                                cardsInHand = cardsDragged
-                            }
                             .offset(y: -5.0)
                     }
                 case 3, 4:
                     ZStack {
                         VStack {
                             CText("Time to score hands!", size: Int(determineFont("Time to score hands!", Int(specs.maxX / 1.31), 16)))
-                                .foregroundStyle(specs.theme.colorWay.textColor)
                             Spacer()
+                        }
+                    }
+                    .onAppear {
+                        guard let playerState = gameHelper.playerState else {
+                            return
+                        }
+                        
+                        Task {
+                            await gameHelper.updatePlayer(["cards_in_hand": playerState.cards_dragged], arrayAction: .replace)
+                            await gameHelper.updatePlayer(["cards_dragged": [Int]()], arrayAction: .replace)
                         }
                     }
                 default: EmptyView()
@@ -294,11 +300,11 @@ struct CardsView: View {
                     .stroke(specs.theme.colorWay.primary, lineWidth: 5.0)
                     .fill(specs.theme.colorWay.background)
                     .background {
-                        if (gameHelper.playerState?.player_num ?? PlayerState.player_one.player_num) == (gameHelper.gameState?.player_turn ?? gameObservable.game.player_turn) {
+                        if (gameHelper.gameState?.turn ?? gameObservable.game.turn) == 2 && (gameHelper.playerState?.player_num ?? PlayerState.player_one.player_num) == (gameHelper.gameState?.player_turn ?? gameObservable.game.player_turn) {
                             RoundedRectangle(cornerRadius: 25)
                                 .fill(.white)
-                                .shadow(color: specs.theme.colorWay.secondary, radius: 15)
-                                .shadow(color: specs.theme.colorWay.secondary, radius: 15)
+                                .shadow(color: determineShadowColor(), radius: 15)
+                                .shadow(color: determineShadowColor(), radius: 15)
                         }
                     }
                     .geometryGroup()
@@ -317,23 +323,43 @@ struct CardsView: View {
                 .transition(.opacity)
                 .zIndex(1.0)
                 
-                if gameHelper.gameState?.turn ?? gameObservable.game.turn == 4 {
-                    VStack {
-                        PointContainer(crib: true)
-                            .scaleEffect(2.0)
-                            .offset(y: -90)
-                            .onAppear {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 3.0, execute: {
-                                    Task {
-                                        await gameHelper.updatePlayer(["is_ready": true])
-                                    }
-                                })
-                            }
-                    }
-                    .frame(height: 100)
-                    .transition(.move(edge: .bottom).animation(.smooth.delay(1.0)))
-                    .zIndex(0.0)
+                VStack {
+                    PointContainer(crib: true)
+                        .scaleEffect(2.0)
+                        .offset(y: -90)
                 }
+                .opacity(gameHelper.gameState?.turn ?? gameObservable.game.turn == 4 ? 1.0 : 0.001)
+                .onChange(of: gameHelper.gameState?.turn, {
+                    if gameHelper.gameState?.turn ?? gameObservable.game.turn == 4 {
+                        guard let gameState = gameHelper.gameState, let playerState = gameHelper.playerState else {
+                            return
+                        }
+                        
+                        if let team = gameHelper.teams.first(where: { $0.team_num == gameState.team_with_crib }) {
+                            let scoringHands = gameHelper.checkCardsForPoints(crib: gameState.crib, gameState.starter_card)
+                            var playerPoints = 0
+                            
+                            if let lastScoringHand = scoringHands.last {
+                                playerPoints = lastScoringHand.cumlativePoints
+                            }
+                            
+                            // add points to team with crib, ensure it only happens once with lead player check
+                            if playerState.is_lead {
+                                Task {
+                                    await gameHelper.updateTeam(["points": playerPoints + team.points], team.team_num)
+                                }
+                            }
+                            
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0, execute: {
+                                Task {
+                                    await gameHelper.updatePlayer(["is_ready": true])
+                                }
+                            })
+                        }
+                    }
+                })
+                .frame(height: 100)
+                .zIndex(0.0)
             }
 
             ZStack {
@@ -353,13 +379,17 @@ struct CardsView: View {
     
    func determineCommonAreaPosition(turn: Int) -> CGFloat {
         if turn == 1 || turn == 4 {
-            return specs.maxY * 0.57
+            return specs.maxY * 0.5
         } else {
             return specs.maxY * 0.44
         }
     }
     
    func determineCribSpacing(turn: Int) -> CGFloat {
+        if (gameHelper.gameState?.num_players ?? gameObservable.game.num_players) == 6 {
+           return -55
+        }
+       
         if turn == 1 || turn == 4 {
             return -33
         } else {
@@ -374,6 +404,14 @@ struct CardsView: View {
             return .green
         } else {
             return .red
+        }
+    }
+    
+    func determineShadowColor() -> Color {
+        if specs.theme == .banana {
+            return specs.theme.colorWay.primary
+        } else {
+            return specs.theme.colorWay.secondary
         }
     }
     

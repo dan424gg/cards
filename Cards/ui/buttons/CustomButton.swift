@@ -9,6 +9,9 @@ import SwiftUI
 
 struct CustomButton: View {
     @EnvironmentObject var specs: DeviceSpecs
+    @GestureState private var isPressed = false
+    @State var lastPressTime: Date?
+    @State var isDragging: Bool = false
     var name: String
     var submitFunction: (() -> Void)
     var size: Int?
@@ -23,9 +26,9 @@ struct CustomButton: View {
             .background(invertColors ? specs.theme.colorWay.primary : specs.theme.colorWay.secondary)
             .clipShape(Capsule())
             .scaleEffect(scale)
-            .onLongPressGesture(minimumDuration: 100.0, maximumDistance: 50.0, perform: {
+            .onLongPressGesture(minimumDuration: 5.0, maximumDistance: 150.0, perform: {
                 withAnimation(.bouncy(duration: 0.3, extraBounce: 0.4)) {
-                    submitFunction()
+                    handleButtonPress()
                     scale = 1.0
                 }
             }, onPressingChanged: { change in
@@ -36,11 +39,29 @@ struct CustomButton: View {
                     }
                 } else {
                     withAnimation(.bouncy(duration: 0.3, extraBounce: 0.4)) {
-                        submitFunction()
+                        handleButtonPress()
                         scale = 1.0
                     }
                 }
             })
+    }
+
+    func handleButtonPress() {
+        let currentTime = Date()
+        
+        // Check if the button was pressed recently
+        if let lastPress = lastPressTime, currentTime.timeIntervalSince(lastPress) < 2 {
+            print("Button press ignored, too soon after last press \(lastPress).")
+            return
+        }
+
+        // Update the last press time
+        lastPressTime = currentTime
+        
+        withAnimation(.bouncy(duration: 0.3, extraBounce: 0.4)) {
+            submitFunction()
+//            scale = 1.0
+        }
     }
 }
 
@@ -76,5 +97,17 @@ struct ImageButton: View {
 }
 
 #Preview {
-    CustomButton(name: "Submit", submitFunction: { print("hi") })
+    return GeometryReader { geo in
+        CustomButton(name: "Submit", submitFunction: { print("hi") })
+            .environmentObject({ () -> DeviceSpecs in
+                let envObj = DeviceSpecs()
+                envObj.setProperties(geo)
+                return envObj
+            }() )
+            .environmentObject(GameHelper())
+            .position(x: geo.frame(in: .global).midX, y: geo.frame(in: .global).midY)
+            .background(DeviceSpecs().theme.colorWay.background)
+        
+    }
+    .ignoresSafeArea()
 }

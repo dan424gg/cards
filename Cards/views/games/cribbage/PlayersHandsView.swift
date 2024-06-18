@@ -102,6 +102,8 @@ struct PlayerNameButton: View {
             
             HStack {
                 CText(player.name)
+                    .foregroundStyle(specs.theme.colorWay.textColor)
+                
                 if (gameHelper.gameState?.dealer ?? gameObservable.game.dealer) == player.player_num {
                     CribMarker(scale: 0.6)
                         .disabled(true)
@@ -111,7 +113,8 @@ struct PlayerNameButton: View {
                 
                 HStack(spacing: 0) {
                     CText("\(points)", size: 24)
-                    
+                        .foregroundStyle(specs.theme.colorWay.textColor)
+
                     CText("\(cribPoints != -1 ? " + \(cribPoints)" : "")", size: 24)
                         .foregroundStyle(.yellow)
                 }
