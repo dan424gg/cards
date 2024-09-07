@@ -40,6 +40,11 @@
 		1EA903B52BA22F7E00CF76E3 /* LaunchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EA903B42BA22F7E00CF76E3 /* LaunchView.swift */; };
 		1EAE46882B828C0800F7519B /* GameOutcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EAE46872B828C0800F7519B /* GameOutcomeView.swift */; };
 		1EAE468F2B8296D700F7519B /* IntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EAE468E2B8296D700F7519B /* IntroView.swift */; };
+		1EB871262C8D1620006BCE5F /* MonteCarloSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB871202C8D1620006BCE5F /* MonteCarloSearch.swift */; };
+		1EB871272C8D1620006BCE5F /* Tree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB871232C8D1620006BCE5F /* Tree.swift */; };
+		1EB871282C8D1620006BCE5F /* Node.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB871252C8D1620006BCE5F /* Node.swift */; };
+		1EB871292C8D1620006BCE5F /* Runner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB871212C8D1620006BCE5F /* Runner.swift */; };
+		1EB8712A2C8D1620006BCE5F /* RolloutGameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB871242C8D1620006BCE5F /* RolloutGameState.swift */; };
 		1EBED90E2AD7BBFF008B85EE /* CardsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED90D2AD7BBFF008B85EE /* CardsApp.swift */; };
 		1EBED9102AD7BBFF008B85EE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EBED90F2AD7BBFF008B85EE /* ContentView.swift */; };
 		1EBED9122AD7BC00008B85EE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1EBED9112AD7BC00008B85EE /* Assets.xcassets */; };
@@ -145,6 +150,11 @@
 		1EA903B42BA22F7E00CF76E3 /* LaunchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchView.swift; sourceTree = "<group>"; };
 		1EAE46872B828C0800F7519B /* GameOutcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOutcomeView.swift; sourceTree = "<group>"; };
 		1EAE468E2B8296D700F7519B /* IntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroView.swift; sourceTree = "<group>"; };
+		1EB871202C8D1620006BCE5F /* MonteCarloSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonteCarloSearch.swift; sourceTree = "<group>"; };
+		1EB871212C8D1620006BCE5F /* Runner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Runner.swift; sourceTree = "<group>"; };
+		1EB871232C8D1620006BCE5F /* Tree.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tree.swift; sourceTree = "<group>"; };
+		1EB871242C8D1620006BCE5F /* RolloutGameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RolloutGameState.swift; sourceTree = "<group>"; };
+		1EB871252C8D1620006BCE5F /* Node.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Node.swift; sourceTree = "<group>"; };
 		1EBED90A2AD7BBFF008B85EE /* CardsPlayground.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CardsPlayground.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EBED90D2AD7BBFF008B85EE /* CardsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsApp.swift; sourceTree = "<group>"; };
 		1EBED90F2AD7BBFF008B85EE /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -273,6 +283,7 @@
 		1E9ED21E2BE806CD008DBC28 /* utilities */ = {
 			isa = PBXGroup;
 			children = (
+				1EB8711F2C8D1620006BCE5F /* AI */,
 				1EBED90D2AD7BBFF008B85EE /* CardsApp.swift */,
 				1EBED90F2AD7BBFF008B85EE /* ContentView.swift */,
 				1E8D45ED2B585EE5007543BC /* Utils.swift */,
@@ -317,6 +328,26 @@
 				1EA903B42BA22F7E00CF76E3 /* LaunchView.swift */,
 			);
 			path = "launch screen";
+			sourceTree = "<group>";
+		};
+		1EB8711F2C8D1620006BCE5F /* AI */ = {
+			isa = PBXGroup;
+			children = (
+				1EB871222C8D1620006BCE5F /* DataTypes */,
+				1EB871202C8D1620006BCE5F /* MonteCarloSearch.swift */,
+				1EB871212C8D1620006BCE5F /* Runner.swift */,
+			);
+			path = AI;
+			sourceTree = "<group>";
+		};
+		1EB871222C8D1620006BCE5F /* DataTypes */ = {
+			isa = PBXGroup;
+			children = (
+				1EB871252C8D1620006BCE5F /* Node.swift */,
+				1EB871242C8D1620006BCE5F /* RolloutGameState.swift */,
+				1EB871232C8D1620006BCE5F /* Tree.swift */,
+			);
+			path = DataTypes;
 			sourceTree = "<group>";
 		};
 		1EBED9012AD7BBFF008B85EE = {
@@ -650,12 +681,15 @@
 			files = (
 				1E06C9292B003CB300195F6D /* CribbageBoard.swift in Sources */,
 				1EAE46882B828C0800F7519B /* GameOutcomeView.swift in Sources */,
+				1EB8712A2C8D1620006BCE5F /* RolloutGameState.swift in Sources */,
 				1ECE76492B714BCF004F2072 /* UITestingHelper.swift in Sources */,
 				1E939CFD2AE3606D00D64551 /* GameState.swift in Sources */,
 				1E20F1792AF3524100F2B368 /* CardPlaceHolder.swift in Sources */,
 				1EA903B52BA22F7E00CF76E3 /* LaunchView.swift in Sources */,
 				1E8D45EE2B585EE5007543BC /* Utils.swift in Sources */,
+				1EB871282C8D1620006BCE5F /* Node.swift in Sources */,
 				1EC258EB2B9A5DD0001B78EB /* SideBar.swift in Sources */,
+				1EB871262C8D1620006BCE5F /* MonteCarloSearch.swift in Sources */,
 				1EFA9F5B2AF584CC00FA092C /* TurnTwoView.swift in Sources */,
 				1EE63D972BC4621B006D2CDD /* ErrorMessageView.swift in Sources */,
 				1E34805E2BE056A3006C290E /* CustomButton.swift in Sources */,
@@ -686,7 +720,9 @@
 				1E3C3EB42B8549C1000FCAE6 /* SheetDisplayer.swift in Sources */,
 				1EBEF2C22AE4F579008A093B /* TeamState.swift in Sources */,
 				1EFB1F8F2B59C56E001C0ADA /* SwiftUIView.swift in Sources */,
+				1EB871292C8D1620006BCE5F /* Runner.swift in Sources */,
 				1EBED90E2AD7BBFF008B85EE /* CardsApp.swift in Sources */,
+				1EB871272C8D1620006BCE5F /* Tree.swift in Sources */,
 				1E7E89232B9107F100E3626E /* LineOfSuits.swift in Sources */,
 				1EC258ED2B9B820A001B78EB /* MainView.swift in Sources */,
 				1E3480652BE15B45006C290E /* MainScreenButton.swift in Sources */,

@@ -170,6 +170,10 @@ struct LaunchTheme {
     let background: Color = Color("LaunchBackground")
 }
 
+extension Collection {
+    func sample(_ n: Int) -> [Element] { return Array(self.shuffled().prefix(n)) }
+}
+
 extension CGPoint {
     func distance(to point: CGPoint) -> CGFloat {
         return hypot(point.x - x, point.y - y)
@@ -255,7 +259,7 @@ extension View {
     /// - Parameters:
     ///   - condition: The condition to evaluate.
     ///   - transform: The transform to apply to the source `View`.
-    /// - Returns: Either the original `View` or the modified `View` if the condition is `true`.   
+    /// - Returns: Either the original `View` or the modified `View` if the condition is `true`.
     @ViewBuilder func `if`<Content: View>(_ condition: Bool, _ transform: (Self) -> Content) -> some View {
         if condition {
             transform(self)
@@ -264,7 +268,7 @@ extension View {
         }
     }
 
-    @ViewBuilder 
+    @ViewBuilder
     func `if`<Content: View>(_ condition: Bool, _ transform: (Self) -> Content, else elseTransform: (Self) -> Content) -> some View {
         if condition {
             transform(self)
@@ -412,7 +416,7 @@ struct CText: View {
     /// CText("Hello, this is a test")
     ///         .foregroundStyle(.red)
     /// ```
-    /// 
+    ///
     @ViewBuilder func `foregroundStyle`(_ color: Color) -> some View {
         CText(self.string, size: self.size, color: color)
     }
@@ -462,7 +466,7 @@ struct DisplayPlayersHandContainer: View {
                     }
 
                     if scoringPlays == [] {
-                        if player != nil {                            
+                        if player != nil {
                             scoringPlays = gameHelper.checkCardsForPoints(playerCards: player!.cards_in_hand, gameHelper.gameState!.starter_card)
                         } else {
                             scoringPlays = gameHelper.checkCardsForPoints(crib: crib, gameHelper.gameState!.starter_card)
