@@ -6,12 +6,13 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct SinglePlayerView: View {
     @Environment(GameHelper.self) var gameHelper
     @Environment(DeviceSpecs.self) var specs
     @Binding var introView: IntroViewType
-    
+    @FocusState var isFocused: Bool
     @State var name: String = ""
     @State var numberOfBots: Int = 1
     @State var color: Color = .blue
@@ -20,66 +21,85 @@ struct SinglePlayerView: View {
         ZStack {
             VStack(alignment: .center) {
                 CText("Single Player", size: 40)
-                    .font(.custom("LuckiestGuy-Regular", size: 40))
                 
-                HStack {
-                    CText("Game")
-                    Spacer()
-                    GamePicker(color: specs.theme.colorWay.secondary)
-                }
-                .padding(.vertical, 15)
-                .padding(.horizontal, 20)
-                .background {
-                    VisualEffectView(effect: UIBlurEffect(style: .systemThinMaterialDark))
-                        .clipShape(RoundedRectangle(cornerRadius: 25.0))
-                }
-                
-                HStack {
-                    CText("Name")
-                    Spacer()
-                    CustomTextField(textFieldHint: "Name", widthMultiplier: 0.3, alignment: .trailing, value: $name)
-                        .textFieldStyle(ClearTextFieldBorder(color: specs.theme.colorWay.secondary))
-                }
-                .padding(.vertical, 15)
-                .padding(.horizontal, 20)
-                .background {
-                    VisualEffectView(effect: UIBlurEffect(style: .systemThinMaterialDark))
-                        .clipShape(RoundedRectangle(cornerRadius: 25.0))
-                }
-                
-                HStack {
-                    CText("number of bots")
-                    Spacer()
-                    Menu {
-                        Picker("Bots", selection: $numberOfBots, content: {
-                            ForEach([1,2,3], id: \.self) { num in
-                                Text("\(num)")
-                            }
-                        })
-                    } label: {
-                        CText("\(numberOfBots)")
-                            .foregroundStyle(specs.theme.colorWay.secondary)
+                Group {
+                    HStack {
+                        CText("Game")
+                        Spacer()
+                        GamePicker(color: specs.theme.colorWay.secondary)
+                    }
+                    .padding(.vertical, 15)
+                    .padding(.horizontal, 20)
+                    .background {
+                        VisualEffectView(effect: UIBlurEffect(style: .systemThinMaterialDark))
+                            .clipShape(RoundedRectangle(cornerRadius: 25.0))
                     }
                     
-                }
-                .padding(.vertical, 15)
-                .padding(.horizontal, 20)
-                .background {
-                    VisualEffectView(effect: UIBlurEffect(style: .systemThinMaterialDark))
-                        .clipShape(RoundedRectangle(cornerRadius: 25.0))
+                    HStack {
+                        CText("Name")
+                        Spacer()
+                        CustomTextField(textFieldHint: "Name", widthMultiplier: 0.3, alignment: .trailing, value: $name)
+                            .textFieldStyle(ClearTextFieldBorder(color: specs.theme.colorWay.secondary))
+                            .focused($isFocused)
+                            .onChange(of: isFocused, { (old, new) in
+                                if old && !new {
+                                    Task {
+                                        await gameHelper.updatePlayer(["name": name])
+                                    }
+                                }
+                            })
+                    }
+                    .padding(.vertical, 15)
+                    .padding(.horizontal, 20)
+                    .background {
+                        VisualEffectView(effect: UIBlurEffect(style: .systemThinMaterialDark))
+                            .clipShape(RoundedRectangle(cornerRadius: 25.0))
+                    }
+                    
+                    HStack {
+                        CText("number of bots")
+                        Spacer()
+                        Menu {
+                            Picker("Bots", selection: $numberOfBots, content: {
+                                ForEach([1,2,3], id: \.self) { num in
+                                    Text("\(num)")
+                                }
+                            })
+                        } label: {
+                            CText("\(numberOfBots)")
+                                .foregroundStyle(specs.theme.colorWay.secondary)
+                        }
+                        
+                    }
+                    .padding(.vertical, 15)
+                    .padding(.horizontal, 20)
+                    .background {
+                        VisualEffectView(effect: UIBlurEffect(style: .systemThinMaterialDark))
+                            .clipShape(RoundedRectangle(cornerRadius: 25.0))
+                    }
+                    
+                    HStack {
+                        CText("team color")
+                        Spacer()
+                        TeamColorPicker()
+                    }
+                    .padding(.vertical, 15)
+                    .padding(.horizontal, 20)
+                    .background {
+                        VisualEffectView(effect: UIBlurEffect(style: .systemThinMaterialDark))
+                            .clipShape(RoundedRectangle(cornerRadius: 25.0))
+                    }
                 }
                 
-                HStack {
-                    CText("team color")
-                    Spacer()
-                    TeamColorPicker()
-                }
-                .padding(.vertical, 15)
-                .padding(.horizontal, 20)
-                .background {
-                    VisualEffectView(effect: UIBlurEffect(style: .systemThinMaterialDark))
-                        .clipShape(RoundedRectangle(cornerRadius: 25.0))
-                }
+                CustomButton(name: "Play!", submitFunction: {
+                    Task {
+                        gameHelper.players.append(contentsOf: [
+                            PlayerState(name: "BOT", player_num: 1)
+                        ])
+                        gameHelper.teams.append(TeamState(team_num: 2, color: "Red"))
+                        await gameHelper.updateGame(["num_players": 2, "num_teams": 2, "is_playing": true])
+                    }
+                })
             }
             .padding()
             .background {
@@ -98,6 +118,8 @@ struct SinglePlayerView: View {
                 .font(.system(size: 45, weight: .heavy))
                 .foregroundStyle(specs.theme.colorWay.primary, specs.theme.colorWay.secondary)
             }
+        }
+        .onAppear {
         }
     }
 }

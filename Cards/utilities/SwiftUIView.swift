@@ -1,28 +1,33 @@
+
+
+import Combine
+import Foundation
 import SwiftUI
+import SwiftData
+import Firebase
+import FirebaseCore
+import FirebaseFirestore
+import FirebaseFirestoreSwift
+
+enum buttonType {
+    case add, remove, none
+}
 
 struct SwiftUIView: View {
-    @State var counter: Int = 0
-    @State var isProcessing: Bool = false
+    @State var nums: [Int] = [0]
+    @State var butType: buttonType = .none
     
     var body: some View {
         VStack {
-            Text("\(counter)")
-            CustomButton(name: "incr", submitFunction: {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                    counter += 1
-                }
+            Text("\(nums)")
+            
+            CustomButton(name: "add", submitFunction: {
+                butType = .add
             })
             
-//            Button("incr") {
-//                guard !isProcessing else { return } // Check if already processing
-//                isProcessing = true // Set processing flag
-//                
-//                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-//                    counter += 1
-//                }
-//                
-//                isProcessing = false // Release lock
-//            }
+            CustomButton(name: "remove", submitFunction: {
+                butType = .remove
+            })
         }
     }
 }

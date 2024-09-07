@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct GameView: View {
     @Environment(GameHelper.self) private var gameHelper
@@ -78,6 +79,13 @@ struct GameView: View {
                         .transition(.move(edge: .bottom))
                 }
         }
+//        .onAppear {
+//            print(gameHelper.gameState!)
+//            print(gameHelper.playerState!)
+//            print(gameHelper.teamState!)
+//            print(gameHelper.players)
+//            print(gameHelper.teams)
+//        }
         .onChange(of: gameHelper.playerState?.is_ready, {
             guard gameHelper.playerState != nil, gameHelper.gameState != nil, gameHelper.playerState!.is_lead else {
                 return
@@ -162,7 +170,7 @@ struct GameView: View {
             }
             
             Task(priority: .userInitiated) {
-                let randDealer = Int.random(in: 0..<(gameHelper.gameState!.num_players))
+                let randDealer = /*Int.random(in: 0..<(gameHelper.gameState!.num_players))*/ 0
                 
                 // determine dealer's team for crib
                 if let teamWithCrib = gameHelper.players.first(where: { $0.player_num == randDealer })?.team_num {
@@ -184,7 +192,7 @@ struct GameView: View {
             guard gameHelper.playerState!.player_num == gameHelper.gameState!.dealer else {
                 return
             }
-            
+                        
             Task {
                 await gameHelper.shuffleAndDealCards()
                 await gameHelper.updateGame(["turn": 1])
@@ -195,6 +203,7 @@ struct GameView: View {
             guard gameHelper.gameState != nil, gameHelper.playerState != nil, gameHelper.playerState!.is_lead else {
                 return
             }
+            
             Task {
                 await gameHelper.updateGame(["player_turn": (gameHelper.gameState!.dealer + 1) % gameHelper.gameState!.num_players])
             }

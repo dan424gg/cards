@@ -65,7 +65,7 @@ struct LoadingScreen: View {
                             
                             gameHelper.logAnalytics(.game_started)
                             gameHelper.logAnalytics(.game_being_played, ["game": gameHelper.gameState!.game_name])
-                            gameHelper.logAnalytics(.num_players, ["players": 5])
+                            gameHelper.logAnalytics(.num_players, ["players": gameHelper.gameState!.num_players])
                             gameHelper.logAnalytics(.num_teams, ["teams": gameHelper.gameState!.num_teams])
                             for team in gameHelper.teams {
                                 gameHelper.logAnalytics(.color_picked, ["color_picked": team.color])

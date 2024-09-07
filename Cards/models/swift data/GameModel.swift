@@ -10,6 +10,7 @@ import SwiftData
 
 @Model
 final class GameModel: Codable {
+    @Attribute(.unique) var startTime: Date
     var inProgress: Bool
     
     var gameState: GameState?
@@ -19,29 +20,32 @@ final class GameModel: Codable {
     var teams: [TeamState]
     var gameOutcome: GameOutcome
     
-    init(inProgress: Bool = true, gameState: GameState? = nil, teamState: TeamState? = nil, playerState: PlayerState? = nil, players: [PlayerState], teams: [TeamState], gameOutcome: GameOutcome) {
-        self.inProgress = inProgress
-        self.gameState = gameState
-        self.teamState = teamState
-        self.playerState = playerState
-        self.players = players
-        self.teams = teams
-        self.gameOutcome = gameOutcome
+    init(startTime: Date = .now) {
+        self.startTime = startTime
+        self.inProgress = true
+        self.gameState = GameState()
+        self.teamState = TeamState()
+        self.playerState = PlayerState()
+        self.players = []
+        self.teams = []
+        self.gameOutcome = .undetermined
     }
     
     enum CodingKeys: String, CodingKey {
-            case inProgress
-            case gameState
-            case teamState
-            case playerState
-            case players
-            case teams
-            case gameOutcome
-        }
+        case startTime
+        case inProgress
+        case gameState
+        case teamState
+        case playerState
+        case players
+        case teams
+        case gameOutcome
+    }
         
     // Decodable conformance
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.startTime = try container.decode(Date.self, forKey: .startTime)
         self.inProgress = try container.decode(Bool.self, forKey: .inProgress)
         self.gameState = try container.decodeIfPresent(GameState.self, forKey: .gameState)
         self.teamState = try container.decodeIfPresent(TeamState.self, forKey: .teamState)
@@ -54,6 +58,7 @@ final class GameModel: Codable {
     // Encodable conformance
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(startTime, forKey: .startTime)
         try container.encode(inProgress, forKey: .inProgress)
         try container.encodeIfPresent(gameState, forKey: .gameState)
         try container.encodeIfPresent(teamState, forKey: .teamState)
