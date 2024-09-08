@@ -464,7 +464,24 @@ class GameHelper {
             print(error)
         }
     }
-
+    
+    func startGameCollection(fullName: String) {
+        do {
+            gameState = GameState(group_id: 0, num_teams: 1, num_players: 1)
+            let color = gameState!.colors_available.randomElement()!
+            gameState!.colors_available = gameState!.colors_available.filter { $0 != color }
+            try database.setInitGameState(gameState!)
+            
+            playerState = PlayerState(name: fullName, uid: UUID().uuidString, is_lead: true, team_num: 1, player_num: 0)
+            try database.setInitPlayerState(playerState!, playerState!.uid)
+            
+            teamState = TeamState(team_num: 1, color: color)
+            try database.setInitTeamState(teamState!, 1)
+        } catch {
+            // do something
+        }
+    }
+    
     func startGameCollection(fullName: String, testGroupId: Int? = nil) async {
         var groupId = 0
         

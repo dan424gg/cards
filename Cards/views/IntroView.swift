@@ -89,9 +89,7 @@ struct IntroView: View {
                                     introView = .singlePlayer
                                     
                                     gameHelper.database = Local()
-                                    Task {
-                                        await gameHelper.startGameCollection(fullName: "")
-                                    }
+                                    gameHelper.startGameCollection(fullName: "")
                                 }
                             })
                         }

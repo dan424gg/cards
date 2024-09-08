@@ -56,7 +56,7 @@ enum GameSetUpType: Hashable {
     case none
 }
 
-enum GameOutcome: Hashable, Codable {
+enum GameOutcome: Hashable {
     case win
     case lose
     case undetermined
@@ -170,6 +170,10 @@ struct LaunchTheme {
     let background: Color = Color("LaunchBackground")
 }
 
+extension Collection {
+    func sample(_ n: Int) -> [Element] { return Array(self.shuffled().prefix(n)) }
+}
+
 extension CGPoint {
     func distance(to point: CGPoint) -> CGFloat {
         return hypot(point.x - x, point.y - y)
@@ -255,7 +259,7 @@ extension View {
     /// - Parameters:
     ///   - condition: The condition to evaluate.
     ///   - transform: The transform to apply to the source `View`.
-    /// - Returns: Either the original `View` or the modified `View` if the condition is `true`.   
+    /// - Returns: Either the original `View` or the modified `View` if the condition is `true`.
     @ViewBuilder func `if`<Content: View>(_ condition: Bool, _ transform: (Self) -> Content) -> some View {
         if condition {
             transform(self)
@@ -264,7 +268,7 @@ extension View {
         }
     }
 
-    @ViewBuilder 
+    @ViewBuilder
     func `if`<Content: View>(_ condition: Bool, _ transform: (Self) -> Content, else elseTransform: (Self) -> Content) -> some View {
         if condition {
             transform(self)
@@ -365,8 +369,8 @@ func endTextEditing() {
 /// ```
 ///
 struct CText: View {
-    @Environment(GameHelper.self) private var gameHelper
-    @Environment(DeviceSpecs.self) private var specs
+    @EnvironmentObject var gameHelper: GameHelper
+    @EnvironmentObject var specs: DeviceSpecs
     @StateObject var gameObservable = GameObservable(game: .game)
     @AppStorage(AppStorageConstants.filter) var applyFilter: Bool = false
     var string: String
@@ -412,7 +416,7 @@ struct CText: View {
     /// CText("Hello, this is a test")
     ///         .foregroundStyle(.red)
     /// ```
-    /// 
+    ///
     @ViewBuilder func `foregroundStyle`(_ color: Color) -> some View {
         CText(self.string, size: self.size, color: color)
     }
@@ -434,7 +438,7 @@ struct DisableAnimationsViewModifier: ViewModifier {
 
 struct DisplayPlayersHandContainer: View {
     @Environment(\.namespace) var namespace
-    @Environment(GameHelper.self) private var gameHelper
+    @EnvironmentObject var gameHelper: GameHelper
     var player: PlayerState? = nil
     var crib: [Int] = []
     var visibilityFor: TimeInterval
@@ -462,7 +466,7 @@ struct DisplayPlayersHandContainer: View {
                     }
 
                     if scoringPlays == [] {
-                        if player != nil {                            
+                        if player != nil {
                             scoringPlays = gameHelper.checkCardsForPoints(playerCards: player!.cards_in_hand, gameHelper.gameState!.starter_card)
                         } else {
                             scoringPlays = gameHelper.checkCardsForPoints(crib: crib, gameHelper.gameState!.starter_card)
@@ -567,11 +571,12 @@ struct StrokeText: View {
 }
 
 struct TimedTextContainer: View {
-    @Environment(DeviceSpecs.self) private var specs
+    @EnvironmentObject var specs: DeviceSpecs
     @State private var string: String = ""
     @State private var idx: Int = 0
     @Binding var display: Bool
     @Binding var textArray: [String]
+    @State var manip_textArray: [String] = []
     
     var visibilityFor: TimeInterval
     var color: Color = .purple
@@ -583,7 +588,8 @@ struct TimedTextContainer: View {
                 .padding(.horizontal)
                 .padding(.vertical, 10)
                 .id(string)
-                .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .opacity))
+                .transition(.opacity)
+//                .transition(.asymmetric(insertion: .move(edge: .bottom), removal: .slide))
                 .background {
                     if !string.isEmpty {
                         RoundedRectangle(cornerRadius: 5)
@@ -593,32 +599,40 @@ struct TimedTextContainer: View {
                 }
             Spacer()
         }
-        .onChange(of: textArray, initial: true, {
-            if !textArray.isEmpty {
-                for i in 0...textArray.count {
+        .frame(minWidth: 300, maxHeight: 100)
+        .offset(y: 25)
+        .geometryGroup()
+//        .border(.purple)
+        .onChange(of: manip_textArray, initial: true, {
+            if !manip_textArray.isEmpty {
+                for i in 0...manip_textArray.count {
                     DispatchQueue.main.asyncAfter(deadline: .now() + (visibilityFor * Double(i))) {
-                        if i >= textArray.count {
+                        if i >= manip_textArray.count {
                             withAnimation {
                                 display = false
                                 string = ""
-                                textArray.removeAll()
+                                manip_textArray.removeAll()
                             }
                         } else {
                             withAnimation {
-                                string = textArray[i]
+                                string = manip_textArray[i]
                             }
                         }
                     }
                 }
             }
         })
-        .frame(height: 100)
-        .offset(y: 28)
+        .onChange(of: textArray, initial: true, {
+            let newCallouts = textArray.filter({
+                !manip_textArray.contains($0)
+            })
+                        
+            manip_textArray.append(contentsOf: newCallouts)
+        })
         .onTapGesture {
             withAnimation {
-                display = false
                 string = ""
-                textArray.removeAll()
+                manip_textArray.removeAll()
             }
         }
     }
