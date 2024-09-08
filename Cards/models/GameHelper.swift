@@ -37,6 +37,22 @@ class Reference<T> {
     }
 }
 
+class nonMainActorGameHelper {
+    var gameState: GameState
+    var teamState: TeamState
+    var playerState: PlayerState
+    var players: [PlayerState] = []
+    var teams: [TeamState] = []
+    
+    init(gameState: GameState, teamState: TeamState, playerState: PlayerState, players: [PlayerState], teams: [TeamState]) {
+        self.gameState = gameState
+        self.teamState = teamState
+        self.playerState = playerState
+        self.players = players
+        self.teams = teams
+    }
+}
+
 @MainActor class GameHelper: ObservableObject {
     private var gameStateListener: ListenerRegistration!
     private var teamsListener: ListenerRegistration!
@@ -56,6 +72,10 @@ class Reference<T> {
     @Published var error: String = ""
     
     var docRef: DocumentReference!
+    
+    func nonMainActorGameHelperCopy() -> nonMainActorGameHelper {
+        return nonMainActorGameHelper(gameState: self.gameState, teamState: self.teamState, playerState: self.playerState, players: self.players, teams: self.teams)
+    }
     
     func reinitialize() {
         if self.gameState != nil {
