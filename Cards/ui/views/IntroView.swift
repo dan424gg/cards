@@ -78,6 +78,7 @@ struct IntroView: View {
                                     if introView == .multiPlayer {
                                         introView = .nothing
                                     } else {
+                                        gameHelper.gameMode = .multiplayer
                                         gameHelper.database = Firebase()
                                         introView = .multiPlayer
                                     }
@@ -88,8 +89,8 @@ struct IntroView: View {
                                 withAnimation(.snappy.speed(1.0)) {
                                     introView = .singlePlayer
                                     
+                                    gameHelper.gameMode = .singleplayer
                                     gameHelper.database = Local()
-                                    gameHelper.startGameCollection(fullName: "")
                                 }
                             })
                         }

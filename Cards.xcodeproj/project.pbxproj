@@ -414,7 +414,6 @@
 				1E9C56FE2BED7E5700FF288E /* GoogleService-Info.plist */,
 				1E9ED21E2BE806CD008DBC28 /* utilities */,
 				1EBED94A2AD7BF15008B85EE /* models */,
-				1EBED93F2AD7BCC6008B85EE /* views */,
 				1EBED93C2AD7BC8F008B85EE /* ui */,
 				1EBED9132AD7BC01008B85EE /* Preview Content */,
 			);
@@ -450,6 +449,7 @@
 		1EBED93C2AD7BC8F008B85EE /* ui */ = {
 			isa = PBXGroup;
 			children = (
+				1EBED93F2AD7BCC6008B85EE /* views */,
 				1E8A2E612B89050A00A40148 /* pickers */,
 				1EA2457C2AED6F1F003B0943 /* card views */,
 				1EA2457B2AED6ED4003B0943 /* buttons */,

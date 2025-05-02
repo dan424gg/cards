@@ -18,6 +18,7 @@ final class GameModel: Codable {
     var playerState: PlayerState?
     var players: [PlayerState]
     var teams: [TeamState]
+    var gameMode: GameMode
     var gameOutcome: GameOutcome
     
     init(startTime: Date = .now) {
@@ -28,6 +29,7 @@ final class GameModel: Codable {
         self.playerState = PlayerState()
         self.players = []
         self.teams = []
+        self.gameMode = .undetermined
         self.gameOutcome = .undetermined
     }
     
@@ -39,6 +41,7 @@ final class GameModel: Codable {
         case playerState
         case players
         case teams
+        case gameMode
         case gameOutcome
     }
         
@@ -52,6 +55,7 @@ final class GameModel: Codable {
         self.playerState = try container.decodeIfPresent(PlayerState.self, forKey: .playerState)
         self.players = try container.decode([PlayerState].self, forKey: .players)
         self.teams = try container.decode([TeamState].self, forKey: .teams)
+        self.gameMode = try container.decode(GameMode.self, forKey: .gameMode)
         self.gameOutcome = try container.decode(GameOutcome.self, forKey: .gameOutcome)
     }
     
@@ -65,6 +69,7 @@ final class GameModel: Codable {
         try container.encodeIfPresent(playerState, forKey: .playerState)
         try container.encode(players, forKey: .players)
         try container.encode(teams, forKey: .teams)
+        try container.encode(gameMode, forKey: .gameMode)
         try container.encode(gameOutcome, forKey: .gameOutcome)
     }
 }

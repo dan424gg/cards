@@ -22,6 +22,7 @@ public struct PlayerState: Hashable, Codable {
     var cards_dragged: [Int] = []
     
     var callouts: [String] = []
+    var is_bot: Bool = false
 
     static var player_one = PlayerState(name: "Daniel", uid: "1", cards_in_hand: Array(5...8), is_lead: true, team_num: 1, is_ready: true, player_num: 0, cards_dragged: Array(5...8), callouts: ["15 for 2!", "Run of 3 for 5!", "Flush for 9!"])
     static var player_two = PlayerState(name: "Katie", uid: "2", cards_in_hand: Array(9...12), is_lead: false, team_num: 2, player_num: 1, cards_dragged: Array(9...12), callouts: ["15 for 2!", "Run of 3 for 5!", "Flush for 9!"])
@@ -40,28 +41,32 @@ public struct PlayerState: Hashable, Codable {
         case player_num
         case cards_dragged
         case callouts
+        case is_bot
     }
 }
 
 extension PlayerState {
-    subscript(_ keyPath: String) -> Any? {
-        get {
-            if let data = try? JSONEncoder().encode(self)
-                , var dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] { //Any of this could fail silently at any time
-                return dict[keyPath]
-            } else {
-                return nil
-            }
+    func value(forKey key: String) -> Any? {
+        guard let data = try? JSONEncoder().encode(self),
+              let dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            return nil
         }
-        set {
-            if let data = try? JSONEncoder().encode(self)
-                , var dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] { //Any of this could fail silently at any time
-                dict[keyPath] = newValue
-                
-                if let newData = try? JSONSerialization.data(withJSONObject: dict), let newObj = try? JSONDecoder().decode(Self.self, from: newData) { //Any of this could fail silently at any time
-                    self = newObj
-                }
-            }
+        return dict[key]
+    }
+    
+    func setting(value: Any?, forKey key: String) -> PlayerState? {
+        guard let data = try? JSONEncoder().encode(self),
+              var dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            return nil
+        }
+        
+        dict[key] = value
+        
+        if let newData = try? JSONSerialization.data(withJSONObject: dict),
+           let newObject = try? JSONDecoder().decode(PlayerState.self, from: newData) {
+            return newObject
+        } else {
+            return nil
         }
     }
 }

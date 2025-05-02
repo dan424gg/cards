@@ -10,7 +10,6 @@ import SwiftUI
 struct TeamColorPicker: View {
     @Environment(GameHelper.self) private var gameHelper
     @State var teamColor: String = ""
-    @State var listOfColorsAvailable: [String] = ["Red", "Blue", "Teal", "Green", "Yellow", "Orange"]
     @State var size: CGSize = .zero
         
     var body: some View {

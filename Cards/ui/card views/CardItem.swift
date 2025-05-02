@@ -2,6 +2,26 @@ import SwiftUI
 import Foundation
 import UniformTypeIdentifiers
 
+func convertToCardItem(_ id: Int) -> CardItem {
+    return CardItem(id: id)
+}
+
+func convertToCardItem(_ ids: [Int]) -> [CardItem] {
+    return ids.map {
+        CardItem(id: $0)
+    }
+}
+
+func convertToInt(_ cardItem: CardItem) -> Int {
+    return cardItem.id
+}
+
+func convertToInt(_ cardItems: [CardItem]) -> [Int] {
+    return cardItems.map {
+        $0.id
+    }
+}
+
 struct CardItem: Codable, Identifiable, Transferable {
     public init(id: Int) {
         self.id = id

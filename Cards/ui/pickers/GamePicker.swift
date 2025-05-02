@@ -7,26 +7,28 @@
 
 import SwiftUI
 
+
+enum Games: String, CaseIterable, Identifiable {
+    case cribbage, goFish, rummy
+    
+    var id: String { rawValue }
+    
+    var name: String {
+        if self == .goFish {
+            "go fish"
+        } else {
+            rawValue
+        }
+    }
+}
+
+
 struct GamePicker: View {
     @Environment(GameHelper.self) var gameHelper
     @Environment(DeviceSpecs.self) var specs
     @State var gameSelected: Games = .cribbage
     @State var preventCyclicalUpdate: Bool = false
     var color: Color?
-    
-    enum Games: String, CaseIterable, Identifiable {
-        case cribbage, goFish, rummy
-        
-        var id: String { rawValue }
-        
-        var name: String {
-            if self == .goFish {
-                "go fish"
-            } else {
-                rawValue
-            }
-        }
-    }
     
     var body: some View {
         Menu {

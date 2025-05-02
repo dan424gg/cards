@@ -18,6 +18,10 @@ enum DatabaseType: String {
     case local, firebase
 }
 
+enum GameMode: Hashable, Codable {
+    case singleplayer, multiplayer, undetermined
+}
+
 enum ArrayActionType {
     case append
     case remove
@@ -38,6 +42,22 @@ class Reference<T> {
     }
 }
 
+class gameHelperForAi {
+    var gameState: GameState
+    var teamState: TeamState
+    var playerState: PlayerState
+    var players: [PlayerState] = []
+    var teams: [TeamState] = []
+    
+    init(gameState: GameState, teamState: TeamState, playerState: PlayerState, players: [PlayerState], teams: [TeamState]) {
+        self.gameState = gameState
+        self.teamState = teamState
+        self.playerState = playerState
+        self.players = players
+        self.teams = teams
+    }
+}
+
 @Observable
 class GameHelper {
     var database: Database
@@ -46,6 +66,7 @@ class GameHelper {
     var playerState: PlayerState?
     var players: [PlayerState]
     var teams: [TeamState]
+    var gameMode: GameMode
     var gameOutcome: GameOutcome
     
     init() {
@@ -55,7 +76,18 @@ class GameHelper {
         self.playerState = PlayerState()
         self.players = [PlayerState]()
         self.teams = [TeamState]()
+        self.gameMode = .undetermined
         self.gameOutcome = .undetermined
+    }
+    
+    func gameHelperCopyForAi() -> gameHelperForAi {
+        guard gameState != nil, teamState != nil, playerState != nil else {
+            abort()
+        }
+        
+        let players: [PlayerState] = self.players + [self.playerState!]
+        
+        return gameHelperForAi(gameState: self.gameState!, teamState: self.teamState!, playerState: self.playerState!, players: players, teams: self.teams)
     }
         
     func reinitialize() {
@@ -69,6 +101,8 @@ class GameHelper {
         self.teamState = nil
         self.players = []
         self.teams = []
+        
+        self.database.reset(useInMemoryStore: true)
     }
     
     func deleteGameCollection(id: Int) async {
@@ -88,12 +122,14 @@ class GameHelper {
                     if let idx = players.firstIndex(where: {
                         $0.uid == uid!
                     }) {
-                        players[idx][key] = value
+                        if let update = players[idx].setting(value: value, forKey: key) {
+                            players[idx] = update
+                        }
                     } else {
                         print("error        player doesn't exist in 'players'\n\(uid!)")
                     }
                 } else {
-                    playerState![key] = value
+                    playerState = playerState!.setting(value: value, forKey: key)
                 }
             }
             
@@ -111,7 +147,7 @@ class GameHelper {
                     if let idx = players.firstIndex(where: {
                         $0.uid == uid!
                     }) {
-                        var tempArray: [T] = players[idx][key] as! [T]
+                        var tempArray: [T] = players[idx].value(forKey: key) as! [T]
                         
                         switch arrayAction {
                             case .append:
@@ -123,14 +159,15 @@ class GameHelper {
                             case .replace:
                                 tempArray = value
                         }
-                        
-                        players[idx][key] = tempArray
+                        if let update = players[idx].setting(value: tempArray, forKey: key) {
+                            players[idx] = update
+                        }
                     } else {
                         print("error        player doesn't exist in 'players'\n\(uid!)")
                     }
                 } else {
-                    var tempArray: [T] = playerState![key] as! [T]
-                    
+                    var tempArray: [T] = playerState!.value(forKey: key) as! [T]
+
                     switch arrayAction {
                         case .append:
                             tempArray.append(contentsOf: value)
@@ -142,7 +179,9 @@ class GameHelper {
                             tempArray = value
                     }
                     
-                    playerState![key] = tempArray
+                    if let update = playerState!.setting(value: tempArray, forKey: key) {
+                        playerState = update
+                    }
                 }
             }
             
@@ -204,7 +243,7 @@ class GameHelper {
         
         func updateGameField<T>(key: String, value: T) async throws {
             if type(of: database) == Local.self {
-                gameState![key] = value
+                gameState = gameState!.setting(value: value, forKey: key)
             }
             
             try await database.updateGameField(key: key, value: value)
@@ -217,7 +256,7 @@ class GameHelper {
             }
             
             if type(of: database) == Local.self {
-                var tempArray: [T] = gameState![key] as! [T]
+                var tempArray: [T] = gameState!.value(forKey: key) as! [T]
                 
                 switch arrayAction {
                     case .append:
@@ -230,7 +269,7 @@ class GameHelper {
                         tempArray = value
                 }
                 
-                gameState![key] = tempArray
+                gameState = gameState!.setting(value: tempArray, forKey: key)
             }
             
             try await database.updateGameArrayField(key: key, value: value, action: action!)
@@ -300,14 +339,19 @@ class GameHelper {
             let teamNum = teamNum ?? teamState!.team_num
             
             if type(of: database) == Local.self {
-                guard let idx = teams.firstIndex(where: {
+                
+                if let idx = teams.firstIndex(where: {
                     $0.team_num == teamNum
-                }) else {
+                }) {
+                    if let update = teams[idx].setting(value: value, forKey: key) {
+                        teams[idx] = update
+                    }
+                } else if teamNum == teamState!.team_num {
+                    teamState = teamState!.setting(value: value, forKey: key)
+                } else {
                     print("error        couldn't find team for updateTeamField(key: \(key), value: \(value))")
                     return
                 }
-                
-                teams[idx][key] = value
             }
             
             try await database.updateTeamField(teamNum: teamNum, key: key, value: value)
@@ -465,18 +509,18 @@ class GameHelper {
         }
     }
     
-    func startGameCollection(fullName: String) {
+    func startSingleGameCollection(gameName: String, fullName: String, teamColor: String) {
         do {
-            gameState = GameState(group_id: 0, num_teams: 1, num_players: 1)
-            let color = gameState!.colors_available.randomElement()!
-            gameState!.colors_available = gameState!.colors_available.filter { $0 != color }
+            gameState = GameState(group_id: 0, num_teams: 1, game_name: gameName, num_players: 1)
             try database.setInitGameState(gameState!)
             
             playerState = PlayerState(name: fullName, uid: UUID().uuidString, is_lead: true, team_num: 1, player_num: 0)
             try database.setInitPlayerState(playerState!, playerState!.uid)
+//            players.append(playerState!)
             
-            teamState = TeamState(team_num: 1, color: color)
+            teamState = TeamState(team_num: 1, color: teamColor)
             try database.setInitTeamState(teamState!, 1)
+            teams.append(teamState!)
         } catch {
             // do something
         }
@@ -602,7 +646,9 @@ class GameHelper {
 //        }
         
         var allPlayers = players
+//        if gameMode != .singleplayer {
         allPlayers.append(playerState!)
+//        }
         allPlayers.sort(by: { $0.player_num < $1.player_num })
         
 //        // ensure cards_in_hand is cleared for all players

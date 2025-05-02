@@ -56,7 +56,7 @@ enum GameSetUpType: Hashable {
     case none
 }
 
-enum GameOutcome: Hashable {
+enum GameOutcome: Hashable, Codable {
     case win
     case lose
     case undetermined
@@ -66,6 +66,8 @@ enum FocusField: Hashable {
     case name
     case groupId
 }
+
+var listOfColorsAvailable: [String] = ["Red", "Blue", "Teal", "Green", "Yellow", "Orange"]
 
 enum ScoringType: Hashable {
     case flush
@@ -369,8 +371,8 @@ func endTextEditing() {
 /// ```
 ///
 struct CText: View {
-    @EnvironmentObject var gameHelper: GameHelper
-    @EnvironmentObject var specs: DeviceSpecs
+    @Environment(GameHelper.self) private var gameHelper
+    @Environment(DeviceSpecs.self) private var specs
     @StateObject var gameObservable = GameObservable(game: .game)
     @AppStorage(AppStorageConstants.filter) var applyFilter: Bool = false
     var string: String
@@ -438,7 +440,7 @@ struct DisableAnimationsViewModifier: ViewModifier {
 
 struct DisplayPlayersHandContainer: View {
     @Environment(\.namespace) var namespace
-    @EnvironmentObject var gameHelper: GameHelper
+    @Environment(GameHelper.self) private var gameHelper
     var player: PlayerState? = nil
     var crib: [Int] = []
     var visibilityFor: TimeInterval
@@ -571,7 +573,7 @@ struct StrokeText: View {
 }
 
 struct TimedTextContainer: View {
-    @EnvironmentObject var specs: DeviceSpecs
+    @Environment(DeviceSpecs.self) private var specs
     @State private var string: String = ""
     @State private var idx: Int = 0
     @Binding var display: Bool

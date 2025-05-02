@@ -79,13 +79,6 @@ struct GameView: View {
                         .transition(.move(edge: .bottom))
                 }
         }
-//        .onAppear {
-//            print(gameHelper.gameState!)
-//            print(gameHelper.playerState!)
-//            print(gameHelper.teamState!)
-//            print(gameHelper.players)
-//            print(gameHelper.teams)
-//        }
         .onChange(of: gameHelper.playerState?.is_ready, {
             guard gameHelper.playerState != nil, gameHelper.gameState != nil, gameHelper.playerState!.is_lead else {
                 return
@@ -140,6 +133,42 @@ struct GameView: View {
                 gameHelper.gameOutcome = .lose
             }
         })
+        .onChange(of: gameHelper.gameState?.player_turn) {
+            /* Used to handle AI moves for single player during the play (turn 2) */
+            
+            guard gameHelper.gameState != nil, gameHelper.gameMode == .singleplayer, gameHelper.gameState!.turn == 2 else {
+                return
+            }
+            
+            // get bot player numbers
+            var bots: [PlayerState] = gameHelper.players.filter {
+                $0.is_bot
+            }
+            
+            // check if player_turn is one of those players
+            var is_bots_turn: Bool = bots.contains {
+                $0.player_num == gameHelper.gameState!.player_turn
+            }
+            
+            if is_bots_turn {
+                // get that player info (uid, cards_in_hand, etc)
+                guard let bot = bots.first(where: { $0.player_num == gameHelper.gameState!.player_turn }) else {
+                    throw Error(message: "", errorType: <#T##ErrorType#>) // replace this with your actual error type and case
+                }
+                
+                // get move for BOT
+                var move: Int = search(gameHelper.gameHelperCopyForAi())
+                
+                // apply wait time for "thinking"
+                DispatchQueue.main.asyncAfter(deadline: .now() + Double.random(in: 0.75...3.0)) {
+                    // apply move
+                    // handle all updates like actual player (look into turn two view)
+                    Task {
+                        
+                    }
+                }
+            }
+        }
         .onChange(of: gameHelper.gameState?.turn, initial: true, {
             guard gameHelper.gameState != nil else {
                 return
@@ -154,6 +183,8 @@ struct GameView: View {
             handleInitialTurn()
         } else if turn == 0 {
             handleDealerTurn()
+        } else if turn == 1 {
+            handleFirstTurn()
         } else if turn == 2 {
             handleSecondTurn()
         } else if turn == 3 {
@@ -199,6 +230,27 @@ struct GameView: View {
             }
         }
 
+        func handleFirstTurn() {
+            if gameHelper.gameMode == .singleplayer {
+                gameHelper.players.sort(by: {
+                    $0.player_num < $1.player_num
+                })
+                
+                let drawn_cards = gameHelper.players[0].cards_in_hand.sample(2)
+                DispatchQueue.main.asyncAfter(deadline: .now() + Double.random(in: 0.75...3.0)) {
+                    Task {
+                        await gameHelper.updatePlayer(["cards_in_hand": drawn_cards, "is_ready": true], uid: gameHelper.players[0].uid, arrayAction: .remove)
+                        
+                        guard gameHelper.gameState != nil else {
+                            return
+                        }
+                        
+                        gameHelper.gameState!.crib.append(contentsOf: drawn_cards)
+                    }
+                }
+            }
+        }
+        
         func handleSecondTurn() {
             guard gameHelper.gameState != nil, gameHelper.playerState != nil, gameHelper.playerState!.is_lead else {
                 return

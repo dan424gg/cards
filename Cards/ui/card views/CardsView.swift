@@ -17,7 +17,7 @@ struct CardsView: View {
     @StateObject var gameObservable: GameObservable/* = GameObservable(game: .game)*/
     @State var cards: [Int] = []
     @State var cardsInHand: [Int] = []
-    @State var cardsDragged: [Int] = [53,54]
+    @State var cardsDragged: [Int] = []
     
     @State var disableCardsDragged: Bool = false
     
@@ -245,7 +245,7 @@ struct CardsView: View {
                         .transition(.opacity)
                         
                         CustomButton(name: "Submit", submitFunction: {
-                            guard gameHelper.gameState != nil else {
+                            guard gameHelper.gameState != nil, gameHelper.playerState != nil else {
                                 return
                             }
                             

@@ -67,7 +67,7 @@ struct PlayerView: View {
                     })
                     .transition(.offset().combined(with: .opacity))
                 default:
-                    CText("Shouldn't get here")
+                    CText("Shouldn't get here for PlayerView")
             }
 //        }
     }

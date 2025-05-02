@@ -61,24 +61,27 @@ public struct GameState: Hashable, Codable {
 }
 
 extension GameState {
-    subscript(_ keyPath: String) -> Any? {
-        get {
-            if let data = try? JSONEncoder().encode(self)
-                , var dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] { //Any of this could fail silently at any time
-                return dict[keyPath]
-            } else {
-                return nil
-            }
+    func value(forKey key: String) -> Any? {
+        guard let data = try? JSONEncoder().encode(self),
+              let dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            return nil
         }
-        set {
-            if let data = try? JSONEncoder().encode(self)
-                , var dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] { //Any of this could fail silently at any time
-                dict[keyPath] = newValue
-                
-                if let newData = try? JSONSerialization.data(withJSONObject: dict), let newObj = try? JSONDecoder().decode(Self.self, from: newData) { //Any of this could fail silently at any time
-                    self = newObj
-                }
-            }
+        return dict[key]
+    }
+    
+    func setting(value: Any?, forKey key: String) -> GameState? {
+        guard let data = try? JSONEncoder().encode(self),
+              var dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            return nil
+        }
+        
+        dict[key] = value
+        
+        if let newData = try? JSONSerialization.data(withJSONObject: dict),
+           let newObject = try? JSONDecoder().decode(GameState.self, from: newData) {
+            return newObject
+        } else {
+            return nil
         }
     }
 }

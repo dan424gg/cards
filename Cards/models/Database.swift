@@ -18,6 +18,8 @@ import Observation
 protocol Database {
     var modelContainer: ModelContainer? { get }
     
+    mutating func reset(useInMemoryStore: Bool)
+    
     func updatePlayerField<T>(uid: String, key: String, value: T) async throws
     func updatePlayerArrayField<T: Equatable>(uid: String, key: String, value: [T], action: ArrayActionType) async throws
     func updateGameField<T>(key: String, value: T) async throws
@@ -98,7 +100,7 @@ extension Database {
         return try context.fetch(fetchDescriptor)
     }
     
-    /// Same as ```create(_ item: T)``` becuase SwiftData does an 'upsert' by default
+    /// Same as ```create(_ item: T)``` because SwiftData does an 'upsert' by default
     func update<T: PersistentModel>(_ item: T) throws {
         try create(item)
     }
@@ -137,6 +139,18 @@ struct Firebase: Database {
     var startTime: Date
     
     init(useInMemoryStore: Bool = false) {
+        do {
+            startTime = .now
+            let configuration = ModelConfiguration(for: GameModel.self, isStoredInMemoryOnly: useInMemoryStore)
+            modelContainer = try ModelContainer(for: GameModel.self, migrationPlan: GameModelsMigrationPlan.self, configurations: configuration)
+            
+            try create(GameModel(startTime: startTime))
+        } catch {
+            print("error        tried to initialize Firebase() \n\(error)\n")
+        }
+    }
+    
+    mutating func reset(useInMemoryStore: Bool = false) {
         do {
             startTime = .now
             let configuration = ModelConfiguration(for: GameModel.self, isStoredInMemoryOnly: useInMemoryStore)
@@ -425,14 +439,29 @@ struct Local: Database {
         }
     }
     
+    mutating func reset(useInMemoryStore: Bool = true) {
+        do {
+            startTime = .now
+            
+            let configuration = ModelConfiguration(for: GameModel.self, isStoredInMemoryOnly: useInMemoryStore)
+            modelContainer = try ModelContainer(for: GameModel.self, configurations: configuration)
+            
+            try create(GameModel(startTime: startTime))
+        } catch {
+            print("error        tried to initialize Local() \n\(error)\n")
+        }
+    }
+    
     func updatePlayerField<T>(uid: String, key: String, value: T) async throws {
         let tempGameModel = GameModel(startTime: self.startTime)
         
         if tempGameModel.playerState != nil && tempGameModel.playerState!.uid == uid {
-            tempGameModel.playerState![key] = value
+            tempGameModel.playerState = tempGameModel.playerState!.setting(value: value, forKey: key)
         } else if let idx = tempGameModel.players.firstIndex(where: { $0.uid == uid }) {
-            tempGameModel.players[idx][key] = value
-        }
+                if let update = tempGameModel.players[idx].setting(value: value, forKey: key) {
+                    tempGameModel.players[idx] = update
+                }
+            }
         
         try update(tempGameModel)
     }
@@ -443,40 +472,41 @@ struct Local: Database {
         if tempGameModel.playerState != nil && tempGameModel.playerState!.uid == uid {
             switch action {
                 case .append:
-                    var tempAttribute: [T] = tempGameModel.playerState![key] as! [T]
+                    var tempAttribute: [T] = tempGameModel.playerState!.value(forKey: key) as! [T]
                     
                     tempAttribute.append(contentsOf: value)
-                    tempGameModel.playerState![key] = tempAttribute
+                    tempGameModel.playerState = tempGameModel.playerState!.setting(value: tempAttribute, forKey: key)
                 case .remove:
-                    var tempAttribute: [T] = tempGameModel.playerState![key] as! [T]
+                    var tempAttribute: [T] = tempGameModel.playerState!.value(forKey: key) as! [T]
                     
                     for val in value {
                         tempAttribute.removeAll(where: {
                             $0 == val
                         })
                     }
-                    tempGameModel.playerState![key] = tempAttribute
+                    tempGameModel.playerState = tempGameModel.playerState!.setting(value: tempAttribute, forKey: key)
                 case .replace:
-                    tempGameModel.playerState![key] = value
+                    tempGameModel.playerState = tempGameModel.playerState!.setting(value: value, forKey: key)
             }
         } else if let idx = tempGameModel.players.firstIndex(where: { $0.uid == uid }) {
             switch action {
                 case .append:
-                    var tempAttribute: [T] = tempGameModel.players[idx][key] as! [T]
+                    var tempAttribute: [T] = tempGameModel.players[idx].value(forKey: key) as! [T]
                     
                     tempAttribute.append(contentsOf: value)
-                    tempGameModel.players[idx][key] = tempAttribute
-                case .remove:
-                    var tempAttribute: [T] = tempGameModel.players[idx][key] as! [T]
-                    
+                    if let update = tempGameModel.players[idx].setting(value: tempAttribute, forKey: key) {
+                        tempGameModel.players[idx] = update
+                    }                case .remove:
+                    var tempAttribute: [T] = tempGameModel.players[idx].value(forKey: key) as! [T]
+
                     for val in value {
                         tempAttribute.removeAll(where: {
                             $0 == val
                         })
                     }
-                    tempGameModel.players[idx][key] = tempAttribute
+                    tempGameModel.playerState = tempGameModel.playerState!.setting(value: tempAttribute, forKey: key)
                 case .replace:
-                    tempGameModel.players[idx][key] = value
+                    tempGameModel.playerState = tempGameModel.playerState!.setting(value: value, forKey: key)
             }
         }
         
@@ -485,7 +515,7 @@ struct Local: Database {
     
     func updateGameField<T>(key: String, value: T) async throws {
         let tempGameModel = GameModel(startTime: self.startTime)
-        tempGameModel.gameState![key] = value
+        tempGameModel.gameState = tempGameModel.gameState!.setting(value: value, forKey: key)
         try update(tempGameModel)
     }
     
@@ -495,21 +525,21 @@ struct Local: Database {
         if tempGameModel.gameState != nil {
             switch action {
                 case .append:
-                    var tempAttribute: [T] = tempGameModel.gameState![key] as! [T]
+                    var tempAttribute: [T] = tempGameModel.gameState!.value(forKey: key) as! [T]
                     
                     tempAttribute.append(contentsOf: value)
-                    tempGameModel.gameState![key] = tempAttribute
+                    tempGameModel.gameState = tempGameModel.gameState!.setting(value: tempAttribute, forKey: key)
                 case .remove:
-                    var tempAttribute: [T] = tempGameModel.gameState![key] as! [T]
+                    var tempAttribute: [T] = tempGameModel.gameState!.value(forKey: key) as! [T]
                     
                     for val in value {
                         tempAttribute.removeAll(where: {
                             $0 == val
                         })
                     }
-                    tempGameModel.gameState![key] = tempAttribute
+                    tempGameModel.gameState = tempGameModel.gameState!.setting(value: tempAttribute, forKey: key)
                 case .replace:
-                    tempGameModel.gameState![key] = value
+                    tempGameModel.gameState = tempGameModel.gameState!.setting(value: value, forKey: key)
             }
         }
         
@@ -520,9 +550,11 @@ struct Local: Database {
         let tempGameModel = GameModel(startTime: self.startTime)
 
         if tempGameModel.teamState != nil && tempGameModel.teamState!.team_num == teamNum {
-            tempGameModel.teamState![key] = value
+            tempGameModel.teamState = tempGameModel.teamState!.setting(value: value, forKey: key)
         } else if let idx = tempGameModel.teams.firstIndex(where: { $0.team_num == teamNum }) {
-            tempGameModel.teams[idx][key] = value
+            if let update = tempGameModel.teams[idx].setting(value: value, forKey: key) {
+                tempGameModel.teams[idx] = update
+            }
         }
 
         try update(tempGameModel)
@@ -639,6 +671,10 @@ struct Local: Database {
 struct NilDB: Database {
     var modelContainer: ModelContainer?
 
+    mutating func reset(useInMemoryStore: Bool = false) {
+        // not needed
+    }
+    
     func updatePlayerField<T>(uid: String, key: String, value: T) async throws {
         // not needed
     }

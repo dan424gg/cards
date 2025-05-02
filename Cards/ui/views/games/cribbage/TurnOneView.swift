@@ -116,7 +116,7 @@ struct TurnOneView: View {
             }
         }
         .frame(height: 100)
-        .onChange(of: cardsDragged) {            
+        .onChange(of: cardsDragged) {
             if playerReady() {
                 cardIsDisabled = true
 
